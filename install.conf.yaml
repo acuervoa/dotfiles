@@ -2,13 +2,33 @@
     link:
       create: true
       relink: true
+      force: true
 
 - clean: [ '~' ]
 
 - link:
-    ~/.dotfiles: .
+    ~/.dotfiles: 
+        path: .
+    ~/.bash_profile: 
+        path: runcom/.bash_profile
+    ~/.bashrc:
+        path: runcom/.bashrc
+    ~/.inputrc:
+        path: runcom/.inputrc
+    ~/.profile:
+        path: runcom/.profile
+    ~/.gitconfig:
+        path: git/.gitconfig
+    ~/.gitignore_global:
+        path: git/.gitignore_global
+    ~/.system:
+        glob: true
+        path: system/.*
     ~/.vim:
-    ~/.vim/autoload: meta/vim-pathogen/autoload
-    ~/.vimrc: vim/vimrc
+    ~/.vim/autoload:
+        create: true
+        path: meta/vim-pathogen/autoload
+    ~/.vimrc:
+        path: vim/vimrc
 - shell:
   - [ git submodule update --init --recursive, "Installing submodules" ]
