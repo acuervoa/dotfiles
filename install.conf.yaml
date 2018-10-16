@@ -30,5 +30,8 @@
         path: meta/vim-pathogen/autoload
     ~/.vimrc:
         path: vim/vimrc
+
+- brewfile:
+    file: Brewfile
 - shell:
   - [ git submodule update --init --recursive, "Installing submodules" ]
