@@ -1,6 +1,6 @@
-[submodule "dotbot"]
-	path = dotbot
+[submodule "meta/dotbot"]
+	path = meta/dotbot
 	url = https://github.com/anishathalye/dotbot
-[submodule "pathogen"]
-	path = pathogen
+[submodule "meta/vim-pathogen"]
+	path = meta/vim-pathogen
 	url = https://github.com/tpope/vim-pathogen.git
