@@ -1,0 +1,4 @@
+source ~/.system/githelpers.theme.bash
+source ~/.system/colors.theme.bash
+source ~/.system/base.theme.bash
+source ~/.system/rainbowbrite.theme.bash
