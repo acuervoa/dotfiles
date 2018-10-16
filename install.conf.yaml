@@ -24,8 +24,9 @@
     ~/.system:
         path: system
     ~/.vim:
-    ~/.vim/autoload/pathogen.vim:
-        path: meta/vim-pathogen/autoload/pathogen.vim
+    ~/.vim/autoload:
+        force: false
+        path: meta/vim-pathogen/autoload
     ~/.vimrc:
         path: vim/vimrc
     ~/.hammerspoon:
