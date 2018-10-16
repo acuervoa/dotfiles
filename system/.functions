@@ -1,0 +1,16 @@
+# Update dotfiles
+dfu() {
+    (
+        cd ~/.dotfiles && git pull --ff-only && ./install -q
+    )
+}
+
+# Create a directory and cd into it
+take() {
+    mkdir -p "${1}" && cd "${1}"
+}
+
+# Jump to directory containing file
+jump() {
+    cd "$(dirname ${1})"
+}
