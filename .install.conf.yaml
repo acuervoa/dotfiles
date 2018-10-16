@@ -1,13 +1,14 @@
-[
-  {
-    "shell": [
-      ["git submodule update --init --recursive",
-        "Installing submodules"]
-    ]
-  },
-  {
-    "link": {
-      "~/.dotfiles": ""
-    }
-  }
-]
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- clean: [ '~' ]
+
+- link:
+    ~/.dotfiles:
+    ~/.vim:
+    ~/.vim/autoload: pathogen/autoload
+    ~/.vimrc: vim/vimrc
+- shell:
+  - [ git submodule update --init --recursive, "Installing submodules" ]
