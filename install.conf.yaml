@@ -22,11 +22,9 @@
     ~/.gitignore_global:
         path: git/.gitignore_global
     ~/.system:
-        glob: true
-        path: system/.*
+        path: system
     ~/.vim:
     ~/.vim/autoload:
-        create: true
         path: meta/vim-pathogen/autoload
     ~/.vimrc:
         path: vim/vimrc
