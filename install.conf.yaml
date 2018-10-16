@@ -6,7 +6,7 @@
 - clean: [ '~' ]
 
 - link:
-    ~/.dotfiles:
+    ~/.dotfiles: .
     ~/.vim:
     ~/.vim/autoload: meta/vim-pathogen/autoload
     ~/.vimrc: vim/vimrc
