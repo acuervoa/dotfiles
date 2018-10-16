@@ -14,3 +14,8 @@ take() {
 jump() {
     cd "$(dirname ${1})"
 }
+
+# View markdown files from terminal
+rmd () {
+  pandoc $1 | lynx -stdin
+}

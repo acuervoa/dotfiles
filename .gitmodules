@@ -1,12 +1,12 @@
 [submodule "meta/dotbot"]
 	path = meta/dotbot
 	url = https://github.com/anishathalye/dotbot
-[submodule "meta/vim-pathogen"]
-	path = meta/vim-pathogen
-	url = https://github.com/tpope/vim-pathogen.git
 [submodule "vim/bundle/nerdtree"]
 	path = vim/bundle/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
 [submodule "meta/dotbot-brewfile"]
 	path = meta/dotbot-brewfile
 	url = https://github.com/sobolevn/dotbot-brewfile.git
+[submodule "meta/vim-pathogen"]
+	path = meta/vim-pathogen
+	url = https://github.com/tpope/vim-pathogen.git
