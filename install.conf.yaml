@@ -28,7 +28,7 @@
         path: meta/vim-pathogen/autoload
     ~/.vimrc:
         path: vim/vimrc
-
+    ~/.hammerspoon:
 - brewfile:
     file: Brewfile
 - shell:
