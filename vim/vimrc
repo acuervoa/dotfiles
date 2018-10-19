@@ -29,7 +29,16 @@ let mapleader=","
 let g:mapleader=","
 map <leader>s :source ~/.vimrc<CR>
 
-nnoremap <Leader><Leader> :e#<CR>
+nmap <leader>w :w!<CR>
+map <space> /
+map <silent> <leader><CR> :noh<CR>
+
+map <leader>tn :tabnew<CR>
+map <leader>to :tabonly<CR>
+map <leader>tc :tabclose<CR>
+map <leader>tm :tabmove
+
+nnoremap <leader><leader> :e#<CR>
 
 "NerdTree Configuration
 let NERDTreeMapActivateNode='<right>'
