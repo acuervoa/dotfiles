@@ -6,7 +6,6 @@ set background=dark
 let g:solarized_termcolors=256
 colorscheme solarized
 
-set lines=60 columns=150
 set colorcolumn=90
 
 
@@ -23,6 +22,8 @@ set smartindent
 set autoindent
 
 set showmatch
+set noshowmode
+set laststatus=2
 
 autocmd BufWritePre * :%s/\s\+$//e
 
@@ -31,10 +32,12 @@ map <leader>s :source ~/.vimrc<CR>
 
 nnoremap <Leader><Leader> :e#<CR>
 
-"NerdTree Configutarion
+"NerdTree Configuration
 let NERDTreeMapActivateNode='<right>'
 let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.DS_Store', '\~$', '\,swp']
 nmap <leader>n :NERDTreeToggle<CR>
 nmap <leader>j :NERDTreeFind<CR>
 
+"gitGutter Configuration
+set signcolumn=yes
