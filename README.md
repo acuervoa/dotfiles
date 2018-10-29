@@ -35,7 +35,7 @@ Use the `install.sh` file to install everything and link the resources from the 
 ## Exernal submodules
 
  *  [dotbot](https://github.com/anishathalye/dotbot) A tool that bootstraps your dotfiles
- *  [dotbot brewfile] (https://github.com/sobolevn/dotbot-brewfile) Install brew packages with dotbot: bundle style!
+ *  [dotbot brewfile](https://github.com/sobolevn/dotbot-brewfile) Install brew packages with dotbot: bundle style!
  *  [vim pathogen](https://github.com/tpope/vim-pathogen) pathogen.vim: manage your runtimepath
 
 ## Credits
