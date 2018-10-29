@@ -126,14 +126,20 @@
     #                     └─ hash (abbreviated)
 
 	lola = "%C(magenta)%h%C(green)%d %C(blue)(%ar) %C(red)(%an) -- %C(yellow)%s"
+
 [user]
-	email = kuerbo@gmail.com
-	name = acuervoa
+	useConfigOnly = true
+
 [alias]
 	wtf = log -p
 	it = !git init && git commit -m "root" --allow-empty
 	st = status --short --branch
 	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
     lg = log --oneline --decorate --all --graph
+
 [core]
 	excludesfile = ~/.gitignore_global
+
+# Allow local customizations in the .gitconfig_local file
+[include]
+	path = ~/.gitconfig_local
