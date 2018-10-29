@@ -2,7 +2,7 @@
 
 These are my dotfiles. Take anything you want, but at your own risk.
 
-It targets macOS systems.
+It targets macOS systems. This installation delete all contents from dotfiles located in $HOME directory
 
 ## Install
 This will clone (using `git`), or download (using `curl` or `wget`), this repo to `~/.dotfiles`. Alternatively, clone manually into the desired location:
@@ -18,7 +18,7 @@ Use the `install.sh` file to install everything and link the resources from the 
 
 ## Packages
 
-* .gitconfig and .gitignore files. For local configuration you need a `~/.gitconfig_local`
+* .gitconfig and .gitignore files. For local configuration you need a `~/.gitconfig_local` with this information:
 
 ```
 [user]
