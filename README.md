@@ -2,7 +2,7 @@
 
 These are my dotfiles. Take anything you want, but at your own risk.
 
-It targets macOS systems.
+It targets macOS systems. This installation delete all contents from dotfiles located in $HOME directory
 
 ## Install
 This will clone (using `git`), or download (using `curl` or `wget`), this repo to `~/.dotfiles`. Alternatively, clone manually into the desired location:
