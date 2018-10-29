@@ -5,7 +5,7 @@ Capslock bound to HyperKey `⌘ + ⌥ + ⌃ +⇧` via Seil and Karabiner.
 
 Press HyperKey plus the defined Key
 
-###Place a window to a position and size on the screen
+### Place a window to a position and size on the screen
 
 First press `HyperKey + W` for activate the window manager
 
