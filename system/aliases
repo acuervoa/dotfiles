@@ -29,7 +29,6 @@ alias dl="cd ~/Downloads"
 alias d="cd ~/Desktop"
 alias s="cd ~/Sites"
 alias w="cd ~/workspace"
-alias g="git"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
