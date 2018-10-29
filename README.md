@@ -1,13 +1,8 @@
 # Dotfiles
--
 
 These are my dotfiles. Take anything you want, but at your own risk.
 
 It targets macOS systems.
-
-## .files
-
-The application 
 
 ## Install
 This will clone (using `git`), or download (using `curl` or `wget`), this repo to `~/.dotfiles`. Alternatively, clone manually into the desired location:
@@ -18,7 +13,7 @@ cd ~/.dotfiles
 .\install.sh
 ```
 
-Use the `install.sh` file to install everything and link the resources from the $HOME directory to the nested dotfiles.
+Use the `install.sh` file to install everything and link the resources from the **`$HOME`** directory to the nested dotfiles.
 
 
 ## Packages
@@ -31,10 +26,10 @@ Use the `install.sh` file to install everything and link the resources from the 
     name = <your name> 
 ```
 
-* [Hammerspoon]() initial configuration. KeyBindings and windows management. More information [here](./hammerspoon)
-* [RainbowBrite Theme]() from [Bash_it]() framework.
+* [Hammerspoon](https://www.hammerspoon.org/) initial configuration. KeyBindings and windows management. More information [here](./hammerspoon)
+* [RainbowBrite Theme](https://github.com/Bash-it/bash-it/tree/master/themes/rainbowbrite) from [Bash_it](https://github.com/Bash-it/bash-it) framework.
 * [Vim](https://www.vim.org/) configuration and bundles submodules. More information [here](./vim/)
-* [Brewfiles](https://brew.sh) Include brew, cask and mas installations. More information [here]()
+* [Brewfiles](https://brew.sh) Include brew, cask and mas installations. More information [here](./Brewfile)
 
 
 ## Exernal submodules
