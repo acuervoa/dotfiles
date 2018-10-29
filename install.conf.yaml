@@ -7,9 +7,9 @@
 - clean: [ '~' ]
 
 - link:
-    ~/.dotfiles: 
+    ~/.dotfiles:
         path: .
-    ~/.bash_profile: 
+    ~/.bash_profile:
         path: runcom/.bash_profile
     ~/.bashrc:
         path: runcom/.bashrc
@@ -30,5 +30,7 @@
     ~/.vimrc:
         path: vim/vimrc
     ~/.hammerspoon:
+    ~/.aliases:
+        path: system/.aliases
 - shell:
   - [ git submodule update --init --recursive, "Installing submodules" ]
