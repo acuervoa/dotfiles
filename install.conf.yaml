@@ -30,7 +30,5 @@
     ~/.vimrc:
         path: vim/vimrc
     ~/.hammerspoon:
-    ~/.aliases:
-        path: system/aliases
 - shell:
   - [ git submodule update --init --recursive, "Installing submodules" ]
