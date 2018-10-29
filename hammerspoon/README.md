@@ -46,6 +46,6 @@ C | Google Chrome
 F | Finder
 S | Station
 
-###Hints!
+### Hints!
 
 Press `HyperKey + H` for show shortcuts of the open apps.
