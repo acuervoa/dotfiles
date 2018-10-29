@@ -7,8 +7,6 @@
 - clean: [ '~' ]
 
 - link:
-    ~/.dotfiles:
-        path: .
     ~/.bash_profile:
         path: runcom/bash_profile
     ~/.bashrc:
