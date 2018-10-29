@@ -40,4 +40,8 @@ Use the `install.sh` file to install everything and link the resources from the 
 
 ## Credits
 
-Many thanks to the [dotfile community](https://dotfiles.github.io)
+Many thanks :
+
+- to the [dotfile community](https://dotfiles.github.io)
+- to [Webpro](https://github.com/webpro) and his [awesome](https://github.com/webpro/awesome-dotfiles) list
+
