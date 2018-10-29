@@ -18,7 +18,7 @@ Use the `install.sh` file to install everything and link the resources from the 
 
 ## Packages
 
-* .gitconfig and .gitignore files. For local configuration you need a `~/.gitconfig_local`
+* .gitconfig and .gitignore files. For local configuration you need a `~/.gitconfig_local` with this information:
 
 ```
 [user]
