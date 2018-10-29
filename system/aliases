@@ -8,7 +8,7 @@ alias py='python'
 
 alias aliases="alias | sed 's/=.*//'"
 alias functions="declare -f | grep '^[a-z].*()' | sed 's/{$//'"
-    
+
 alias h='history'
 alias trees="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g"
 alias md='mkdir -p'
@@ -29,10 +29,11 @@ alias dl="cd ~/Downloads"
 alias d="cd ~/Desktop"
 alias s="cd ~/Sites"
 alias w="cd ~/workspace"
+alias g="git"
 
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
-	colorflag="--color"	
+	colorflag="--color"
 	export LSCOLORS=ExfxcxdxCxBxBxcxcxExEx
 	export LS_COLORS="di=34"
 	export EXA_COLORS="di=34"
@@ -58,7 +59,7 @@ alias gurl='curl --compressed'	# Gzip-enabled `curl`
 alias week='date +%V'		# Get week number
 
 # Stopwatch
-alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'	
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 
 # Get OS X Software Updates, and update installed Ruby gems, Homebrew, npm, and their installed packages
 alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; npm update npm -g; npm update -g; sudo gem update'
