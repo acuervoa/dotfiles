@@ -23,7 +23,7 @@ Press `HyperKey + W` for deactivate the window manager
 
 Key | Action
 --- | ---
-<space> | Maximize window
+< space > | Maximize window
 
 ### Move a window between monitors
 
