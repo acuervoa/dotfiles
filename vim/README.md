@@ -11,3 +11,4 @@ Use of [Pathogen](https://github.com/tpope/vim-pathogen) plugin installation.
 *   [NerdCommenter](https://github.com/scrooloose/nerdcommenter) Vim plugin for intensely orgasmic commenting
 *   [NerdTree](https://github.com/scrooloose/nerdtree) A tree explorer plugin for vim.
 *   [Ale](https://github.com/w0rp/ale) Asynchronous linting/fixing for Vim and Language Server Protocol (LSP) integration
+* [WakaTime](https://github.com/wakatime/vim-wakatime.git) Vim plugin for automatic time tracking and metrics generated from your programming activity.
