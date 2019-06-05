@@ -10,7 +10,8 @@ alias aliases="alias | sed 's/=.*//'"
 alias functions="declare -f | grep '^[a-z].*()' | sed 's/{$//'"
 
 alias h='history'
-alias trees="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g"
+alias trii="tree -C -I $(git check-ignore * 2>/dev/null | tr "\n" "|").git"
+alias trees="tree -L 2 -s -h -p -D -t"
 alias md='mkdir -p'
 alias rd='rmdir'
 alias xt="extract"
