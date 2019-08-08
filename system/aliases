@@ -10,7 +10,7 @@ alias aliases="alias | sed 's/=.*//'"
 alias functions="declare -f | grep '^[a-z].*()' | sed 's/{$//'"
 
 alias h='history'
-alias hh="history|awk '{print $2}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -r"
+alias hh="history|awk '{print $2}'|awk 'BEGIN {FS=\"|\"} {print $1}'|sort|uniq -c|sort -r"
 alias trii="tree -C -I $(git check-ignore * 2>/dev/null | tr "\n" "|").git"
 alias trees="tree -L 2 -s -h -p -D -t"
 alias md='mkdir -p'
