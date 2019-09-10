@@ -1,0 +1,32 @@
+- defaults:
+    link:
+      create: true
+      relink: true
+      force: true
+
+- clean: [ '~' ]
+
+- link:
+    ~/.bash_profile:
+        path: runcom/bash_profile
+    ~/.bashrc:
+        path: runcom/bashrc
+    ~/.inputrc:
+        path: runcom/inputrc
+    ~/.profile:
+        path: runcom/profile
+    ~/.gitconfig:
+        path: git/gitconfig
+    ~/.gitignore_global:
+        path: git/gitignore_global
+    ~/.system:
+        path: system
+    ~/.vim:
+    ~/.vim/autoload:
+        force: false
+        path: meta/vim-pathogen/autoload
+    ~/.vimrc:
+        path: vim/vimrc
+    ~/.hammerspoon:
+- shell:
+  - [ git submodule update --init --recursive, "Installing submodules" ]

@@ -1,3 +1,33 @@
-[submodule "libs/dotbot"]
-	path = libs/dotbot
-	url = https://github.com/anishathalye/dotbot.git
+[submodule "meta/dotbot"]
+	path = meta/dotbot
+	url = https://github.com/anishathalye/dotbot
+[submodule "vim/bundle/nerdtree"]
+	path = vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
+[submodule "meta/dotbot-brewfile"]
+	path = meta/dotbot-brewfile
+	url = https://github.com/sobolevn/dotbot-brewfile.git
+[submodule "meta/vim-pathogen"]
+	path = meta/vim-pathogen
+	url = https://github.com/tpope/vim-pathogen.git
+[submodule "vim/bundle/vim-colors-solarized"]
+	path = vim/bundle/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized.git
+[submodule "vim/bundle/nerdcommenter"]
+	path = vim/bundle/nerdcommenter
+	url = https://github.com/scrooloose/nerdcommenter.git
+[submodule "vim/bundle/lightline.vim"]
+	path = vim/bundle/lightline.vim
+	url = https://github.com/itchyny/lightline.vim
+[submodule "vim/bundle/supertab"]
+	path = vim/bundle/supertab
+	url = https://github.com/ervandew/supertab.git
+[submodule "vim/bundle/vim-gitgutter"]
+	path = vim/bundle/vim-gitgutter
+	url = git://github.com/airblade/vim-gitgutter.git
+[submodule "vim/bundle/ale"]
+	path = vim/bundle/ale
+	url = https://github.com/w0rp/ale.git
+[submodule "vim/bundle/vim-wakatime"]
+	path = vim/bundle/vim-wakatime
+	url = git://github.com/wakatime/vim-wakatime.git

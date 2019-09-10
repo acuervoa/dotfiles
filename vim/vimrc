@@ -1,0 +1,57 @@
+execute pathogen#infect('bundle/{}')
+filetype plugin indent on
+
+syntax enable
+set background=dark
+let g:solarized_termcolors=256
+colorscheme solarized
+
+set colorcolumn=90
+
+
+set number
+set hidden
+set history=100
+set hlsearch
+
+set nowrap
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set smartindent
+set autoindent
+
+set showmatch
+
+autocmd BufWritePre * :%s/\s\+$//e
+
+let mapleader=","
+let g:mapleader=","
+map <leader>s :source ~/.vimrc<CR>
+
+nmap <leader>w :w!<CR>
+map <space> /
+map <silent> <leader><CR> :noh<CR>
+
+map <leader>tn :tabnew<CR>
+map <leader>to :tabonly<CR>
+map <leader>tc :tabclose<CR>
+map <leader>tm :tabmove
+
+nnoremap <leader><leader> :e#<CR>
+
+"NerdTree Configuration
+let NERDTreeMapActivateNode='<right>'
+let NERDTreeShowHidden=1
+let NERDTreeIgnore=['\.DS_Store', '\~$', '\,swp']
+nmap <leader>nn :NERDTreeToggle<CR>
+nmap <leader>nj :NERDTreeFind<CR>
+nmap <leader>nb :NERDTreeFromBookmark
+
+"gitGutter Configuration
+set signcolumn=yes
+set updatetime=100
+
+"lightline Configuration
+set noshowmode
+set laststatus=2
