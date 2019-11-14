@@ -1,8 +1,7 @@
+export PATH=""
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin":$PATH
-export PATH="/usr/local/sbin:$PATH"
-export PATH="~/.composer/vendor/bin:$PATH"
+export PATH="/usr/local/sbin":$PATH
+export PATH="~/.composer/vendor/bin":$PATH
 export PATH="/usr/local/opt/sqlite/bin":$PATH
 export PATH="/usr/local/opt/python/libexec/bin":$PATH
-export PATH="/usr/local/opt/sqlite/bin":$PATH
-export PATH="/usr/local/Cellar/node/11.0.0/bin":$PATH
-export PATH="/usr/local/mongoEnterprise/bin":$PATH
+export PATH="/usr/local/opt/ruby/bin":$PATH
