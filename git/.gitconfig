@@ -11,10 +11,10 @@
 
 	# Commit all changes
 	ca = !git add -A && git commit -av
-cm = !git add -A && git commit -m 	
+cm = !git add -A && git commit -m
 	co = checkout
 	cob = checkout -b
-    
+
 	# Show the diff between the latest commit and the current state
 	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
@@ -46,7 +46,7 @@ cm = !git add -A && git commit -m
 	# View abbreviated SHA, description, and history graph of the latest 20 commits
 	l = log --oneline --graph
 	ll = log --pretty=custom -n 20
-	lola = log --pretty=lola -n 20 
+	lola = log --pretty=lola -n 20
 
 	# Pull in remote changes for the current repository and all its submodules
 	p = pull --rebase
@@ -63,10 +63,10 @@ cm = !git add -A && git commit -m
 
 	undo = reset HEAD~1 --mixed
     up = !git pull --rebase --prune $@ && git submodule update --init --recursive
-    
-    wip = !git add -u && git commit -m "WIP" 
+
+    wip = !git add -u && git commit -m "WIP"
     wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
-    	
+
 	# Show verbose output about tags, branches or remotes
 	tags = tag -l
 	branches = branch -a
@@ -77,7 +77,7 @@ cm = !git add -A && git commit -m
 
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-	
+
 
 	# Merge GitHub pull request on top of the current branch or,
 	# if a branch name is specified, on top of the specified branch
@@ -105,10 +105,12 @@ cm = !git add -A && git commit -m
 
 [color "diff"]
 
-    frag = magenta
-    meta = yellow
-    new = green
-    old = red
+    frag = magenta bold
+  meta = yellow
+  commit = yellow bold
+    new = green bold
+  old = red bold
+  whitespace = red reverse
 
 [color "status"]
 
@@ -137,3 +139,19 @@ cm = !git add -A && git commit -m
     lg = log --oneline --decorate --all --graph
 [core]
 	excludesfile = ~/.gitignore
+	pager = diff-so-fancy | less --tabs=4 -RFX
+[color]
+	ui = true
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[diff-so-fancy]
+	markEmptyLines = true
+	changeHunkIndicators = true
+	stripLeadingSymbols = true
+	useUnicodeRuler = true
+  #rulerWidth = 47
+[http]
+	sslVerify = false

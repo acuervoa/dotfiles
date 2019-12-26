@@ -29,4 +29,5 @@ elif [ -f /etc/bash_completion ]; then
 	source /etc/bash_completion;
 fi;
 
-
+eval $(thefuck --alias)
+. /usr/local/etc/profile.d/z.sh
