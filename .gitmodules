@@ -28,3 +28,6 @@
 [submodule "vim/bundle/ale"]
 	path = vim/bundle/ale
 	url = https://github.com/w0rp/ale.git
+[submodule "vim/bundle/vim-wakatime"]
+	path = vim/bundle/vim-wakatime
+	url = git://github.com/wakatime/vim-wakatime.git

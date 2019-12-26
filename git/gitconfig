@@ -47,6 +47,7 @@ cm = !git add -A && git commit -m
 	l = log --oneline --graph
 	ll = log --pretty=custom -n 20
 	lola = log --pretty=lola -n 20
+  lal = log --oneline --all --graph -n 20
 
 	# Pull in remote changes for the current repository and all its submodules
 	p = pull --rebase
@@ -128,15 +129,28 @@ cm = !git add -A && git commit -m
     #                     └─ hash (abbreviated)
 
 	lola = "%C(magenta)%h%C(green)%d %C(blue)(%ar) %C(red)(%an) -- %C(yellow)%s"
+
 [user]
-	email = kuerbo@gmail.com
+	useConfigOnly = true
 	name = acuervoa
+	email = andres.cuervo.adame@accenture.com
+
 [alias]
 	wtf = log -p
 	it = !git init && git commit -m "root" --allow-empty
 	st = status --short --branch
 	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
     lg = log --oneline --decorate --all --graph
+	adog = log --all --decorate --oneline --graph
+user = "!f() { hub api --flat user | grep .login | awk '/.login/ {print $2}'; }; f"
+ # this function allows you to go through hub low level api with or without multiple pages
+  paginate = "!paginate() { local output cursor; output=\"$(\"$@\")\"; cursor=\"$(awk '/\\.hasNextPage/ { has_next=$2 } /\\.endCursor/ { if (has_next==\"true\") print $2 }' <<<\"$output\")\"; printf \"%s\\n\" \"$output\"; [ -z \"$cursor\" ] || paginate \"$@\" -f after=\"$cursor\"; }; paginate "
+
+  repos = "!repos() { local user=\"${1?}\";shift 1; git paginate hub api -t graphql -f user=\"$user\" \"$@\" \
+  -f query='query($user: String!, $per_page: Int = 100, $after: String) { user(login: $user) { \
+  repositories(first: $per_page, after: $after) { nodes { nameWithOwner }, pageInfo { hasNextPage, endCursor } } } }';}; \
+  repos \"$(git user)\" | awk '/\\.nameWithOwner\\t/ { print $2 }';"
+
 [core]
 	excludesfile = ~/.gitignore
 	pager = diff-so-fancy | less --tabs=4 -RFX
@@ -155,3 +169,8 @@ cm = !git add -A && git commit -m
   #rulerWidth = 47
 [http]
 	sslVerify = false
+	excludesfile = ~/.gitignore_global
+
+# Allow local customizations in the .gitconfig_local file
+[include]
+	path = ~/.gitconfig_local

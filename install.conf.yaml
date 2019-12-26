@@ -7,20 +7,18 @@
 - clean: [ '~' ]
 
 - link:
-    ~/.dotfiles: 
-        path: .
-    ~/.bash_profile: 
-        path: runcom/.bash_profile
+    ~/.bash_profile:
+        path: runcom/bash_profile
     ~/.bashrc:
-        path: runcom/.bashrc
+        path: runcom/bashrc
     ~/.inputrc:
-        path: runcom/.inputrc
+        path: runcom/inputrc
     ~/.profile:
-        path: runcom/.profile
+        path: runcom/profile
     ~/.gitconfig:
-        path: git/.gitconfig
+        path: git/gitconfig
     ~/.gitignore_global:
-        path: git/.gitignore_global
+        path: git/gitignore_global
     ~/.system:
         path: system
     ~/.vim:
