@@ -132,8 +132,8 @@ cm = !git add -A && git commit -m
 
 [user]
 	useConfigOnly = true
-	name = acuervoa
-	email = andres.cuervo.adame@accenture.com
+	name = andres.cuervo
+	email = andres.cuervo@webfg.com
 
 [alias]
 	wtf = log -p
@@ -174,3 +174,5 @@ user = "!f() { hub api --flat user | grep .login | awk '/.login/ {print $2}'; };
 # Allow local customizations in the .gitconfig_local file
 [include]
 	path = ~/.gitconfig_local
+[push]
+	default = simple
