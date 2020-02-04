@@ -14,7 +14,7 @@ au FocusGained,BufEnter * checktime
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ','
+let mapleader = '<'
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -23,8 +23,6 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error
 command! W execute 'W !sudo tee % >/dev/null' <bar> edit!
 
-" Fast reload vimrc
-map <leader>s :source ~/.vimrc<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -110,8 +108,6 @@ catch
 endtry
 
 set background=dark
-
-set colorcolumn=90
 
 " Set extra options when running in GUI mode
 if has("gui_running")
