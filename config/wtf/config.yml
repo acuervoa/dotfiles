@@ -1,0 +1,91 @@
+wtf:
+  colors:
+    border:
+      focusable: darkslateblue
+      focused: orange
+      normal: gray
+  grid:
+    columns: [32, 32, 32, 32, 90]
+    rows: [10, 10, 10, 4, 4, 90]
+  refreshInterval: 1
+  mods:
+    bittrex:
+      colors:
+        base:
+          name: orange
+          displayName: red
+        market:
+          name: red
+          field: white
+          value: green
+      enabled: true
+      position:
+        top: 0 
+        left: 0
+        height: 2
+        width: 1
+      refreshInterval: 5
+      summary:
+        BTC:
+          displayName: Bitcoin
+          market:
+            - LTC
+            - ETH
+    digitalclock:
+      color: orange
+      enabled: true
+      font: bigfont
+      hourformat: 24
+      position:
+        top: 0
+        left: 1
+        height: 1
+        width: 1
+      refreshInterval: 1
+      title: "big clock"
+      type: "digitalclock"
+    todo:
+      checkedIcon: "X"
+      colors:
+        highlight:
+          fore: "black"
+          back: "orange"
+      enabled: true
+      filename: "todo.yml"
+      position:
+        top: 0
+        left: 3
+        height: 2
+        width: 1
+      refreshInterval: 3600
+    docker:
+      type: docker
+      enabled: true
+      labelColor: lightblue
+      position:
+        top: 1
+        left: 1
+        height: 4
+        width: 2
+      refreshInterval: 1
+    resourceusage:
+      cpuCombined: false
+      enabled: true
+      position:
+        top: 0
+        left: 2
+        height: 1
+        width: 1
+      refreshInterval: 1
+    spotify:
+      enabled: true
+      colors:
+        label: "green"
+        text: "white"
+      position:
+        top: 2
+        left: 3
+        height: 1
+        width: 1
+      refreshInterval: 0
+

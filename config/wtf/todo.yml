@@ -1,0 +1,13 @@
+items:
+- checked: false
+  checkedicon: x
+  text: Docker dev to phalcon4
+  uncheckedicon: ' '
+- checked: false
+  checkedicon: x
+  text: 'LDAP User MAD03 '
+  uncheckedicon: ' '
+- checked: false
+  checkedicon: x
+  text: User @jenkins deployment
+  uncheckedicon: ' '
