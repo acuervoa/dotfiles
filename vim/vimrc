@@ -1,5 +1,6 @@
 " Show line numbers
-set number
+nmap <F9> :set nonumber<cr>
+nmap <F10> :set number<cr>
 
 " Sets how many lines of history VIM has to remember
 set history=500
@@ -21,7 +22,7 @@ nmap <leader>w :w!<cr>
 
 " :W sudo saves the file
 " (useful for handling the permission-denied error
-command! W execute 'W !sudo tee % >/dev/null' <bar> edit!
+command! W execute 'W !sudo tee % > /dev/null ' <bar> edit!
 
 " Fast reload vimrc
 map <leader>s :source ~/.vimrc<cr>
@@ -229,8 +230,11 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 set laststatus=2
 
 " Format the status line
-set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\  
-
+"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\  
+set statusline=\ %{HasPaste()}%<%-15.25(%f%)%m%r%h\ %w\ \ 
+set statusline+=\ \ \ [%{&ff}/%Y]
+set statusline+=\ \ \ %<%20.30(%{hostname()}:%{CurDir()}%)\
+set statusline+=%=%-10.(%l,%c%V%)\ %p%%/%L
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
@@ -244,7 +248,10 @@ function! HasPaste()
     return ''
 endfunction
 
-
+function! CurDir()
+    let curdir = substitute(getcwd(), $HOME, "~", "")
+    return curdir
+endfunction
 
 
 
