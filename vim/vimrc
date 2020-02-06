@@ -1,3 +1,5 @@
+execute pathogen#infect('bundle/{}')
+
 " Show line numbers
 nmap <F9> :set nonumber<cr>
 nmap <F10> :set number<cr>
@@ -253,7 +255,17 @@ function! CurDir()
     return curdir
 endfunction
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugin Configurations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" NerdTree Configuration
+let NERDTreeMapActivateNote='<right>'
+let NERDTreeShowHidden=1
+let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
+nmap <leader>nn :NERDTreeToggle<CR>
+nmap <leader>nj :NERDTreeFind<CR>
+nmap <leader>nb :NERDTreeFromBookmark
 
 
 
