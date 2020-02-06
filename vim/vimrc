@@ -1,6 +1,7 @@
 execute pathogen#infect('bundle/{}')
 
 " Show line numbers
+set number
 nmap <F9> :set nonumber<cr>
 nmap <F10> :set number<cr>
 
@@ -266,6 +267,4 @@ let NERDTreeIgnore=['\.DS_Store', '\~$', '\.swp']
 nmap <leader>nn :NERDTreeToggle<CR>
 nmap <leader>nj :NERDTreeFind<CR>
 nmap <leader>nb :NERDTreeFromBookmark
-
-
 
