@@ -18,6 +18,8 @@ export HISTSIZE='32768';
 export HISTFILESIZE="${HISTSIZE}";
 # Omit duplicates and commands that begin with a space from history.
 export HISTCONTROL='ignoreboth';
+# Avoid duplicate in history
+export HISTIGNORE='&:[ ]*'
 
 
 # Highlight section titles in manual pages.
