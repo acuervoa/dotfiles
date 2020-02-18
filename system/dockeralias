@@ -92,6 +92,26 @@ relies_on(){
     done
 }
 
+dock() {
+    sudo systemctl restart docker
+}
+
+# Get docker container IP address
+dockip(){
+    local cont=${1:-}
+    if [ -n "$cont" ]; then
+        docker inspect --format {{.NetworkSettings.Networks.bridge.IPAddress}} ${cont}
+    else
+        echo ""
+        echo "Provide container name"
+    fi
+}
+
+dockshell(){
+    docker exec -it ${1} /bin/bash
+}
+
+
 
 
 # creates an nginx config for a local route
@@ -125,6 +145,39 @@ EOF
 
 # open browser
     browser-exec "http://${server}"
+
+}
+
+###############################################
+## Container aliases
+##
+
+
+nginx(){
+    del_stopped nginx
+
+    docker run -d \
+            --restart always \
+            -v "${HOME}/.nginx:/etc/nginx" \
+            --net host \
+            --name nginx \
+            nginx
+
+}
+
+nmap(){
+    docker run --rm -it \
+            --net host \
+            jess/nmap "$@"
+}
+
+
+portainer(){
+    docker run -d \
+        --name portainer \
+        -p 9000:9000 \
+        -v "/var/run/docker.sock:/var/run/docker.sock" \
+        portainer/portainer
 
 }
 
