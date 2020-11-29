@@ -15,6 +15,14 @@ shopt -s histappend;
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell
 
+# Make sure display get updated when terminal window get resized
+shopt -q -s checkwinsize
+
+# Make multi-line commandsline in history
+shopt -q -s cmdhist
+
+
+
 # Enable some Bash 4 features when possible:
 # * `autocd`, e.g. `**/qux` will enter `./foo/bar/baz/qux`
 # * Recursive globbing, e.g. `echo **/*.txt`
