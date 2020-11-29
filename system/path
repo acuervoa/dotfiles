@@ -1,8 +1,10 @@
 #export PATH=""
 #export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin":$PATH
-#export PATH="/usr/local/sbin":$PATH
-#export PATH="~/.composer/vendor/bin":$PATH
+export PATH="/usr/local/sbin":$PATH
+export PATH="~/.composer/vendor/bin":$PATH
 #export PATH="/usr/local/opt/sqlite/bin":$PATH
 #export PATH="/usr/local/opt/python/libexec/bin":$PATH
 #export PATH="/usr/local/opt/ruby/bin":$PATH
 export PATH="/home/andres/bin":$PATH
+export PATH="/Users/kuerbo/bin":$PATH
+export PATH="/opt/metasploit-framework/bin":$PATH
