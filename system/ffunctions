@@ -86,6 +86,30 @@ function tre() {
 	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }
 
+function git-undo() { 
+    git reset --soft HEAD^
+}
+
+function gclonecd() { 
+    git_dir="$(basename "$1" .git)"
+    git_dir_resolved=${2:-$git_dir}
+    git clone "$@" && cd "$git_dir_resolved";
+}
+
+function killport() {
+    echo "Killing process on port: $1"
+    fuser -n tcp -k $1;
+}
+
+function whoinport() {
+    lsof -nP -i4TCP:$1 | grep LISTEN
+}
+
+#Bash function to change directories and list contents
+cd() {
+    builtin cd $@
+    ls -lh
+}
 # OS Detection
 function is_osx(){
     [[ "$OSTYPE" =~ ^darwin ]] || return 1

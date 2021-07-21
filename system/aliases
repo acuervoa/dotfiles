@@ -9,6 +9,7 @@ alias functions="declare -f | grep '^[a-z].*()' | sed 's/{$//'"
 
 alias h='history'
 alias hh="history|awk '{print $2}'|awk 'BEGIN {FS=\"|\"} {print $1}'|sort|uniq -c|sort -r"
+alias hs='history | grep'
 alias trii="tree -C -I $(git check-ignore * 2>/dev/null | tr "\n" "|").git"
 alias trees="tree -L 2 -s -h -p -D -t"
 alias md='mkdir -p'
@@ -45,11 +46,12 @@ fi
 
 alias sl="ls"
 alias l="exa -lGa --classify --group-directories-first --git --extended  --binary --accessed"	# List all files colorized in long format
-alias ll="ls -alh --color --classify --group-directories-first"
+#alias ll="ls -alh --color --classify --group-directories-first"
+alias ll="ls -alhF ${colorflag}"
 alias la="ls -laF ${colorflag}"								# List all files colorized in long format, including dotfiles
 alias lsd="ls -lF ${colorflag} | grep --color=never '^d'"				# List only directories
 alias ls="command ls ${colorflag}"							# Always use color output for `ls`
-
+alias lles="ls -Al | less"
 
 alias sudo='sudo '		# Enable aliases to be sudo’ed
 alias gurl='curl --compressed'	# Gzip-enabled `curl`
@@ -151,4 +153,6 @@ alias reload="exec $SHELL -l"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
+
+alias google-chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
 

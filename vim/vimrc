@@ -1,10 +1,11 @@
 execute pathogen#infect('bundle/{}')
 
 " Show line numbers
-set number
-nmap <F9> :set nonumber<cr>
-nmap <F10> :set number<cr>
+set number relativenumber
+nmap <F9> :set nonumber norelativenumber<cr>
+nmap <F10> :set number relativenumber<cr>
 
+set mouse=a
 " Sets how many lines of history VIM has to remember
 set history=500
 
