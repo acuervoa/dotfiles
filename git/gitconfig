@@ -79,25 +79,6 @@ cm = !git add -A && git commit -m
 	# Credit an author on the latest commit
 	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
-
-	# Merge GitHub pull request on top of the current branch or,
-	# if a branch name is specified, on top of the specified branch
-	mpr = "!f() { \
-		declare currentBranch=\"$(git symbolic-ref --short HEAD)\"; \
-		declare branch=\"${2:-$currentBranch}\"; \
-		if [ $(printf \"%s\" \"$1\" | grep '^[0-9]\\+$' > /dev/null; printf $?) -eq 0 ]; then \
-			git fetch origin refs/pull/$1/head:pr/$1 && \
-			git checkout -B $branch && \
-			git rebase $branch pr/$1 && \
-			git checkout -B $branch && \
-			git merge pr/$1 && \
-			git branch -D pr/$1 && \
-			git commit --amend -m \"$(git log -1 --pretty=%B)\n\nCloses #$1.\"; \
-		fi \
-	}; f"
-	unstage = reset HEAD
-	b = branch
-
 [color "branch"]
 
     current = green bold
@@ -132,7 +113,7 @@ cm = !git add -A && git commit -m
 
 [user]
 	useConfigOnly = true
-	name = andres.cuervo
+	name = acuervo
 	email = andres.cuervo@webfg.com
 
 [alias]
@@ -143,13 +124,6 @@ cm = !git add -A && git commit -m
     lg = log --oneline --decorate --all --graph
 	adog = log --all --decorate --oneline --graph
 user = "!f() { hub api --flat user | grep .login | awk '/.login/ {print $2}'; }; f"
- # this function allows you to go through hub low level api with or without multiple pages
-  paginate = "!paginate() { local output cursor; output=\"$(\"$@\")\"; cursor=\"$(awk '/\\.hasNextPage/ { has_next=$2 } /\\.endCursor/ { if (has_next==\"true\") print $2 }' <<<\"$output\")\"; printf \"%s\\n\" \"$output\"; [ -z \"$cursor\" ] || paginate \"$@\" -f after=\"$cursor\"; }; paginate "
-
-  repos = "!repos() { local user=\"${1?}\";shift 1; git paginate hub api -t graphql -f user=\"$user\" \"$@\" \
-  -f query='query($user: String!, $per_page: Int = 100, $after: String) { user(login: $user) { \
-  repositories(first: $per_page, after: $after) { nodes { nameWithOwner }, pageInfo { hasNextPage, endCursor } } } }';}; \
-  repos \"$(git user)\" | awk '/\\.nameWithOwner\\t/ { print $2 }';"
 
 [core]
 	excludesfile = ~/.gitignore

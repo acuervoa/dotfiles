@@ -6,3 +6,4 @@
 #export PATH="/usr/local/opt/python/libexec/bin":$PATH
 #export PATH="/usr/local/opt/ruby/bin":$PATH
 export PATH="/home/andres/bin":$PATH
+export PATH="/opt/firefox/firefox":$PATH
