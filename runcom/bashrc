@@ -7,7 +7,6 @@ eval $(thefuck --alias)
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 eval "$(thefuck --alias)"
 eval "$(zoxide init bash)" # --cmd z --hook pwd)"
 # eval "($(starship init bash)"

@@ -106,10 +106,10 @@ function whoinport() {
 }
 
 #Bash function to change directories and list contents
-cd() {
-    builtin cd $@
-    ls -lh
-}
+#cd() {
+    #builtin cd $@
+    #ls -lh
+#}
 # OS Detection
 function is_osx(){
     [[ "$OSTYPE" =~ ^darwin ]] || return 1

@@ -48,22 +48,10 @@ dalias() { alias | grep 'docker' | sed "s/^\([^=]*\)=\(.*\)/\1 => \2/"| sed "s/[
 dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
 
 
-###########################################
+#
 ## Helpers
 #
 
-
-dcleanup(){
-    local containers
-    mapfile -t containers < <(docker ps -aq 2>/dev/null)
-    docker rm "${containers[@]" 2>/dev/null
-    local volumes
-    mapfile -t volumes < <(docker ps --filter status=exited -q 2>/dev/null)
-    docker rm -v "${volumes[@]}" 2>/dev/null
-    local images
-    mapfile -t images < <(docker images --filter dangling=true -q 2>/dev/null)
-    docker rmi "$(images[@]}" 2>/dev/null
-}
 
 del_stopped(){
     local name=$1
@@ -112,69 +100,3 @@ dockshell(){
 }
 
 
-
-
-# creates an nginx config for a local route
-#nginx_config(){
-#    server=$1
-#    route=$2
-
-#cat >"${HOME}/.nginx/conf.d/${server}.conf" <<-EOF
-#upstream ${server} { server ${route}; }
-#server {
-#server_name ${server};
-#location / {
-#proxy_pass http://${server};
-#proxy_http_version 1.1;
-#proxy_set_header Upgrade \$http_upgrade;
-#proxy_set_header Connection "upgrade";
-#proxy_set_header Host \$http_host;
-#proxy_set_header X-Forwarded-Proto \$scheme;
-#proxy_set_header X-Forwarded-For \$remote_addr;
-#proxy_set_header X-Forwarded-Port \$server_port;
-#proxy_set_header X-Request-Start \$msec;
-#}
-#}
-#EOF
-
-#restart nginx
-    docker restart nginx
-
-# add host to /etc/hosts
-    hostess add "$server" 127.0.0.1
-
-# open browser
-    browser-exec "http://${server}"
-
-}
-
-###############################################
-## Container aliases
-##
-
-
-nginx(){
-    del_stopped nginx
-
-    docker run -d \
-            --restart always \
-            -v "${HOME}/.nginx:/etc/nginx" \
-            --net host \
-            --name nginx \
-            nginx
-
-}
-
-nmap(){
-    docker run --rm -it \
-            --net host \
-            jess/nmap "$@"
-}
-
-portainer(){
-    docker run -d \
-        --name portainer \
-        -p 9000:9000 \
-        -v "/var/run/docker.sock:/var/run/docker.sock" \
-        portainer/portainer
-}
