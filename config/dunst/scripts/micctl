@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DUNSTIFY="/usr/bin/dunstify"
+NOTIFY="/usr/bin/notify-send"
+PAMIXER="/usr/bin/pamixer"
+
+ICON_HIGH="microphone-sensitivity-high"
+ICON_MEDIUM="microphone-sensitivity-medium"
+ICON_LOW="microphone-sensitivity-low"
+ICON_MUTED="microphone-sensitivity-muted"
+SUMMARY="Micrófono"
+ID_FILE="/tmp/dunst_mic_id"
+
+get_vol() { "$PAMIXER" --default-source --get-volume; }
+
+is_muted() {
+  if [[ "$("$PAMIXER" --default-source --get-mute)" == "true" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+pick_icon() {
+  local v="$1"
+  if is_muted; then echo "$ICON_MUTED"; return; fi
+  if   (( v >= 66 )); then echo "$ICON_HIGH"
+  elif (( v >= 33 )); then echo "$ICON_MEDIUM"
+  elif (( v >=  1 )); then echo "$ICON_LOW"
+  else echo "$ICON_MUTED"; fi
+}
+
+read_id() {
+  [[ -f "$ID_FILE" ]] || return 1
+  local id
+  id="$(<"$ID_FILE")"
+  [[ "$id" =~ ^[0-9]+$ ]] || return 1
+  echo "$id"
+}
+
+send_notif() {
+  local v="$1" icon body rid prev_id
+  local TIMEOUT_MS=1200
+  icon="$(pick_icon "$v")"
+  if is_muted; then body="Silenciado"; v=0; else body="${v}%"; fi
+  if prev_id="$(read_id)"; then rid=(-r "$prev_id"); else rid=(); fi
+
+  if nid="$("$DUNSTIFY" -p -a "micctl" -i "$icon" \
+           -h int:value:"$v" -h string:x-dunst-stack-tag:mic \
+           -u low -t "$TIMEOUT_MS" "${rid[@]}" "$SUMMARY" "$body")"
+  then
+    printf '%s' "$nid" > "$ID_FILE"
+  else
+    "$NOTIFY" "$SUMMARY" "$body"
+  fi
+}
+
+case "${1:-}" in
+  up)      "$PAMIXER" --default-source -i 5   ;;
+  down)    "$PAMIXER" --default-source -d 5   ;;
+  toggle|mute) "$PAMIXER" --default-source -t ;;
+  set)     "$PAMIXER" --default-source --set-volume "${2:?}" ;;
+  *) echo "Uso: micctl {up|down|toggle|mute|set <N>}"; exit 1 ;;
+esac
+
+v=$(get_vol)
+send_notif "$v"
+

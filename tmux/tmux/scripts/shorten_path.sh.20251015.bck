@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Abrevia ruta: ~ reemplaza $HOME, carpetas intermedias reducidas a 1 letra
+path="${1:-$PWD}"
+
+# Sustituir $HOME por ~
+path="${path/#$HOME/~}"
+
+# Divide en segmentos y abrevia
+IFS='/' read -ra parts <<< "$path"
+short=""
+for ((i=0; i<${#parts[@]}-1; i++)); do
+  seg="${parts[i]}"
+  [[ -z "$seg" ]] && continue
+  # deja ~ intacto, el resto se queda con primera letra
+  if [[ "$seg" == "~" ]]; then
+    short+="/~"
+  else
+    short+="/${seg:0:1}"
+  fi
+done
+# añade último segmento completo
+short+="/${parts[-1]}"
+
+# elimina doble slash al principio
+short="${short#/}"
+
+echo "$short"
+

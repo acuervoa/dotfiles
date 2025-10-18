@@ -1,0 +1,16 @@
+# ~/.gitalias  alias Git rápidos y legibles
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status -sb
+    lg = log --graph --pretty=format:'%C(yellow)%hCreset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    last = log -1 HEAD --stat
+    undo = reset HEAD~1 --mixed
+
+    df = diff
+    dc = diff --cached
+    cp = cherry-pick
+    type = cat-file -t
+    dump = cat-file -p

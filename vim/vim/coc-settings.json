@@ -1,0 +1,19 @@
+{
+  "suggest.noselect": false,
+  "diagnostic.enableSign": true,
+  "diagnostic.virtualText": true,
+  "coc.preferences.formatOnSaveFiletypes": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "yaml",
+    "html",
+    "css",
+    "scss",
+    "markdown",
+    "php"
+  ],
+  "prettier.disableSuccessMessage": true
+}

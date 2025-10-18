@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export LC_ALL=C
+
+# Paleta alta-contraste
+GREEN="#[fg=#00ff00]"   # OK
+AMBER="#[fg=#ffff00]"   # Warning
+RED="#[fg=#ff0000]"     # Critical
+NEUT="#[fg=#cdd6f4]"    # separadores
+RESET="#[fg=#777777]"   # texto normal sobre bg azul de la pastilla
+
+# Helpers de colores por umbral
+color_cpu() { # v = 0..100
+  local v=$1
+  if   (( v >= 80 )); then echo "$RED"
+  elif (( v >= 50 )); then echo "$AMBER"
+  else                   echo "$GREEN"
+  fi
+}
+color_temp() { # °C
+  local v=$1
+  if   (( v >= 85 )); then echo "$RED"
+  elif (( v >= 70 )); then echo "$AMBER"
+  else                   echo "$GREEN"
+  fi
+}
+color_load() { # % (L1 normalizado *100)
+  local v=$1
+  if   (( v >= 100 )); then echo "$RED"
+  elif (( v >= 70  )); then echo "$AMBER"
+  else                    echo "$GREEN"
+  fi
+}
+color_mem() { # % usado
+  local v=$1
+  if   (( v >= 80 )); then echo "$RED"
+  elif (( v >= 60 )); then echo "$AMBER"
+  else                   echo "$GREEN"
+  fi
+}
+color_net() { # Mi/s total
+  # Umbrales orientativos: <1 Mi/s verde, <20 ámbar, >=20 rojo
+  local mi10=$1  # valor *10 para comparar enteros
+  if   (( mi10 >= 200 * 10 )); then echo "$RED"   # >=200 Mi/s (ajusta a tu gusto)
+  elif (( mi10 >=  10 * 10 )); then echo "$AMBER" # >=10 Mi/s
+  else                               echo "$GREEN"
+  fi
+}
+
+# --- CPU % (usa tu script) ---
+cpu_raw="$("$HOME/.tmux/scripts/cpu_pct.sh" 2>/dev/null || echo "0%")"
+cpu_pct=${cpu_raw%%%*}                # "NN%" -> NN
+# padding 3 dígitos (000..100)
+printf -v CPU_STR "%3d%%" "$cpu_pct"
+CPU_COL=$(color_cpu "$cpu_pct")
+
+# --- Temp °C ---
+temp_raw="$("$HOME/.tmux/scripts/cpu_temp.sh" 2>/dev/null || echo "--°C")"
+# extrae numero (puede ser decimal); si "--", trata como 0
+if [[ "$temp_raw" =~ ^([0-9]+)(\.[0-9]+)?°C$ ]]; then
+  temp_val="${BASH_REMATCH[1]}"
+else
+  temp_val=0
+fi
+printf -v TEMP_STR "%3d°C" "$temp_val"
+TEMP_COL=$(color_temp "$temp_val")
+
+# --- Load normalizado (L1 / nCPUs * 100) ---
+# Leemos /proc/loadavg y CPUs aquí para mayor control
+read -r L1 _ < <(awk '{print $1}' /proc/loadavg)
+CPUS=$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 1)
+# ratio % con redondeo
+load_pct=$(awk -v l1="$L1" -v n="$CPUS" 'BEGIN{v=int((l1*100.0/n)+0.5); if(v<0)v=0; if(v>999)v=999; print v}')
+printf -v LOAD_STR "%3d%%" "$load_pct"
+LOAD_COL=$(color_load "$load_pct")
+
+# --- Mem % (del script existente, buscar "(NN%)") ---
+mem_raw="$("$HOME/.tmux/scripts/mem_human.sh" 2>/dev/null || echo "0/0 (0%)")"
+if [[ "$mem_raw" =~ \(([0-9]+)%\) ]]; then
+  mem_pct="${BASH_REMATCH[1]}"
+else
+  mem_pct=0
+fi
+printf -v MEM_STR "%3d%%" "$mem_pct"
+MEM_COL=$(color_mem "$mem_pct")
+
+# --- Net RX/TX (PLAIN=1 => "RX_Ki_s TX_Ki_s"), autoescala Ki/Mi/Gi con ancho fijo ---
+IF_OVERRIDE="${IF_OVERRIDE:-}"
+read -r rx_kis tx_kis < <(PLAIN=1 IF_OVERRIDE="$IF_OVERRIDE" "$HOME/.tmux/scripts/net_kis.sh" 2>/dev/null || echo "0 0")
+
+# Escala automática con 1 decimal y ancho fijo:
+#   número: 6 de ancho con 1 decimal (espacios, no ceros), unidad: 2 chars => total 8
+human_scale_fixed() {
+  local kis=$1 unit val
+  if   (( kis >= 1024*1024 )); then
+    unit="Gi"; val=$(awk -v v="$kis" 'BEGIN{printf "%.1f", v/1048576.0}')
+  elif (( kis >= 1024 )); then
+    unit="Mi"; val=$(awk -v v="$kis" 'BEGIN{printf "%.1f", v/1024.0}')
+  else
+    unit="Ki"; val=$(awk -v v="$kis" 'BEGIN{printf "%.1f", v+0.0}')
+  fi
+  # número (6 ancho, 1 decimal) + unidad (2 ancho) => 8 columnas exactas
+  printf "%6.1f%2s" "$val" "$unit"
+}
+
+RX_STR=$(human_scale_fixed "$rx_kis")
+TX_STR=$(human_scale_fixed "$tx_kis")
+
+# Colores por dirección (umbral independiente) — basados en Mi/s (más intuitivo)
+rx_mi10=$(awk -v v="$rx_kis" 'BEGIN{printf "%d", int((v/1024.0)*10+0.5)}')
+tx_mi10=$(awk -v v="$tx_kis" 'BEGIN{printf "%d", int((v/1024.0)*10+0.5)}')
+
+color_net_dir() {
+  local mi10=$1
+  if   (( mi10 >=  50*10 )); then echo "$RED"    # >= 50 Mi/s
+  elif (( mi10 >=  10*10 )); then echo "$AMBER"  # >= 10 Mi/s
+  else                          echo "$GREEN"   # < 10 Mi/s
+  fi
+}
+RX_COL=$(color_net_dir "$rx_mi10")
+TX_COL=$(color_net_dir "$tx_mi10")
+
+# --- Imprime PÍLDORA (glyph + valor), separadores ·, con colores por métrica ---
+# OJO: no tocamos bg aquí; la bg la pone tmux fuera (segmento  … ).
+printf "  %s%s%s  %s·%s   %s%s%s  %s·%s   %s%s%s  %s·%s   %s%s%s  %s·%s   %s%s↓%s%s%s↑%s " \
+  "$CPU_COL"  "$CPU_STR"  "$RESET" \
+  "$NEUT" "$RESET" \
+  "$TEMP_COL" "$TEMP_STR" "$RESET" \
+  "$NEUT" "$RESET" \
+  "$LOAD_COL" "$LOAD_STR" "$RESET" \
+  "$NEUT" "$RESET" \
+  "$MEM_COL"  "$MEM_STR"  "$RESET" \
+  "$NEUT" "$RESET" \
+  "$RX_COL"  "$RX_STR"  "$RESET" \
+  "$TX_COL"  "$TX_STR"  "$RESET"
+

@@ -1,0 +1,223 @@
+" ===== Líder y opciones básicas =====
+let mapleader = " "
+let maplocalleader = ","
+
+set number relativenumber
+set expandtab shiftwidth=2 tabstop=2
+set termguicolors
+set signcolumn=yes
+set updatetime=250
+set timeoutlen=300
+set cursorline
+set scrolloff=8 sidescrolloff=8
+set mouse=a
+set clipboard=unnamedplus
+set ignorecase smartcase
+set splitright splitbelow
+set nowrap
+set undofile
+
+" ===== Plugin manager: vim-plug =====
+" Instala vim-plug si no lo tienes: https://github.com/junegunn/vim-plug
+" (en shell) curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+call plug#begin('~/.vim/plugged')
+
+" Tema / UI
+Plug 'tomasiser/vim-code-dark'                  " Tema estilo VSCode
+Plug 'ryanoasis/vim-devicons'                   " Iconos Nerd Font
+Plug 'itchyny/lightline.vim'                    " Statusline ligera
+
+" LSP/completado (Vim & Nvim)
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " LSP, rename, code action, diag
+
+" Explorador tipo VSCode
+Plug 'lambdalisue/fern.vim'
+Plug 'lambdalisue/fern-renderer-nerdfont.vim'
+
+" Búsqueda difusa tipo Telescope (pero para Vim)
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Git
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+
+" Edición
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'jiangmiao/auto-pairs'
+
+" Which-key para Vim
+Plug 'liuchengxu/vim-which-key'
+
+" Terminal flotante (ToggleTerm-like)
+Plug 'voldikss/vim-floaterm'
+
+" Depuración (DAP equivalente)
+Plug 'puremourning/vimspector'
+
+" Extras de calidad de vida
+Plug 'Yggdroot/indentLine'                      " Guías de indentación
+Plug 'machakann/vim-highlightedyank'            " Resalta yank
+Plug 'easymotion/vim-easymotion'                 " Saltos rápidos (Flash-like)
+
+call plug#end()
+
+" ===== Tema =====
+colorscheme codedark
+
+" ===== Lightline (statusline limpia, con rama Git si hay fugitive) =====
+let g:lightline = {
+\ 'colorscheme': 'codedark',
+\ 'active': {
+\   'left': [ [ 'mode' ],
+\             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+\   'right':[ [ 'lineinfo' ], [ 'percent' ], [ 'filetype' ] ]
+\ },
+\ 'component_function': { 'gitbranch': 'FugitiveHead' },
+\ }
+function! FugitiveHead()
+  try | return fugitive#head()
+  catch | return '' | endtry
+endfunction
+
+" ===== Fern (explorador lateral con Nerd Font) =====
+let g:fern#renderer = 'nerdfont'
+nnoremap <silent> <C-b>     :Fern . -reveal=% -drawer -toggle -width=35<CR>
+nnoremap <silent> <leader>e :Fern . -reveal=% -drawer -width=35<CR>
+
+" ===== FZF (equivalentes de Telescope) =====
+nnoremap <silent> <C-p>        :Files<CR>
+nnoremap <silent> <leader>ff   :Files<CR>
+nnoremap <silent> <leader>fr   :History<CR>
+nnoremap <silent> <leader>fb   :Buffers<CR>
+nnoremap <silent> <leader>sg   :Rg<CR>
+nnoremap <silent> <leader>sw   :Rg <C-R><C-W><CR>
+nnoremap <silent> <leader>ss   :CocList symbols<CR>   " símbolos doc
+nnoremap <silent> <leader>sS   :CocList -A symbols<CR> " símbolos workspace
+
+" ===== Terminal flotante (ToggleTerm-like) =====
+tnoremap <Esc> <C-\><C-n>
+nnoremap <silent> <C-`> :FloatermToggle<CR>
+tnoremap <silent> <C-`> <C-\><C-n>:FloatermToggle<CR>
+
+" ===== Which-key (muestra <leader> como en Neovim) =====
+let g:which_key_use_floating_win = 1
+nnoremap <silent> <leader> :<C-u>WhichKey '<Space>'<CR>
+call which_key#register('<Space>', 'g:which_key_map')
+let g:which_key_map = {}
+let g:which_key_map.b = { 'name': '+Buffer' }
+let g:which_key_map.c = { 'name': '+Code' }
+let g:which_key_map.d = { 'name': '+Debug' }
+let g:which_key_map.f = { 'name': '+File/Find' }
+let g:which_key_map.g = { 'name': '+Git' }
+let g:which_key_map.h = { 'name': '+Hunk' }
+let g:which_key_map.o = { 'name': '+Overseer' }
+let g:which_key_map.s = { 'name': '+Search' }
+let g:which_key_map.u = { 'name': '+UI' }
+let g:which_key_map.x = { 'name': '+Diagnostics' }
+
+" ===== Git hunks (como gitsigns) =====
+let g:gitgutter_map_keys = 0
+nnoremap ]h :GitGutterNextHunk<CR>
+nnoremap [h :GitGutterPrevHunk<CR>
+nnoremap <leader>hs :GitGutterStageHunk<CR>
+nnoremap <leader>hr :GitGutterUndoHunk<CR>
+nnoremap <leader>hp :GitGutterPreviewHunk<CR>
+nnoremap <leader>hd :GitGutterDiffOrig<CR>
+nnoremap <leader>hb :Git blame<CR>
+
+" ===== Indent guides & yank highlight =====
+let g:indentLine_char = '│'
+let g:indentLine_fileTypeExclude = ['help','terminal','fern','startify']
+let g:highlightedyank_highlight_duration = 200
+
+" Autoinstall CoC packages
+let g:coc_global_extensions = [
+      \ '@yaegassy/coc-intelephense',
+      \ 'coc-json', 'coc-tserver', 'coc-html', 'coc-css', 'coc-eslint'
+      \ 
+]
+
+" ===== LSP via coc.nvim (teclas estilo VSCode/Nvim) =====
+inoremap <silent><expr> <C-Space> coc#refresh()
+inoremap <silent><expr> <CR> pumvisible() ? coc#pum#confirm() : "\<CR>"
+
+nmap <silent> gd  <Plug>(coc-definition)
+nmap <silent> gD  <Plug>(coc-declaration)
+nmap <silent> gi  <Plug>(coc-implementation)
+nmap <silent> gt  <Plug>(coc-type-definition)
+nmap <silent> gr  <Plug>(coc-references)
+nmap <silent> K   :call CocActionAsync('doHover')<CR>
+nmap <silent> <F2> <Plug>(coc-rename)
+xmap <silent> <leader>ca <Plug>(coc-codeaction-selected)
+nmap <silent> <leader>ca <Plug>(coc-codeaction)
+nmap <silent> <leader>cd :CocDiagnostics<CR>
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
+nnoremap <silent> <leader>cs :CocList --normal outline<CR>
+nnoremap <silent> <leader>cf :call CocActionAsync('format')<CR>
+inoremap <silent><expr> <C-k> coc#refresh()
+
+" ===== Navegación de buffers / ventanas =====
+nnoremap <silent> <C-Tab>       :bnext<CR>
+nnoremap <silent> <C-S-Tab>     :bprevious<CR>
+nnoremap <silent> <C-PageDown>  :bnext<CR>
+nnoremap <silent> <C-PageUp>    :bprevious<CR>
+nnoremap <silent> <leader>bd    :bdelete<CR>
+nnoremap <silent> <leader>bo    :%bd\|e#\|bd#<CR>
+
+nnoremap <silent> <C-h> <C-w>h
+nnoremap <silent> <C-j> <C-w>j
+nnoremap <silent> <C-k> <C-w>k
+nnoremap <silent> <C-l> <C-w>l
+nnoremap <silent> <C-Up>    :resize +2<CR>
+nnoremap <silent> <C-Down>  :resize -2<CR>
+nnoremap <silent> <C-Left>  :vertical resize -2<CR>
+nnoremap <silent> <C-Right> :vertical resize +2<CR>
+
+" Mover/duplicar líneas
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+nnoremap <S-A-j> yyp
+nnoremap <S-A-k> yyP
+vnoremap <S-A-j> y'>pgv
+vnoremap <S-A-k> y'<Pgv
+
+" Comentarios (Ctrl+/)
+nnoremap <silent> <C-_> :Commentary<CR>
+xnoremap <silent> <C-_> :Commentary<CR>
+
+" Guardar/Cerrar/Seleccionar todo
+nnoremap <silent> <C-s> :w<CR>
+inoremap <silent> <C-s> <Esc>:w<CR>a
+vnoremap <silent> <C-s> <Esc>:w<CR>
+nnoremap <silent> <C-w> :bd<CR>
+nnoremap <silent> <C-a> ggVG
+
+" Diagnósticos estilo Trouble
+nnoremap <silent> <leader>xx :CocList diagnostics<CR>
+nnoremap <silent> <leader>xq :copen<CR>
+nnoremap <silent> <leader>xl :lopen<CR>
+
+" Toggles UI
+nnoremap <silent> <leader>uw :set wrap!<CR>
+nnoremap <silent> <leader>ul :set number!<CR>
+nnoremap <silent> <leader>ur :set relativenumber!<CR>
+nnoremap <silent> <leader>us :setlocal spell!<CR>
+
+" Quitar resalte búsqueda con ESC
+nnoremap <silent> <Esc> :nohlsearch<CR>
+
+" ===== Vimspector (teclas estilo nvim-dap) =====
+nmap <F5>    <Plug>VimspectorContinue
+nmap <F10>   <Plug>VimspectorStepOver
+nmap <F11>   <Plug>VimspectorStepInto
+nmap <S-F11> <Plug>VimspectorStepOut
+nmap <F9>    <Plug>VimspectorToggleBreakpoint
+

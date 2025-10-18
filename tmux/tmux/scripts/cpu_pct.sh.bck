@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Calcula CPU% sin dormir: usa delta desde la última lectura persistida
+STATE="/tmp/tmux_cpu_${USER}.state"
+
+read -r _ u n s i io irq si st ge gn < /proc/stat
+total=$((u+n+s+i+io+irq+si+st+ge+gn))
+idle=$((i+io))
+
+if [[ -f "$STATE" ]]; then
+    read -r pt pi < "$STATE" 2>/dev/null || { echo "0%"; echo "$total $idle" > "$STATE"; exit 0; }
+    dt=$(( total - pt ))
+    di=$(( idle - pi ))
+    (( dt >0 )) && printf "%d%%" $(( (100*(dt-di))/dt )) || printf "0%%"
+else
+    printf "0%%"
+fi
+
+echo "$total $idle" > "$STATE"

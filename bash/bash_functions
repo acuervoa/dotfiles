@@ -1,0 +1,88 @@
+# ~/.bash_functions — funciones útiles no cubiertas por aliases
+
+# Abrir fichero en $EDITOR (nvim). Si no pasas argumento e tienes fzf, selecciona.
+f() {
+  local file="$1"
+  if [ -z "$file" ]; then
+    if command -v fzf >/dev/null 2>&1; then
+      if command -v rg >/dev/null 2>&1; then
+        file="$(rg --files --hidden --follow -g '!.git' 2>/dev/null | fzf --height 40% --layout=reverse)"
+      elif command -v fd >/dev/null 2>&1; then
+        file="$(fd --type f --hidden --follow --exclude .git | fzf --height 40% --layout=reverse)"
+      else
+        file="$(find . -type f 2>/dev/null | fzf --height 40% --layout=reverse)"
+      fi
+    else
+      echo "Uso: f <archivo>   (o instala fzf para selección interactiva)" >&2
+      return 1
+    fi
+  fi
+  [ -n "$file" ] && "${EDITOR:-nvim}" "$file"
+}
+
+# Ir al directorio del fichero (rápido para abrir proyectos)
+cdf() {
+  if [ -z "$1" ]; then
+    echo "Uso: cdf <ruta/archivo>" >&2
+    return 1
+  fi
+  cd "$(dirname -- "$1")" || return
+}
+
+# mkdir + cd
+mkcd() {
+  if [ -z "$1" ]; then
+    echo "Uso: mkcd <directorio>" >&2
+    return 1
+  fi
+  mkdir -p -- "$1" && cd -- "$1" || return
+}
+
+# Extraer archivos comprimidos con una sola orden
+extract() {
+  if [ -z "$1" ] || [ ! -f "$1" ]; then
+    echo "Uso: extract <archivo>" >&2
+    return 1
+  fi
+  case "$1" in
+    *.tar.bz2)   tar xjf "$1"   ;;
+    *.tar.gz)    tar xzf "$1"   ;;
+    *.tar.xz)    tar xJf "$1"   ;;
+    *.tar)       tar xf  "$1"   ;;
+    *.tbz2)      tar xjf "$1"   ;;
+    *.tgz)       tar xzf "$1"   ;;
+    *.bz2)       bunzip2 "$1"   ;;
+    *.gz)        gunzip  "$1"   ;;
+    *.xz)        unxz    "$1"   ;;
+    *.zip)       unzip   "$1"   ;;
+    *.7z)        7z x    "$1"   ;;
+    *)           echo "'$1' no es un formato soportado" >&2; return 2 ;;
+  esac
+}
+
+# Lanzar/adjuntar a una sesión tmux por nombre (default: main)
+t() {
+  local name="${1:-main}"
+  tmux new -A -s "$name"
+}
+
+# Copiar salida de un comando al clipboard del sistema (Wayland/X11)
+toclip() {
+  if command -v wl-copy >/dev/null 2>&1; then
+    cat | wl-copy
+  elif command -v xclip >/dev/null 2>&1; then
+    cat | xclip -selection clipboard
+  else
+    echo "No hay wl-copy ni xclip instalados" >&2
+    return 1
+  fi
+}
+
+# Buscar en el historial con fzf y ejecutar
+fhist() {
+  command -v fzf >/dev/null 2>&1 || { echo "fzf no instalado" >&2; return 1; }
+  local cmd
+  cmd="$(HISTTIMEFORMAT= history | sed 's/^ *[0-9]\+ *//' | fzf --height 40% --layout=reverse --tac)"
+  [ -n "$cmd" ] && printf '%s\n' "$cmd" && eval "$cmd"
+}
+

@@ -1,0 +1,158 @@
+# ===========================
+# ~/.bashrc - Arch
+# Autor: Andrés Cuervo (ajustado por ChatGPT)
+# ===========================
+
+# Cargar sólo shells interactivas
+case $- in
+*i*) : ;;
+*) return ;;
+esac
+
+# Asegurar entorno de login en shells no-login
+if [ -z "${PROFILE_LOADED:-}" ] && [ -r "$HOME/.profile" ]; then
+  . "$HOME/.profile"
+fi
+
+# Teclas y flujo
+# - Libera Ctrl+S
+stty -ixon 2>/dev/null || true
+# - Edición tipo Vim en linea de comandos
+set -o vi
+
+# Historial
+export HISTCONTROL=ignoredups:erasedups
+export HISTSIZE=200000
+export HISTFILESIZE=400000
+export HISTTIMEFORMAT='%F %T '
+shopt -s histappend   # añadir en lugar de sobrescribir
+shopt -s cmdhist      # almacenar lineas largas como una sola entrada
+shopt -s checkwinsize # ajustar LINES y COLUMNS tras cada comando
+shopt -s globstar     # ** para recursivo en glob
+shopt -s autocd       # escribir dir = cd dir
+shopt -s cdspell      # corrige pequeñas faltas al hacer cd
+
+# Editor por defecto
+export EDITOR=nvim
+export VISUAL=nvim
+
+# FZF + ripgrep
+if command -v rg >/dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!.git"'
+elif command -v fd >/dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+else
+  export FZF_DEFAULT_COMMAND='find . -type f'
+fi
+
+# Opciones por defecto FZF
+export FZF_DEFAULT_OPTS="
+    --height 50%
+    --layout=reverse
+    --info=inline
+    --border
+    --margin=1,1
+"
+
+# Keybindings de FZF
+if [ -f /usr/share/fzf/key-bindings.bash ]; then
+  source /usr/share/fzf/key-bindings.bash
+fi
+if [ -f /usr/share/fzf/completion.bash ]; then
+  source /usr/share/fzf/completion.bash
+fi
+if [ -f ~/.fzf.bash ]; then
+  source ~/.fzf.bash
+fi
+
+# pbcopy/pbpaste
+if command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
+  pbcopy() { wl-copy; }
+  pbpaste() { wl-paste; }
+elif command -v xclip >/dev/null 2>&1; then
+  pbcopy() { xclip -selection clipboard; }
+  pbpaste() { xclip -selection clipboard -o; }
+fi
+
+# Iniciar herramientas
+
+# - zoxide (cd inteligente)
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init bash)"
+fi
+
+# - starship (prompt)
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init bash)"
+fi
+
+# - fnm (gestor de versiones de node)
+if [ -z "${FNM_INITIALIZED:-}" ]; then
+  if command -v fnm >/dev/null 2>&1; then
+    eval "$(fnm env --use-on-cd --shell=bash)"
+    export FNM_INITIALIZED=1
+  fi
+fi
+
+# Desactiva titulo dentro de tmux
+if [[ -n "$TMUX" ]]; then
+  PROMPT_COMMAND=${PROMPT_COMMAND//\\e]0;*\a/}
+  PROMPT_COMMAND=${PROMPT_COMMAND//__vte_prompt_command;/}
+  PROMPT_COMMAND=${PROMPT_COMMAND//__vte_prompt_command/}
+  PROMPT_COMMAND=${PROMPT_COMMAND//set-window-title/}
+fi
+
+# Carga de aliases y funciones
+[ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
+[ -f "$HOME/.bash_functions" ] && source "$HOME/.bash_functions"
+
+# Atajos de calidad de vida
+alias ..='cd ..'
+alias ...='cd ../..'
+alias gs='git status -sb 2>/dev/null || git status'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git log --oneline --graph --deprecate -n 30'
+
+# ls mejorado: eza
+alias ls='ls -altr --color=auto'
+if command -v eza >/dev/null 2>&1; then
+  alias l='eza --group-directories-first --icons=auto --color=auto --sort newest'
+  alias ll='eza -lh --git --group-directories-first --icons=auto --color=auto --sort newest'
+  alias la='eza -a --group-directories-first --icons=auto --color=auto --sort newest'
+else
+  alias ls='ls --color=auto -h'
+  alias ll='ls -lh'
+  alias la='ls -A'
+fi
+
+# Docker comose V2
+if command -v docker >/dev/null 2>&1; then
+  alias dc='docker compose'
+  alias dcb='docker compose build'
+  alias dcu='docker compose up'
+  alias dcud='docker compose up -d'
+  alias dcd='docker compose down'
+  alias dcr='docker compose restart'
+  alias dcps='docker compose ps'
+  alias dcl='docker compose logs'
+  alias dclf='docker compose logs -f'
+  alias dce='docker compose exec'
+fi
+
+# PATH normalize (estable y sin duplicados) ---
+#-  Desduplicar manteniendo el primer encuentro (orden estable)
+PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
+
+#- Mover Nix al final para evitar sombras
+move_to_end() {
+  local p="$1"
+  PATH="$(/usr/bin/tr ':' '\n' <<<"$PATH" | /usr/bin/awk -v p="$p" '$0!=p{a[++n]=$0; next} {b[++m]=$0} END{for(i=1;i<=n;i++)print a[i]; for(j=1;j<=m;j++)print b[j]}' | paste -sd: -)"
+}
+move_to_end "$HOME/.nix-profile/bin"
+move_to_end "/nix/var/nix/profiles/default/bin"
+
+export PATH
+
+# PATH y extras ligeros
+export PATH=/home/acuervo/.config/composer/vendor/bin:${PATH}

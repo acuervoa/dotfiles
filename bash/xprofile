@@ -1,0 +1,8 @@
+#!/bin/sh
+# Ahorro de energía y pantalla
+xset dpms 1800 2400 3600
+xset s off -dpms
+
+# Teclado (Caps -> Escape) — descomenta si lo quieres
+# setxkbmap -option caps:escape
+
