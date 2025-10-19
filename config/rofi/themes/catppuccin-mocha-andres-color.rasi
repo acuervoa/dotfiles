@@ -1,0 +1,145 @@
+* {
+  /* Catppuccin Mocha — paleta ampliada */
+  base:        #1e1e2e;  mantle: #181825;  crust:   #11111b;
+  text:        #cdd6f4;  subtext0:#a6adc8; overlay0:#6c7086;
+  surface0:    #313244;  surface1:#45475a; surface2:#585b70;
+
+  blue:   #89b4fa;  sky:    #89dceb;  teal:  #94e2d5;
+  green:  #a6e3a1;  yellow: #f9e2af;  peach: #fab387;
+  maroon: #eba0ac;  red:    #f38ba8;  pink:  #f5c2e7;  mauve: #cba6f7;
+
+  /* Acento principal (cámbialo por @peach/@sky/@green si te apetece) */
+  accent:       @peach;
+
+  bg:           @base;
+  fg:           @text;
+  border-col:   @surface2;
+
+  border-radius: 12;
+  padding: 10;
+  font: "JetBrainsMono Nerd Font 12";
+}
+
+/* ---------- Ventana ---------- */
+#window {
+  background-color: @bg;
+  border: 2;
+  border-color: @border-col;
+  border-radius: 14;
+}
+
+/* ---------- Contenedor raíz ---------- */
+#mainbox { padding: 12; spacing: 8; }
+
+/* ---------- Barra de entrada ---------- */
+#inputbar {
+  padding: 8 12;
+  border: 1;
+  border-color: @surface1;
+  background-color: @surface0;
+  text-color: @fg;
+  border-radius: 10;
+}
+
+/* “Chips” de prompt y modo activo con color de acento */
+#prompt {
+  text-color: @crust;
+  background-color: @accent;
+  padding: 2 8;
+  border-radius: 8;
+  margin: 0 8 0 0;
+}
+#entry {
+  text-color: @fg;
+}
+
+/* Mensajes (ayuda/errores) */
+#message {
+  background-color: @surface0;
+  border: 1;
+  border-color: @surface2;
+  border-radius: 8;
+  padding: 6 10;
+  text-color: @subtext0;
+}
+#error-message {
+  background-color: @crust;
+  border: 1;
+  border-color: @red;
+  border-radius: 8;
+  padding: 8 10;
+  text-color: @red;
+}
+
+/* ---------- Lista (grid colorida) ---------- */
+#listview {
+  spacing: 8;
+  columns: 3;    /* ajusta a tu gusto */
+  lines:   8;
+  border: 0;
+}
+
+/* Elemento por defecto */
+#element {
+  padding: 8;
+  border: 1;
+  border-color: transparent;
+  background-color: @surface0;
+  text-color: @fg;
+  border-radius: 10;
+}
+/* Icono + texto */
+#element-icon { size: 36; }
+#element-text {
+  highlight: bold;             /* resalta coincidencias */
+}
+
+/* Elemento seleccionado — ¡color! */
+#element selected {
+  background-color: @accent;
+  border: 1;
+  border-color: @accent;
+  text-color: @crust;
+}
+
+/* Estados útiles si rofi los marca (no siempre aparecen): */
+#element normal.active {
+  background-color: @sky;
+  text-color: @crust;
+  border: 1; border-color: @sky;
+}
+#element normal.urgent {
+  background-color: @red;
+  text-color: @crust;
+  border: 1; border-color: @red;
+}
+
+/* ---------- Conmutador de modos ---------- */
+#mode-switcher {
+  spacing: 6;
+}
+#button {
+  padding: 4 8;
+  border-radius: 8;
+  background-color: @surface0;
+  text-color: @fg;
+  border: 1; border-color: @surface1;
+}
+#button selected {
+  background-color: @peach;    /* contraste respecto a @accent */
+  border: 1; border-color: @peach;
+  text-color: @crust;
+}
+
+/* ---------- Scrollbar discreto ---------- */
+#scrollbar {
+  handle-width: 6;
+  padding: 0;
+  border: 0;
+  background-color: @surface0;
+}
+#scrollbar handle {
+  background-color: @surface2;
+  border-radius: 6;
+}
+
