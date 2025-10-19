@@ -118,8 +118,10 @@ bindsym $mod+Shift+$right move right
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
-# Alternar pantalla completa
-bindsym $mod+f fullscreen toggle
+# Alternar pantalla completa (análogo a Tmux 'Z' = Zoom)
+bindsym $mod+z fullscreen toggle
+# Finder de ventanas (análogo a Tmux prefix+f)
+bindsym $mod+f exec --no-startup-id rofi -show window
 
 # Organización de contenedores
 bindsym $mod+s layout stacking
@@ -127,6 +129,12 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+Mod1+h split h
 bindsym $mod+Mod1+v split v
+#
+# Redimensionar contenedor (similar a Alt+Shift+Flechas en tmux)
+bindsym $mod+Shift+Left  resize shrink width 10 px or 10 ppt
+bindsym $mod+Shift+Right resize grow   width 10 px or 10 ppt
+bindsym $mod+Shift+Up    resize grow   height 10 px or 10 ppt
+bindsym $mod+Shift+Down  resize shrink height 10 px or 10 ppt
 
 # =======================
 # WORKSPACES Y MONITORES
