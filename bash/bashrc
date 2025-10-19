@@ -112,7 +112,7 @@ alias ...='cd ../..'
 alias gs='git status -sb 2>/dev/null || git status'
 alias gc='git commit'
 alias gp='git push'
-alias gl='git log --oneline --graph --deprecate -n 30'
+alias gl='git log --oneline --graph -n 30'
 
 # ls mejorado: eza
 alias ls='ls -altr --color=auto'

@@ -1,0 +1,4 @@
+/tmux/tmux/plugins/
+/vim/vim/plugged/
+/vim/vim/autoload/*
+!/vim/vim/autoload/plug.vim
