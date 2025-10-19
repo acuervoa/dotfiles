@@ -20,7 +20,7 @@ o.splitright = true
 o.splitbelow = true
 o.wrap = false
 o.undofile = true
-o.winborder = "rounded"
+-- FIX: winborder no es option global (evita error de inicio)
 
 -- Desactiar providers
 vim.g.loaded_perl_provider = 0
