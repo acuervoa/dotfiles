@@ -136,9 +136,8 @@ let g:highlightedyank_highlight_duration = 200
 " Autoinstall CoC packages
 let g:coc_global_extensions = [
       \ '@yaegassy/coc-intelephense',
-      \ 'coc-json', 'coc-tserver', 'coc-html', 'coc-css', 'coc-eslint'
-      \ 
-]
+      \ 'coc-json', 'coc-tsserver', 'coc-html', 'coc-css', 'coc-eslint'
+      \ ]
 
 " ===== LSP via coc.nvim (teclas estilo VSCode/Nvim) =====
 inoremap <silent><expr> <C-Space> coc#refresh()
@@ -194,10 +193,17 @@ nnoremap <silent> <C-_> :Commentary<CR>
 xnoremap <silent> <C-_> :Commentary<CR>
 
 " Guardar/Cerrar/Seleccionar todo
-nnoremap <silent> <C-s> :w<CR>
-inoremap <silent> <C-s> <Esc>:w<CR>a
-vnoremap <silent> <C-s> <Esc>:w<CR>
-nnoremap <silent> <C-w> :bd<CR>
+nnoremap <silent> <leader>w :w<CR>
+if empty($TMUX)
+  inoremap <silent> <C-s> <Esc>:w<CR>a
+  vnoremap <silent> <C-s> <Esc>:w<CR>
+  nnoremap <silent> <C-w> :bd<CR>
+endif
+
+" Cierres coherentes con Neovim
+nnoremap <silent> <leader>q :q<CR>
+nnoremap <silent> <leader><BS> :only<CR>
+
 nnoremap <silent> <C-a> ggVG
 
 " Diagnósticos estilo Trouble
