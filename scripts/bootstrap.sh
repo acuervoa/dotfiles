@@ -30,16 +30,22 @@ Notas:
 EOF
 }
 
-note(){ echo "[*] $*"; }
-die(){ echo "ERROR: $*" >&2; exit 1; }
-act(){ if $DRYRUN; then echo "DRYRUN: $*"; else eval "$@"; fi; }
+note() { echo "[*] $*"; }
+die() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
+act() { if $DRYRUN; then echo "DRYRUN: $*"; else eval "$@"; fi; }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run|-n) DRYRUN=true ;;
-    --mode=*) MODE="${1#*=}" ;;
-    --help|-h) usage; exit 0 ;;
-    *) die "Opción desconocida: $1" ;;
+  --dry-run | -n) DRYRUN=true ;;
+  --mode=*) MODE="${1#*=}" ;;
+  --help | -h)
+    usage
+    exit 0
+    ;;
+  *) die "Opción desconocida: $1" ;;
   esac
   shift
 done
@@ -73,24 +79,24 @@ if [[ "$MODE" == "stow" ]]; then
 
   # 1) Enlaces explícitos en $HOME (bash, git, tmux, vim)
   # bash
-  link_to "$DOTFILES/bash/bashrc"        "$HOME/.bashrc"
-  link_to "$DOTFILES/bash/bash_profile"  "$HOME/.bash_profile"
-  link_to "$DOTFILES/bash/profile"       "$HOME/.profile"
-  link_to "$DOTFILES/bash/xprofile"      "$HOME/.xprofile"
-  link_to "$DOTFILES/bash/bash_aliases"  "$HOME/.bash_aliases"
-  link_to "$DOTFILES/bash/bash_functions"$HOME/.bash_functions"
+  link_to "$DOTFILES/bash/bashrc" "$HOME/.bashrc"
+  link_to "$DOTFILES/bash/bash_profile" "$HOME/.bash_profile"
+  link_to "$DOTFILES/bash/profile" "$HOME/.profile"
+  link_to "$DOTFILES/bash/xprofile" "$HOME/.xprofile"
+  link_to "$DOTFILES/bash/bash_aliases" "$HOME/.bash_aliases"
+  link_to "$DOTFILES/bash/bash_functions" "$HOME/.bash_functions"
   # git
-  link_to "$DOTFILES/git/gitconfig"      "$HOME/.gitconfig"
-  link_to "$DOTFILES/git/gitalias"       "$HOME/.gitalias"
+  link_to "$DOTFILES/git/gitconfig" "$HOME/.gitconfig"
+  link_to "$DOTFILES/git/gitalias" "$HOME/.gitalias"
   # tmux
-  link_to "$DOTFILES/tmux/tmux.conf"     "$HOME/.tmux.conf"
+  link_to "$DOTFILES/tmux/tmux.conf" "$HOME/.tmux.conf"
   if [[ -d "$DOTFILES/tmux/tmux" ]]; then
     backup_path "$HOME/.tmux"
     act "ln -sfn '$DOTFILES/tmux/tmux' '$HOME/.tmux'"
     echo "LINK $DOTFILES/tmux/tmux -> $HOME/.tmux" >>"$MANIFEST"
   fi
   # vim
-  link_to "$DOTFILES/vim/vimrc"          "$HOME/.vimrc"
+  link_to "$DOTFILES/vim/vimrc" "$HOME/.vimrc"
   if [[ -d "$DOTFILES/vim/vim" ]]; then
     backup_path "$HOME/.vim"
     act "ln -sfn '$DOTFILES/vim/vim' '$HOME/.vim'"
@@ -124,7 +130,7 @@ Pasos sugeridos (manuales) para git bare:
   # 3) Añade y commitea los archivos deseados
   #    OJO: este enfoque gestiona ficheros en $HOME directamente (sin stow).
 EOF
-  echo "MODE bare" > "$MANIFEST"
+  echo "MODE bare" >"$MANIFEST"
 else
   die "Modo no soportado: $MODE"
 fi
