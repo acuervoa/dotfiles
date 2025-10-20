@@ -251,3 +251,4 @@ for_window [window_role="task_dialog"] floating enable
 
 gaps inner 6
 gaps outer 3
+
