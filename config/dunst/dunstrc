@@ -121,4 +121,4 @@
     summary = "*"
     format = "<b>%s</b>\n%b"
 
-
+include "~/.config/dunst/mocha.conf"

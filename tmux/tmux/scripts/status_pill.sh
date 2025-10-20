@@ -145,8 +145,9 @@ choose_ifaces() {
   local list=""
   for dev in /sys/class/net/*; do
     local name; name=$(basename "$dev")
-    [[ "$name" == "lo" ]] && continue
-    [[ "$name" =~ ^(veth|docker|br-|vmnet|tun|tap|kube|virbr)$ || "$name" =~ ^(veth|docker|br-|vmnet|tun|tap|kube|virbr).* ]] && continue
+    case "$name" in
+      lo|veth*|docker*|br-*|vmnet*|tun*|tap*|kube*|virbr*) continue;;
+    esac
     [[ -r "$dev/operstate" ]] || continue
     grep -q up "$dev/operstate" || continue
     list+="$name "

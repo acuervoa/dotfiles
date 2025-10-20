@@ -9,9 +9,9 @@
   maroon: #eba0ac;  red:    #f38ba8;  pink:  #f5c2e7;  mauve: #cba6f7;
 
   /* Acento principal (cámbialo por @peach/@sky/@green si te apetece) */
-  accent:       @peach;
+  accent:       @blue;
 
-  bg:           @base;
+  bg:           @blue; /*base;*/
   fg:           @text;
   border-col:   @surface2;
 
