@@ -1,3 +1,104 @@
+# SHORTCUTS · Paridad i3 ↔ tmux ↔ (Neo)Vim ↔ kitty ↔ polybar
+
+**ES | EN** · [Español](#español) · [English](#english)
+
+---
+
+## Español
+
+### Convenciones
+- **tmux Prefix:** `Ctrl+s` (añade `stty -ixon` en `~/.bashrc` para liberarlo).
+- **NeoVim Leader:** `Space` (`<leader>`).
+- **$mod i3:** `Super` (tecla Windows).
+
+### Matriz de paridad (acciones comunes)
+| Acción | tmux | i3 | NeoVim | kitty |
+|---|---|---|---|---|
+| Cambiar de panel/ventana | *(según binds de tu tmux)* | *(según i3/config)* | **Ctrl+h/j/k/l** | — |
+| Guardar | — | — | **<leader>w** | — |
+| Buscar | — | — | **Ctrl+f** abre `/` | — |
+| Redimensionar | *(típico: Prefix+flechas)* | *(según i3/config)* | **Ctrl+←/→/↑/↓** | — |
+| Scratch terminal | — | **$mod+Shift+Return (toggle)** | — | — |
+
+> Esta tabla refleja **lo confirmado en los configs actuales** (NeoVim, kitty, i3) y la **intención de paridad** donde tmux/i3 no muestran binding explícito aquí. Revisa cada sección.
+
+### NeoVim (`config/nvim/lua/keymaps.lua`)
+- Navegación ventanas: **Ctrl+h/j/k/l**
+- Alternativas: **Alt+h**, **Alt+l**
+- Mover línea (VSCode-like): **Alt+j / Alt+k** (Normal e Insert)
+- Redimensionar splits: **Ctrl+←/→/↑/↓**
+- Guardar: **<leader>w**
+- Búsqueda coherente: **Ctrl+f** abre el prompt `/`
+
+### Kitty (`config/kitty/kitty.conf`)
+- Copiar: **Ctrl+Shift+C**
+- Pegar: **Ctrl+Shift+V**
+- Nueva ventana OS: **Ctrl+Shift+N**
+- Nueva pestaña: **Ctrl+Shift+Enter**
+- (Si está configurado) **Ctrl+click** sobre URL para abrirla
+
+### i3 (`config/i3/config`)
+- Mod principal: **$mod = Mod4 (Super)**
+- Scratchpad (terminal): **$mod+Shift+Return** → `~/.config/i3/scripts/toggle_scratch.sh`
+- Brillo: **XF86MonBrightnessUp/Down** con `brightnessctl`
+- Autostart relevante: `redshift -l geoclue2 -t 6500:3600`
+
+### Polybar (`config/polybar/config.ini`)
+- **mic**: **click-izq** → *mute/unmute* (`~/.config/dunst/scripts/micctl toggle`)
+- **updates**: **click-izq** → abre terminal de actualización; **click-der** → `notify-send "Actualizaciones pendientes" "$(checkupdates)"`
+
+### Dunst
+- Alternar pausa: `dunstctl set-paused toggle`
+- Probar: `notify-send "Test" "Dunst OK"`
+
+---
+
+## English
+
+### Conventions
+- **tmux Prefix:** `Ctrl+s` (add `stty -ixon` in `~/.bashrc`).
+- **NeoVim Leader:** `Space` (`<leader>`).
+- **i3 $mod:** `Super` (Windows key).
+
+### Parity matrix (common actions)
+| Action | tmux | i3 | NeoVim | kitty |
+|---|---|---|---|---|
+| Move between panes/windows | *(per your tmux binds)* | *(per i3/config)* | **Ctrl+h/j/k/l** | — |
+| Save | — | — | **<leader>w** | — |
+| Search | — | — | **Ctrl+f** opens `/` | — |
+| Resize | *(typical: Prefix+arrows)* | *(per i3/config)* | **Ctrl+←/→/↑/↓** | — |
+| Scratch terminal | — | **$mod+Shift+Return (toggle)** | — | — |
+
+> This matrix shows what’s **confirmed in current configs** (NeoVim, kitty, i3) and the **parity intent** where tmux/i3 bindings aren’t explicit here. See sections below.
+
+### NeoVim (`config/nvim/lua/keymaps.lua`)
+- Window navigation: **Ctrl+h/j/k/l**
+- Alternatives: **Alt+h**, **Alt+l**
+- Move line (VSCode-like): **Alt+j / Alt+k** (Normal & Insert)
+- Resize splits: **Ctrl+←/→/↑/↓**
+- Save: **<leader>w**
+- Search: **Ctrl+f** opens `/`
+
+### Kitty (`config/kitty/kitty.conf`)
+- Copy: **Ctrl+Shift+C**
+- Paste: **Ctrl+Shift+V**
+- New OS window: **Ctrl+Shift+N**
+- New tab: **Ctrl+Shift+Enter**
+- (If configured) **Ctrl+click** on URL to open
+
+### i3 (`config/i3/config`)
+- Main modifier: **$mod = Mod4 (Super)**
+- Scratchpad (terminal): **$mod+Shift+Return** → `~/.config/i3/scripts/toggle_scratch.sh`
+- Brightness: **XF86MonBrightnessUp/Down** with `brightnessctl`
+- Relevant autostart: `redshift -l geoclue2 -t 6500:3600`
+
+### Polybar (`config/polybar/config.ini`)
+- **mic**: **left click** → *mute/unmute* (`~/.config/dunst/scripts/micctl toggle`)
+- **updates**: **left click** → open update terminal; **right click** → `notify-send "Actualizaciones pendientes" "$(checkupdates)"`
+
+### Dunst
+- Toggle pause: `dunstctl set-paused toggle`
+- Test: `notify-send "Test" "Dunst OK"`
 # Glosario de atajos — Entorno Arch (i3/tmux/Neovim/Kitty/Polybar/Dunst/Picom/Rofi)
 
 **Leyenda**  
