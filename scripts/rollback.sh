@@ -37,10 +37,28 @@ while read -r line; do
 done < "$MANIFEST"
 
 if (( ${#PACKAGES[@]} )); then
-  echo "[*] Desstow: ${PACKAGES[*]}"
-  pushd "$DOTFILES/config" >/dev/null
-  stow -v -D -t "$HOME/.config" "${PACKAGES[@]}"
-  popd >/dev/null
+  EXISTING=()
+  MISSING=()
+  for pkg in "${PACKAGES[@]}"; do
+    if [[ -d "$DOTFILES/config/$pkg" ]]; then
+      EXISTING+=("$pkg")
+    else
+      MISSING+=("$pkg")
+    fi
+  done
+
+  if (( ${#MISSING[@]} )); then
+    echo "[*] Omitiendo paquetes ausentes: ${MISSING[*]}"
+  fi
+
+  if (( ${#EXISTING[@]} )); then
+    echo "[*] Desstow: ${EXISTING[*]}"
+    pushd "$DOTFILES/config" >/dev/null
+    stow -v -D -t "$HOME/.config" "${EXISTING[@]}"
+    popd >/dev/null
+  else
+    echo "[*] No hay paquetes de ~/.config para desstow."
+  fi
 fi
 
 # 2) Eliminar symlinks creados según manifest
