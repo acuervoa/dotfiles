@@ -16,17 +16,21 @@ BACKUP_DIR="$BACKUP_ROOT/$TS"
 MANIFEST="$MANIFEST_ROOT/$TS.manifest"
 # Paquetes por defecto bajo ~/.config
 PACKAGES_DEF=(dunst i3 kitty nvim picom polybar rofi)
+# Lista final (posiblemente sobrescrita vía --packages)
+PACKAGES=()
 
 usage() {
   cat <<EOF
 Uso: $(basename "$0") [opciones]
   --dry-run, -n       Simula acciones (no escribe nada)
   --mode=stow|bare    'stow' (por defecto) o 'bare' (alternativa)
+  --packages=lista    Coma-separada: stow sólo esos paquetes de ~/.config
   --help, -h          Ayuda
 Notas:
   - En modo 'stow' crea backups con timestamp y symlinks.
   - Enlaza bash/git/tmux/vim explícitamente a \$HOME.
-  - Stowea paquetes de ~/.config: ${PACKAGES_DEF[*]}
+  - Stowea paquetes de ~/.config (por defecto): ${PACKAGES_DEF[*]}
+  - Personaliza lista con --packages=paquete1,paquete2
 EOF
 }
 
@@ -41,6 +45,14 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
   --dry-run | -n) DRYRUN=true ;;
   --mode=*) MODE="${1#*=}" ;;
+  --packages=*)
+    IFS=',' read -r -a PACKAGES <<<"${1#*=}"
+    ;;
+  --packages)
+    shift
+    [[ $# -gt 0 ]] || die "--packages requiere una lista"
+    IFS=',' read -r -a PACKAGES <<<"$1"
+    ;;
   --help | -h)
     usage
     exit 0
@@ -49,6 +61,10 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+if [[ "$MODE" == "stow" && ${#PACKAGES[@]} -eq 0 ]]; then
+  PACKAGES=("${PACKAGES_DEF[@]}")
+fi
 
 mkdir -p "$BACKUP_DIR" "$MANIFEST_ROOT"
 
@@ -77,6 +93,20 @@ if [[ "$MODE" == "stow" ]]; then
   command -v stow >/dev/null 2>&1 || die "stow no está instalado. Instala con: sudo pacman -S stow"
   note "Modo: stow | Backups: $BACKUP_DIR"
 
+  PACKAGES_TO_STOW=()
+  MISSING_PACKAGES=()
+  for pkg in "${PACKAGES[@]}"; do
+    if [[ -d "$DOTFILES/config/$pkg" ]]; then
+      PACKAGES_TO_STOW+=("$pkg")
+    else
+      MISSING_PACKAGES+=("$pkg")
+    fi
+  done
+
+  if (( ${#MISSING_PACKAGES[@]} )); then
+    note "Omitiendo paquetes inexistentes: ${MISSING_PACKAGES[*]}"
+  fi
+
   # 1) Enlaces explícitos en $HOME (bash, git, tmux, vim)
   # bash
   link_to "$DOTFILES/bash/bashrc" "$HOME/.bashrc"
@@ -104,12 +134,17 @@ if [[ "$MODE" == "stow" ]]; then
   fi
 
   # 2) Stow para ~/.config
-  pushd "$DOTFILES/config" >/dev/null
-  echo "PACKAGES ${PACKAGES_DEF[*]}" >>"$MANIFEST"
-  STOW_FLAGS="-v"
-  $DRYRUN && STOW_FLAGS="-n -v"
-  act "stow $STOW_FLAGS -t '$HOME/.config' ${PACKAGES_DEF[*]}"
-  popd >/dev/null
+  if (( ${#PACKAGES_TO_STOW[@]} )); then
+    pushd "$DOTFILES/config" >/dev/null
+    echo "PACKAGES ${PACKAGES_TO_STOW[*]}" >>"$MANIFEST"
+    STOW_FLAGS="-v"
+    $DRYRUN && STOW_FLAGS="-n -v"
+    act "stow $STOW_FLAGS -t '$HOME/.config' ${PACKAGES_TO_STOW[*]}"
+    popd >/dev/null
+  else
+    echo "PACKAGES" >>"$MANIFEST"
+    note "No hay paquetes válidos de ~/.config para stowear."
+  fi
 
   note "Hecho. Manifest: $MANIFEST"
   note "Backup dir: $BACKUP_DIR"
