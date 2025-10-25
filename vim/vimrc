@@ -62,6 +62,9 @@ Plug 'Yggdroot/indentLine'                      " Guías de indentación
 Plug 'machakann/vim-highlightedyank'            " Resalta yank
 Plug 'easymotion/vim-easymotion'                 " Saltos rápidos (Flash-like)
 
+" Navegación Vim <-> tmux
+Plug 'christoomey/vim-tmux-navigator'
+
 call plug#end()
 
 " ===== Tema =====
@@ -219,6 +222,14 @@ nnoremap <silent> <leader>us :setlocal spell!<CR>
 
 " Quitar resalte búsqueda con ESC
 nnoremap <silent> <Esc> :nohlsearch<CR>
+
+" Mappings para navegacion entre ventanas
+let g:tmux_navigator_no_mappings = 1
+let g:temux_navigator_disable_when_zoomed = 1
+nnoremap <silent> <C-h> :<C-U>TmuxNavigateLeft<CR>
+nnoremap <silent> <C-j> :<C-U>TmuxNavigateDown<CR>
+nnoremap <silent> <C-k> :<C-U>TmuxNavigateUp<CR>
+nnoremap <silent> <C-l> :<C-U>TmuxNavigateRight<CR>
 
 " ===== Vimspector (teclas estilo nvim-dap) =====
 nmap <F5>    <Plug>VimspectorContinue

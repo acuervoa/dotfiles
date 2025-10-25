@@ -1,11 +1,11 @@
 -- Keymaps "globales" no atados a plugins concretos
 local map = vim.keymap.set
 
--- Navegación de ventanas
-map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+-- Navegación de ventanas/paneles (Neovim <-> tmux)
+map("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Focus left (nvim/tmux)" })
+map("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Focus down (nvim/tmux)" })
+map("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Focus up (nvim/tmux)" })
+map("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Focus right (nvim/tmux)" })
 map("n", "<M-h>", "<C-w>h", { desc = "Go to left window (Alt)" })
 map("n", "<M-l>", "<C-w>l", { desc = "Go to right window (Alt)" })
 
