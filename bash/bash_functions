@@ -1,38 +1,241 @@
 # ~/.bash_functions — funciones útiles no cubiertas por aliases
 
-# Abrir fichero en $EDITOR (nvim). Si no pasas argumento e tienes fzf, selecciona.
-f() {
-  local file="$1"
-  if [ -z "$file" ]; then
-    if command -v fzf >/dev/null 2>&1; then
-      if command -v rg >/dev/null 2>&1; then
-        file="$(rg --files --hidden --follow -g '!.git' 2>/dev/null | fzf --height 40% --layout=reverse)"
-      elif command -v fd >/dev/null 2>&1; then
-        file="$(fd --type f --hidden --follow --exclude .git | fzf --height 40% --layout=reverse)"
-      else
-        file="$(find . -type f 2>/dev/null | fzf --height 40% --layout=reverse)"
-      fi
-    else
-      echo "Uso: f <archivo>   (o instala fzf para selección interactiva)" >&2
+# Comprueba binarios requeridos antes de ejecutar la función
+_req(){
+  for cmd in "$@"; do 
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      printf 'Error: necesito "%s" en $PATH.\n' "$cmd" >&2
       return 1
     fi
-  fi
-  [ -n "$file" ] && "${EDITOR:-nvim}" "$file"
+  done
 }
 
-# Ir al directorio del fichero (rápido para abrir proyectos)
+# Abre $1 con $EDITOR posicionado en la linea $2 (si existe soporte tipo nvim +NUM)
+_edit_at() {
+  local file="$1" line="$2"
+  local editor="${EDITOR:-nvim}"
+
+  if [ -n "$line" ]; then
+    "$editor" "+${line}" -- "$file"
+  else
+    "$editor" -- "$file"
+  fi
+}
+
+# Buscar archivo/directorio y abrir
+# - Maneja espacios en nombres
+# - No peta si no eliges nada
+# - Si seleccionas un directorio, te pregunta si quieres cd o abrir en el editor
+
+fo() {
+  _req fd fzf bat eza || return 1
+
+  local sel
+  sel="$(
+    fd --hidden --follow --color=never --exclude .git \
+    | fzf   --ansi \
+            --prompt ' abrir > ' \
+            --preview='
+                  if [ -d {} ]; then
+                      eza -la --color=always {}
+                  else
+                      bat --style=numbers --color=always {} 2>/dev/null | head -500
+                  fi
+            ' \
+            --preview-window=right,70%
+  )" || return 0
+
+  [ -z "$sel" ] && return 0
+
+  if [ -d "$sel" ]; then
+    printf 'Has elegido un directorio: %s\n' "$sel" >&2
+    printf '¿Entrar con "cd" (c) o abrir en editor (e)? [c/e] ' >&2
+    read -r ans 
+    if [ "$ans" = "c" ]; then
+      cd -- "$sel" || printf 'No pude hacer cd.\n' >&2
+      return
+    fi
+    "${EDITOR:-nvim}" -- "$sel"
+  else
+    "${EDITOR:-nvim}" -- "$sel"
+  fi
+
+}
+
+
+# Saltar a un directorio reciente/zoxide 
+# - Verifica zoxide
+# - Evita hacer cd a rutas que ya no existen
+# - Maneja rutas con espacios
 cdf() {
-  if [ -z "$1" ]; then
-    echo "Uso: cdf <ruta/archivo>" >&2
+  _req zoxide fzf eza || return 1
+
+  local dir 
+  dir="$(
+      zoxide query -l \
+      | sed '/^$/d' \
+      | sort -u \
+      | fzf   --ansi \
+              --prompt ' cd > ' \
+              --preview 'eza -la --color=always {}' \
+              --preview-window=right,60%
+  )" || return 0
+
+  [ -z "$dir" ] && return 0
+
+  if [ ! -d "$dir" ]; then
+    printf 'Ruta elegida ya no existe: %s\n' "$dir" >&2
     return 1
   fi
-  cd "$(dirname -- "$1")" || return
+
+  cd -- "$dir" || printf 'No pude hacer cd.\n' >&2
 }
 
+# Checkout de rama con preview del histórico
+# - Comprueba que estás en un repo git.
+# - Incluye rama actual destacada
+# - Evita fallo si no eliges nada
+
+gcof() {
+  _req git fzf || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'Aquí no hay repo git.\n' >&2
+    return 1
+  fi
+
+  local current
+  current="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+
+  local branch
+  branch="$(
+      git for-each-ref --format='%(refname:short)' refs/heads \
+      | sed '/^$/d' \
+      | fzf   --ansi \
+              --prompt=' branch > ' \
+              --header="Actual: ${current}" \
+              --preview='git log --oneline --decorate --graph -n 30 {}' \
+              --preview-window=right,70%
+  )" || return 0
+
+  [ -z "$branch" ] && return 0
+
+  git checkout -- "$branch"
+}
+
+# Matar procesos con confirmación
+# - No mata ciegamente con -9
+# - Evita matar PID 1, tu propio shell
+# - Envia SIGTERM primero, luego opcional SIGKILL
+# - Pide confirmación
+
+fkill() {
+  _req fzf ps awk kill || return 1
+
+  local sel
+  sel="$(
+      ps -eo pid,user,stat,%cpu,%mem,cmd --sort=-%cpu \
+      | awk 'NR>1' \
+      | fzf   --ansi --multi \
+              --prompt=' kill > ' \
+              --header='Selecciona procesos a terminar (SPACE para marcar, ENTER para confirmar)' \
+              --preview='echo PID:{1}; ps -p {1} -o pid,ppid,user,stat,%cpu,%mem,etime,cmd' \
+              --preview-window=down,50%
+  )" || return 0
+
+  [ -z "$sel" ] && return 0
+
+  local pids=()
+  local line pid
+  while IFS= read -r line; do
+    pid="$(printf '%s\n' "$line" | awk '{print $1}')"
+    if [ "$pid" = "1" ] || [ "$pid" = "$$" ]; then
+      continue
+    fi
+    pids+=("$pid")
+  done <<< "$sel"
+
+  [ "${#pids[@]}" -eq 0 ] && {
+      printf 'Nada que matar.\n' >&2
+      return 0
+  }
+
+  printf 'Vas a enviar SIGTERM a: %s\n' "${pids[*]}" >&2
+  printf '¿Continuar? [y/N] ' >&2
+  read -r ans
+  [ "$ans" = "y" ] || return 0
+
+  kill -- "${pids[@]}" 2>/dev/null
+
+  sleep 0.3
+  local still_up=()
+  for pid in "${pids[@]}"; do
+    if kill -0 "$pid" 2>/dev/null; then
+      still_up+=("$pid")
+    fi
+  done
+
+  if [ "${#still_up[@]}" -gt 0 ]; then
+    printf 'Estos siguen vivos: %s\n' "${still_up[*]}" >&2
+    printf '¿Forzar con SIGKILL (-9)? [y/N] ' >&2
+    read -r force
+    [ "$force" = "y" ] && kill -9 -- "${still_up[@]}" 2>/dev/null
+  fi
+}
+
+
+# Buscar en el repo con ripgrep + abrir en el editor
+# - Maneja patrón vacio
+# - Soporta múltiples selecciones
+# - Respeta espacios en rutas.
+# - Abre el editor saltando a la linea exacta
+# - Vista previa recortada centrada en la linea del match
+
+rgf(){
+  _req rg fzf bat || return 1
+
+  if [ $# -eq 0 ]; then
+    printf 'Uso: rgf <patrón de búsqueda>\n' >&2
+    return 1
+  fi
+
+  local results
+  results="$(
+      rg --hidden --glob '!.git' --line-number --no-heading --color=never -- "$@" \
+      | fzf   --multi \
+              --prompt=' rg > ' \
+              --delimiter=':' \
+              --nth=3.. \
+              --preview='
+                    line={2}
+                    start=$(( line - 10 ))
+                    [ "$start" -lt 1 ] && start=1
+                    end=$(( line + 30 ))
+
+                    bat --style=numbers --color=always \
+                        --highlight-line "$line" \
+                        --line-range "${start}:${end}" \
+                        {1} 2>/dev/null
+              ' \
+              --preview-window=right,70%
+  )" || return 0
+
+  [ -z "$results" ] && return 0
+
+  local sel fpath lnum
+  while IFS= read -r sel; do
+    fpath="$(printf '%s\n' "$sel" | awk -F: '{print $1}')"
+    lnum="$(printf '%s\n' "$sel" | awk -F: '{print $2}')"
+
+    [ -n "$fpath" ] && [ -f "$fpath" ] && _edit_at "$fpath" "$lnum"
+  done <<< "$results"
+}
+
+
 # mkdir + cd
-mkcd() {
+take() {
   if [ -z "$1" ]; then
-    echo "Uso: mkcd <directorio>" >&2
+    printf "Uso: take <directorio>" >&2
     return 1
   fi
   mkdir -p -- "$1" && cd -- "$1" || return
@@ -41,7 +244,7 @@ mkcd() {
 # Extraer archivos comprimidos con una sola orden
 extract() {
   if [ -z "$1" ] || [ ! -f "$1" ]; then
-    echo "Uso: extract <archivo>" >&2
+    printf "Uso: extract <archivo>" >&2
     return 1
   fi
   case "$1" in
@@ -56,7 +259,7 @@ extract() {
     *.xz)        unxz    "$1"   ;;
     *.zip)       unzip   "$1"   ;;
     *.7z)        7z x    "$1"   ;;
-    *)           echo "'$1' no es un formato soportado" >&2; return 2 ;;
+    *)           printf "'%s' no es un formato soportado\n" "$1" >&2; return 2 ;;
   esac
 }
 
@@ -67,22 +270,203 @@ t() {
 }
 
 # Copiar salida de un comando al clipboard del sistema (Wayland/X11)
-toclip() {
-  if command -v wl-copy >/dev/null 2>&1; then
-    cat | wl-copy
-  elif command -v xclip >/dev/null 2>&1; then
-    cat | xclip -selection clipboard
+# - Soporta pipe ("echo foo | cb") y argumento ("cb foo")
+cb() {
+  local input
+  if [ -t 0 ]; then
+    input="$*"
+    [ -z "$input" ] && { printf 'Uso: echo "texto" | cb   o   cb "texto"\n' >&2; return 1;}
   else
-    echo "No hay wl-copy ni xclip instalados" >&2
+    input="$(cat)"
+  fi
+
+  if command -v wl-copy >/dev/null 2>&1; then
+    printf '%s' "$input" | wl-copy
+  elif command -v xclip >/dev/null 2>&1; then
+    printf '%s' "$input" | xclip -selection clipboard
+  else
+    printf "No hay wl-copy ni xclip instalados\n" >&2
     return 1
   fi
 }
 
-# Buscar en el historial con fzf y ejecutar
+# Buscar en el historial con fzf y (opcionalmente) ejecutar
+# - Pide confirmación ANTES de eval
+
 fhist() {
-  command -v fzf >/dev/null 2>&1 || { echo "fzf no instalado" >&2; return 1; }
-  local cmd
-  cmd="$(HISTTIMEFORMAT= history | sed 's/^ *[0-9]\+ *//' | fzf --height 40% --layout=reverse --tac)"
-  [ -n "$cmd" ] && printf '%s\n' "$cmd" && eval "$cmd"
+    _req fzf || return 1
+
+    local cmd
+    cmd="$(
+        HISTTIMEFORMAT= history \
+        | sed 's/^ *[0-9]\+ *//' \
+        | fzf --height 40% \
+              --layout=reverse \
+              --tac \
+              --prompt='📜 hist > '
+    )" || return 0
+
+    [ -z "$cmd" ] && return 0
+
+    printf 'Comando seleccionado:\n%s\n' "$cmd" >&2
+    printf '¿Ejecutar ahora? [y/N] ' >&2
+    read -r ans
+    if [ "$ans" = "y" ]; then
+        eval "$cmd"
+    else
+        printf '%s\n' "$cmd"
+    fi
 }
 
+# Ir a la raiz del repo
+grt() {
+  _req git || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'No estas en un repo git.\n' >&2
+    return 1
+  fi
+
+  local root
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+  builtin cd -- "$root" || {
+    printf 'No puede hacde cd a %s\n' "$root" >&2
+    return 1
+  }
+}
+
+# Checkout rápido de rama (local o remota) con creación automática
+# - unifica "cámbiame a rama X" y "créame rama feature/X" en una sola acción
+gbr() {
+  _req git fzf || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'Aqui no hay repo git.\n' >&2
+    return 1
+  fi
+
+  local branch
+  branch="$(
+      {
+          git for-each-ref --format='%(refname:short)' refs/heads
+          git for-each-ref --format='%(refname:short)' refs/remotes \
+            | sed 's#^origin/##'
+      } \
+      | sort -u \
+      | fzf --prompt=' branch > ' --ansi \
+            --preview='git log --oneline --decorate --graph -n 20 {}' \
+            --preview-window=right,70%
+  )" || return 0
+
+  [ -z "$branch" ] && return 0
+
+  if git rev-parse --verify "origin/$branch" >/dev/null 2>&1; then
+    git checkout -b "$branch" "origin/$branch"
+    return
+  fi
+
+  printf 'Rama "%s" no existe, crear desde HEAD actual? [y/N] ' "$branch" >&2
+  read -r ans 
+  [ "$ans" = "y" ] && git checkout -b "$branch"
+}
+
+
+# Que vamos a commitear realmente (diff staged bonito)
+gstaged() {
+  _req git bat || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'No estás en un repo git.\n' >&2
+    return 1
+  fi
+
+  git diff --cached --color=always \
+  | bat --paging=always --plain --color=always
+}
+
+# Deshacer el último commit pero mantener los cambios en el working directory
+# - soft reset seguro
+gundo() {
+  _req git || return 1
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    printf 'No estás en un repo git.\n' >&2
+    return 1
+  fi
+
+  printf 'Esto hará: git reset --soft HEAD~1 (deshace el último commit pero conserva los cambios).\n' >&2
+  printf '¿Continuar? [y/N] ' >&2
+  read -r ans 
+  [ "$ans" = "y" ] || returno 0
+
+  git reset --soft HEAD~1
+}
+
+# Servicios docker actiovos (docker compose ps)
+docps() {
+  _req docker || return 1
+  ( grt >/dev/null 2>&1 || true )
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose ps
+  else
+    docker compose ps
+  fi
+}
+
+# fzf para elegir servicio y ver logs -f
+dlogs() {
+  _req fzf docker || return 1
+  ( grt >/dev/null 2>&1 || true )
+
+  local svc 
+  svc="$(
+      if command -v docker-compose >/dev/null 2>&1; then 
+        docker-compose ps --services
+      else
+        docker compose ps --services
+      fi | fzf --prompt=' logs > '
+  )" || return 0
+
+  [ -z "$svc" ] && return 0
+
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose logs -f "$svc"
+  else
+    docker compose logs -f "$svc"
+  fi
+}
+
+# Entrar en un servicio con /bin/sh (o bash si existe)
+dsh() {
+  _req fzf docker || return 1
+  ( grt >/dev/null 2>&1 || true )
+
+  local svc 
+  svc="$(
+      if command -v docker-compose >/dev/null 2>&1; then
+        docker-compose ps --services
+      else
+        docker compose ps --services
+      fi | fzf --prompt=' shell > '
+  )" || return 0
+
+  [ -z "$svc" ] && return 0
+
+  if command -v docker-compose >/dev/null 2>&1; then
+    docker-compose exec "$svc" bash 2>/dev/null || docke -compose exec "$svc" sh
+  else
+    docker compose exec "$svc" bash 2>/dev/null || docker compose exec "$svc" sh
+  fi
+}
+
+# Agregar una líne rápida a lista de tareas
+todo() {
+  local file="$HOME/.todo.cli.txt"
+
+  if [ $# -eq 0 ]; then
+    nl -ba "$file" 2>/dev/null || printf '(lista vacia)\n'
+    return 0
+  fi
+
+  printf '[%s] %s\n' "$(date +'%Y-%m-%d %H:%M')" "$*" >> "$file"
+  printf "Añadido a TODO: %s\n" "$*" >&2
+}
