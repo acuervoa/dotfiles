@@ -11,6 +11,7 @@
 [core]
     editor = nvim
     pager = delta
+	hooksPath = /home/acuervo/.git-hooks
 
 [color]
     ui = auto

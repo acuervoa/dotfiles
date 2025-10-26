@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# commit-msg - rechaza mensajes con WIP/tmp
+
+msgfile="$1"
+if [ -z "${msgfile:-}" ] || [ ! -f "$msgfile" ]; then
+  exit 0
+fi
+
+if grep -qiE '(^|\s)(wip|tmp)(\s|:|$)' "$msgfile"; then
+  echo "❌ Mensaje de commit inválido: evita 'WIP' o 'tmp'." >&2
+  echo "   Sugerencia: usa 'fixup!' o 'WIP YYYY-MM-DD' en ramas, no en mensajes." >&2
+  exit 1
+fi
+
+exit 0

@@ -1,4 +1,4 @@
-# SHORTCUTS · Paridad i3 ↔ tmux ↔ (Neo)Vim ↔ kitty ↔ polybar
+# SHORTCUTS · Paridad i3 ↔ tmux ↔ (Neo)Vim ↔ kitty ↔ polybar (+ CLI helpers)
 
 **ES | EN** · [Español](#español) · [English](#english)
 
@@ -9,8 +9,8 @@
 ### Convenciones
 
 - **tmux Prefix:** `Ctrl+s` (añade `stty -ixon` en `~/.bashrc` para liberarlo).
-- **NeoVim Leader:** `Space` (`<leader>`).
-- **$mod i3:** `Super` (tecla Windows).
+- **NeoVim Leader:** `Espacio` (`<leader>`).
+- **i3 $mod:** `Super` (tecla Windows).
 
 ### Matriz de paridad (acciones comunes)
 
@@ -26,43 +26,119 @@
 | Scratch terminal      | —                                   | $mod+Shift+Return (toggle) | —                                 | —                                                  |
 | Reload config         | `r`/`R` tmux.conf                   | $mod+Shift+c (reload i3)   | `:source` (o autocomandos)        | —                                                  |
 
-> **Prefix tmux:** `Ctrl+s` (requiere `stty -ixon`). **Leader NeoVim:** Espacio.
+> **Prefix tmux:** `Ctrl+s` (requiere `stty -ixon`). **Leader NeoVim:** Espacio.  
+> Esta tabla refleja **configs actuales** y la **intención de paridad**. Revisa las secciones por app si ajustas algo.
 
-> Esta tabla refleja **lo confirmado en los configs actuales** (NeoVim, kitty, i3) y la **intención de paridad** donde tmux/i3 no muestran binding explícito aquí. Revisa cada sección.
+---
 
 ### NeoVim (`config/nvim/lua/keymaps.lua`)
 
 - Navegación ventanas: **Ctrl+h/j/k/l**
-- Alternativas: **Alt+h**, **Alt+l**
-- Mover línea (VSCode-like): **Alt+j / Alt+k** (Normal e Insert)
 - Redimensionar splits: **Ctrl+←/→/↑/↓**
 - Guardar: **<leader>w**
-- Búsqueda coherente: **Ctrl+f** abre el prompt `/`
+- Búsqueda coherente: **Ctrl+f** abre `/`
+- Mover línea: **Alt+j / Alt+k** (Normal e Insert)
+- Alternativas foco: **Alt+h / Alt+l**
+
+### tmux (`~/.tmux.conf` o equivalente)
+
+- Foco panes: **Ctrl+h/j/k/l** (sin depender del modo copy)
+- Splits: Prefix+`"` (H) / `%` (V)
+- Redimensionar: Ctrl+Flechas (±1), Alt+Flechas (±5)
+- Zoom: `z`/`Z` · Cambiar layout: `Space` · Siguientes layouts: `M-1..7`
+- Buscar ventana: `f` · Árbol sesiones/ventanas: `w/s/S`
+- Recargar config: `r`/`R`
 
 ### Kitty (`config/kitty/kitty.conf`)
 
-- Copiar: **Ctrl+Shift+C**
-- Pegar: **Ctrl+Shift+V**
-- Nueva ventana OS: **Ctrl+Shift+N**
-- Nueva pestaña: **Ctrl+Shift+Enter**
-- (Si está configurado) **Ctrl+click** sobre URL para abrirla
+- Copiar: **Ctrl+Shift+C** · Pegar: **Ctrl+Shift+V**
+- Nueva ventana OS: **Ctrl+Shift+N** · Nueva pestaña: **Ctrl+Shift+Enter**
+- URLs: **Ctrl+click** para abrir
 
 ### i3 (`config/i3/config`)
 
 - Mod principal: **$mod = Mod4 (Super)**
-- Scratchpad (terminal): **$mod+Shift+Return** → `~/.config/i3/scripts/toggle_scratch.sh`
-- Brillo: **XF86MonBrightnessUp/Down** con `brightnessctl`
+- Scratchpad (kitty): **$mod+Shift+Return** (toggle)
+- Layouts: `$mod+s` stacking · `$mod+w` tabbed · Fullscreen `$mod+z`
+- Redimensionar: `$mod+Shift+Flechas`
 - Autostart relevante: `redshift -l geoclue2 -t 6500:3600`
 
 ### Polybar (`config/polybar/config.ini`)
 
-- **mic**: **click-izq** → _mute/unmute_ (`~/.config/dunst/scripts/micctl toggle`)
-- **updates**: **click-izq** → abre terminal de actualización; **click-der** → `notify-send "Actualizaciones pendientes" "$(checkupdates)"`
+- **mic**: **click izq** → mute/unmute (`~/.config/dunst/scripts/micctl toggle`)
+- **updates**: **click izq** → abre terminal de actualización; **click der** → `notify-send "Actualizaciones pendientes" "$(checkupdates)"`
 
 ### Dunst
 
 - Alternar pausa: `dunstctl set-paused toggle`
 - Probar: `notify-send "Test" "Dunst OK"`
+
+### Rofi
+
+- App launcher: `$mod+d` (_drun_) · `$mod+Shift+d` (window) · `$mod+F11` (run) · `$mod+v` (clipmenu)
+
+---
+
+## CLI helpers (desde `~/.bash_functions`)
+
+> **Idea:** atajos “de teclado ampliados” a nivel de shell con FZF/TUI, para navegar, buscar y operar más rápido.
+
+### Navegación & búsqueda
+
+| Acción                         | Función  | Ejemplo    | Notas                                               |
+| ------------------------------ | -------- | ---------- | --------------------------------------------------- |
+| Buscar archivo/dir y abrir     | `fo`     | `fo`       | Previews con `bat`/`eza`; si es dir → `cd` o editar |
+| Saltar a dir reciente (zoxide) | `cdf`    | `cdf`      | `zoxide query -l` + preview                         |
+| Buscar texto y abrir al match  | `rgf`    | `rgf TODO` | `ripgrep` + salto a línea en `$EDITOR`              |
+| Ir a raíz del repo             | `grt`    | `grt`      | `git rev-parse --show-toplevel`                     |
+| Fichero tocado recientemente   | `recent` | `recent`   | Según commits últimos 3 días                        |
+| Historial con confirmación     | `fhist`  | `fhist`    | Confirmación antes de `eval`                        |
+
+### Git de alto nivel
+
+| Acción                            | Función      | Ejemplo                  | Notas                          |
+| --------------------------------- | ------------ | ------------------------ | ------------------------------ |
+| Cambiar rama con log preview      | `gcof`       | `gcof`                   | Solo ramas locales             |
+| Cambiar/crear rama (local/remota) | `gbr`        | `gbr`                    | Unifica checkout local/remoto  |
+| Ver staged bonito                 | `gstaged`    | `gstaged`                | `git diff --cached` → `bat`    |
+| Deshacer último commit (soft)     | `gundo`      | `gundo`                  | Conserva working tree          |
+| Limpiar ramas mergeadas           | `gclean`     | `gclean`                 | Contra `main/master`           |
+| Guardar checkpoint (stash -m)     | `checkpoint` | `checkpoint "WIP login"` | Muestra `stash list`           |
+| WIP rápido                        | `wip`        | `wip`                    | `git add -A && commit`         |
+| Fixup contra HEAD                 | `fixup`      | `fixup`                  | Luego `rebase -i --autosquash` |
+| Watch de cambios en vivo          | `watchdiff`  | `watchdiff`              | Status + diff cada 2s          |
+
+### Docker
+
+| Acción                    | Función | Ejemplo | Notas                                        |
+| ------------------------- | ------- | ------- | -------------------------------------------- |
+| Servicios activos         | `docps` | `docps` | Detecta `docker-compose` vs `docker compose` |
+| Logs `-f` del servicio    | `dlogs` | `dlogs` | Selección con FZF                            |
+| Shell dentro del servicio | `dsh`   | `dsh`   | `bash` o `sh`                                |
+
+### Sistema / Utilidades
+
+| Acción                          | Función   | Ejemplo                            | Notas                                   |
+| ------------------------------- | --------- | ---------------------------------- | --------------------------------------- |
+| Matar procesos con confirmación | `fkill`   | `fkill`                            | SIGTERM → opcional SIGKILL              |
+| Copiar al portapapeles          | `cb`      | `echo foo \| cb` · `cb "foo"`      | Wayland: `wl-copy`; X11: `xclip`        |
+| Medir tiempo de un comando      | `bench`   | `bench make -j8`                   | ms + s (usa `bc` o `awk`)               |
+| Puertos en escucha              | `ports`   | `ports`                            | `ss` o `lsof`                           |
+| Repetir último comando fallido  | `redo`    | (tras fallo) `redo`                | Usa `fc`                                |
+| Mini TODO en plano              | `todo`    | `todo "Revisar hooks"`             | Persiste en `~/.todo.cli.txt`           |
+| Crear dir + cd                  | `take`    | `take foo/bar`                     | `mkdir -p && cd`                        |
+| Extraer archivos                | `extract` | `extract foo.tar.gz`               | Formatos comunes                        |
+| Sesión tmux rápida              | `t`       | `t` · `t api`                      | `tmux new -A -s`                        |
+| Papelera segura                 | `trash`   | `trash *.log`                      | Requiere `trash-cli`                    |
+| Temporizador interactivo        | `tt`      | `tt`                               | Pulsa `Enter` para parar                |
+| Top rápido filtrado             | `topme`   | `topme`                            | Muestra procesos típicos de stack web   |
+| Cambiar `.env` seguro           | `envswap` | `envswap list` · `envswap use dev` | Copia `.env.<name>` → `.env` con backup |
+
+**Dependencias (Arch):**
+
+```bash
+sudo pacman -S --needed fzf fd ripgrep bat eza zoxide wl-clipboard xclip trash-cli docker docker-compose bc
+```
 
 ---
 
@@ -76,76 +152,49 @@
 
 ### Parity matrix (common actions)
 
-| Action                     | tmux                       | i3                             | NeoVim               | kitty |
-| -------------------------- | -------------------------- | ------------------------------ | -------------------- | ----- |
-| Move between panes/windows | _(per your tmux binds)_    | _(per i3/config)_              | **Ctrl+h/j/k/l**     | —     |
-| Save                       | —                          | —                              | **<leader>w**        | —     |
-| Search                     | —                          | —                              | **Ctrl+f** opens `/` | —     |
-| Resize                     | _(typical: Prefix+arrows)_ | _(per i3/config)_              | **Ctrl+←/→/↑/↓**     | —     |
-| Scratch terminal           | —                          | **$mod+Shift+Return (toggle)** | —                    | —     |
+| Action                     | tmux                       | i3                         | NeoVim                    | kitty                                              |
+| -------------------------- | -------------------------- | -------------------------- | ------------------------- | -------------------------------------------------- |
+| Move between panes/windows | **Ctrl+h/j/k/l**           | $mod+Left/Down/Up/Right    | **Ctrl+h/j/k/l**          | —                                                  |
+| Splits H / V               | Prefix+`"` (H) / `%` (V)   | $mod+Mod1+h / $mod+Mod1+v  | `<leader>"` / `<leader>%` | —                                                  |
+| Resize                     | Ctrl+Arrows (±1), Alt (±5) | $mod+Shift+Arrows          | Ctrl+Arrows               | —                                                  |
+| Zoom/Fullscreen            | `z` / `Z`                  | $mod+z                     | `<leader>z`               | —                                                  |
+| Save                       | —                          | —                          | `<leader>w`               | —                                                  |
+| Search                     | `f` find-window            | —                          | **Ctrl+f** → `/`          | URL: **Ctrl+click**                                |
+| New window/tab             | `c` / `,` rename           | $mod+Return (kitty)        | —                         | **Ctrl+Shift+Enter** (tab), **Ctrl+Shift+n** (win) |
+| Scratch terminal           | —                          | $mod+Shift+Return (toggle) | —                         | —                                                  |
+| Reload config              | `r`/`R` tmux.conf          | $mod+Shift+c (reload i3)   | `:source`                 | —                                                  |
 
-> This matrix shows what’s **confirmed in current configs** (NeoVim, kitty, i3) and the **parity intent** where tmux/i3 bindings aren’t explicit here. See sections below.
+---
 
 ### NeoVim (`config/nvim/lua/keymaps.lua`)
 
-- Window navigation: **Ctrl+h/j/k/l**
-- Alternatives: **Alt+h**, **Alt+l**
-- Move line (VSCode-like): **Alt+j / Alt+k** (Normal & Insert)
-- Resize splits: **Ctrl+←/→/↑/↓**
-- Save: **<leader>w**
-- Search: **Ctrl+f** opens `/`
+- Window nav: **Ctrl+h/j/k/l** · Resize: **Ctrl+Arrows** · Save: **<leader>w**
+- Search: **Ctrl+f** opens `/` · Move line: **Alt+j / Alt+k**
 
-### Kitty (`config/kitty/kitty.conf`)
+### tmux
 
-- Copy: **Ctrl+Shift+C**
-- Paste: **Ctrl+Shift+V**
-- New OS window: **Ctrl+Shift+N**
-- New tab: **Ctrl+Shift+Enter**
-- (If configured) **Ctrl+click** on URL to open
+- Focus: **Ctrl+h/j/k/l** · Splits: Prefix+`"`/`%` · Resize: Ctrl/Alt+Arrows
+- Zoom: `z` · Layout cycle: `Space` · Find-window: `f` · Trees: `w/s/S`
 
-### i3 (`config/i3/config`)
+### Kitty / i3 / Polybar / Dunst / Rofi
 
-- Main modifier: **$mod = Mod4 (Super)**
-- Scratchpad (terminal): **$mod+Shift+Return** → `~/.config/i3/scripts/toggle_scratch.sh`
-- Brightness: **XF86MonBrightnessUp/Down** with `brightnessctl`
-- Relevant autostart: `redshift -l geoclue2 -t 6500:3600`
+- Kitty: **Ctrl+Shift+C/V/N/Enter**, URLs with **Ctrl+click**
+- i3: `$mod`=Super · scratch terminal `$mod+Shift+Return` · resize `$mod+Shift+Arrows`
+- Polybar: mic left-click toggle, updates left-click terminal / right-click notify
+- Dunst: `dunstctl set-paused toggle` · test with `notify-send "Test" "Dunst OK"`
+- Rofi: `$mod+d` drun · `$mod+Shift+d` window · `$mod+F11` run · `$mod+v` clipmenu
 
-### Polybar (`config/polybar/config.ini`)
+---
 
-- **mic**: **left click** → _mute/unmute_ (`~/.config/dunst/scripts/micctl toggle`)
-- **updates**: **left click** → open update terminal; **right click** → `notify-send "Actualizaciones pendientes" "$(checkupdates)"`
+## Quick CLI helpers (from `~/.bash_functions`)
 
-### Dunst
+**Navigation & Search:** `fo`, `cdf`, `rgf`, `grt`, `recent`, `fhist`  
+**Git:** `gcof`, `gbr`, `gstaged`, `gundo`, `gclean`, `checkpoint`, `wip`, `fixup`, `watchdiff`  
+**Docker:** `docps`, `dlogs`, `dsh`  
+**System:** `fkill`, `cb`, `bench`, `ports`, `redo`, `todo`, `take`, `extract`, `t`, `trash`, `tt`, `topme`, `envswap`
 
-- Toggle pause: `dunstctl set-paused toggle`
-- Test: `notify-send "Test" "Dunst OK"`
+**Install deps (Arch):**
 
-# Glosario de atajos — Entorno Arch (i3/tmux/Neovim/Kitty/Polybar/Dunst/Picom/Rofi)
-
-**Leyenda**  
-• `Ctrl`=Control · `Alt`=Alt · `Mayús`=Shift · **Leader (Neovim)**=Espacio.  
-• **tmux/root** = sin prefijo · **tmux/prefix** = tras `Ctrl-s` (prefijo).  
-• `$mod` = modificador i3 (p.ej. Super).
-
-| Categoría                | Acción                                     | Neovim              | tmux / root (sin prefijo)                                          | tmux / prefix (Ctrl-s + …)                                                                                  | i3                                                                                                                                                         | Kitty                                                      | Rofi                                                               | Polybar                                                                                  | Dunst                                  | Picom |
-| ------------------------ | ------------------------------------------ | ------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | -------------------------------------- | ----- | --- |
-| **Foco / Navegación**    | Mover foco ← ↓ ↑ →                         | Ctrl-h/j/k/l        | Ctrl-h/j/k/l **smart** (si Vim/fzf, lo envía dentro) · Alt-h/j/k/l | h/j/k/l, Left/Down/Up/Right                                                                                 | $mod+$left,$down,$up,$right y $mod+Left/Down/Up/Right                                                                                                      | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-|                          | Último panel/ventana                       | —                   | —                                                                  | `;` último pane, `a` última ventana                                                                         | $mod+Tab back_and_forth                                                                                                                                    | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Splits / Layout**      | Split H / V                                | Leader+" / Leader+% | —                                                                  | `"` vertical (-v), `%` horizontal (-h)                                                                      | $mod+Mod1+h (split h), $mod+Mod1+v (split v), $mod+e (toggle)                                                                                              | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-|                          | Layouts / Zoom                             | —                   | F10 sync-panes toggle                                              | `Space` next-layout · `M-1..M-7` layouts · `z/Z` zoom                                                       | $mod+s stacking · $mod+w tabbed · $mod+z fullscreen                                                                                                        | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Resize**               | Resize fino                                | Ctrl+←/→/↑/↓        | Alt+Shift+Left/Right ±5 · Alt+Shift+Up/Down ±2                     | Ctrl+Arrows ±1 · Alt+Arrows ±5 · M-Arrows ±5                                                                | $mod+Shift+Left/Right/Up/Down (±10 px/pp)                                                                                                                  | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Mover**                | Mover/swap                                 | —                   | —                                                                  | `{` ↑, `}` ↓ (swap panes)                                                                                   | $mod+Shift+Left/Down/Up/Right                                                                                                                              | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Ventanas / WS**        | Nueva / cambiar / renombrar                | —                   | M-Left/Right prev/next                                             | `c` nueva, `n/p` next/prev, `,` rename, `.` mover, `0..9` seleccionar, `L` last-client                      | $mod+1..0 ir WS; $mod+Shift+1..0 mover a WS                                                                                                                | Ctrl+Shift+Enter nueva pestaña; Ctrl+Shift+n nueva ventana | —                                                                  | —                                                                                        | —                                      | —     | —   |
-| **Buffers / Copiado**    | Copiar/pegar                               | —                   | WheelUpStatus prev win · WheelDownStatus next win                  | `[` copy-mode · `]` paste · `=` choose-buffer · `#` list-buffers · `-` delete-buffer · `PPage` copy-mode -u | —                                                                                                                                                          | Ctrl+Shift+c / v                                           | —                                                                  | —                                                                                        | —                                      | —     |
-| **Búsqueda**             | Buscar / ayuda                             | Ctrl-f              | —                                                                  | `f` find-window · `?` list-keys · `/` ayuda keys                                                            | —                                                                                                                                                          | Ctrl+click URL                                             | $mod+d drun · $mod+F11 run · $mod+Shift+d window · $mod+v clipmenu | —                                                                                        | —                                      | —     |
-| **Pane / Gestión**       | Kill / detach / clock                      | —                   | —                                                                  | `q` kill-pane · `BSpace` kill-otros panes · `&` kill-window · `d` detach · `t` clock                        | $mod+q kill                                                                                                                                                | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Recarga / Menús**      | Reload / menús                             | —                   | —                                                                  | `r/R` recargar tmux.conf · `\` menús · `w/s/S` trees/sessionx                                               | $mod+Shift+c reload · $mod+Shift+r restart · $mod+Shift+e salir                                                                                            | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Plugins tmux**         | TPM / fzf / extrakto / yank / resurrect    | —                   | —                                                                  | `I/U/M-u` TPM · `F` tmux-fzf · `x` extrakto · `y/Y` yank · `C-s` save resurrect · `C-r` restore             | —                                                                                                                                                          | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-| **Audio / Multimedia**   | Volumen / Mic / Player                     | —                   | —                                                                  | —                                                                                                           | XF86Audio\* → `$volscript` y `$micscript`; Play/Pause/Next/Prev con `playerctl`                                                                            | —                                                          | —                                                                  | **Click izq. mic** toggle (`micctl`)                                                     | —                                      | —     |
-| **Dunst**                | Mostrar / Toggle                           | —                   | —                                                                  | —                                                                                                           | $mod+y `dunstctl history-pop` · $mod+Shift+y toggle (script)                                                                                               | —                                                          | —                                                                  | **Click izq.** toggle dunst                                                              | `dmenu` definido; incluye `mocha.conf` | —     |
-| **Sistema / Utilidades** | Terminal / scratch / screenshots / outputs | —                   | —                                                                  | —                                                                                                           | $mod+Return kitty · $mod+Shift+Return scratch · $mod+Shift+n scratch Obsidian · $mod+F2 fullshot · $mod+Shift+F2 GUI · $mod+Ctrl+Left/Right mover a salida | —                                                          | —                                                                  | **Click izq.** actualizador (abre kitty script) · **Click der.** notifica `checkupdates` | —                                      | —     |
-| **Brillo**               | Subir/Bajar                                | —                   | —                                                                  | —                                                                                                           | XF86MonBrightnessUp/Down → `brightnessctl`                                                                                                                 | —                                                          | —                                                                  | —                                                                                        | —                                      | —     |
-
-**Neovim extra (edición)**  
-• Mover línea: `Alt-j` (↓), `Alt-k` (↑) · Duplicar: `Shift+Alt-j/k`  
-• Cerrar ventana: `<leader>q` · Cerrar otras: `<leader><BS>` · Selector buffers: `<leader>s`
+```bash
+sudo pacman -S --needed fzf fd ripgrep bat eza zoxide wl-clipboard xclip trash-cli docker docker-compose bc
+```

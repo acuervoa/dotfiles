@@ -195,6 +195,80 @@ nvim --headless "+checkhealth" +qa
 tmux -V
 ```
 
+## Shell helpers (bash)
+
+**Ubicación:** `~/.bash_functions`  
+**Requisitos (Arch):**
+
+```bash
+sudo pacman -S --needed fzf fd ripgrep bat eza zoxide wl-clipboard xclip trash-cli docker docker-compose bc
+```
+
+> `cb` usa `wl-copy` (Wayland) o `xclip` (X11); `bench` usa `bc` o `awk`.
+
+**Destacados:**
+
+- Buscar/abrir: `fo` (ficheros/dirs con preview), `rgf "patrón"` (ripgrep + salto a línea).
+- Saltos: `cdf` (zoxide), `grt` (raíz del repo).
+- Git: `gcof`, `gbr`, `gstaged`, `gundo`, `gclean`, `checkpoint`, `wip`, `fixup`, `watchdiff`.
+- Docker: `docps`, `dlogs`, `dsh`.
+- Utilidades: `fkill`, `cb`, `fhist`, `take`, `extract`, `t`, `ports`, `topme`, `r`, `tt`, `trash`, `bench`, `redo`, `envswap`, `todo`.
+
+---
+
+## Hooks de Git (reproducibles)
+
+Instala hooks centralizados en `~/.config/git/hooks/` y apúntalos globalmente:
+
+```bash
+mkdir -p ~/.config/git/hooks
+# Copiar los hooks del repo (ajusta la ruta de origen según tu estructura):
+cp -f ./git/hooks/pre-commit ~/.config/git/hooks/pre-commit
+cp -f ./git/hooks/commit-msg ~/.config/git/hooks/commit-msg
+chmod +x ~/.config/git/hooks/{pre-commit,commit-msg}
+
+# Usar ruta global para todos los repos
+git config --global core.hooksPath "$HOME/.config/git/hooks"
+```
+
+**Qué hacen:**
+
+- **pre-commit**: bloquea trazas (`console.log`, `var_dump`, etc.) y ficheros sensibles (`.env*`, `docker-compose.override.yml`) si están _staged_.
+- **commit-msg**: rechaza mensajes con `WIP`/`tmp`.
+
+**Consejos:**
+
+- Para cambios rápidos sin ensuciar el historial, usa `wip`, `fixup`, y luego `git rebase -i --autosquash`.
+
+---
+
+## Verificación rápida
+
+```bash
+# Sintaxis y carga de funciones
+bash -n ~/.bash_functions && source ~/.bash_functions
+
+# Smoke tests
+type fo cdf rgf fkill cb gbr dlogs dsh bench >/dev/null
+
+# Hooks activos
+git config --global core.hooksPath
+test -x ~/.config/git/hooks/pre-commit
+test -x ~/.config/git/hooks/commit-msg
+```
+
+**Pruebas de hooks:**
+
+```bash
+# pre-commit: crear fichero con 'console.log' y probar
+echo 'console.log("debug")' > test.js
+git add test.js && git commit -m "prueba" || echo "OK: hook bloqueó el commit"
+git reset HEAD test.js && rm test.js
+
+# commit-msg: WIP
+git commit --allow-empty -m "WIP prueba" || echo "OK: commit-msg bloqueó el mensaje"
+```
+
 ### License
 
 MIT

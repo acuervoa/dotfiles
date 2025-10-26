@@ -330,7 +330,7 @@ grt() {
   local root
   root="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
   builtin cd -- "$root" || {
-    printf 'No puede hacde cd a %s\n' "$root" >&2
+    printf 'No puede hacer cd a %s\n' "$root" >&2
     return 1
   }
 }
@@ -396,7 +396,7 @@ gundo() {
   printf 'Esto hará: git reset --soft HEAD~1 (deshace el último commit pero conserva los cambios).\n' >&2
   printf '¿Continuar? [y/N] ' >&2
   read -r ans 
-  [ "$ans" = "y" ] || returno 0
+  [ "$ans" = "y" ] || return 0
 
   git reset --soft HEAD~1
 }
@@ -452,7 +452,7 @@ dsh() {
   [ -z "$svc" ] && return 0
 
   if command -v docker-compose >/dev/null 2>&1; then
-    docker-compose exec "$svc" bash 2>/dev/null || docke -compose exec "$svc" sh
+    docker-compose exec "$svc" bash 2>/dev/null || docker-compose exec "$svc" sh
   else
     docker compose exec "$svc" bash 2>/dev/null || docker compose exec "$svc" sh
   fi
@@ -470,3 +470,290 @@ todo() {
   printf '[%s] %s\n' "$(date +'%Y-%m-%d %H:%M')" "$*" >> "$file"
   printf "Añadido a TODO: %s\n" "$*" >&2
 }
+
+# Quien escucha en que puerto
+ports() {
+  if command -v ss>/dev/null 2>&1; then
+    ss -tulpen 2>/dev/null \
+    | sed '1,1!s/^/ /' \
+    | awk '{print $1, $5, $7, $9}' \
+    | column -t 
+  elif command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP -sTCP:LISTEN
+  else
+    printf 'Necesito ss o lsof.\n' >&2
+    return 1
+  fi
+}
+
+# Limpia ramas locales ya mergeadas
+gclean() {
+  _req git || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null; then
+    printf 'No estás en un repo git.\n' >&2
+    return 1
+  fi
+
+  local base
+  if git show-ref --verify --quiet refs/heads/main; then
+    base=main
+  elif git show-ref --verify --quiet refs/heads/master; then
+    base=master
+  else
+    base="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's#.*/##')"
+  fi
+    
+  git fetch --all --prune >/dev/null 2>&1
+
+  local current
+  current="$(git rev-parse --abbrev-ref HEAD)"
+
+  local merged 
+  merged="$(git branch --merged "$base" \
+      | sed 's/^[* ] *//' \
+      | grep -v "^$base$" \
+      | grep -v "^$current$"
+  )"
+
+  if [ -z "$merged" ]; then
+    printf 'No hay ramas mergeadas para limpiar.\n' >&2
+    return 0
+  fi
+
+  printf 'Las siguientes ramas ya están mergeadas en %s:\n' "$base" >&2
+  printf '%s\n' "$merged" >&2
+  printf '¿Borrarlas? [y/N] ' >&2
+  read -r ans 
+  [ "$ans" = "y" ] || return 0
+
+  printf '%s\n' "$merged" | while read -r br; do 
+    [ -z "$br" ] && continue
+    git branch -d "$br"
+  done
+}
+
+# Monitoreo rapido de CPU/MEM de procesos
+topme() {
+  ps -eo pid,ppid,user,%cpu,%mem,etime,cmd --sort=-%cpu \
+  | awk 'NR==1 || /php|fpm|nginx|mysql|docker|composer|artisan|symfony/'
+}
+
+
+# "Hazlo otra vez"
+r() {
+  local tmp last
+  tmp="$(mktemp)"
+
+  last="$(HISTTIMEFORMAT= history | sed 's/^ *[0-9]\+ *//' | tail -n 2 | head -n 1)"
+  printf '%s\n' "$last" > "$tmp"
+  "${EDITOR:-nvim}" "$tmp"
+  printf 'Ejecutar?\n' >&2
+  read -r ans 
+  if [ "$ans" = "y" ]; then
+    . "$tmp"
+  else
+    cat "$tmp"
+  fi
+  rm -f "$tmp"
+}
+
+# Añade un temporizador interactivo simple
+tt() {
+  local start end delta
+  start=$(date +%s)
+  printf ' Timer iniciado. Pulsa ENTER al terminar...\n' >&2
+  read -r _
+  end=$(date +%s)
+  delta=$(( end - start ))
+  printf ' %s segundos (%s min)\n' "$delta" "$(( delta / 60 ))"
+}
+
+# Papelera en vez de rm directo 
+trash() {
+  command -v trash-put >/dev/null 2>&1 || {
+    printf 'Necesito trash-put (trash-cli)\n' >&2
+    return 1
+  }
+  trash-put -- "$@"
+}
+
+
+# Watcher de cambios locales en vivo 
+watchdiff() {
+  _req git || return 1
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    printf 'No estás en un repo git.\n' >&2
+    return 1
+  fi
+
+  while true; do 
+    clear
+    local _root _branch
+    _root="$(git rev-parse --show-toplevel)"
+    _branch="$(got rev-parse --abbrev-ref HEAD)"
+    printf " %s (%s)\n" "$_root" "$_branch"
+    echo
+    git status --short
+    echo
+    echo "---- cambios no stageados (hasta 200 líneas) -----"
+    git diff --color=always | sed -n '1,200p'
+    sleep 2
+  done
+}
+
+# Guarda el stash de trabajo con nombre legible
+
+checkpoint() {
+    _req git || return 1
+
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null; then
+        printf 'No estás en un repo git.\n' >&2
+        return 1
+    fi
+
+    local msg="${*:-work-in-progress}"
+    git add -A
+    git stash push -m "$msg"
+    printf "✔ Guardado como checkpoint: %s\n" "$msg" >&2
+    git stash list | head -n 5
+}
+
+# Commit rapido "Work in progress"
+# - despues reescribir con rebase -i  o  git commit --amend
+wip() {
+    _req git || return 1
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null; then
+        printf 'No estás en un repo git.\n' >&2
+        return 1
+    fi
+
+    git add -A
+    git commit -m "WIP $(date +'%Y-%m-%d %H:%M')" || {
+        printf 'Nada que commitear.\n' >&2
+        return 0
+    }
+    printf '✔ WIP guardado.\n' >&2
+}
+
+# Generear commits "fixup!" contra el ultimo commit
+fixup() {
+    _req git || return 1
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null; then
+        printf 'No estás en un repo git.\n' >&2
+        return 1
+    fi
+
+    local target msg
+    target="$(git rev-parse --verify HEAD)" || return 1
+    msg="$(git log -1 --pretty=format:%s)"
+
+    git add -A
+    git commit --fixup "$target" || {
+        printf 'Nada que fixupear.\n' >&2
+        return 0
+    }
+
+    printf '✔ fixup! -> %s\n' "$msg" >&2
+    printf 'Para plegar historia luego:\n  git rebase -i --autosquash <base>\n' >&2
+}
+
+
+# Mide cuanto tiempo tarda en ejecutarse un comando
+bench() {
+    if [ $# -eq 0 ]; then
+        printf 'Uso: bench <comando ...>\n' >&2
+        return 1
+    fi
+
+    local start end delta
+    start=$(date +%s%3N)  # ms si tu date lo soporta, GNU date sí
+    "$@"
+    end=$(date +%s%3N)
+    delta=$(( end - start ))
+    local secs 
+    if command -v bc >/dev/null 2>&1; then 
+      secs="$(echo "$delta / 1000" | bc -l)"
+    else
+      secs="$(awk -v d="$delta" 'BEGIN{ printf "%.3f", d/1000 }')"
+    fi
+    printf "⏱  %s ms (~%s s)\n" "$delta" "$secs"
+}
+
+# ultimos arhivos que hemos tacodo en este repo
+recent() {
+    _req git fzf bat || return 1
+
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>/dev/null; then
+        printf 'No estás en un repo git.\n' >&2
+        return 1
+    fi
+
+    local file
+    file="$(
+        git log --name-only --pretty=format: --since='3 days ago' \
+        | sed '/^$/d' \
+        | sort -u \
+        | fzf --prompt='🕑 recientes > ' \
+              --preview='bat --style=numbers --color=always {} 2>/dev/null | head -500' \
+              --preview-window=right,70%
+    )" || return 0
+
+    [ -z "$file" ] && return 0
+
+    _edit_at "$file"
+}
+
+# repite el ultimo comando fallido
+redo() {
+    # requiere `fc`, builtin de bash, que edita último comando en $EDITOR
+    # y luego lo ejecuta
+    local last_status="$?"
+    if [ "$last_status" -eq 0 ]; then
+        printf 'El último comando NO falló.\n' >&2
+        return 1
+    fi
+    fc -e "${EDITOR:-nvim}"
+}
+
+# Cambia entre distintos .env de forma segura
+envswap() {
+    # uso:
+    #   envswap list
+    #   envswap use staging
+    # asume archivos tipo .env.staging, .env.local, etc.
+
+    local base=".env"
+    local cmd="$1"
+    local name="$2"
+
+    if [ "$cmd" = "list" ]; then
+        ls -1 .env.* 2>/dev/null \
+        | sed 's/^\.env\.//' \
+        | sort
+        return 0
+    fi
+
+    if [ "$cmd" = "use" ] && [ -n "$name" ]; then
+        local src=".env.$name"
+        if [ ! -f "$src" ]; then
+            printf 'No existe %s\n' "$src" >&2
+            return 1
+        fi
+
+        if [ -f "$base" ]; then
+            cp "$base" "$base.bak.$(date +%s)"
+        fi
+
+        cp "$src" "$base"
+        printf '✔ %s activado -> %s\n' "$src" "$base" >&2
+        return 0
+    fi
+
+    printf 'Uso:\n' >&2
+    printf '  envswap list           # ver entornos disponibles (.env.*)\n' >&2
+    printf '  envswap use staging    # copia .env.staging -> .env (guardando backup)\n' >&2
+    return 1
+}
+

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# pre-commit - escaneo de secretos/trazas y bloqueo de ficheros sensibles
+
+set -u
+blocklist='(var_dump|print_r|dd\(|die\(|console\.log|API_KEY|PASSWORD|SECRET)'
+
+echo "-> pre-commit: escaneando contenido staged..."
+files="$(git diff --cached --name-only --diff-filter=ACM |
+  grep -E '\.(php|js|ts|env|ini|json|ya?ml|conf|sh)$' || true)"
+
+[ -z "$files" ] && exit 0
+
+fail=0
+while IFS= read -r f; do
+  if git show ":$f" | grep -nEI "$blocklist" -I >/dev/null; then
+    echo "❌ Bloqueado: '$f' contiene trazas/debug o posibles secretos." >&2
+    git show ":$f" | grep -nEI "$blocklist" -I >&2 || true
+    fail=1
+  fi
+done <<EOF
+${files}
+EOF
+
+for sensitive in ".env" ".env.local" ".env.prod" "docker-compose.override.yml"; do
+  if git diff --cached --name-only | grep -Fx "$sensitive" >/dev/null; then
+    echo "❌ ERROR: '$sensitive' está staged. No se permite commitear eso." >&2
+    fail=1
+  fi
+done
+
+if [ "$fail" -ne 0 ]; then
+  echo "❌ Commit cancelado. Limpia antes de commitear." >&2
+  exit 1
+fi
+
+echo "✔ pre-commit OK "
+exit 0

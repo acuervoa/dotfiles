@@ -6,6 +6,31 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-10-26
+
+### Añadido
+
+- **Shell helpers** en `~/.bash_functions`:
+  - Navegación/edición: `fo`, `cdf`, `rgf`, `recent`, `_edit_at`.
+  - Git TUI: `gcof`, `gbr`, `gstaged`, `gundo`, `gclean`, `checkpoint`, `wip`, `fixup`, `watchdiff`, `grt`.
+  - Docker helpers: `docps`, `dlogs`, `dsh`.
+  - Utilidades: `fkill`, `cb`, `fhist`, `take`, `extract`, `t`, `ports`, `topme`, `r`, `tt`, `trash`, `bench`, `redo`, `envswap`, `todo`.
+- **Hooks de Git** (reproducibles vía `core.hooksPath`):
+  - `pre-commit`: escaneo de trazas (`console.log`, `var_dump`, etc.), bloqueo de ficheros sensibles (`.env*`, `docker-compose.override.yml`).
+  - `commit-msg`: rechazo de commits con `WIP/tmp`.
+
+### Corregido
+
+- `gundo`: typo `returno` → `return`.
+- `dsh`: typo `docke -compose` → `docker-compose`.
+- `grt`: mensaje corregido.
+- `watchdiff`: variable inexistente `$s` → mostrar rama real; mensaje y límite de líneas coherente.
+- `bench`: _fallback_ a `awk` si no hay `bc`.
+
+### Documentación
+
+- `README.md`: se añaden dependencias (`fd`, `fzf`, `ripgrep`, `bat`, `eza`, `zoxide`, `wl-clipboard`/`xclip`, `trash-cli`, `docker`, `docker-compose`, `bc`) y guía de instalación/uso de hooks.
+
 ## [2025-10-25] – Navegación Vim/Neovim ↔ tmux con <C-h/j/k/l>
 
 **Ámbito**: unificar la navegación entre _splits_ de Vim/Neovim y paneles tmux usando las mismas teclas.
