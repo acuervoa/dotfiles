@@ -96,6 +96,17 @@ if [ -z "${MISE_INITIALIZED:-}" ]; then
   if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate bash)"
     export MISE_INITIALIZED=1
+    
+# - atuin (historial avanzado)
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash)"
+fi
+
+# - fnm (gestor de versiones de node)
+if [ -z "${FNM_INITIALIZED:-}" ]; then
+  if command -v fnm >/dev/null 2>&1; then
+    eval "$(fnm env --use-on-cd --shell=bash)"
+    export FNM_INITIALIZED=1
   fi
 fi
 
@@ -132,4 +143,6 @@ move_to_end "/nix/var/nix/profiles/default/bin"
 export PATH
 
 # PATH y extras ligeros
-export PATH=/home/acuervo/.config/composer/vendor/bin:${PATH}
+if [ -d "$HOME/.config/composer/vendor/bin" ]; then
+  PATH="$HOME/.config/composer/vendor/bin:$PATH"
+fi

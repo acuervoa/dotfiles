@@ -343,6 +343,7 @@
 | `docps` | `bash/bash_lib/docker.sh` | Lista servicios activos con `docker compose ps`. |
 | `dlogs` | `bash/bash_lib/docker.sh` | Selecciona servicio con `fzf` y hace `logs -f` tail 200. |
 | `dsh` | `bash/bash_lib/docker.sh` | Abre shell interactiva (`bash`/`sh`) en servicio en ejecución. |
+| `dclean` | `bash/bash_lib/docker.sh` | Ejecuta `docker system prune` tras confirmación explícita. |
 | `fo` | `bash/bash_lib/nav.sh` | Busca archivos/dirs con `fd` + `fzf`, abre o `cd`. |
 | `cdf` | `bash/bash_lib/nav.sh` | Navega a directorios recientes vía `zoxide`. |
 | `take` | `bash/bash_lib/nav.sh` | `mkdir -p` + `cd` en una sola orden. |
@@ -413,6 +414,8 @@
 | `..` / `...` | `cd ..` / `cd ../..` | Navegación rápida de directorios. |
 | `gs` | `git status -sb 2>/dev/null || git status` | Status breve con fallback si `-sb` no soportado. |
 | `gc` / `gcm` | `git commit` / `git commit -m` | Accesos directos a commit. |
+| `gup` | `git pull --rebase --autostash` | Pull que rebasea y guarda cambios sin staged. |
+| `gfa` | `git fetch --all --prune` | Actualiza remotos y elimina referencias obsoletas. |
 | `gpf` | `git push --force-with-lease` | Push forzado seguro. |
 | `gl` | `git log --oneline --graph -n 30` | Historial compacto. |
 | `gd` | `git diff --color=always \| bat --pagging=always --plain --color=always 2>/dev/null || git diff` | Diff coloreado vía `bat`; **typo `--pagging` rompe la opción, ver Observaciones**. |
@@ -424,7 +427,7 @@
 | `ls` | Si existe `eza`: `eza --group-directories-first --icons=auto --color=auto --sort newest -la`; si no, `ls --color=auto`. | Listado enriquecido. |
 | `ll` | `eza -lh --git ...` o `ls -alh --color=auto` | Listado detallado. |
 | `la` | `eza -a ...` o `ls -A --color=auto` | Incluye ocultos. |
-| `dc` / `dcb` / `dcu` / `dcud` / `dcd` / `dcr` | `docker compose` (varias subcomandos) | Atajos compose v2 (solo si docker existe). |
+| `dc` / `dcb` / `dcp` / `dcu` / `dcud` / `dcd` / `dcr` | `docker compose` (varias subcomandos) | Atajos compose v2 (solo si docker existe). |
 | `dcps` | `docker compose ps` | Lista servicios. |
 | `dps` | `docker ps -a --format "table ..."` | Tabla de contenedores. |
 | `dcl` / `dclf` / `dce` | Logs, logs -f y exec (compose). |
