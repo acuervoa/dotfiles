@@ -1,0 +1,16 @@
+# Configuración mínima para alinear lazygit con las convenciones de Git del repo.
+# Documentación: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+
+git:
+  # Detecta correctamente la rama principal al sincronizar/limpiar.
+  mainBranches:
+    - main
+    - master
+  # Respeta los hooks centralizados configurados mediante core.hooksPath.
+  hooksPath: ~/.git-hooks
+  # Evita que lazygit cree ramas base usando remotos distintos.
+  mainRemote: origin
+
+ui:
+  # Mantiene consistente el estilo de confirmaciones (no interferir con hooks interactivos).
+  confirmOnQuit: true

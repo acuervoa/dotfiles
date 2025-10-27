@@ -9,7 +9,7 @@ Daily-driver dotfiles para **Arch Linux** que alinean i3, tmux, NeoVim/Vim, kitt
 - Configuración de NeoVim (≥0.11) con lazy.nvim, Mason v2, LSP/DAP, formateo (conform.nvim) y tooling dev (git, telescope, overseer, toggleterm…).
 - tmux (`tmux/tmux.conf`) con prefix `Ctrl+s`, TPM, integración con NeoVim y scripts auxiliares (`tmux/tmux/scripts/*`).
 - Stack gráfico: i3 + polybar + picom + dunst + rofi + kitty tematizados (Catppuccin) y scripts para micrófono/volumen/animaciones.
-- Git centralizado (`git/gitconfig`, `git/gitalias`, `git/git-hooks/*`), fallback Vim (`vim/`) y plantilla ADR (`.adr/ADR-TEMPLATE.md`).
+- Git centralizado (`git/gitconfig`, `git/gitalias`, `git/git-hooks/*`), UI TUI (`config/lazygit/`) + fallback Vim (`vim/`) y plantilla ADR (`.adr/ADR-TEMPLATE.md`).
 - Documentación bilingüe (README, SHORTCUTS) con equivalencia de atajos i3 ↔ tmux ↔ NeoVim ↔ kitty ↔ polybar.
 
 ---
@@ -39,7 +39,7 @@ Acciones (modo `stow`, por defecto):
 
 - Crea backup en `.backups/<TS>/` y manifest en `.manifests/<TS>.manifest`.
 - Enlaza explícitamente Bash (`bashrc`, `bash_profile`, `bash_aliases`, `bash_functions`, `bash_lib`), Git (`gitconfig`, `gitalias`, `git-hooks`), tmux (`tmux.conf`, `tmux/`), Vim (`vimrc`, `vim/`).
-- Stow de `config/{dunst,i3,kitty,nvim,picom,polybar,rofi}` sobre `~/.config`. Personaliza con `--packages=kitty,polybar`.
+- Stow de `config/{dunst,i3,kitty,lazygit,nvim,picom,polybar,rofi}` sobre `~/.config`. Personaliza con `--packages=kitty,polybar`.
 - Acepta `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para entornos compartidos.
 
 Manifiesto (`.manifests/<TS>.manifest`) registra los symlinks aplicados (`LINK src -> dest`) y la lista de paquetes stoweados.
@@ -64,7 +64,7 @@ ln -sfn "$PWD/vim/vimrc" "$HOME/.vimrc"
 ln -sfn "$PWD/vim/vim" "$HOME/.vim"
 
 # Config bajo ~/.config (stow por paquete)
-for pkg in dunst i3 kitty nvim picom polybar rofi; do
+for pkg in dunst i3 kitty lazygit nvim picom polybar rofi; do
   mkdir -p "$HOME/.config/$pkg"
   stow -vt "$HOME/.config" "config/$pkg" -S
 done
@@ -73,7 +73,7 @@ done
 ### Validación (bootstrap)
 
 ```bash
-for p in ~/.config/{kitty/kitty.conf,polybar/config.ini,picom/picom.conf,i3/config,dunst/dunstrc,rofi/config.rasi,nvim}; do
+for p in ~/.config/{kitty/kitty.conf,lazygit/config.yml,polybar/config.ini,picom/picom.conf,i3/config,dunst/dunstrc,rofi/config.rasi,nvim}; do
   [ -L "$p" ] && echo "OK $p -> $(readlink -f "$p")" || echo "MISSING $p"
 done
 ```
@@ -103,12 +103,12 @@ Documentado en `bootstrap.sh --mode=bare`. No aplica symlinks; útil si quieres 
 
 ### Resumen
 
-Dotfiles listos para uso diario en **Arch Linux** con i3, tmux, NeoVim/Vim, kitty, rofi, dunst, picom y polybar. Incluye scripts de bootstrap/rollback, librería Bash modular, configuración completa de NeoVim con LSP/DAP, TPM para tmux y tooling adicional (Git hooks, ADR template, docs de atajos).
+Dotfiles listos para uso diario en **Arch Linux** con i3, tmux, NeoVim/Vim, kitty, rofi, dunst, picom, polybar y lazygit. Incluye scripts de bootstrap/rollback, librería Bash modular, configuración completa de NeoVim con LSP/DAP, TPM para tmux y tooling adicional (Git hooks, ADR template, docs de atajos).
 
 ### Requisitos (paquetes Arch)
 
 - Base gráfica: `i3-wm`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`.
-- Terminal/productividad: `tmux`, `neovim>=0.11`, `vim` (opcional), `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `wl-clipboard`, `xclip`, `trash-cli`, `docker`, `docker-compose`, `bc`.
+- Terminal/productividad: `tmux`, `neovim>=0.11`, `vim` (opcional), `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `wl-clipboard`, `xclip`, `trash-cli`, `docker`, `docker-compose`, `bc`, `lazygit`.
 - Audio/UX: `pamixer`, `playerctl`, `brightnessctl`, `pacman-contrib` (`checkupdates`), `bluez`, `bluez-utils` (para módulo Bluetooth).
 - Fuentes: _MesloLGLDZ Nerd Font_, _Noto Color Emoji_.
 
@@ -121,10 +121,11 @@ Dotfiles listos para uso diario en **Arch Linux** con i3, tmux, NeoVim/Vim, kitt
 dotfiles/
 ├── .adr/                 # Plantilla ADR (ADR-TEMPLATE.md)
 ├── bash/                 # bashrc, aliases, profile, xprofile, librería (~/.bash_lib)
-├── config/               # Configs para kitty, polybar, picom, i3, dunst, rofi, nvim
+├── config/               # Configs para kitty, lazygit, polybar, picom, i3, dunst, rofi, nvim
 │   ├── dunst/            # dunstrc + scripts micctl/volctl + paleta mocha
 │   ├── i3/               # config + scripts (i3lock, i3exit, toggle_scratch*, mode_system)
 │   ├── kitty/            # kitty.conf (Catppuccin Mocha)
+│   ├── lazygit/          # config.yml alineado con ramas principales + hooks globales
 │   ├── nvim/             # init.lua + lua/config + lua/plugins (lazy.nvim)
 │   ├── picom/            # picom.conf, perfil lowlatency, toggle-animations.sh
 │   ├── polybar/          # config.ini, mocha.ini, launch.sh, validate.sh
@@ -142,6 +143,7 @@ dotfiles/
 
 - **Bash (`bash/bash_lib/*.sh`)**: módulos `core`, `git`, `nav`, `docker`, `misc` cargables desde `.bashrc`. Atajos útiles (`fo`, `rgf`, `cdf`, `grt`, `docps`, `dlogs`, `dsh`, `fkill`, `cb`, `todo`, etc.).
 - **Git**: `git/gitconfig` con alias globales (`git/gitalias`) y hooks centralizados (`git/git-hooks/pre-commit`, `commit-msg`). El bootstrap enlaza `~/.git-hooks` para uso global.
+- **Lazygit (`config/lazygit/config.yml`)**: respeta `core.hooksPath` global (`~/.git-hooks`), fija `origin` como remoto principal y reconoce `main`/`master` para operaciones seguras.
 - **tmux (`tmux/tmux.conf`)**: prefix `Ctrl+s`, navegación `Alt+h/j/k/l`, splits en cwd, zoom, sync panes, fallback `select-pane` con soporte NeoVim (`christoomey/vim-tmux-navigator`). Plugins TPM (`tmux-resurrect`, `tmux-continuum`, `tmux-fzf`, `tmux-menus`, `tmux-sessionx`, `extrakto`, `tmux-yank`). Scripts auxiliares en `tmux/tmux/scripts/*` (CPU, memoria, estado paneles) para statusline.
 - **NeoVim (`config/nvim/`)**: `init.lua` carga `lua/config/*` (opciones, keymaps, autocmds, lazy.nvim). Plugins categorizados (`lua/plugins/`):
   - LSP vía `mason-org/mason.nvim` + `mason-lspconfig` + API nativa 0.11 (`intelephense`, `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`) con breadcrumbs (`outline.nvim`, `barbecue`), inlay hints y diagnostics personalizados.
@@ -168,8 +170,8 @@ bash ./scripts/bootstrap.sh
 Para enlaces mínimos manuales:
 
 ```bash
-mkdir -p ~/.config/{kitty,polybar,picom,i3,dunst,rofi}
-for f in kitty/kitty.conf polybar/config.ini picom/picom.conf i3/config dunst/dunstrc rofi/config.rasi; do
+mkdir -p ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi}
+for f in kitty/kitty.conf lazygit/config.yml polybar/config.ini picom/picom.conf i3/config dunst/dunstrc rofi/config.rasi; do
   [ -f "$HOME/.config/$f" ] && mv "$HOME/.config/$f"{,.bak}
   ln -sf "$HOME/dotfiles/config/$f" "$HOME/.config/$f"
 done
@@ -258,7 +260,7 @@ Daily-driver dotfiles for **Arch Linux** featuring i3, tmux, NeoVim/Vim, kitty, 
 ### Requirements (Arch packages)
 
 - UI stack: `i3-wm`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`.
-- Terminal/productivity: `tmux`, `neovim>=0.11`, `vim` (optional), `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `wl-clipboard`, `xclip`, `trash-cli`, `docker`, `docker-compose`, `bc`.
+- Terminal/productivity: `tmux`, `neovim>=0.11`, `vim` (optional), `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `wl-clipboard`, `xclip`, `trash-cli`, `docker`, `docker-compose`, `bc`, `lazygit`.
 - Audio/UX: `pamixer`, `playerctl`, `brightnessctl`, `pacman-contrib`, `bluez`, `bluez-utils`.
 - Fonts: _MesloLGLDZ Nerd Font_, _Noto Color Emoji_.
 
@@ -271,7 +273,7 @@ Daily-driver dotfiles for **Arch Linux** featuring i3, tmux, NeoVim/Vim, kitty, 
 dotfiles/
 ├── .adr/                 # ADR template
 ├── bash/                 # shell rc, aliases, profile, modular library (~/.bash_lib)
-├── config/               # kitty, polybar, picom, i3, dunst, rofi, nvim configs
+├── config/               # kitty, lazygit, polybar, picom, i3, dunst, rofi, nvim configs
 ├── git/                  # gitconfig, gitalias, reusable hooks
 ├── scripts/              # bootstrap.sh, rollback.sh
 ├── tmux/                 # tmux.conf + helper scripts
@@ -285,6 +287,7 @@ dotfiles/
 
 - **Bash library:** `bash/bash_lib/{core,git,nav,docker,misc}.sh` exposes helpers (`fo`, `rgf`, `cdf`, `grt`, `docps`, `dlogs`, `dsh`, `fkill`, `cb`, `todo`, …). Load them conditionally from `.bashrc`.
 - **Git tooling:** opinionated `gitconfig` + global aliases (`gitalias`) + reproducible hooks (`git/git-hooks`). Bootstrap links them into `~/.gitconfig`, `~/.gitalias`, `~/.git-hooks`.
+- **Lazygit:** `config/lazygit/config.yml` honours the global hooks path, keeps `origin` as main remote and recognises `main`/`master` as trunk branches for safe sync.
 - **tmux:** `Ctrl+s` prefix, navigation with `Alt+h/j/k/l`, splits in current working dir, zoom + pane sync, NeoVim-aware navigation. TPM plugins: sensible, yank, resurrect, continuum, vim-tmux-navigator, tmux-fzf, tmux-menus, tmux-sessionx, extrakto. Extra scripts in `tmux/tmux/scripts/` feed the status line.
 - **NeoVim:** `config/nvim/` runs lazy.nvim, Mason (v2), LSP (intelephense, lua_ls, ts_ls, html, cssls, jsonls), cmp, Treesitter, Telescope, Neo-tree, git UI, conform.nvim + nvim-lint, overseer tasks, nvim-dap (+ UI/virtual text + Mason integration), VSCode-style UI (bufferline, lualine, notify, toggleterm, trouble, indent guides, barbecue). Handy commands: `:Lazy! sync`, `:Mason`, `:OverseerRun`, `:Trouble`, `:FormatToggle`.
 - **i3 & UX:** `config/i3/config` mirrors tmux/NeoVim bindings, provides scratchpads (kitty, Obsidian), system mode, locker script, multimedia controls (playerctl, pamixer, micctl, volctl, brightnessctl) and integrates with dunst/picom.
@@ -307,8 +310,8 @@ bash ./scripts/bootstrap.sh
 Minimal manual symlinks:
 
 ```bash
-mkdir -p ~/.config/{kitty,polybar,picom,i3,dunst,rofi}
-for f in kitty/kitty.conf polybar/config.ini picom/picom.conf i3/config dunst/dunstrc rofi/config.rasi; do
+mkdir -p ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi}
+for f in kitty/kitty.conf lazygit/config.yml polybar/config.ini picom/picom.conf i3/config dunst/dunstrc rofi/config.rasi; do
   [ -f "$HOME/.config/$f" ] && mv "$HOME/.config/$f"{,.bak}
   ln -sf "$HOME/dotfiles/config/$f" "$HOME/.config/$f"
 done

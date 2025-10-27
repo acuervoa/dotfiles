@@ -15,7 +15,7 @@ MANIFEST_ROOT="$DOTFILES/.manifests"
 BACKUP_DIR="$BACKUP_ROOT/$TS"
 MANIFEST="$MANIFEST_ROOT/$TS.manifest"
 # Paquetes por defecto bajo ~/.config
-PACKAGES_DEF=(dunst i3 kitty nvim picom polybar rofi)
+PACKAGES_DEF=(dunst i3 kitty lazygit nvim picom polybar rofi)
 # Lista final (posiblemente sobrescrita vía --packages)
 PACKAGES=()
 
