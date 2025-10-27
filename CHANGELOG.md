@@ -6,6 +6,12 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-10-28 — Documentación alineada con git-hooks
+
+### Cambiado
+- `README.md`: se documenta la ruta real `git/git-hooks` y el uso de `~/.git-hooks` (enlazada por `bootstrap.sh`) para los hooks compartidos.
+- Verificación rápida actualizada (`test -x ~/.git-hooks/*`).
+
 ## 2025-10-27 — Modularización Bash, fixes y atajos
 
 ### Añadido
