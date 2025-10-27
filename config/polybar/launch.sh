@@ -1,39 +1,32 @@
 #!/usr/bin/env bash
-# set -euo pipefail
-#
-# # Cierra instancias previas
-# killall -q polybar || true
-# while pgrep -u "$UID" -x polybar >/dev/null; do sleep 0.2; done
-#
-# # Lanza por monitor detectado
-# if commnad -v xrandr >/dev/null 2>&1; then
-#   primary="$(xrandr --query | awk '/ primary/{print $1; exit}')"
-#   if [ -n "${primary:-}" ]; then
-#     MONITOR="$primary" polybar --reload main &
-#   else
-#     first="$(polybar -m | head -n1 | cut -d: -f1)"
-#     MONITOR="$first" polybar --reload main &
-#   fi
-#   # Resto de monitores -> barra secundaria
-#   while read -r m; do
-#     [ "$m" = "${primary:-}" ] && continue
-#     MONITOR="$m" polybar --reload secondary &
-#   done < <(polybar -m | cut d: -f1 | tail -n +2)
-# else
-#   polybar --reload main &
-# fi
-#
-# disown
-#
-killall -q polybar
 
-while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+killall -q polybar || true
 
-polybar --reload main &
-polybar --reload secondary &
+while pgrep -u "$UID" -x polybar >/dev/null; do
+  sleep 0.2
+done
 
-# for MONITOR in $(xrandr --query | grep " connected " | cut -d" " -f1); do
-# 	MONITOR=$MONITOR polybar --reload mybar &
-# done
+if command -v xrandr >/dev/null 2>&1; then
+  mapfile -t monitors < <(xrandr --query | awk '/ connected/{print $1}')
 
-# echo "Bars launched..."
+  if [ "${#monitors[@]}" -gt 0 ]; then
+    primary="$(xrandr --query | awk '/ primary/{print $1; exit}')"
+
+    if [ -z "${primary:-}" ]; then
+      primary="${monitors[0]}"
+    fi
+
+    MONITOR="$primary" polybar --reload main &
+
+    for monitor in "${monitors[@]}"; do
+      [ "$monitor" = "$primary" ] && continue
+      MONITOR="$monitor" polybar --reload secondary &
+    done
+  else
+    polybar --reload main &
+  fi
+else
+  polybar --reload main &
+fi
+
+disown
