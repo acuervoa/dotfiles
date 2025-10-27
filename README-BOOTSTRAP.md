@@ -34,6 +34,22 @@ for pkg in kitty lazygit polybar picom i3 dunst rofi nvim; do
 done
 ```
 
+## Versionado de lenguajes con mise
+```bash
+# instala los runtimes definidos en config/mise/config.toml
+mise install
+
+# ejemplo para fijar versiones globales adicionales
+mise use -g node@lts
+```
+
+`mise` se inicializa automáticamente vía `eval "$(mise activate bash)"` en `~/.bashrc`.
+
+## Direnv
+- Instala `direnv` (incluido en los paquetes base superiores).
+- Tras hacer `cd` a un proyecto con `.envrc` ejecuta `direnv allow` para autorizarlo.
+- El `hook` `eval "$(direnv hook bash)"` ya está cargado en `~/.bashrc` para activar los entornos.
+
 ## Librería Bash modular
 ```bash
 # En ~/.bashrc (carga condicional de módulos)
