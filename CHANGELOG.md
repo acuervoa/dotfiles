@@ -6,6 +6,19 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-10-30 — Shell más portátil y barra tmux consciente de la red
+
+### Añadido
+- Integración opcional de Atuin, direnv y mise durante el arranque de Bash (solo si las herramientas están instaladas), manteniendo `fnm` como gestor de Node. 
+- Alias de sincronización y mantenimiento para Git (`gup`, `gfa`, `lg`) y Docker Compose (`dcp`, etc.) con detección automática de las utilidades necesarias.
+
+### Cambiado
+- La inyección del binario global de Composer ahora comprueba si el directorio existe antes de modificar el `PATH`, evitando rutas rotas en otros usuarios o máquinas.
+- El indicador de red de tmux deja la variable `@net_if` vacía por defecto y el script `status_pill.sh` autodetecta las interfaces activas cuando no hay una lista definida por el usuario.
+
+### Corregido
+- Se eliminó la dependencia de nombres de interfaz cableados en los scripts de la barra de estado de tmux, reduciendo falsos negativos en entornos Wi-Fi u otros adaptadores.
+
 ## 2025-10-29 — Rollback robusto y Polybar consciente de monitores
 
 ### Cambiado

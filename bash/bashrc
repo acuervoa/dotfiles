@@ -96,7 +96,9 @@ if [ -z "${MISE_INITIALIZED:-}" ]; then
   if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate bash)"
     export MISE_INITIALIZED=1
-    
+  fi
+fi
+
 # - atuin (historial avanzado)
 if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash)"
