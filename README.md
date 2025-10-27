@@ -297,17 +297,17 @@ sudo pacman -S --needed fzf fd ripgrep bat eza zoxide wl-clipboard xclip trash-c
 
 ## Hooks de Git (reproducibles)
 
-Instala hooks centralizados en `~/.config/git/hooks/` y apúntalos globalmente:
+Instala hooks centralizados en `~/.git-hooks/` (el bootstrap los enlaza ahí) y apúntalos globalmente:
 
 ```bash
-mkdir -p ~/.config/git/hooks
+mkdir -p ~/.git-hooks
 # Copiar los hooks del repo (ajusta la ruta de origen según tu estructura):
-cp -f ./git/hooks/pre-commit ~/.config/git/hooks/pre-commit
-cp -f ./git/hooks/commit-msg ~/.config/git/hooks/commit-msg
-chmod +x ~/.config/git/hooks/{pre-commit,commit-msg}
+cp -f ./git/git-hooks/pre-commit ~/.git-hooks/pre-commit
+cp -f ./git/git-hooks/commit-msg ~/.git-hooks/commit-msg
+chmod +x ~/.git-hooks/{pre-commit,commit-msg}
 
 # Usar ruta global para todos los repos
-git config --global core.hooksPath "$HOME/.config/git/hooks"
+git config --global core.hooksPath "$HOME/.git-hooks"
 ```
 
 **Qué hacen:**
@@ -332,8 +332,8 @@ type fo cdf rgf fkill cb gbr dlogs dsh bench >/dev/null
 
 # Hooks activos
 git config --global core.hooksPath
-test -x ~/.config/git/hooks/pre-commit
-test -x ~/.config/git/hooks/commit-msg
+test -x ~/.git-hooks/pre-commit
+test -x ~/.git-hooks/commit-msg
 ```
 
 **Pruebas de hooks:**
