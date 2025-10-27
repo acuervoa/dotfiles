@@ -1,21 +1,41 @@
-# core.sh
-# ~/.bash_functions — funciones útiles no cubiertas por aliases
-#
+#!/usr/bin/env bash
+# core.sh — funciones útiles no cubiertas por aliases
+
 # Comprueba binarios requeridos antes de ejecutar la función
 _req() {
-  local cmd
-  for cmd in "$@"; do
-    if ! command -v "$cmd" >/dev/null 2>&1; then
-      printf 'Error: necesito "%s" en $PATH.\n' "$cmd" >&2
-      return 1
+  local missing=0 c
+  for c in "$@"; do
+    if ! command -v "$c" >/dev/null 2>&1; then
+      printf 'Falta comando requerido: %s\n' "$c" >&2
+      missing=1
     fi
   done
+  return $missing
 }
 
-# Abre $1 con $EDITOR posicionado en la linea $2 (si existe soporte tipo nvim +NUM)
+# Abre archivo en el editor preferido.
+# Respeta $VISUAL, luego $EDITOR. Fallback a nvim/vim/nano.
+# Si se pasa número de línea y el editor soporta "+<line>", lo usa.
 _edit_at() {
   local file="$1" line="$2"
-  local editor="${EDITOR:-nvim}"
+  local editor
+
+  if [ -z "$file" ]; then
+    printf 'No hay fichero que abrir.\n' >&2
+    return 1
+  fi
+
+  if [ -n "${VISUAL:-}" ]; then
+    editor="$VISUAL"
+  elif [ -n "${EDITOR:-}" ]; then
+    editor="$EDITOR"
+  elif command -v nvim >/dev/null 2>&1; then
+    editor="nvim"
+  elif command -v vim >/dev/null 2>&1; then
+    editor="vim"
+  else
+    editor="nano"
+  fi
 
   if [ -n "$line" ]; then
     "$editor" "+${line}" -- "$file"
@@ -92,7 +112,7 @@ fkill() {
 # - Vista previa recortada centrada en la linea del match
 
 rgf() {
-  _req rg fzf bat || return 1
+  _req rg fzf bat awk || return 1
 
   if [ $# -eq 0 ]; then
     printf 'Uso: rgf <patrón de búsqueda>\n' >&2
@@ -133,27 +153,39 @@ rgf() {
 
 # Lanzar/adjuntar a una sesión tmux por nombre (default: main)
 t() {
+  _req tmux || return 1
   local name="${1:-main}"
-  tmux new -A -s "$name"
+
+  if tmux has-session -t "$name" 2>/dev/null; then
+    tmux attach -t "$name"
+  else
+    tmux new -s "$name"
+  fi
 }
 
 # Papelera en vez de rm directo
 trash() {
-  command -v trash-put >/dev/null 2>&1 || {
-    printf 'Necesito trash-put (trash-cli)\n' >&2
+  _req thrash-put || {
+    printf 'Necesito trash-put (paquete trash-cli)\n' >&2
     return 1
   }
   trash-put -- "$@"
 }
 
-# repite el ultimo comando fallido
+# volver a ejecutar el último comando interactivo
+# - Reejecuta el comando anterior al `redo` leyendo el history.
+# - Útil para: "me dio error, ejecuto 'redo' directamente".
+# - Limitación: si lo último en el history es literalmente 'redo', entraría bucle.
+#   Lo evitamos leyendo el penúltimo comando de history.
 redo() {
-  # requiere `fc`, builtin de bash, que edita último comando en $EDITOR
-  # y luego lo ejecuta
-  local last_status="$?"
-  if [ "$last_status" -eq 0 ]; then
-    printf 'El último comando NO falló.\n' >&2
+  local cmd
+  cmd="$(history 2 | head -n1 | sed 's/^[ ]*[0-9]\+[ ]*//')"
+
+  if [ -z "$cmd" ]; then
+    printf 'No puedo recuperar el último comando.\n' >&2
     return 1
   fi
-  fc -e "${EDITOR:-nvim}"
+
+  printf 'Reejecutando; %s\n' "$cmd" >&2
+  eval "$cmd"
 }
