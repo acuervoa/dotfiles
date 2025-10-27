@@ -5,19 +5,25 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias gs='git status -sb 2>/dev/null || git status'
 alias gc='git commit'
-alias gp='git push'
+alias gcm='git commit -m'
+alias gpf='git push --force-with-lease'
 alias gl='git log --oneline --graph -n 30'
-alias br='source ~/.bashrc'
+alias gd='git diff --color=always | bat --pagging=always --plain --color=always 2>/dev/null || git diff'
+alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff --cached'
+alias ga='git add -A'
+alias gco='git checkout'
+alias gsw='git switch'
 
 # ls mejorado: eza
-alias ls='ls -altr --color=auto'
+alias l0='\ls --color=auto'
 if command -v eza >/dev/null 2>&1; then
-  alias l='eza --group-directories-first --icons=auto --color=auto --sort newest'
+  alias ls='eza --group-directories-first --icons=auto --color=auto --sort newest -la'
   alias ll='eza -lh --git --group-directories-first --icons=auto --color=auto --sort newest'
   alias la='eza -a --group-directories-first --icons=auto --color=auto --sort newest'
 else
-  alias ll='ls -lh'
-  alias la='ls -A'
+  alias ls='ls --color=auto'
+  alias ll='ls -alh --color=auto'
+  alias la='ls -A --color=auto'
 fi
 
 # Docker comose V2
@@ -36,14 +42,20 @@ if command -v docker >/dev/null 2>&1; then
 fi
 
 # Modernos y seguros
-alias cat="bat -p --paging=never"
+if command -v bat >/dev/null 2>&1; then
+  alias cat="bat -p --paging=never"
+fi
 alias grep="grep --color=auto"
 alias rgrep="rg --color=auto"
-alias vim="nvim"
-alias n="nvim"
+if command -v nvim >/dev/null 2>&1; then
+  alias vim="nvim"
+  alias n="nvim"
+fi
 
 # Atajos útiles
 alias cls="clear"
 alias reload="source ~/.bashrc"
-alias path='echo -e ${PATH//:/\\n}'
-alias help='tldr'
+alias path='echo "$PATH" | tr ":" "\n"'
+if command -v tldr >/dev/null 2>&1; then
+  alias help='tldr'
+fi
