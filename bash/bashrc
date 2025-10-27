@@ -81,16 +81,21 @@ if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init bash)"
 fi
 
+# - direnv (entornos por directorio)
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook bash)"
+fi
+
 # - starship (prompt)
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init bash)"
 fi
 
-# - fnm (gestor de versiones de node)
-if [ -z "${FNM_INITIALIZED:-}" ]; then
-  if command -v fnm >/dev/null 2>&1; then
-    eval "$(fnm env --use-on-cd --shell=bash)"
-    export FNM_INITIALIZED=1
+# - mise (gestor de versiones de lenguajes)
+if [ -z "${MISE_INITIALIZED:-}" ]; then
+  if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate bash)"
+    export MISE_INITIALIZED=1
   fi
 fi
 

@@ -4,12 +4,14 @@ Guía rápida para levantar el entorno de **dotfiles** en Arch con **backups**, 
 
 ## Paquetes base (Arch)
 ```bash
-sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide       wl-clipboard xclip trash-cli docker docker-compose bc       tmux neovim i3-wm kitty rofi polybar dunst picom
+sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide direnv mise \
+      wl-clipboard xclip trash-cli docker docker-compose bc \
+      tmux neovim i3-wm kitty rofi polybar dunst picom
 ```
 
 ## Estructura
 - Home: `bash/` (bashrc, aliases, profile, xprofile…)
-- Config: `config/{kitty,polybar,picom,i3,dunst,rofi,nvim}`
+- Config: `config/{kitty,polybar,picom,i3,dunst,rofi,nvim,mise}`
 - Docs: `README.md`, `README-BOOTSTRAP.md`, `SHORTCUTS.md`, `CHANGELOG.md`
 
 ## Bootstrap (vía scripts)
@@ -27,12 +29,28 @@ for f in bash/bashrc bash/bash_aliases bash/bash_profile bash/profile bash/xprof
   stow -vt "$HOME" "$(dirname "$f")" -S
 done
 
-for pkg in kitty polybar picom i3 dunst rofi nvim; do
+for pkg in kitty polybar picom i3 dunst rofi nvim mise; do
   mkdir -p "$HOME/.config/$pkg"
   [ -e "$HOME/.config/$pkg" ] && true
   stow -vt "$HOME/.config" "config/$pkg" -S
 done
 ```
+
+## Versionado de lenguajes con mise
+```bash
+# instala los runtimes definidos en config/mise/config.toml
+mise install
+
+# ejemplo para fijar versiones globales adicionales
+mise use -g node@lts
+```
+
+`mise` se inicializa automáticamente vía `eval "$(mise activate bash)"` en `~/.bashrc`.
+
+## Direnv
+- Instala `direnv` (incluido en los paquetes base superiores).
+- Tras hacer `cd` a un proyecto con `.envrc` ejecuta `direnv allow` para autorizarlo.
+- El `hook` `eval "$(direnv hook bash)"` ya está cargado en `~/.bashrc` para activar los entornos.
 
 ## Librería Bash modular
 ```bash
