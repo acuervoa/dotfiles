@@ -81,11 +81,22 @@ if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init bash)"
 fi
 
+# - direnv (entornos por directorio)
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook bash)"
+fi
+
 # - starship (prompt)
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init bash)"
 fi
 
+# - mise (gestor de versiones de lenguajes)
+if [ -z "${MISE_INITIALIZED:-}" ]; then
+  if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate bash)"
+    export MISE_INITIALIZED=1
+    
 # - atuin (historial avanzado)
 if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash)"
