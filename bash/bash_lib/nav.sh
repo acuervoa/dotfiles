@@ -155,7 +155,7 @@ extract() {
 cb() {
   local data
 
-  if [ -t 0 ]; then
+  if [ ! -t 0 ]; then
     data="$(cat)"
   elif [ $# -eq 1 ] && [ -f "$1" ]; then
     data="$(cat -- "$1")"
