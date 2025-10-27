@@ -30,6 +30,7 @@ fi
 if command -v docker >/dev/null 2>&1; then
   alias dc='docker compose'
   alias dcb='docker compose build'
+  alias dcp='docker compose pull'
   alias dcu='docker compose up'
   alias dcud='docker compose up -d'
   alias dcd='docker compose down'
