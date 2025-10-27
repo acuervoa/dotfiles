@@ -25,7 +25,7 @@ _docker_compose() {
 # Si estás en un repo git y en la raíz git existe docker-compose.yml o compose.yml,
 # hace cd a esa raíz. Si no, no toca el cwd.
 _cd_repo_root_if_compose() {
-  if git-rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     local root
     root="$(git rev-parse --show-top-level 2>/dev/null)" || return 0
 

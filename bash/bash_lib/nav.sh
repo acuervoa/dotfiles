@@ -162,9 +162,7 @@ cb() {
   else
     data="$*"
     if [ -z "$data" ]; then
-      printf 'Uso: echo "texto" | cb\n
-                   cb "textoi libre"\n
-                   cb fichero.txt\n' >&2
+      printf 'Uso:\techo "texto" | cb\n\tcb "texto libre"\n\tcb fichero.txt\n' >&2
       return 1
     fi
   fi

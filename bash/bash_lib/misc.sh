@@ -26,7 +26,7 @@ fhist() {
 
   local cmd
   cmd="$(
-    prinf '%s\n' "$hist" |
+    printf '%s\n' "$hist" |
       awk '!seen[$0]++' |
       fzf --height 40% \
         --layout=reverse \
@@ -95,7 +95,7 @@ bench() {
   }
 
   local start end delta secs
-  start="$(now_ms)"
+  start="$(_now_ms)"
   ("$@")
   end="$(_now_ms)"
 
@@ -107,7 +107,7 @@ bench() {
     secs="$(awk -v d="$delta" 'BEGIN{ printf "%.3f", d/1000 }')"
   fi
 
-  printf "⏱  %s ms (~%s s)\n" "$delta" "$secs"
+  printf "⏱ %s ms (~%s s)\n" "$delta" "$secs"
 }
 
 # Cambia entre distintos .env de forma segura

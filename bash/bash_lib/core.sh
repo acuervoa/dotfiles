@@ -17,13 +17,12 @@ _req() {
 # Respeta $VISUAL, luego $EDITOR. Fallback a nvim/vim/nano.
 # Si se pasa número de línea y el editor soporta "+<line>", lo usa.
 _edit_at() {
-  local file="$1" line="$2"
-  local editor
+  local file="$1" line="$2" editor
 
-  if [ -z "$file" ]; then
+  [ -z "$file" ] && {
     printf 'No hay fichero que abrir.\n' >&2
     return 1
-  fi
+  }
 
   if [ -n "${VISUAL:-}" ]; then
     editor="$VISUAL"
@@ -53,7 +52,7 @@ _edit_at() {
 fkill() {
   _req fzf ps awk kill || return 1
 
-  local sel
+  local sel pids=() line pid
   sel="$(
     ps -eo pid,user,stat,%cpu,%mem,cmd --sort=-%cpu |
       awk 'NR>1' |
@@ -66,14 +65,9 @@ fkill() {
 
   [ -z "$sel" ] && return 0
 
-  local pids=()
-  local line pid
   while IFS= read -r line; do
     pid="$(printf '%s\n' "$line" | awk '{print $1}')"
-    if [ "$pid" = "1" ] || [ "$pid" = "$$" ]; then
-      continue
-    fi
-    pids+=("$pid")
+    [ "$pid" = "1" ] || [ "$pid" = "$$" ] || pids+=("$pid")
   done <<<"$sel"
 
   [ "${#pids[@]}" -eq 0 ] && {
