@@ -201,7 +201,7 @@ done
 
 ### Licencia
 
-MIT
+[MIT](LICENSE)
 
 ---
 
@@ -350,4 +350,4 @@ git commit --allow-empty -m "WIP prueba" || echo "OK: commit-msg bloqueó el men
 
 ### License
 
-MIT
+[MIT](LICENSE)
