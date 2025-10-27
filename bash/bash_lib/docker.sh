@@ -86,3 +86,15 @@ dsh() {
 
   _docker_compose exec "$svc" bash 2>/dev/null || _docker_compose exec "$svc" sh
 }
+
+# Limpiar recursos docker sin uso tras confirmación explícita
+dclean() {
+  _req docker || return 1
+
+  printf '%s' 'Esto ejecutará "docker system prune" y eliminará contenedores detenidos, imágenes dangling y cachés. ¿Continuar? [y/N] ' >&2
+  local ans
+  read -r ans
+  [ "$ans" = "y" ] || return 0
+
+  docker system prune "$@"
+}
