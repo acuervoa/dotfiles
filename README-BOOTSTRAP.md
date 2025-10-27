@@ -4,12 +4,12 @@ Guía rápida para levantar el entorno de **dotfiles** en Arch con **backups**, 
 
 ## Paquetes base (Arch)
 ```bash
-sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide       wl-clipboard xclip trash-cli docker docker-compose bc       tmux neovim i3-wm kitty rofi polybar dunst picom
+sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide       wl-clipboard xclip trash-cli docker docker-compose bc       tmux lazygit neovim i3-wm kitty rofi polybar dunst picom
 ```
 
 ## Estructura
 - Home: `bash/` (bashrc, aliases, profile, xprofile…)
-- Config: `config/{kitty,polybar,picom,i3,dunst,rofi,nvim}`
+- Config: `config/{kitty,lazygit,polybar,picom,i3,dunst,rofi,nvim}`
 - Docs: `README.md`, `README-BOOTSTRAP.md`, `SHORTCUTS.md`, `CHANGELOG.md`
 
 ## Bootstrap (vía scripts)
@@ -27,7 +27,7 @@ for f in bash/bashrc bash/bash_aliases bash/bash_profile bash/profile bash/xprof
   stow -vt "$HOME" "$(dirname "$f")" -S
 done
 
-for pkg in kitty polybar picom i3 dunst rofi nvim; do
+for pkg in kitty lazygit polybar picom i3 dunst rofi nvim; do
   mkdir -p "$HOME/.config/$pkg"
   [ -e "$HOME/.config/$pkg" ] && true
   stow -vt "$HOME/.config" "config/$pkg" -S

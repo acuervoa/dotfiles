@@ -420,6 +420,7 @@
 | `ga` | `git add -A` | Añade todo. |
 | `gco` | `git checkout` | Alias clásico. |
 | `gsw` | `git switch` | Cambio de rama. |
+| `lg` | `lazygit` (si está instalado) | UI TUI para Git que respeta los hooks globales (`~/.git-hooks`). No reemplaza `git lg` (alias de `gitalias`). |
 | `l0` | `\ls --color=auto` | LS «clásico» cuando se redefine `ls`. |
 | `ls` | Si existe `eza`: `eza --group-directories-first --icons=auto --color=auto --sort newest -la`; si no, `ls --color=auto`. | Listado enriquecido. |
 | `ll` | `eza -lh --git ...` o `ls -alh --color=auto` | Listado detallado. |

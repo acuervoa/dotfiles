@@ -13,6 +13,9 @@ alias gds='git diff --cached --color=always | bat --paging=always --plain --colo
 alias ga='git add -A'
 alias gco='git checkout'
 alias gsw='git switch'
+if command -v lazygit >/dev/null 2>&1; then
+  alias lg='lazygit'
+fi
 
 # ls mejorado: eza
 alias l0='\ls --color=auto'
