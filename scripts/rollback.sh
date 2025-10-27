@@ -11,13 +11,36 @@ BACKUP_ROOT="$DOTFILES/.backups"
 pick_manifest() {
   local sel="$1"
   if [[ "$sel" == "latest" || -z "$sel" ]]; then
-    ls -1 "$MANIFEST_ROOT"/*.manifest 2>/dev/null | sort | tail -n1
+    local manifest_files=()
+    local nullglob_was_set=0
+    if shopt -q nullglob; then
+      nullglob_was_set=1
+    fi
+    shopt -s nullglob
+    manifest_files=("$MANIFEST_ROOT"/*.manifest)
+    if ((nullglob_was_set == 0)); then
+      shopt -u nullglob
+    fi
+
+    if ((${#manifest_files[@]} == 0)); then
+      return 2
+    fi
+
+    printf '%s\n' "${manifest_files[@]}" | sort | tail -n1
   else
     echo "$MANIFEST_ROOT/$sel.manifest"
   fi
 }
 
-MANIFEST="$(pick_manifest "${1:-latest}")"
+if MANIFEST="$(pick_manifest "${1:-latest}")"; then
+  :
+else
+  status=$?
+  if ((status == 2)); then
+    echo "No se encontraron manifests en $MANIFEST_ROOT" >&2
+  fi
+  exit "$status"
+fi
 [[ -f "$MANIFEST" ]] || {
   echo "No existe manifest: $MANIFEST" >&2
   exit 1
