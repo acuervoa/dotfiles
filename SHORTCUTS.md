@@ -413,6 +413,8 @@
 | `..` / `...` | `cd ..` / `cd ../..` | Navegación rápida de directorios. |
 | `gs` | `git status -sb 2>/dev/null || git status` | Status breve con fallback si `-sb` no soportado. |
 | `gc` / `gcm` | `git commit` / `git commit -m` | Accesos directos a commit. |
+| `gup` | `git pull --rebase --autostash` | Pull que rebasea y guarda cambios sin staged. |
+| `gfa` | `git fetch --all --prune` | Actualiza remotos y elimina referencias obsoletas. |
 | `gpf` | `git push --force-with-lease` | Push forzado seguro. |
 | `gl` | `git log --oneline --graph -n 30` | Historial compacto. |
 | `gd` | `git diff --color=always \| bat --pagging=always --plain --color=always 2>/dev/null || git diff` | Diff coloreado vía `bat`; **typo `--pagging` rompe la opción, ver Observaciones**. |
