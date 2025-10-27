@@ -127,4 +127,6 @@ move_to_end "/nix/var/nix/profiles/default/bin"
 export PATH
 
 # PATH y extras ligeros
-export PATH=/home/acuervo/.config/composer/vendor/bin:${PATH}
+if [ -d "$HOME/.config/composer/vendor/bin" ]; then
+  PATH="$HOME/.config/composer/vendor/bin:$PATH"
+fi
