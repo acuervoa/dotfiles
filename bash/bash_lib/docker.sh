@@ -2,7 +2,7 @@
 
 # devuelve si tenemos "docker compose" o "docker-compose"
 _have_compose() {
-  if command -v docker-compose >/dev/null 2>1; then
+  if command -v docker-compose >/dev/null 2>&1; then
     return 0
   fi
   if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
