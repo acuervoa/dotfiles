@@ -129,22 +129,31 @@ nm_ssid_for() {
   echo "$ssid"
 }
 
-choose_ifaces() {
-  # Si el usuario define IF_OVERRIDE="eth0,wlan0", respétalo
-  if [[ -n "${IF_OVERRIDE:-}" ]]; then
-    # Filtra a interfaces existentes
-    local out=""
-    IFS=',' read -ra ARR <<<"$IF_OVERRIDE"
-    for n in "${ARR[@]}"; do
-      [[ -e "/sys/class/net/$n" ]] && out+="$n "
-    done
-    [[ -n "$out" ]] && { echo "$out"; return; }
-  fi
+normalize_override_list() {
+  local raw="$1" token out=""
+  local -A seen=()
 
-  # Preferimos todas las interfaces UP (excluye lo/docker/virt)
-  local list=""
+  # Normaliza separadores: comas, punto y coma y saltos de línea → espacios
+  raw="${raw//$'\n'/ }"
+  raw="${raw//,/ }"
+  raw="${raw//;/ }"
+
+  for token in $raw; do
+    [[ -n "$token" ]] || continue
+    [[ -e "/sys/class/net/$token" ]] || continue
+    if [[ -z "${seen[$token]:-}" ]]; then
+      seen[$token]=1
+      out+="$token "
+    fi
+  done
+
+  [[ -n "$out" ]] && printf '%s' "${out% }"
+}
+
+auto_detect_ifaces() {
+  local list="" name
   for dev in /sys/class/net/*; do
-    local name; name=$(basename "$dev")
+    name=$(basename "$dev")
     case "$name" in
       lo|veth*|docker*|br-*|vmnet*|tun*|tap*|kube*|virbr*) continue;;
     esac
@@ -152,14 +161,33 @@ choose_ifaces() {
     grep -q up "$dev/operstate" || continue
     list+="$name "
   done
-  # Si ninguna UP, usar la del default route si existe
+
   if [[ -z "$list" ]]; then
     local dif
     dif=$(ip -o route show default 2>/dev/null | awk '{print $5; exit}' || true)
     [[ -n "$dif" ]] && list="$dif"
   fi
-  echo "$list"
+
+  [[ -n "$list" ]] && printf '%s' "${list% }"
 }
+
+choose_ifaces() {
+  # Si el usuario define IF_OVERRIDE="eth0,wlan0", respétalo
+  if [[ -n "${IF_OVERRIDE:-}" ]]; then
+    local cleaned
+    cleaned="$(normalize_override_list "$IF_OVERRIDE")"
+    [[ -n "$cleaned" ]] && { echo "$cleaned"; return; }
+  fi
+
+  local auto
+  auto="$(auto_detect_ifaces)"
+  echo "${auto:-}"
+}
+
+if [[ "${1:-}" == "--detect-ifaces" ]]; then
+  auto_detect_ifaces
+  exit 0
+fi
 
 net_rates() {
   # Devuelve: "rx_kis tx_kis has_eth has_wifi wifi_ssid"
