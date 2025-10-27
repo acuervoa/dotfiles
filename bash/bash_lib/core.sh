@@ -159,7 +159,7 @@ t() {
 
 # Papelera en vez de rm directo
 trash() {
-  _req thrash-put || {
+  _req trash-put || {
     printf 'Necesito trash-put (paquete trash-cli)\n' >&2
     return 1
   }
