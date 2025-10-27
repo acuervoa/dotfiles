@@ -6,6 +6,14 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-10-29 — Rollback robusto y Polybar consciente de monitores
+
+### Cambiado
+- `config/polybar/launch.sh`: el _launcher_ detecta monitores conectados con `xrandr`, respeta el primario (o cae al primero disponible) y solo lanza las barras necesarias (`main` + `secondary`).
+
+### Corregido
+- `scripts/rollback.sh`: selección segura del manifest más reciente (`latest`) aun cuando no existan archivos, mensajes claros cuando faltan manifests/backups y omisión de paquetes `stow` inexistentes.
+
 ## 2025-10-28 — Documentación alineada con git-hooks
 
 ### Cambiado
