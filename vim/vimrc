@@ -170,10 +170,12 @@ nnoremap <silent> <C-PageUp>    :bprevious<CR>
 nnoremap <silent> <leader>bd    :bdelete<CR>
 nnoremap <silent> <leader>bo    :%bd\|e#\|bd#<CR>
 
-nnoremap <silent> <C-h> <C-w>h
-nnoremap <silent> <C-j> <C-w>j
-nnoremap <silent> <C-k> <C-w>k
-nnoremap <silent> <C-l> <C-w>l
+if !exists(':TmuxNavigateLeft')
+  nnoremap <silent> <C-h> <C-w>h
+  nnoremap <silent> <C-j> <C-w>j
+  nnoremap <silent> <C-k> <C-w>k
+  nnoremap <silent> <C-l> <C-w>l
+endif
 nnoremap <silent> <C-Up>    :resize +2<CR>
 nnoremap <silent> <C-Down>  :resize -2<CR>
 nnoremap <silent> <C-Left>  :vertical resize -2<CR>
@@ -225,7 +227,7 @@ nnoremap <silent> <Esc> :nohlsearch<CR>
 
 " Mappings para navegacion entre ventanas
 let g:tmux_navigator_no_mappings = 1
-let g:temux_navigator_disable_when_zoomed = 1
+let g:tmux_navigator_disable_when_zoomed = 1
 nnoremap <silent> <C-h> :<C-U>TmuxNavigateLeft<CR>
 nnoremap <silent> <C-j> :<C-U>TmuxNavigateDown<CR>
 nnoremap <silent> <C-k> :<C-U>TmuxNavigateUp<CR>
