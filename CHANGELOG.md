@@ -6,6 +6,43 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2025-10-27 — Modularización Bash, fixes y atajos
+
+### Añadido
+- **Librería Bash modular** en `~/.bash_lib/` dividida en:
+  - `core.sh`: `_req`, `_edit_at`, `fkill`, `rgf`, `t`, `trash`, `redo`.
+  - `git.sh`: `gbr`, `gcof`, `gclean`, `gp`, `watchdiff`, `recent`, `wip`, `fixup`, etc.
+  - `docker.sh`: `_docker_compose` (v1/v2), `docps`, `dlogs`, `dsh`.
+  - `nav.sh`: `fo`, `cdf`, `take`.
+  - `misc.sh`: `fhist`, `todo`, `bench`, `envswap`, `r`, `ports`, `topme`, `tt`, `extract`, `cb`.
+- Documentación actualizada: `README.md`, `README-BOOTSTRAP.md`, `SHORTCUTS.md`, `CONTRIBUTING.md`.
+
+### Cambiado
+- `~/.bashrc` pasa a **carga modular** (sourcing de `~/.bash_lib/*.sh`) en lugar de `.bash_functions` monolítico.
+- Ajustes de entorno: `stty -ixon`, `set -o vi`, FZF defaults (con `rg`/`fd`), integración `zoxide`, `starship`, `fnm`.
+
+### Corregido
+- `fhist`: typo `printf` (antes `prinf`) y deduplicación estable.
+- `cb`: detección correcta de **stdin piped** vs args; soporta `wl-copy`, `xclip`, `pbcopy`.
+- `bench`: cronometraje estable (ms) con _fallback_ portable.
+- `ports`: alineado con `ss`/`lsof` y cabeceras consistentes.
+- `docker`: detección robusta de `docker-compose` v1 y `docker compose` v2; `cd` a raíz del repo si hay compose.
+- Funciones `g*` (git): validaciones y previews fzf consistentes.
+
+### Deprecated / Eliminado
+- Uso directo de `.bash_functions` → **reemplazado** por `~/.bash_lib/*.sh`.
+
+### Migración
+1. Comenta la carga de `.bash_functions` en `~/.bashrc`.
+2. Añade:
+   ```bash
+   [ -f "$HOME/.bash_lib/core.sh"   ] && . "$HOME/.bash_lib/core.sh"
+   [ -f "$HOME/.bash_lib/git.sh"    ] && . "$HOME/.bash_lib/git.sh"
+   [ -f "$HOME/.bash_lib/nav.sh"    ] && . "$HOME/.bash_lib/nav.sh"
+   [ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
+   [ -f "$HOME/.bash_lib/misc.sh"   ] && . "$HOME/.bash_lib/misc.sh"
+   ```
+
 ## 2025-10-26
 
 ### Añadido
@@ -128,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tmux list-keys | grep -E 'bind-key q kill-pane|find-window'` → deben aparecer los nuevos binds.
   - Probar: `prefix+q`, `prefix+f`, `prefix+"`, `prefix+%`, `Alt+Shift+Flechas`.
 - **i3**
-  - `i3-msg -t get_bindings | grep -E '"(Mod4\\+z|Mod4\\+f|Mod4\\+Shift\\+(Left|Right|Up|Down))"'`
+  - `i3-msg -t get_bindings | grep -E '"(Mod4\+z|Mod4\+f|Mod4\+Shift\+(Left|Right|Up|Down))"'`
   - Probar: `$mod+z` (fullscreen), `$mod+f` (Rofi window), `$mod+Shift+Flechas` (resize).
 - **Neovim**
   - `:verbose map <C-f>` → debe mostrar el mapping al prompt de `/`.
@@ -145,14 +182,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Secuencias de Alt+Shift+Flechas** pueden variar según terminal; en _Kitty_ funcionan correctamente. Si no funcionan, usar solo `Ctrl+Flechas`.
 - Cambio de hábito: `$mod+f` ya no es fullscreen (ver “Notas de migración” #2).
-
----
-
-## Histórico anterior
-
-> Este es el primer changelog formal de la serie “alineado a tmux”.
-
-# Changelog
 
 ## [2025-10-19] - Audit: estabilidad, tema y atajos
 

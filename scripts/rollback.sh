@@ -18,10 +18,16 @@ pick_manifest() {
 }
 
 MANIFEST="$(pick_manifest "${1:-latest}")"
-[[ -f "$MANIFEST" ]] || { echo "No existe manifest: $MANIFEST" >&2; exit 1; }
+[[ -f "$MANIFEST" ]] || {
+  echo "No existe manifest: $MANIFEST" >&2
+  exit 1
+}
 TS="$(basename "$MANIFEST" .manifest)"
 BACKUP_DIR="$BACKUP_ROOT/$TS"
-[[ -d "$BACKUP_DIR" ]] || { echo "No existe backup dir: $BACKUP_DIR" >&2; exit 1; }
+[[ -d "$BACKUP_DIR" ]] || {
+  echo "No existe backup dir: $BACKUP_DIR" >&2
+  exit 1
+}
 
 echo "[*] Usando manifest: $MANIFEST"
 echo "[*] Usando backup  : $BACKUP_DIR"
@@ -34,9 +40,9 @@ while read -r line; do
     PACKAGES=($rest)
     break
   fi
-done < "$MANIFEST"
+done <"$MANIFEST"
 
-if (( ${#PACKAGES[@]} )); then
+if ((${#PACKAGES[@]})); then
   EXISTING=()
   MISSING=()
   for pkg in "${PACKAGES[@]}"; do
@@ -47,15 +53,19 @@ if (( ${#PACKAGES[@]} )); then
     fi
   done
 
-  if (( ${#MISSING[@]} )); then
+  if ((${#MISSING[@]})); then
     echo "[*] Omitiendo paquetes ausentes: ${MISSING[*]}"
   fi
 
-  if (( ${#EXISTING[@]} )); then
-    echo "[*] Desstow: ${EXISTING[*]}"
-    pushd "$DOTFILES/config" >/dev/null
-    stow -v -D -t "$HOME/.config" "${EXISTING[@]}"
-    popd >/dev/null
+  if ((${#EXISTING[@]})); then
+    if ! command -v stow >/dev/null 2>&1; then
+      echo "[!] 'stow' no está instalado. Omitiendo des-stow de paquetes."
+    else
+      echo "[*] Desstow: ${EXISTING[*]}"
+      pushd "$DOTFILES/config" >/dev/null
+      stow -v -D -t "$HOME/.config" "${EXISTING[@]}"
+      popd >/dev/null
+    fi
   else
     echo "[*] No hay paquetes de ~/.config para desstow."
   fi

@@ -103,7 +103,7 @@ if [[ "$MODE" == "stow" ]]; then
     fi
   done
 
-  if (( ${#MISSING_PACKAGES[@]} )); then
+  if ((${#MISSING_PACKAGES[@]})); then
     note "Omitiendo paquetes inexistentes: ${MISSING_PACKAGES[*]}"
   fi
 
@@ -115,9 +115,11 @@ if [[ "$MODE" == "stow" ]]; then
   link_to "$DOTFILES/bash/xprofile" "$HOME/.xprofile"
   link_to "$DOTFILES/bash/bash_aliases" "$HOME/.bash_aliases"
   link_to "$DOTFILES/bash/bash_functions" "$HOME/.bash_functions"
+  link_to "$DOTFILES/bash/bash_lib" "$HOME/.bash_lib"
   # git
   link_to "$DOTFILES/git/gitconfig" "$HOME/.gitconfig"
   link_to "$DOTFILES/git/gitalias" "$HOME/.gitalias"
+  link_to "$DOTFILES/git/git-hooks" "$HOME/.git-hooks"
   # tmux
   link_to "$DOTFILES/tmux/tmux.conf" "$HOME/.tmux.conf"
   if [[ -d "$DOTFILES/tmux/tmux" ]]; then
@@ -134,11 +136,12 @@ if [[ "$MODE" == "stow" ]]; then
   fi
 
   # 2) Stow para ~/.config
-  if (( ${#PACKAGES_TO_STOW[@]} )); then
+  if ((${#PACKAGES_TO_STOW[@]})); then
     pushd "$DOTFILES/config" >/dev/null
     echo "PACKAGES ${PACKAGES_TO_STOW[*]}" >>"$MANIFEST"
     STOW_FLAGS="-v"
     $DRYRUN && STOW_FLAGS="-n -v"
+    act "mkdir -p '$HOME/.config'"
     act "stow $STOW_FLAGS -t '$HOME/.config' ${PACKAGES_TO_STOW[*]}"
     popd >/dev/null
   else

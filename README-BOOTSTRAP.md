@@ -1,72 +1,57 @@
-# Bootstrap, Backups & Rollback
+# README-BOOTSTRAP
 
-## Requisitos
+Guía rápida para levantar el entorno de **dotfiles** en Arch con **backups**, **symlinks** y **librería Bash modular**.
 
-- GNU stow (`sudo pacman -S stow`)
+## Paquetes base (Arch)
+```bash
+sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide       wl-clipboard xclip trash-cli docker docker-compose bc       tmux neovim i3-wm kitty rofi polybar dunst picom
+```
 
-## Bootstrap (dry-run)
+## Estructura
+- Home: `bash/` (bashrc, aliases, profile, xprofile…)
+- Config: `config/{kitty,polybar,picom,i3,dunst,rofi,nvim}`
+- Docs: `README.md`, `README-BOOTSTRAP.md`, `SHORTCUTS.md`, `CHANGELOG.md`
 
+## Bootstrap (vía scripts)
 ```bash
 cd ~/dotfiles
 bash ./scripts/bootstrap.sh --dry-run
-```
-
-## Bootstrap (aplicar)
-
-```bash
 bash ./scripts/bootstrap.sh
 ```
 
-Crea `./.backups/<TS>/` y `./.manifests/<TS>.manifest` y enlaza:
-
-- Bash/Git/Tmux/Vim ⇒ $HOME
-- Paquetes `config/*` ⇒ `~/.config` (stow)
-
-## Plan B (si no usas scripts)
-
-> Requiere stow (instala con sudo pacman -S stow).
-
+## Bootstrap manual con stow (mínimo)
 ```bash
 cd ~/dotfiles
-# Home-level (bash y similares)
 for f in bash/bashrc bash/bash_aliases bash/bash_profile bash/profile bash/xprofile; do
-
-base=$(basename "$f"); [ -f "$HOME/.${base}" ] && cp -a "$HOME/.${base}" "$HOME/.${base}.bak"
-
-stow -vt "$HOME" "$(dirname "$f")" -S
+  base=$(basename "$f"); [ -f "$HOME/.${base}" ] && cp -a "$HOME/.${base}" "$HOME/.${base}.bak"
+  stow -vt "$HOME" "$(dirname "$f")" -S
 done
-# Configs bajo ~/.config (ejemplos)
-stow -vt "$HOME/.config" config/kitty -S
-stow -vt "$HOME/.config" config/polybar -S
-stow -vt "$HOME/.config" config/picom -S
-stow -vt "$HOME/.config" config/i3 -S
-stow -vt "$HOME/.config" config/dunst -S
-stow -vt "$HOME/.config" config/rofi -S
-stow -vt "$HOME/.config" config/nvim -S
+
+for pkg in kitty polybar picom i3 dunst rofi nvim; do
+  mkdir -p "$HOME/.config/$pkg"
+  [ -e "$HOME/.config/$pkg" ] && true
+  stow -vt "$HOME/.config" "config/$pkg" -S
+done
 ```
 
-## Validación (bootstrap)
-
+## Librería Bash modular
 ```bash
-# Symlinks creados
-for p in ~/.config/{kitty/kitty.conf,polybar/config.ini,picom/picom.conf,i3/config,dunst/dunstrc,rofi/config.rasi,nvim}; do
-
-[ -L "$p" ] && echo "OK $p -> $(readlink -f "$p")" || echo "MISSING $p"
-done
+# En ~/.bashrc (carga condicional de módulos)
+[ -f "$HOME/.bash_lib/core.sh"   ] && . "$HOME/.bash_lib/core.sh"
+[ -f "$HOME/.bash_lib/git.sh"    ] && . "$HOME/.bash_lib/git.sh"
+[ -f "$HOME/.bash_lib/nav.sh"    ] && . "$HOME/.bash_lib/nav.sh"
+[ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
+[ -f "$HOME/.bash_lib/misc.sh"   ] && . "$HOME/.bash_lib/misc.sh"
 ```
 
-## Rollback (último)
+## Validación rápida
+```bash
+source ~/.bashrc
+bash -n ~/.bash_lib/*.sh && for f in ~/.bash_lib/*.sh; do . "$f"; done
+type gbr gcof gclean docps dlogs dsh fo cdf rgf cb bench >/dev/null
+```
 
+## Rollback
 ```bash
 bash ./scripts/rollback.sh latest
 ```
-
-O por timestamp:
-
-```bash
-bash ./scripts/rollback.sh 20251020-120000
-```
-
-## Modo alternativo: git bare
-
-Documentado en `bootstrap.sh --mode=bare` (no se ejecuta por defecto).
