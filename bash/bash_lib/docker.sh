@@ -35,6 +35,20 @@ _cd_repo_root_if_compose() {
   fi
 }
 
+_list_running_services() {
+  if out="$(_docker_compose ps --services --status=runnig 2>/dev/null)" && [ -n "$out" ]; then
+    printf '%s\n' "$out"
+    return 0
+  fi
+
+  if out="$()_docker_compose ps --services --filter "status=running" 2>/dev/null)" && [ -n "$out" ]; then
+    printf '%s\n' "$out"
+    return 0
+  fi
+
+  return 1
+}
+
 # Servicios docker activos (docker compose ps)
 # - Intenta situarte en la raíz del repo SOLO si ahí está el compose.
 docps() {
@@ -71,13 +85,11 @@ dlogs() {
 dsh() {
   _req fzf docker || return 1
   _have_compose || return 1
-
   _cd_repo_root_if_compose
 
   local svc
   svc="$(
-    _docker_compose ps |
-      awk 'NR>1 && $0 ~ /running/ {print $4}' |
+    _list_running_services |
       sort -u |
       fzf --prompt=' shell > ' --header='Servicios activos (running)'
   )" || return 0
