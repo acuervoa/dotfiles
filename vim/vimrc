@@ -17,6 +17,20 @@ set splitright splitbelow
 set nowrap
 set undofile
 
+" Backup files (archivo~)
+set backup
+set backupext=.bak
+set backupdir=~/.vim-tmp/backup//
+
+" Swap files (.swp)
+set swapfile
+set directory=~/.vim-tmp/swap//
+
+" Undo persistente (.un~)
+set undofile
+set undodir=~/.vim-tmp/undo//
+
+
 " ===== Plugin manager: vim-plug =====
 " Instala vim-plug si no lo tienes: https://github.com/junegunn/vim-plug
 " (en shell) curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
