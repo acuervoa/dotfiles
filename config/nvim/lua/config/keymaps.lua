@@ -1,5 +1,6 @@
 -- Keymaps "globales" no atados a plugins concretos
 local map = vim.keymap.set
+local opt = { silent = true, noremap = true }
 
 -- Navegación de ventanas/paneles (Neovim <-> tmux)
 map("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Focus left (nvim/tmux)" })
@@ -51,3 +52,23 @@ map("n", "<leader>w", "<cmd>w<cr>", { desc = "Write file" })
 map({ "n", "i", "v" }, "<C-f>", function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("/", true, false, true), "n", false)
 end, { desc = "Search prompt (/)" })
+
+-- Navegación de buffers (rápido, sin plugins)
+map("n", "H", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
+map("n", "L", "<cmd>bnext<cr>", { desc = "Next buffer" })
+
+-- Conserva el comportamiento nativo de H/L (top/bottom of screen) en gH/gL
+map("n", "gH", "<cmd>normal! H<cr>", { desc = "Screen top" })
+map("n", "gL", "<cmd>normal! L<cr>", { desc = "Screen bottom" })
+
+-- Limpiar hightlight de búsqueda
+map("n", "<leader><space>", "<cmd>nohlsearch<cr>", { desc = "Clear search hightlight" })
+
+-- Toggles de edición para el día a día
+map("n", "<leader>tw", function()
+	vim.opt.wrap = not vim.opt.wrap:get()
+end, { desc = "Toggle wrap" })
+map("n", "<leader>tn", function()
+	vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end, { desc = "Toggle relativenumber" })
+map("n", "<leader>ts", "<cmd>setlocal spell! spelllang=es,en<cr>", { desc = "Toggle spell (es/en)" })

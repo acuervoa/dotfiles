@@ -27,7 +27,7 @@ require("lazy").setup({
 				"zipPlugin",
 				"netrwPlugin",
 				"matchit",
-				"matchparen",
+				"matchparent",
 			},
 		},
 	},

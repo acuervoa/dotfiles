@@ -45,6 +45,7 @@ if command -v docker >/dev/null 2>&1; then
   alias dcl='docker compose logs'
   alias dclf='docker compose logs -f'
   alias dce='docker compose exec'
+  alias dil='docker images'
 fi
 
 # Modernos y seguros
