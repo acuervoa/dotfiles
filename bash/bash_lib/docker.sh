@@ -41,7 +41,7 @@ _list_running_services() {
     return 0
   fi
 
-  if out="$()_docker_compose ps --services --filter "status=running" 2>/dev/null)" && [ -n "$out" ]; then
+  if out="$(_docker_compose ps --services --filter "status=running" 2>/dev/null)" && [ -n "$out" ]; then
     printf '%s\n' "$out"
     return 0
   fi

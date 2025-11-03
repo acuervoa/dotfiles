@@ -8,3 +8,5 @@ export VISUAL="nvim"
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 export PROFILE_LOADED="yes"
+
+. "$HOME/.atuin/bin/env"

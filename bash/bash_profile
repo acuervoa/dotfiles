@@ -7,3 +7,5 @@
 case $- in
     *i* ) [ -f "$HOME/.bashrc" ] && . "$HOME/.bashrc" ;;
 esac
+
+. "$HOME/.atuin/bin/env"

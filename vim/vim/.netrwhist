@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =9
+let g:netrw_dirhist_9='/home/af601888/Workspace/perf-lab'
+let g:netrw_dirhist_8='/home/af601888/Workspace/perf-lab/php'
+let g:netrw_dirhist_7='/home/af601888/Workspace/perf-lab'
+let g:netrw_dirhist_6='/home/af601888/code/logscope/cmd'
+let g:netrw_dirhist_5='/home/af601888/code/logscope'
+let g:netrw_dirhist_4='/home/acuervo/dotfiles/vim/.vim/config'
+let g:netrw_dirhist_3='/home/acuervo/dotfiles/vim/.vim'
+let g:netrw_dirhist_2='/home/acuervo/dotfiles/vim'
+let g:netrw_dirhist_1='/home/acuervo/dotfiles'
