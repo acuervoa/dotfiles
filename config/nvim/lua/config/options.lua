@@ -1,3 +1,4 @@
+-- options.lua
 -- Opciones básicas (estilo VSCode)
 local o = vim.opt
 o.number = true
@@ -22,7 +23,6 @@ o.splitright = true
 o.splitbelow = true
 o.wrap = false
 o.undofile = true
--- FIX: winborder no es option global (evita error de inicio)
 
 -- Desactiar providers
 vim.g.loaded_perl_provider = 0

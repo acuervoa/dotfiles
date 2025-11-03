@@ -1,3 +1,4 @@
+-- nvim-dap
 return {
 	"mfussenegger/nvim-dap",
 	dependencies = {
@@ -14,21 +15,21 @@ return {
 			desc = "Debug: Start/Continue",
 		},
 		{
-			"<F10>",
+			"<leader>d0",
 			function()
 				require("dap").step_over()
 			end,
 			desc = "Debug: Step Over",
 		},
 		{
-			"<F11>",
+			"<leader>dI",
 			function()
 				require("dap").step_into()
 			end,
 			desc = "Debug: Step Into",
 		},
 		{
-			"<S-F11>",
+			"<leader>dU",
 			function()
 				require("dap").step_out()
 			end,

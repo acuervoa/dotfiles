@@ -1,12 +1,14 @@
+-- keymaps.lua
+
 -- Keymaps "globales" no atados a plugins concretos
 local map = vim.keymap.set
 local opt = { silent = true, noremap = true }
 
 -- Navegación de ventanas/paneles (Neovim <-> tmux)
-map("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Focus left (nvim/tmux)" })
-map("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Focus down (nvim/tmux)" })
-map("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Focus up (nvim/tmux)" })
-map("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Focus right (nvim/tmux)" })
+-- map("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Focus left (nvim/tmux)" })
+-- map("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Focus down (nvim/tmux)" })
+-- map("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Focus up (nvim/tmux)" })
+-- map("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Focus right (nvim/tmux)" })
 map("n", "<M-h>", "<C-w>h", { desc = "Go to left window (Alt)" })
 map("n", "<M-l>", "<C-w>l", { desc = "Go to right window (Alt)" })
 
@@ -48,10 +50,11 @@ map("n", "<C-Down>", "<cmd>resize -1<cr>", { desc = "Decrease height (C-Down)" }
 -- Guardado alternativo (dentro de tmux, <C-s> es prefijo)
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Write file" })
 
--- Búsqueda coherente (Ctrl-f abre el prompt '/')
-map({ "n", "i", "v" }, "<C-f>", function()
+-- Búsqueda: evita choque con nvim-cmp (usa <C-f> en insert.)
+map("n", "<C-f>", function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("/", true, false, true), "n", false)
 end, { desc = "Search prompt (/)" })
+map("n", "<leader>/", "/", { desc = "Buscar (/)" })
 
 -- Navegación de buffers (rápido, sin plugins)
 map("n", "H", "<cmd>bprevious<cr>", { desc = "Previous buffer" })

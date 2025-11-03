@@ -1,4 +1,6 @@
--- Highlight al copiar
+--- autocmds.lua
+
+--- Highlight al copiar
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
 	callback = function()
@@ -43,5 +45,25 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 vim.api.nvim_create_autocmd("VimResized", {
 	callback = function()
 		vim.cmd("tabdo wincmd =")
+	end,
+})
+
+-- Cerrar paneles/ventanas auxiliares con 'q'
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("q_to_close", { clear = true }),
+	pattern = {
+		"help",
+		"man",
+		"lspinfo",
+		"qf",
+		"checkhealth",
+		"OverseerList",
+		"neotest-summary",
+		"neo-tree",
+		"Outline",
+		"dap-float",
+	},
+	callback = function(ev)
+		vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = ev.buf, silent = true })
 	end,
 })

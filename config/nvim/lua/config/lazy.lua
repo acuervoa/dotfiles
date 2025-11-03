@@ -1,3 +1,4 @@
+-- lazy.lua
 -- Bootstrap lazy.nvim y carga todo lo de lua/plugins/*
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local uv = vim.uv or vim.loop
