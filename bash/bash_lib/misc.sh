@@ -224,3 +224,13 @@ tt() {
   delta=$((end - start))
   printf '%s segundos (%s min)\n' "$delta" "$((delta / 60))"
 }
+
+# Wrapper de Yazi, cd al salir
+y() {
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+  yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd <"$tmp" || cwd="$(cat -- "$tmp")"
+  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+  rm -f -- "$tmp"
+}
