@@ -2,13 +2,20 @@
 # CONFIGURACIÓN DE i3WM
 # =======================
 
-# Modificador principal (Super/Win)
+# ------------ Variables base
 set $mod Mod4
+set $term kitty
+set $rofi rofi -font 'Noto Sans 13'
+set $volscript ~/.config/dunst/scripts/volctl
+set $micscript ~/.config/dunst/scripts/micctl
+set $refresh_polybar ~/.config/polybar/scripts/hook_refresh.sh
 
-# Fuente para títulos de ventana y barras
+
+
+# ------------- Fuente para títulos de ventana y barras
 font pango:MesloLGSDZ Nerd Font 10
 
-# Activar NumLock al iniciar sesión
+# ------------- Activar NumLock al iniciar sesión
 exec_always --no-startup-id numlockx on
 
 
@@ -18,44 +25,22 @@ exec --no-startup-id copyq
 # Lanzador universal (apps, archivos, cálculos)
 exec --no-startup-id albert
 
-
 # Redshift (temperatura de color, menos fatiga visual)
 exec --no-startup-id redshift -l geoclue2 -t 6500:3600 -r
 
-# Ajuste de brillo con teclas Fn (brightnessctl)
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+# Barra 
+exec_always --no-startup-id ~/.config/polybar/launch.sh
 
-# ======= SCRATCHPAD ÚTILES ========
+# System tray
+exec --no-startup-id nm-applet
+exec --no-startup-id dunst
 
-# Regla para mandarla al scratchpad y dejarla flotante/centrada
-for_window [class="scratch-terminal" instance="scratch-terminal"] \
-    floating enable, move position center, resize set 1600 900 
-
-# Si existe la mark 'scratch_term' -> toggle con scratchpad show:
-bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh
-# Terminal por defecto (Kitty)
-bindsym $mod+Return exec --no-startup-id kitty
-
-## Notas rápidas (Obsidian scratch)
-#exec --no-startup-id obsidian --class obsidian-scratch
-#for_window [class="obsidian-scratch"] floating enable, move position center, resize set 1600 900
-bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh
-#bindsym $mod+Shift+n [class="obsidian-scratch"] scratchpad show
-#
-## Reproductor de música
-#exec  --no-startup-id spotify --class spotify-scratch
-#for_window [class="spotify-scratch"] floating enable, move position center, resize set 1200 800
-#bindsym $mod+m exec --no-startup-id spotify
-#bindsym $mod+Shift+m [class="Spotify"] scratchpad show
-
+# Distribución dinámica de workspaces por salidas
+exec_always --no-startup-id $ext_detect
 
 # =======================
 # LANZADORES
 # =======================
-
-#set -x CM_HISTLENGTH 2000
-#set -x CM_SELECTIONS clipboard,primary
 # Lanzador de aplicaciones (Rofi)
 bindsym $mod+d exec --no-startup-id rofi -modi run -show drun -show-icons -font "Noto Sans 13"
 bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "Noto Sans 13"
@@ -63,30 +48,46 @@ bindsym $mod+Shift+d exec --no-startup-id rofi -show window -show-icons -font "N
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
 
 # =======================
+# BRILLO 
+# =======================
+# Ajuste de brillo con teclas Fn (brightnessctl)
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+# =======================
 # CONTROL DE VOLUMEN Y MULTIMEDIA
 # =======================
-set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id $volscript up && $refresh_polybar
+bindsym XF86AudioLowerVolume exec --no-startup-id $volscript down && $refresh_polybar
+bindsym XF86AudioMute        exec --no-startup-id $volscript mute && $refresh_polybar
 
-#bindsym XF86AudioRaiseVolume exec --no-startup-id pamixer -i 5 && $refresh_i3status
-#bindsym XF86AudioLowerVolume exec --no-startup-id pamixer -d 5 && $refresh_i3status
-#bindsym XF86AudioMute exec --no-startup-id pamixer -t && $refresh_i3status
-#bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-set $volscript ~/.config/dunst/scripts/volctl
-set $micscript ~/.config/dunst/scripts/micctl
-
-bindsym XF86AudioRaiseVolume exec --no-startup-id $volscript up && $refresh_i3status
-bindsym XF86AudioLowerVolume exec --no-startup-id $volscript down && $refresh_i3status
-bindsym XF86AudioMute        exec --no-startup-id $volscript mute && $refresh_i3status
-
-bindsym XF86AudioMicMute     exec --no-startup-id $micscript toggle && $refresh_i3status
-bindsym Shift+XF86AudioRaiseVolume exec --no-startup-id $micscript up && $refresh_i3status
-bindsym Shift+XF86AudioLowerVolume exec --no-startup-id $micscript down && $refresh_i3status
+bindsym XF86AudioMicMute     exec --no-startup-id $micscript toggle && $refresh_polybar
+bindsym Shift+XF86AudioRaiseVolume exec --no-startup-id $micscript up && $refresh_polybar
+bindsym Shift+XF86AudioLowerVolume exec --no-startup-id $micscript down && $refresh_polybar
 
 
 bindsym XF86AudioPlay exec playerctl play
 bindsym XF86AudioPause exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
+
+# ========================
+# SCRATCHPAD
+# ========================
+
+# Regla para mandarla al scratchpad y dejarla flotante/centrada
+for_window [class="scratch-terminal" instance="scratch-terminal"] \
+    floating enable, move position center, resize set 1600 900 
+
+# Si existe la mark 'scratch_term' -> toggle con scratchpad show:
+bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh
+# Notas rápidas (Obsidian scratch)
+bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh
+
+# Terminal por defecto (Kitty)
+bindsym $mod+Return exec --no-startup-id kitty
+
+
 
 # =======================
 # MOVIMIENTO Y GESTIÓN DE VENTANAS
@@ -102,13 +103,12 @@ bindsym $mod+$down focus down
 bindsym $mod+$up focus up
 bindsym $mod+$right focus right
 bindsym $mod+Tab workspace back_and_forth
-
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
-# Mover ventanas
+# Mover contenedor
 bindsym $mod+Shift+$left move left
 bindsym $mod+Shift+$down move down
 bindsym $mod+Shift+$up move up
@@ -129,7 +129,7 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+Mod1+h split h
 bindsym $mod+Mod1+v split v
-#
+
 # Redimensionar contenedor (similar a Alt+Shift+Flechas en tmux)
 bindsym $mod+Shift+Left  resize shrink width 10 px or 10 ppt
 bindsym $mod+Shift+Right resize grow   width 10 px or 10 ppt
@@ -187,6 +187,13 @@ bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
 # =======================
+# MULTIMONITOR
+# =======================
+# Mover ventana al monitor izquierdo/derecho
+bindsym $mod+Ctrl+Left move container to output left
+bindsym $mod+Ctrl+Right move container to output right
+
+# =======================
 # REINICIAR Y CERRAR SESIÓN
 # =======================
 bindsym $mod+Shift+c reload
@@ -196,6 +203,14 @@ bindsym control+mod1+Delete exec --no-startup-id ~/.config/i3/scripts/mode_syste
 bindsym $mod+q kill
 
 # =======================
+# NOTIFICACIONES
+# =======================
+# Dunst: pausar / reanudar (No molestar)
+bindsym $mod+Shift+y exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh
+# Dunst: ver historial y re-disparar la última
+bindsym $mod+y exec --no-startup-id /usr/bin/dunstctl history-pop
+
+# =======================
 # TRANSPARENCIA Y DISEÑO (PICOM)
 # =======================
 exec_always --no-startup-id picom -b
@@ -203,7 +218,7 @@ exec_always --no-startup-id picom -b
 # =======================
 # BARRA DE ESTADO (POLYBAR)
 # =======================
-exec_always --no-startup-id ~/.config/polybar/launch.sh
+#exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # =======================
 # SCREENSHOTS (FLAMESHOT)
@@ -218,37 +233,25 @@ exec --no-startup-id nm-applet
 exec --no-startup-id dunst
 exec_always --no-startup-id feh --bg-scale ~/Pictures/i3lock/2.jpg
 
-# =======================
-# NOTIFICACIONES
-# =======================
-# Dunst: pausar / reanudar (No molestar)
-bindsym $mod+Shift+y exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh
-# Dunst: ver historial y re-disparar la última
-bindsym $mod+y exec --no-startup-id /usr/bin/dunstctl history-pop
 
 # =======================
 # REGLAS PARA VENTANAS FLOTANTES
 # =======================
-for_window [window_role="task_dialog"] floating enable
-for_window [class="Alacritty"] floating disable
 for_window [class="^.*"] border pixel 1
+gaps inner 6
+gaps outer 3
+smart_gaps on
+smart_borders on
 
-# ====== WORKSPACES POR APLICACIÓN ========
-#assign [class="Code"]                 $ws4
-#assign [class="firefox"]               $ws1
-#assign [class="obsidian"]              $ws6
 
-# ===== MOVIMIENTO ENTRE SALIDAS ==========
-# Mover ventana al monitor izquierdo/derecho
-bindsym $mod+Ctrl+Left move container to output left
-bindsym $mod+Ctrl+Right move container to output right
 
 # ===== REGLAS GENERALES ==========
 # Evitar que popups rompan el layout
 for_window [window_type="dialog"] floating enable
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
+for_window [class="Pavucontrol|Nm-connection|Blueman-manger|flameshot|File-roller"] floating enable
+for_window [title="Picture-in-Picture"] floating enable, sticky enable
+for_window [class="Alacritty"] floating disable
 
-gaps inner 6
-gaps outer 3
 
