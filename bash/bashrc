@@ -18,7 +18,7 @@ fi
 # - Libera Ctrl+S
 stty -ixon 2>/dev/null || true
 # - Edición tipo Vim en linea de comandos
-set -o vi
+#set -o vi
 
 # Historial
 export HISTCONTROL=ignoredups:erasedups
