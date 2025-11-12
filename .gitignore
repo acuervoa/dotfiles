@@ -4,6 +4,9 @@
 !/vim/vim/autoload/plug.vim
 
 
+/config/yazi/plugins/
+/config/yazi/flavors/
+
 /.backups/
 /.manifests/
 *.swp
