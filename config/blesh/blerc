@@ -2,8 +2,9 @@
 
 # --- Integración fzf via ble (completado + keybindings) ---
 # Esto sustituye a los scripts /usr/share/fzf/key-bindings.bash & friends.
-ble-import -d integration/fzf-completion
-ble-import -d integration/fzf-key-bindings
+ble-import integration/fzf-completion
+ble-import integration/fzf-key-bindings
+
 
 
 # --- Autosuggestions tipo zsh-autosuggestions/fish ---
@@ -14,6 +15,7 @@ bleopt complete_auto_delay=120
 
 # Color tenue de la sugerencia (gris claro)
 ble-face auto_complete='fg=245,italic'
+# Color para errores de sintaxis
 ble-face syntax_error='fg=203,bold'
 
 # --- Ruido visual mínimo, estilo shell limpia ---
@@ -25,10 +27,17 @@ bleopt exec_elapsed_mark=
 bleopt edit_marker=
 bleopt edit_marker_error=
 
-# Ejecutar la línea actual con Alt+Enter
+# Ejecutar la línea actual con Ctrl-G (también en MULTILINE)
 ble-bind -f 'C-g' 'accept-line'
 
+# Asegurar que Alt+. inserta el último argumento
+ble-bind -f 'M-.' insert-last-argument
 
+
+# Despues de cargar fzf, si Atuin está disponible, forzar C-r -> Atuin
+#if command -v __atuin_history >/dev/null 2&1; then
+  ble-bind -x 'C-r' __atuin_history
+#fi
 # --- Comportamiento de completado tipo zsh ---
 
 # De serie ble.sh ya:

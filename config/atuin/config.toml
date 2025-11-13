@@ -3,10 +3,10 @@
 # --- Búsqueda tipo fzf / zsh-history-substring-search ---
 
 # Modo de búsqueda: fuzzy = sintaxis estilo fzf (muy cómodo)
-search_mode = "fuzzy"
+search_mode = "fuzzy"     # prefix | fulltext | fuzzy | skim
 
 # Qué histórico se busca por defecto (global = todo, como muchos setups de zsh)
-filter_mode = "global"
+filter_mode = "directory"    # global | host | session | directory
 
 # Si algún día activas Atuin con la flecha ↑, qué usar:
 # search_mode_shell_up_key_binding = "fuzzy"

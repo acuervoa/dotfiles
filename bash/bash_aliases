@@ -14,13 +14,14 @@ alias gd='git diff --color=always | bat --paging=always --plain --color=always 2
 alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff --cached'
 alias ga='git add -A'
 alias gco='git checkout'
+alias gcob="git checkout -b"
 alias gsw='git switch'
 if command -v lazygit >/dev/null 2>&1; then
   alias lg='lazygit'
 fi
 
 # ls mejorado: eza
-alias l0='\ls --color=auto'
+alias l='\ls --color=auto'
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza --group-directories-first --icons=auto --color=auto --sort newest -la'
   alias ll='eza -lh --git --group-directories-first --icons=auto --color=auto --sort newest'

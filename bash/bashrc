@@ -37,7 +37,23 @@ shopt -s cdspell      # corrige pequeñas faltas al hacer cd
 export EDITOR=nvim
 export VISUAL=nvim
 
-# FZF + ripgrep
+# - ble.sh (autosuggestions + syntax highlighting tipo zsh)
+if [[ $- == *i* ]] && [ -f "/usr/share/blesh/ble.sh" ]; then
+  # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
+  source /usr/share/blesh/ble.sh --noattach
+fi
+
+# Readline/completion más cómodo (case-insensitive, menú)
+# Sólo si NO esta ble.sh
+if [[ -z ${BLE_VERSION-} ]]; then
+  bind 'set completion-ignore-case on'
+  bind 'set show-all-if-ambiguous on'
+  bind 'set menu-complete-display-prefix on'
+  bind '"\t": menu-complete'
+  bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
+fi
+
+# FZF + ripgrep / fd
 if command -v rg >/dev/null 2>&1; then
   export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!.git"'
 elif command -v fd >/dev/null 2>&1; then
@@ -107,34 +123,6 @@ if [ -z "${MISE_INITIALIZED:-}" ]; then
   fi
 fi
 
-# - ble.sh (opcional: autosuggestions + syntax highlighting tipo zsh)
-if [[ $- == *i* ]] && [ -f "/usr/share/blesh/ble.sh" ]; then
-  # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
-  source "/usr/share/blesh/ble.sh" --noattach
-fi
-
-# - atuin (historial avanzado)
-# if command -v atuin >/dev/null 2>&1; then
-#   # Evita que Atuin robe la tecla up; que ble.sh gestione las flechas
-#   eval "$(atuin init bash --disable-up-arrow)"
-# fi
-
-# Defereimos el init de atuin hasta que se cargue el modulo fzf-key-bindings de ble,
-# asi Ctrl+R de atuin sobrescribe el de fzf.
-if [[ ${BLE_VERSION-} ]] && command -v atuin >/dev/null 2>&1; then
-  ble-import -C 'eval "$(atuin init bash --disable-up-arrow)"' integration/fzf-key-bindings
-fi
-
-# Readline/completion más cómodo (case-insensitive, menú)
-# Sólo si NO esta ble.sh
-if [[ -z ${BLE_VERSION-} ]]; then
-  bind 'set completion-ignore-case on'
-  bind 'set show-all-if-ambiguous on'
-  bind 'set menu-complete-display-prefix on'
-  bind '"\t": menu-complete'
-  bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
-fi
-
 # - fnm (gestor de versiones de node)
 if [ -z "${FNM_INITIALIZED:-}" ]; then
   if command -v fnm >/dev/null 2>&1; then
@@ -153,8 +141,6 @@ fi
 
 # Carga de aliases y funciones
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
-
-# Carga helpers base (siempre)
 [ -f "$HOME/.bash_lib/core.sh" ] && . "$HOME/.bash_lib/core.sh"
 [ -f "$HOME/.bash_lib/git.sh" ] && . "$HOME/.bash_lib/git.sh"
 [ -f "$HOME/.bash_lib/nav.sh" ] && . "$HOME/.bash_lib/nav.sh"
@@ -177,6 +163,11 @@ export PATH
 # PATH y extras ligeros
 if [ -d "$HOME/.config/composer/vendor/bin" ]; then
   PATH="$HOME/.config/composer/vendor/bin:$PATH"
+fi
+
+# -- Atuin (historial avanzado) + binding robusto de C-r ----
+if command -v atuin >/dev/null 2>&1; then
+  eval "$(atuin init bash --disable-up-arrow)"
 fi
 
 # Adjuntar ble.sh una vez que todo lo demás está configurado
