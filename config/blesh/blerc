@@ -1,0 +1,27 @@
+# ~/.blerc - capa "zsh-like" para ble.sh
+
+# --- Autosuggestions tipo zsh-autosuggestions/fish ---
+
+# Sugerencias automáticas rápidas pero no agresivas (en ms)
+# 0 = ultra inmediato; 100-200 se siente fluido
+bleopt complete_auto_delay=120
+
+# Color tenue de la sugerencia (gris claro)
+ble-face auto_complete='fg=245,italic'
+
+# --- Ruido visual mínimo, estilo shell limpia ---
+
+# Quita marcadores tipo "[ble: EOF]" y tiempos de comandos
+bleopt propmt_eol_mark=''
+bleopt exec_errexit_mark=
+bleopt exec_elapsed_mark=
+
+# --- Comportamiento de completado tipo zsh ---
+
+# De serie ble.sh ya:
+# - Hace sintaxis highlighting tipo zsh-syntax-highlighting
+# - Muestra menú de completado navegable con TAB / Shift-TAB
+# - Da autosuggestions al estilo fish/zsh sobre la línea actual
+# Aquí solo documentamos el uso:
+#   - TAB / Shift-TAB: moverte por el menú de completado
+#   - Flechas / teclas de movimiento: aceptar sugerencias cuando estés al final de la línea
