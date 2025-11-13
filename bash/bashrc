@@ -29,6 +29,7 @@ shopt -s histappend   # añadir en lugar de sobrescribir
 shopt -s cmdhist      # almacenar lineas largas como una sola entrada
 shopt -s checkwinsize # ajustar LINES y COLUMNS tras cada comando
 shopt -s globstar     # ** para recursivo en glob
+shopt -s extglob      # globs extendidos !(pat), +(pat), @(a|b)...
 shopt -s autocd       # escribir dir = cd dir
 shopt -s cdspell      # corrige pequeñas faltas al hacer cd
 
@@ -64,6 +65,18 @@ fi
 if [ -f ~/.fzf.bash ]; then
   source ~/.fzf.bash
 fi
+
+# bash-completion (completado más cercano a ecosistema zsh)
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+  . /usr/share/bash-completion/bash_completion
+fi
+
+# Readline/completion más cómodo (case-insensitive, menú)
+bind 'set completion-ignore-case on'
+bind 'set show-all-if-ambiguous on'
+bind 'set menu-complete-display-prefix on'
+bind '"\t": menu-complete'
+bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
 
 # pbcopy/pbpaste
 if command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
@@ -124,14 +137,13 @@ fi
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
 
 # Carga helpers base (siempre)
-#[ -f "$HOME/.bash_functions" ] && source "$HOME/.bash_functions"
 [ -f "$HOME/.bash_lib/core.sh" ] && . "$HOME/.bash_lib/core.sh"
 [ -f "$HOME/.bash_lib/git.sh" ] && . "$HOME/.bash_lib/git.sh"
 [ -f "$HOME/.bash_lib/nav.sh" ] && . "$HOME/.bash_lib/nav.sh"
 [ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
 [ -f "$HOME/.bash_lib/misc.sh" ] && . "$HOME/.bash_lib/misc.sh"
 
-#-  Desduplicar manteniendo el primer encuentro (orden estable)
+#-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
 PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
 
 #- Mover Nix al final para evitar sombras
@@ -148,3 +160,8 @@ export PATH
 if [ -d "$HOME/.config/composer/vendor/bin" ]; then
   PATH="$HOME/.config/composer/vendor/bin:$PATH"
 fi
+
+# ble.sh (opcional: autosuggestions + syntax highlighting tipo zsh)
+# if [[ $- == *i* ]] && [ -f "$HOME/.local/share/blesh/ble.sh" ]; then
+#   source "$HOME/.local/share/blesh/ble.sh" --attach=auto
+# fi
