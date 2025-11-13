@@ -20,11 +20,11 @@ if command -v lazygit >/dev/null 2>&1; then
 fi
 
 # ls mejorado: eza
-alias l='\ls --color=auto'
+alias l='\ls -altr --color=auto'
 if command -v exa >/dev/null 2>&1; then
   alias ls='exa --group-directories-first --icons --color=auto --sort newest -la'
   alias ll='exa -lh --git --group-directories-first --icons --color=auto --sort newest'
-  alias la='exa -a --group-directories-first --icons --color=auto --sort newest'
+  alias la='exa -la --group-directories-first --icons --color=auto --sort newest'
 else
   alias ls='ls --color=auto'
   alias ll='ls -alh --color=auto'
