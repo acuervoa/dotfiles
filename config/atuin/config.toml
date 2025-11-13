@@ -2,30 +2,31 @@
 
 # --- Búsqueda tipo fzf / zsh-history-substring-search ---
 
-# Modo de búsqueda: fuzzy = sintaxis estilo fzf
+# Modo de búsqueda: fuzzy = sintaxis estilo fzf (muy cómodo)
 search_mode = "fuzzy"
 
-# Qué histórico se busca por defecto (global=todo)
+# Qué histórico se busca por defecto (global = todo, como muchos setups de zsh)
 filter_mode = "global"
 
-# Si algún día activas Atuin con la flecha up :
+# Si algún día activas Atuin con la flecha ↑, qué usar:
 # search_mode_shell_up_key_binding = "fuzzy"
-# filter_mode_shell_up_key_binding = "directory"
+# filter_mode_shell_up_key_binding = "directory"  # solo este repo/directorio, muy práctico
 
 # --- Apariencia y UX tipo "plugin de zsh" ---
 
 # UI compacta, no pantalla completa
 style = "compact"
-inline_height = 15  # máximo de lineas que ocupa la TUI
-show_help = true    # muestra los atajos al pie
-show_preview = true # ver el comando entero si es largo
+inline_height = 15       # máximo de líneas que ocupa la TUI (ajusta a gusto)
+show_help = true         # muestra los atajos al pie
+show_preview = true      # ver el comando entero si es largo
 
-# Enter no ejecuta directamenteel comando: primero vuelve a la shell 
+# Enter NO ejecuta directamente el comando: primero vuelve a la shell
 enter_accept = false
 
 # Keymap de la TUI
-keymap_mode = "auto" # si usas vi-mode en bash, respeta; si no, "emacs"
+keymap_mode = "auto"     # si usas vi-mode en bash/zsh, respeta eso; si no, "emacs"
 
 # Historial y privacidad
 store_failed = true
 secrets_filter = true
+

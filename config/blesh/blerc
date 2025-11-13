@@ -1,5 +1,11 @@
 # ~/.blerc - capa "zsh-like" para ble.sh
 
+# --- Integración fzf via ble (completado + keybindings) ---
+# Esto sustituye a los scripts /usr/share/fzf/key-bindings.bash & friends.
+ble-import -d integration/fzf-completion
+ble-import -d integration/fzf-key-bindings
+
+
 # --- Autosuggestions tipo zsh-autosuggestions/fish ---
 
 # Sugerencias automáticas rápidas pero no agresivas (en ms)
@@ -8,13 +14,20 @@ bleopt complete_auto_delay=120
 
 # Color tenue de la sugerencia (gris claro)
 ble-face auto_complete='fg=245,italic'
+ble-face syntax_error='fg=203,bold'
 
 # --- Ruido visual mínimo, estilo shell limpia ---
 
 # Quita marcadores tipo "[ble: EOF]" y tiempos de comandos
-bleopt propmt_eol_mark=''
+bleopt prompt_eol_mark=''
 bleopt exec_errexit_mark=
 bleopt exec_elapsed_mark=
+bleopt edit_marker=
+bleopt edit_marker_error=
+
+# Ejecutar la línea actual con Alt+Enter
+ble-bind -f 'C-g' 'accept-line'
+
 
 # --- Comportamiento de completado tipo zsh ---
 

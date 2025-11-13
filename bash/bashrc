@@ -56,27 +56,22 @@ export FZF_DEFAULT_OPTS="
 "
 
 # Keybindings de FZF
-if [ -f /usr/share/fzf/key-bindings.bash ]; then
-  source /usr/share/fzf/key-bindings.bash
-fi
-if [ -f /usr/share/fzf/completion.bash ]; then
-  source /usr/share/fzf/completion.bash
-fi
-if [ -f ~/.fzf.bash ]; then
-  source ~/.fzf.bash
-fi
+# Lo gestionamos via ble.sh (integration/fzf-*)
+# para que no pisen las bindings de atuin/ble.
+# if [ -f /usr/share/fzf/key-bindings.bash ]; then
+#   source /usr/share/fzf/key-bindings.bash
+# fi
+# if [ -f /usr/share/fzf/completion.bash ]; then
+#   source /usr/share/fzf/completion.bash
+# fi
+# if [ -f ~/.fzf.bash ]; then
+#   source ~/.fzf.bash
+# fi
 
 # bash-completion (completado más cercano a ecosistema zsh)
 if [ -f /usr/share/bash-completion/bash_completion ]; then
   . /usr/share/bash-completion/bash_completion
 fi
-
-# Readline/completion más cómodo (case-insensitive, menú)
-bind 'set completion-ignore-case on'
-bind 'set show-all-if-ambiguous on'
-bind 'set menu-complete-display-prefix on'
-bind '"\t": menu-complete'
-bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
 
 # pbcopy/pbpaste
 if command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
@@ -119,9 +114,25 @@ if [[ $- == *i* ]] && [ -f "/usr/share/blesh/ble.sh" ]; then
 fi
 
 # - atuin (historial avanzado)
-if command -v atuin >/dev/null 2>&1; then
-  # Evita que Atuin robe la tecla up; que ble.sh gestione las flechas
-  eval "$(atuin init bash --disable-up-arrow)"
+# if command -v atuin >/dev/null 2>&1; then
+#   # Evita que Atuin robe la tecla up; que ble.sh gestione las flechas
+#   eval "$(atuin init bash --disable-up-arrow)"
+# fi
+
+# Defereimos el init de atuin hasta que se cargue el modulo fzf-key-bindings de ble,
+# asi Ctrl+R de atuin sobrescribe el de fzf.
+if [[ ${BLE_VERSION-} ]] && command -v atuin >/dev/null 2>&1; then
+  ble-import -C 'eval "$(atuin init bash --disable-up-arrow)"' integration/fzf-key-bindings
+fi
+
+# Readline/completion más cómodo (case-insensitive, menú)
+# Sólo si NO esta ble.sh
+if [[ -z ${BLE_VERSION-} ]]; then
+  bind 'set completion-ignore-case on'
+  bind 'set show-all-if-ambiguous on'
+  bind 'set menu-complete-display-prefix on'
+  bind '"\t": menu-complete'
+  bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
 fi
 
 # - fnm (gestor de versiones de node)
