@@ -1,112 +1,98 @@
 #!/usr/bin/env bash
-# Rollback dotfiles — desstow + restaurar backup según manifest
-# Uso:
-#   ./scripts/rollback.sh [TIMESTAMP|latest]
-set -Eeuo pipefail
+# Restaura un backup creado por bootstrap.sh en $HOME
+# Usa rsync con --backup para guardar los ficheros/symlinks actuales que se pisen.
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-MANIFEST_ROOT="$DOTFILES/.manifests"
-BACKUP_ROOT="$DOTFILES/.backups"
+set -euo pipefail
 
-pick_manifest() {
-  local sel="$1"
-  if [[ "$sel" == "latest" || -z "$sel" ]]; then
-    local manifest_files=()
-    local nullglob_was_set=0
-    if shopt -q nullglob; then
-      nullglob_was_set=1
-    fi
-    shopt -s nullglob
-    manifest_files=("$MANIFEST_ROOT"/*.manifest)
-    if ((nullglob_was_set == 0)); then
-      shopt -u nullglob
-    fi
+HOME_DIR="${HOME:?}"
 
-    if ((${#manifest_files[@]} == 0)); then
-      return 2
-    fi
+usage() {
+	cat <<EOF
+Uso: $(basename "$0") [RUTA_BACKUP]
 
-    printf '%s\n' "${manifest_files[@]}" | sort | tail -n1
-  else
-    echo "$MANIFEST_ROOT/$sel.manifest"
-  fi
+Sin argumentos, usa el último directorio ~/.dotfiles_backup_*.
+Con argumento, puedes pasar una ruta absoluta o relativa al HOME.
+
+Ejemplos:
+  $(basename "$0")
+  $(basename "$0") ~/.dotfiles_backup_20251113_170000
+  $(basename "$0") .dotfiles_backup_20251113_170000
+EOF
 }
 
-if MANIFEST="$(pick_manifest "${1:-latest}")"; then
-  :
+if [[ "${1-}" == "-h" || "${1-}" == "--help" ]]; then
+	usage
+	exit 0
+fi
+
+# --- Resolver BACKUP_DIR ---
+
+BACKUP_DIR="${1-}"
+
+if [[ -n "$BACKUP_DIR" ]]; then
+	# Si es ruta relativa, asúmela desde $HOME
+	if [[ "$BACKUP_DIR" != /* ]]; then
+		BACKUP_DIR="$HOME_DIR/$BACKUP_DIR"
+	fi
+	if [[ ! -d "$BACKUP_DIR" ]]; then
+		echo "[ERROR] Directorio de backup no existe: $BACKUP_DIR" >&2
+		exit 1
+	fi
 else
-  status=$?
-  if ((status == 2)); then
-    echo "No se encontraron manifests en $MANIFEST_ROOT" >&2
-  fi
-  exit "$status"
-fi
-[[ -f "$MANIFEST" ]] || {
-  echo "No existe manifest: $MANIFEST" >&2
-  exit 1
-}
-TS="$(basename "$MANIFEST" .manifest)"
-BACKUP_DIR="$BACKUP_ROOT/$TS"
-[[ -d "$BACKUP_DIR" ]] || {
-  echo "No existe backup dir: $BACKUP_DIR" >&2
-  exit 1
-}
-
-echo "[*] Usando manifest: $MANIFEST"
-echo "[*] Usando backup  : $BACKUP_DIR"
-
-# 1) Des-stow de los paquetes listados
-PACKAGES=()
-while read -r line; do
-  if [[ "$line" == PACKAGES* ]]; then
-    read -r _ rest <<<"$line"
-    PACKAGES=($rest)
-    break
-  fi
-done <"$MANIFEST"
-
-if ((${#PACKAGES[@]})); then
-  EXISTING=()
-  MISSING=()
-  for pkg in "${PACKAGES[@]}"; do
-    if [[ -d "$DOTFILES/config/$pkg" ]]; then
-      EXISTING+=("$pkg")
-    else
-      MISSING+=("$pkg")
-    fi
-  done
-
-  if ((${#MISSING[@]})); then
-    echo "[*] Omitiendo paquetes ausentes: ${MISSING[*]}"
-  fi
-
-  if ((${#EXISTING[@]})); then
-    if ! command -v stow >/dev/null 2>&1; then
-      echo "[!] 'stow' no está instalado. Omitiendo des-stow de paquetes."
-    else
-      echo "[*] Desstow: ${EXISTING[*]}"
-      pushd "$DOTFILES/config" >/dev/null
-      stow -v -D -t "$HOME/.config" "${EXISTING[@]}"
-      popd >/dev/null
-    fi
-  else
-    echo "[*] No hay paquetes de ~/.config para desstow."
-  fi
+	# Buscar el último ~/.dotfiles_backup_*
+	mapfile -t backups < <(find "$HOME_DIR" -maxdepth 1 -type d -name '.dotfiles_backup_*' | sort)
+	if ((${#backups[@]} == 0)); then
+		echo "[ERROR] No se han encontrado directorios ~/.dotfiles_backup_* en $HOME_DIR" >&2
+		exit 1
+	fi
+	BACKUP_DIR="${backups[-1]}"
 fi
 
-# 2) Eliminar symlinks creados según manifest
-echo "[*] Eliminando symlinks registrados…"
-grep '^LINK ' "$MANIFEST" | while read -r _ src _ arrow dest; do
-  # línea: LINK SRC -> DEST
-  if [[ -L "$dest" ]]; then
-    rm -f "$dest"
-    echo "  rm $dest"
-  fi
-done
+if [[ ! -d "$BACKUP_DIR" ]]; then
+	echo "[ERROR] $BACKUP_DIR no es un directorio válido." >&2
+	exit 1
+fi
 
-# 3) Restaurar backup
-echo "[*] Restaurando backup sobre \$HOME…"
-rsync -a "$BACKUP_DIR"/ "$HOME"/
+# --- Comprobar rsync ---
 
-echo "[*] Rollback completado."
-exit 0
+if ! command -v rsync >/dev/null 2>&1; then
+	echo "[ERROR] Este script requiere 'rsync' instalado." >&2
+	exit 1
+fi
+
+echo "[INFO] Directorio de backup seleccionado: $BACKUP_DIR"
+echo "[INFO] Se restaurará su contenido sobre $HOME_DIR"
+echo "[INFO] Los ficheros actuales que se sobrescriban se guardarán en un directorio de conflictos."
+echo
+
+read -r -p "¿Continuar con el rollback? [y/N] " ans
+case "$ans" in
+[yY][eE][sS] | [yY]) ;;
+*)
+	echo "[INFO] Operación cancelada."
+	exit 0
+	;;
+esac
+
+# --- Directorio para conflictos (lo que haya ahora y se pise) ---
+
+CONFLICT_DIR="$HOME_DIR/.dotfiles_rollback_conflicts_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$CONFLICT_DIR"
+
+echo "[INFO] Directorio de conflictos: $CONFLICT_DIR"
+echo "[INFO] Ejecutando rsync..."
+echo
+
+# Nota:
+# - "$BACKUP_DIR"/ -> "$HOME_DIR"/ copia el CONTENIDO del backup a $HOME.
+# - --backup y --backup-dir mueven lo que exista ahora en $HOME a CONFLICT_DIR antes de sobrescribir.
+rsync -a \
+	--backup \
+	--backup-dir="$CONFLICT_DIR" \
+	"$BACKUP_DIR"/ \
+	"$HOME_DIR"/
+
+echo
+echo "[OK] Rollback completado."
+echo "[INFO] Ficheros restaurados desde: $BACKUP_DIR"
+echo "[INFO] Ficheros/symlinks anteriores guardados en: $CONFLICT_DIR"

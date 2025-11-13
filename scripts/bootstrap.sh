@@ -1,176 +1,103 @@
 #!/usr/bin/env bash
-# Bootstrap dotfiles — backups + symlinks + stow + manifest
-# Uso:
-#   ./scripts/bootstrap.sh [--dry-run] [--mode=stow|bare]
-# Variables:
-#   DOTFILES (por defecto: $HOME/dotfiles)
-set -Eeuo pipefail
+set -euo pipefail
 
-MODE="stow"
-DRYRUN=false
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-TS="$(date +%Y%m%d-%H%M%S)"
-BACKUP_ROOT="$DOTFILES/.backups"
-MANIFEST_ROOT="$DOTFILES/.manifests"
-BACKUP_DIR="$BACKUP_ROOT/$TS"
-MANIFEST="$MANIFEST_ROOT/$TS.manifest"
-# Paquetes por defecto bajo ~/.config
-PACKAGES_DEF=(dunst i3 kitty lazygit nvim picom polybar rofi)
-# Lista final (posiblemente sobrescrita vía --packages)
-PACKAGES=()
-
-usage() {
-  cat <<EOF
-Uso: $(basename "$0") [opciones]
-  --dry-run, -n       Simula acciones (no escribe nada)
-  --mode=stow|bare    'stow' (por defecto) o 'bare' (alternativa)
-  --packages=lista    Coma-separada: stow sólo esos paquetes de ~/.config
-  --help, -h          Ayuda
-Notas:
-  - En modo 'stow' crea backups con timestamp y symlinks.
-  - Enlaza bash/git/tmux/vim explícitamente a \$HOME.
-  - Stowea paquetes de ~/.config (por defecto): ${PACKAGES_DEF[*]}
-  - Personaliza lista con --packages=paquete1,paquete2
-EOF
-}
-
-note() { echo "[*] $*"; }
-die() {
-  echo "ERROR: $*" >&2
-  exit 1
-}
-act() { if $DRYRUN; then echo "DRYRUN: $*"; else eval "$@"; fi; }
-
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-  --dry-run | -n) DRYRUN=true ;;
-  --mode=*) MODE="${1#*=}" ;;
-  --packages=*)
-    IFS=',' read -r -a PACKAGES <<<"${1#*=}"
-    ;;
-  --packages)
-    shift
-    [[ $# -gt 0 ]] || die "--packages requiere una lista"
-    IFS=',' read -r -a PACKAGES <<<"$1"
-    ;;
-  --help | -h)
-    usage
-    exit 0
-    ;;
-  *) die "Opción desconocida: $1" ;;
-  esac
-  shift
-done
-
-if [[ "$MODE" == "stow" && ${#PACKAGES[@]} -eq 0 ]]; then
-  PACKAGES=("${PACKAGES_DEF[@]}")
-fi
-
-mkdir -p "$BACKUP_DIR" "$MANIFEST_ROOT"
-
-# Guarda archivo existente en BACKUP_DIR conservando estructura
-backup_path() {
-  local p="$1"
-  if [[ -e "$p" || -L "$p" ]]; then
-    local dest="$BACKUP_DIR${p}"
-    act "mkdir -p '$(dirname "$dest")'"
-    # copia preservando atributos; si es symlink copia el enlace
-    act "cp -a --no-preserve=ownership '$p' '$dest' 2>/dev/null || true"
-  fi
-}
-
-# Crea symlink seguro con backup previo y registra en MANIFEST
-link_to() {
-  local src="$1" dest="$2"
-  [[ -e "$src" || -L "$src" ]] || return 0
-  backup_path "$dest"
-  act "mkdir -p '$(dirname "$dest")'"
-  act "ln -sfn '$src' '$dest'"
-  echo "LINK $src -> $dest" >>"$MANIFEST"
-}
-
-if [[ "$MODE" == "stow" ]]; then
-  command -v stow >/dev/null 2>&1 || die "stow no está instalado. Instala con: sudo pacman -S stow"
-  note "Modo: stow | Backups: $BACKUP_DIR"
-
-  PACKAGES_TO_STOW=()
-  MISSING_PACKAGES=()
-  for pkg in "${PACKAGES[@]}"; do
-    if [[ -d "$DOTFILES/config/$pkg" ]]; then
-      PACKAGES_TO_STOW+=("$pkg")
-    else
-      MISSING_PACKAGES+=("$pkg")
-    fi
-  done
-
-  if ((${#MISSING_PACKAGES[@]})); then
-    note "Omitiendo paquetes inexistentes: ${MISSING_PACKAGES[*]}"
-  fi
-
-  # 1) Enlaces explícitos en $HOME (bash, git, tmux, vim)
-  # bash
-  link_to "$DOTFILES/bash/bashrc" "$HOME/.bashrc"
-  link_to "$DOTFILES/bash/bash_profile" "$HOME/.bash_profile"
-  link_to "$DOTFILES/bash/profile" "$HOME/.profile"
-  link_to "$DOTFILES/bash/xprofile" "$HOME/.xprofile"
-  link_to "$DOTFILES/bash/bash_aliases" "$HOME/.bash_aliases"
-  link_to "$DOTFILES/bash/bash_functions" "$HOME/.bash_functions"
-  link_to "$DOTFILES/bash/bash_lib" "$HOME/.bash_lib"
-  # git
-  link_to "$DOTFILES/git/gitconfig" "$HOME/.gitconfig"
-  link_to "$DOTFILES/git/gitalias" "$HOME/.gitalias"
-  link_to "$DOTFILES/git/git-hooks" "$HOME/.git-hooks"
-  # tmux
-  link_to "$DOTFILES/tmux/tmux.conf" "$HOME/.tmux.conf"
-  if [[ -d "$DOTFILES/tmux/tmux" ]]; then
-    backup_path "$HOME/.tmux"
-    act "ln -sfn '$DOTFILES/tmux/tmux' '$HOME/.tmux'"
-    echo "LINK $DOTFILES/tmux/tmux -> $HOME/.tmux" >>"$MANIFEST"
-  fi
-  # vim
-  link_to "$DOTFILES/vim/vimrc" "$HOME/.vimrc"
-  if [[ -d "$DOTFILES/vim/vim" ]]; then
-    backup_path "$HOME/.vim"
-    act "ln -sfn '$DOTFILES/vim/vim' '$HOME/.vim'"
-    echo "LINK $DOTFILES/vim/vim -> $HOME/.vim" >>"$MANIFEST"
-  fi
-
-  # 2) Stow para ~/.config
-  if ((${#PACKAGES_TO_STOW[@]})); then
-    pushd "$DOTFILES/config" >/dev/null
-    echo "PACKAGES ${PACKAGES_TO_STOW[*]}" >>"$MANIFEST"
-    STOW_FLAGS="-v"
-    $DRYRUN && STOW_FLAGS="-n -v"
-    act "mkdir -p '$HOME/.config'"
-    act "stow $STOW_FLAGS -t '$HOME/.config' ${PACKAGES_TO_STOW[*]}"
-    popd >/dev/null
-  else
-    echo "PACKAGES" >>"$MANIFEST"
-    note "No hay paquetes válidos de ~/.config para stowear."
-  fi
-
-  note "Hecho. Manifest: $MANIFEST"
-  note "Backup dir: $BACKUP_DIR"
-
-elif [[ "$MODE" == "bare" ]]; then
-  note "Modo: bare (alternativo). No se aplican symlinks ni stow."
-  cat <<'EOF'
-Pasos sugeridos (manuales) para git bare:
-
-  # 1) Inicializa bare
-  git init --bare "$HOME/.dotfiles.git"
-  git --git-dir="$HOME/.dotfiles.git" --work-tree="$HOME" config status.showUntrackedFiles no
-
-  # 2) Alias conveniente en tu shell
-  echo "alias dot='git --git-dir=$HOME/.dotfiles.git --work-tree=$HOME'" >> "$HOME/.bash_aliases"
-  # (reinicia shell) y prueba con:  dot status
-
-  # 3) Añade y commitea los archivos deseados
-  #    OJO: este enfoque gestiona ficheros en $HOME directamente (sin stow).
-EOF
-  echo "MODE bare" >"$MANIFEST"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "$SCRIPT_DIR/bash" ]; then
+	REPO_DIR="$SCRIPT_DIR"
 else
-  die "Modo no soportado: $MODE"
+	REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 fi
 
-exit 0
+BACKUP_DIR=""
+
+ensure_backup_dir() {
+	if [ -z "$BACKUP_DIR" ]; then
+		BACKUP_DIR="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
+		mkdir -p "$BACKUP_DIR"
+		echo "[INFO] Creando directorio de backup en $BACKUP_DIR"
+	fi
+}
+
+link_item() {
+	local rel_path="$1"
+	local target_rel="$2" # relativo a $HOME
+	local src="$REPO_DIR/$rel_path"
+	local dest="$HOME/$target_rel"
+
+	if [ ! -e "$src" ] && [ ! -d "$src" ]; then
+		echo "[WARN] Origen no existe: $src (saltando)"
+		return 0
+	fi
+
+	# Si ya es el symlink correcto, no hacemos nada
+	if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+		echo "[OK]  $dest ya apunta a $src"
+		return 0
+	fi
+
+	# Backup si existe algo en destino
+	if [ -e "$dest" ] || [ -L "$dest" ]; then
+		ensure_backup_dir
+		local backup_dest="$BACKUP_DIR/$target_rel"
+		mkdir -p "$(dirname "$backup_dest")"
+		echo "[INFO] Moviendo $dest a $backup_dest"
+		mv "$dest" "$backup_dest"
+	fi
+
+	mkdir -p "$(dirname "$dest")"
+	echo "[LINK] $dest -> $src"
+	ln -s "$src" "$dest"
+}
+
+main() {
+	echo "[INFO] Repo de dotfiles: $REPO_DIR"
+	echo "[INFO] Instalando symlinks en $HOME"
+	echo
+
+	# --- Bash ---
+	link_item "bash/bashrc" ".bashrc"
+	link_item "bash/bash_profile" ".bash_profile"
+	link_item "bash/profile" ".profile"
+	link_item "bash/xprofile" ".xprofile"
+	link_item "bash/bash_aliases" ".bash_aliases"
+	link_item "bash/bash_functions" ".bash_functions"
+	link_item "bash/bash_lib" ".bash_lib"
+
+	# --- Config (~/.config/...) ---
+	link_item "config/atuin" ".config/atuin"
+	link_item "config/blesh" ".config/blesh"
+	link_item "config/dunst" ".config/dunst"
+	link_item "config/i3" ".config/i3"
+	link_item "config/kitty" ".config/kitty"
+	link_item "config/lazygit" ".config/lazygit"
+	link_item "config/mise" ".config/mise"
+	link_item "config/nvim" ".config/nvim"
+	link_item "config/picom" ".config/picom"
+	link_item "config/polybar" ".config/polybar"
+	link_item "config/rofi" ".config/rofi"
+	link_item "config/yazi" ".config/yazi"
+
+	# --- Git ---
+	link_item "git/gitconfig" ".gitconfig"
+	link_item "git/gitalias" ".gitalias"
+	link_item "git/git-hooks" ".git-hooks"
+
+	# --- Tmux ---
+	link_item "tmux/tmux.conf" ".tmux.conf"
+	link_item "tmux/tmux" ".tmux"
+
+	# --- Vim ---
+	link_item "vim/vimrc" ".vimrc"
+	link_item "vim/vim" ".vim"
+	link_item "vim/vim-tmp" ".vim-tmp"
+
+	echo
+	echo "[INFO] Instalación de dotfiles completada."
+	if [ -n "$BACKUP_DIR" ]; then
+		echo "[INFO] Copias de seguridad en: $BACKUP_DIR"
+	else
+		echo "[INFO] No ha sido necesario crear copias de seguridad (no había nada que pisar)."
+	fi
+}
+
+main "$@"
