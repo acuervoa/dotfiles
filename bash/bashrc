@@ -112,9 +112,16 @@ if [ -z "${MISE_INITIALIZED:-}" ]; then
   fi
 fi
 
+# - ble.sh (opcional: autosuggestions + syntax highlighting tipo zsh)
+if [[ $- == *i* ]] && [ -f "/usr/share/blesh/ble.sh" ]; then
+  # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
+  source "/usr/share/blesh/ble.sh" --noattach
+fi
+
 # - atuin (historial avanzado)
 if command -v atuin >/dev/null 2>&1; then
-  eval "$(atuin init bash)"
+  # Evita que Atuin robe la tecla up; que ble.sh gestione las flechas
+  eval "$(atuin init bash --disable-up-arrow)"
 fi
 
 # - fnm (gestor de versiones de node)
@@ -161,7 +168,7 @@ if [ -d "$HOME/.config/composer/vendor/bin" ]; then
   PATH="$HOME/.config/composer/vendor/bin:$PATH"
 fi
 
-# ble.sh (opcional: autosuggestions + syntax highlighting tipo zsh)
-# if [[ $- == *i* ]] && [ -f "$HOME/.local/share/blesh/ble.sh" ]; then
-#   source "$HOME/.local/share/blesh/ble.sh" --attach=auto
-# fi
+# Adjuntar ble.sh una vez que todo lo demás está configurado
+if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
+  ble-attach
+fi
