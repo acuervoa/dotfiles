@@ -141,11 +141,12 @@ fi
 
 # Carga de aliases y funciones
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
-[ -f "$HOME/.bash_lib/core.sh" ] && . "$HOME/.bash_lib/core.sh"
-[ -f "$HOME/.bash_lib/git.sh" ] && . "$HOME/.bash_lib/git.sh"
-[ -f "$HOME/.bash_lib/nav.sh" ] && . "$HOME/.bash_lib/nav.sh"
-[ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
-[ -f "$HOME/.bash_lib/misc.sh" ] && . "$HOME/.bash_lib/misc.sh"
+[ -f "$HOME/.bash_lib/bash_lib.sh" ] && source "$HOME/.bash_lib/bash_lib.sh"
+# [ -f "$HOME/.bash_lib/core.sh" ] && . "$HOME/.bash_lib/core.sh"
+# [ -f "$HOME/.bash_lib/git.sh" ] && . "$HOME/.bash_lib/git.sh"
+# [ -f "$HOME/.bash_lib/nav.sh" ] && . "$HOME/.bash_lib/nav.sh"
+# [ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
+# [ -f "$HOME/.bash_lib/misc.sh" ] && . "$HOME/.bash_lib/misc.sh"
 
 #-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
 PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"

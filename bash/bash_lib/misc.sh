@@ -1,3 +1,5 @@
+# misc.sh - utilidades varias
+
 # buscar en historial con fzf y (opcionalmente) ejecutar
 # - Si no hay historial disponible, aborta limpio.
 # - Dedup: colapsa comandos idénticos para no ver 40 veces el mismo curl.
@@ -7,7 +9,7 @@
 # Uso:
 #   fhist           -> busca, pregunta, ejecuta en subshell si dices "y"
 #   fhist --live    -> ejecuta en shell (eval) si dices "y"
-
+# @cmd fhist  Buscar en history con fzf y ejecutar (subshell o live)
 fhist() {
   _req fzf || return 1
 
@@ -20,17 +22,25 @@ fhist() {
   local hist
   hist="$(HISTTIMEFORMAT= history 2>/dev/null | sed 's/^ *[0-9]\+ *//')" || true
   if [ -z "$hist" ]; then
-    printf 'No hay historial disponible en estra sesión.\n' >&2
+    printf 'No hay historial disponible en esta sesión.\n' >&2
+    return 1
+  fi
+
+  hist="$(
+    printf '%s\n' "$hist" |
+      tac | awk '!seen[$0]++' | tac |
+      grep -Ev '^(ls|cd|pwd|historyi|fhist|redo|r)($| )' || true
+  )"
+
+  if [ -z "$hist" ]; then
+    printf 'No hay comandos interesantes tras el filtrado.\n' >&2
     return 1
   fi
 
   local cmd
   cmd="$(
     printf '%s\n' "$hist" |
-      awk '!seen[$0]++' |
-      fzf --height 40% \
-        --layout=reverse \
-        --tac \
+      fzf --tac \
         --prompt='📜 hist > ' \
         --preview='echo {}' \
         --preview-window=down,3
@@ -39,22 +49,20 @@ fhist() {
   [ -z "$cmd" ] && return 0
 
   printf 'Comando seleccionado:\n%s\n' "$cmd" >&2
-  printf '¿Ejecutar ahora? [y/N] ' >&2
-  read -r ans
-  [ "$ans" = "y" ] || {
+  if ! _confirm '¿Ejecutar ahora? [y/N] '; then
     printf '%s\n' "$cmd"
     return 0
-  }
-
-  if [ "$mode" = "live" ]; then
-    eval "$cmd"
-  else
-    (eval "$cmd")
   fi
+
+  case "$mode" in
+  live) eval "$cmd" ;;
+  subshell) (eval "$cmd") ;;
+  esac
 }
 
 # lista/añade tareas rápidas en ~/.todo.cli.txt
 # - Evita crear el archivo con permisos abiertos. Lo fuerza a 600.
+# @cmd todo   Añadir entrada a un TODO plano con timestamp
 todo() {
   local file="$HOME/.todo.cli.txt"
 
@@ -74,6 +82,7 @@ todo() {
 
 # Mide cuanto tiempo tarda en ejecutarse un comandos
 # # - Ejecuta el comando en SUBSHELL para no alterar la sesión.
+# @cmd bench  Medir el tiempo de ejecución de un comando (ms/segundos)
 bench() {
   _req awk || return 1
 
@@ -85,29 +94,28 @@ bench() {
   _now_ms() {
     if date +%s%3N >/dev/null 2>&1; then
       date +%s%3N
-    else
-      if date +%s%N >/dev/null 2>&1; then
-        awk -v ns="$(date +%s%N)" 'BEGIN{print int ns/1000000)}'
-      else
-        awk -v s="$(date +%s)" 'BEGIN{print s*1000}'
-      fi
+      return
     fi
+
+    date %s | awk '{ print $1 * 1000 }'
   }
 
   local start end delta secs
   start="$(_now_ms)"
   ("$@")
+  local status=$?
   end="$(_now_ms)"
 
   delta=$((end - start))
 
   if command -v bc >/dev/null 2>&1; then
-    secs="$(echo "$delta / 1000" | bc -l)"
+    printf 'Tiempo: %s ms (~%.3f s)\n' "$delta" \
+      "$(printf '%s / 1000' "$delta" | bc -l)"
   else
-    secs="$(awk -v d="$delta" 'BEGIN{ printf "%.3f", d/1000 }')"
+    printf 'Tiempo: %s ms (~%s s)\n' "$delta" "$((delta / 1000))"
   fi
 
-  printf "⏱ %s ms (~%s s)\n" "$delta" "$secs"
+  return "$status"
 }
 
 # Cambia entre distintos .env de forma segura
@@ -119,34 +127,36 @@ bench() {
 # - Valida que exista .env.* antes de tocar nada.
 # - Hace backup con permisos 600.
 # - Fuerza permisos 600 en el .env final.
+# @cmd envswap  Gestionar .env.<nombre> -> .env con backup
 envswap() {
-
   local base=".env"
-  local cmd="$1"
-  local name="$2"
+  local cmd="${1:-}"
+  local name="${2:-}"
 
   if [ "$cmd" = "list" ]; then
     ls -1 .env.* 2>/dev/null |
       sed 's/^\.env\.//' |
-      sort
+      sort || true
     return 0
   fi
 
   if [ "$cmd" = "use" ] && [ -n "$name" ]; then
     local src=".env.$name"
+
     if [ ! -f "$src" ]; then
       printf 'No existe %s\n' "$src" >&2
       return 1
     fi
 
     if [ -f "$base" ]; then
-      local bak="$base.bak.$(date +%s)"
-      cp "$base" "$bak"
+      local bak
+      bak="$base.bak.$(date +%s)"
+      cp -- "$base" "$bak"
       chmod 600 "$bak" 2>/dev/null || true
-      printf '(bakup en %s)\n' "$bak" >&2
+      printf '(backup en %s)\n' "$bak" >&2
     fi
 
-    cp "$src" "$base"
+    cp -- "$src" "$base"
     chmod 600 "$base" 2>/dev/null || true
     printf '✔ %s activado -> %s\n' "$src" "$base" >&2
     return 0
@@ -158,63 +168,92 @@ envswap() {
   return 1
 }
 
+# Quien escucha en que puerto
+# @cmd ports  Ver puertos en eschucha (ss/netstat simplificado)
+ports() {
+  _req awk || return 1
+
+  if command -v ss >/dev/null 2>&1; then
+    ss -tulpen 2>/dev/null |
+      awk '
+        NR==1 {
+          printf "%-6s %-30s %-24s %-10s\n", "Proto","Local","PID/Program","User"
+          next
+        }
+        {
+          proto=$1;
+          laddr=$5;
+          user=$6;
+          prog=$7;
+          printf "%-6s %-30s %-24s %-10s\n", proto, laddr, prog, user
+        }
+      '
+  elif comand -v netstat >/dev/null 2>&1; then
+    netstat -tulpen 2>/dev/null |
+      awk '
+        NR==1 {
+          printf "%-6s %-30s %-24s %-10s\n", "Proto","Local","PID/Program","User"
+          next
+        }
+        {
+          proto=$1;
+          laddr=$5;
+          user=$6;
+          prog=$7;
+          printf "%-6s %-30s %-24s %-10s\n", proto, laddr, prog, user
+        }
+      '
+  elif command -v lsof >/dev/null 2>&1; then
+    lsof -nP -iTCP -sTCP:LISTEN
+  else
+    printf 'Necesito ss, netstat o lsof.\n' >&2
+    return 1
+  fi
+}
+
 # editar y re-ejecutar el último comando del history
 #
 # - Usa penúltima entrada del history (evita capturar el propio 'r').
 # - Crea tmp 600.
 # - Después de ejecutar, borra el tmp.
 # - Pregunta antes de ejecutar con `source`
+# @cmd r  Editar y re-ejecutar el penúltimo comando del history
 r() {
   _req "${EDITOR:-nvim}" >/dev/null 2>&1 || true
 
-  local tmp last
+  local tmp last ans
   tmp="$(mktemp)"
   chmod 600 "$tmp" 2>/dev/null || true
 
-  last="$(HISTTIMEFORMAT= history 2>/dev/null |
-    sed 's/^ *[0-9]\+ *//' |
-    tail -n 2 | head -n 1)"
+  last="$(
+    HISTTIMEFORMAT= history 2>/dev/null |
+      sed 's/^ *[0-9]\+ *//' |
+      tail -n 2 | head -n 1
+  )"
+
+  if [ -z "$last" ]; then
+    printf 'No puedo recuperar el último comando.\n' >&2
+    rm -f -- "$tmp"
+    return 1
+  fi
 
   printf '%s\n' "$last" >"$tmp"
   "${VISUAL:-${EDITOR:-nvim}}" "$tmp"
 
   printf 'Esto se va a ejectuar en la shell actual. ¿Ejecutar? [y/N] ' >&2
   read -r ans
-  if [ "$ans" = "y" ]; then
-    . "$tmp"
-  else
-    cat "$tmp"
+  if [ "$ans" != "y" ]; then
+    rm -f -- "$tmp"
+    return 0
   fi
-  rm -f "$tmp"
-}
 
-# Quien escucha en que puerto
-ports() {
-  _req awk || return 1
-  if command -v ss >/dev/null 2>&1; then
-    ss -tulpen 2>/dev/null |
-      awk 'NR==1 {printf "%-6s %-30s %-20s %-15s\n,"Proto","LocalAddress:Port","PID/Program","User"; next}
-             NR>1 {
-               proto=$1; laddr=$5; user=$6; prog=$7;
-               printf "%-6s %-30s %-20 %-15s\n", proto,laddr,prog,user
-             }'
-  elif command -v lsof >/dev/null 2>&1; then
-    lsof -nP -iTCP -sTCP:LISTEN
-  else
-    printf 'Necesito ss o lsof.\n' >&2
-    return 1
-  fi
-}
-
-# Monitoreo rapido de CPU/MEM de procesos que me importan
-# Prioriza por CPU alta
-topme() {
-  _req awk || return 1
-  ps -eo pid,ppid,user,%cpu,%mem,etime,cmd --sort=-%cpu |
-    awk 'NR==1 || /php|fpm|nginx|mysql|maria|docker|composer|artisan|symfony|node|redis|postg|psql/'
+  # shellcheck disable=SC1090
+  . "$tmp"
+  rm -f -- "$tmp"
 }
 
 # Añade un temporizador interactivo simple
+# @cmd tt   Temporizador manual (ENTER para parar)
 tt() {
   local start end delta
   start=$(date +%s)
@@ -225,12 +264,24 @@ tt() {
   printf '%s segundos (%s min)\n' "$delta" "$((delta / 60))"
 }
 
+# Monitoreo rapido de CPU/MEM de procesos que me importan
+# Prioriza por CPU alta
+# @cmd topme  Procesos relevantes (stack dev) ordenados por consumo
+topme() {
+  _req awk ps || return 1
+  ps -eo pid,ppid,user,%cpu,%mem,etime,cmd --sort=-%cpu |
+    awk 'NR==1 || /php|fpm|nginx|mysql|maria|docker|composer|artisan|symfony|node|redis|postg|psql/'
+}
+
 # Wrapper de Yazi, cd al salir
+# @cmd y  Wrapper de yazi que hace cd al salir
 y() {
   local tmp cwd
   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
   yazi "$@" --cwd-file="$tmp"
-  IFS= read -r -d '' cwd <"$tmp" || cwd="$(cat -- "$tmp")"
+  if ! IFS= read -r -d '' cwd <"$tmp"; then
+    cwd="$(cat -- "$tmp")"
+  fi
   [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
   rm -f -- "$tmp"
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # core.sh — funciones útiles no cubiertas por aliases
 
-# Comprueba binarios requeridos antes de ejecutar la función
+# @cmd _req Comprobar que existen todos los binarios requeridos
 _req() {
   local missing=0 c
   for c in "$@"; do
@@ -13,9 +13,20 @@ _req() {
   return $missing
 }
 
+# Función de confirmación
+# @cmd _confirm Preguntar al usuario antes de ejecutar acciones peligrosas
+_confirm() {
+  local msg="${1:-¿Continuar? [y/N] }"
+  local ans
+  printf '%s' "$msg" >&2
+  read -r ans
+  [ "$ans" = "y" ]
+}
+
 # Abre archivo en el editor preferido.
 # Respeta $VISUAL, luego $EDITOR. Fallback a nvim/vim/nano.
 # Si se pasa número de línea y el editor soporta "+<line>", lo usa.
+# @ cmd _edit_at  Abrir fichero en $EDITOR en una linea concreta (si se facilita)
 _edit_at() {
   local file="$1" line="$2" editor
 
@@ -24,23 +35,56 @@ _edit_at() {
     return 1
   }
 
-  if [ -n "${VISUAL:-}" ]; then
-    editor="$VISUAL"
-  elif [ -n "${EDITOR:-}" ]; then
-    editor="$EDITOR"
-  elif command -v nvim >/dev/null 2>&1; then
-    editor="nvim"
-  elif command -v vim >/dev/null 2>&1; then
-    editor="vim"
-  else
-    editor="nano"
+  [ ! -f "$file" ] && {
+    printf 'El fichero no existe: %s\n' "$file" >&2
+    return 1
+  }
+
+  editor="${VISUAL:-${EDITOR:-}}"
+  if [ -z "$editor" ]; then
+    if command -v nvim >/dev/null 2>&1; then
+      editor="nvim"
+    elif command -v vim >/dev/null 2>&1; then
+      editor="vim"
+    elif command -v nano >/dev/null 2>&1; then
+      editor="nano"
+    else
+      printf 'No hay editor configurado (EDITOR/VISUAL).\n' >&2
+      return 1
+    fi
   fi
 
   if [ -n "$line" ]; then
-    "$editor" "+${line}" -- "$file"
+    case "$editor" in
+    *nvim | *vim)
+      "$editor" "+${line}" "$file"
+      ;;
+    *code)
+      "$editor" -g "${file}:${line}"
+      ;;
+    *)
+      "$editor" "$file"
+      ;;
+    esac
   else
-    "$editor" -- "$file"
+    "$editor" "$file"
   fi
+}
+
+# Papelera en vez de rm directo
+# @cmd trash  Enviar archivos al contenedor (trash-cli)
+trash() {
+  _req trash-put || {
+    printf 'Necesito trash-put (paquete trash-cli)\n' >&2
+    return 1
+  }
+
+  if [ "$#" -eq 0 ]; then
+    printf 'Uso: trash <archivo...>\n' >&2
+    return 1
+  fi
+
+  trash-put -- "$@"
 }
 
 # Matar procesos con confirmación
@@ -48,20 +92,22 @@ _edit_at() {
 # - Evita matar PID 1, tu propio shell
 # - Envia SIGTERM primero, luego opcional SIGKILL
 # - Pide confirmación
-
+# @cmd fkill  Elegir procesos con fzf y enviar SIGTERM/SIGKILL
 fkill() {
   _req fzf ps awk kill || return 1
 
-  local sel pids=() line pid
+  local sel
   sel="$(
     ps -eo pid,user,stat,%cpu,%mem,cmd --sort=-%cpu |
       awk 'NR>1' |
       fzf --ansi --multi \
         --prompt=' kill > ' \
-        --header='Selecciona procesos a terminar (SPACE para marcar, ENTER para confirmar)' \
+        --header='SPACE para marcar, ENTER para confirmar)' \
         --preview='echo PID:{1}; ps -p {1} -o pid,ppid,user,stat,%cpu,%mem,etime,cmd' \
         --preview-window=down,50%
   )" || return 0
+
+  local pids=() line pid
 
   [ -z "$sel" ] && return 0
 
@@ -76,10 +122,9 @@ fkill() {
   }
 
   printf 'Vas a enviar SIGTERM a: %s\n' "${pids[*]}" >&2
-  printf '¿Continuar? [y/N] ' >&2
-  read -r ans
-  [ "$ans" = "y" ] || return 0
+  _confirm || return 0
 
+  printf 'killing proceso: %s\n' "${pids[@]}"
   kill -- "${pids[@]}" 2>/dev/null
 
   sleep 0.3
@@ -92,9 +137,8 @@ fkill() {
 
   if [ "${#still_up[@]}" -gt 0 ]; then
     printf 'Estos siguen vivos: %s\n' "${still_up[*]}" >&2
-    printf '¿Forzar con SIGKILL (-9)? [y/N] ' >&2
-    read -r force
-    [ "$force" = "y" ] && kill -9 -- "${still_up[@]}" 2>/dev/null
+    _confirm "¿Forzar con SIGKILL (-9)? [y/N] " || return 0
+    kill -9 -- "${still_up[@]}" 2>/dev/null
   fi
 }
 
@@ -104,7 +148,7 @@ fkill() {
 # - Respeta espacios en rutas.
 # - Abre el editor saltando a la linea exacta
 # - Vista previa recortada centrada en la linea del match
-
+# @cmd rgf  Buscar con ripgrep + fzf y abrir resultados en $EDITOR
 rgf() {
   _req rg fzf bat awk || return 1
 
@@ -115,37 +159,35 @@ rgf() {
 
   local results
   results="$(
-    rg --hidden --glob '!.git' --line-number --no-heading --color=never -- "$@" |
+    rg --vimgrep --hidden --glob '!.git' -- "$@" 2>/dev/null |
       fzf --multi \
         --prompt=' rg > ' \
         --delimiter=':' \
-        --nth=3.. \
+        --nth=4.. \
         --preview='
-                    line={2}
-                    start=$(( line - 10 ))
-                    [ "$start" -lt 1 ] && start=1
-                    end=$(( line + 30 ))
-
-                    bat --style=numbers --color=always \
-                        --highlight-line "$line" \
-                        --line-range "${start}:${end}" \
-                        {1} 2>/dev/null
-              ' \
+          file={1};line={2}
+          if command -v bat >/dev/null 2>&1; then
+            bat --style=numbers --color=always --highlight-line="$line" "$file"
+          else
+            nl ba "$file" | sed -n "$((line-5)),$((line+5))p"
+          fi 
+        ' \
         --preview-window=right,70%
   )" || return 0
 
   [ -z "$results" ] && return 0
 
-  local sel fpath lnum
-  while IFS= read -r sel; do
-    fpath="$(printf '%s\n' "$sel" | awk -F: '{print $1}')"
-    lnum="$(printf '%s\n' "$sel" | awk -F: '{print $2}')"
+  local fpath lnum line
+  while IFS= read -r line; do
+    fpath="$(printf '%s\n' "$line" | awk -F: '{print $1}')"
+    lnum="$(printf '%s\n' "$line" | awk -F: '{print $2}')"
 
     [ -n "$fpath" ] && [ -f "$fpath" ] && _edit_at "$fpath" "$lnum"
   done <<<"$results"
 }
 
 # Lanzar/adjuntar a una sesión tmux por nombre (default: main)
+# @cmd t  Crear/adjuntar sesión tmux
 t() {
   _req tmux || return 1
   local name="${1:-main}"
@@ -157,29 +199,38 @@ t() {
   fi
 }
 
-# Papelera en vez de rm directo
-trash() {
-  _req trash-put || {
-    printf 'Necesito trash-put (paquete trash-cli)\n' >&2
-    return 1
-  }
-  trash-put -- "$@"
-}
-
 # volver a ejecutar el último comando interactivo
 # - Reejecuta el comando anterior al `redo` leyendo el history.
 # - Útil para: "me dio error, ejecuto 'redo' directamente".
 # - Limitación: si lo último en el history es literalmente 'redo', entraría bucle.
 #   Lo evitamos leyendo el penúltimo comando de history.
+# @cmd redo   Reejecutar el penúltimo comando del history
 redo() {
-  local cmd
-  cmd="$(history 2 | head -n1 | sed 's/^[ ]*[0-9]\+[ ]*//')"
+  local last
+  last="$(
+    HISTTIMEFORMAT= history 2>/dev/null |
+      sed 's/^ *[0-9]\+ *//' |
+      tail -n 2 | head -n 1
+  )"
 
-  if [ -z "$cmd" ]; then
+  if [ -z "$last" ]; then
     printf 'No puedo recuperar el último comando.\n' >&2
     return 1
   fi
 
-  printf 'Reejecutando; %s\n' "$cmd" >&2
-  eval "$cmd"
+  printf 'Reejecutando; %s\n' "$last" >&2
+  eval "$last"
+}
+
+# @cmd dothelp  Listar funciones del bash_lib con descripción
+dothelp() {
+  local dir="${1:-$HOME/dotfiles/bash/bash_lib}"
+  if [ ! -d "$dir" ]; then
+    printf 'Directorio no encontrado: %s\n' "$dir" >&2
+    return 1
+  fi
+
+  grep -h '^# @cmd' "$dir"/*.sh 2>/dev/null |
+    sed 's/^# @cmd[[:space:]]\+//' |
+    sort
 }

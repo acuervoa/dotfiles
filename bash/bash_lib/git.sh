@@ -2,7 +2,7 @@
 
 # Helpers
 
-# Asegura que estamos en un repo git
+# @cmd _git_root_or_die   Asegura que estamos en un repo git
 _git_root_or_die() {
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     printf 'No estás en un repo git.\n' >&2
@@ -10,7 +10,7 @@ _git_root_or_die() {
   fi
 }
 
-# Detecta rama principal (main/master o HEAD remoto)
+# @cmd _git_main_branch   Detecta rama principal (main/master o HEAD remoto)
 _git_main_branch() {
   if git show-ref --verify --quiet refs/heads/main; then
     printf 'main'
@@ -33,7 +33,7 @@ _git_main_branch() {
   return 1
 }
 
-# Wrapper seguro para cambiar de rama
+# @cmd _git_switch  Wrapper seguro para cambiar de rama
 # Usa git switch si existe, si no git checkout
 _git_switch() {
   local target="$1"
@@ -44,7 +44,7 @@ _git_switch() {
   fi
 }
 
-# Wrapper seguro para crear rama desde otra ref
+# @cmd _git_switch_new  Wrapper seguro para crear rama desde otra ref
 _git_switch_new() {
   local new_branch="$1"
   local from="$2"
@@ -55,7 +55,7 @@ _git_switch_new() {
   fi
 }
 
-# Ir a la raiz del repo
+# @cmd grt  Ir a la raiz del repo
 grt() {
   _req git || return 1
   _git_root_or_die || return 1
@@ -68,7 +68,7 @@ grt() {
   }
 }
 
-# Checkout rápido de rama (local o remota) con creación automática
+# @cmd gbr  Checkout rápido de rama (local o remota) con creación automática
 # - Eliges entre ramas locales y remotas (se elimina el prefijo origin/)
 # - Si no existe localmente pero sí en origin, crea rama de tracking
 # - Si no existe en ningún sitio, te ofrece crearla desde HEAD actual
@@ -108,7 +108,7 @@ gbr() {
   _git_switch_new "$branch" HEAD
 }
 
-# Que vamos a commitear realmente (diff staged bonito)
+# @cmd gstaged  Que vamos a commitear realmente (diff staged bonito)
 gstaged() {
   _req git bat || return 1
   _git_root_or_die || return 1
@@ -116,25 +116,22 @@ gstaged() {
   git diff --cached --color=always
 }
 
-# Deshacer el último commit pero mantener los cambios en el working directory
+# @cmd gundo  Deshacer el último commit pero mantener los cambios en el working directory
 # - soft reset seguro
 gundo() {
   _req git || return 1
   _git_root_or_die || return 1
 
   printf 'Esto hará: git reset --soft HEAD~1 (deshace el último commit pero conserva los cambios).\n' >&2
-  printf '¿Continuar? [y/N] ' >&2
-  read -r ans
-  [ "$ans" = "y" ] || return 0
-
+  _confirm || return 0
+  printf 'Ejecutando git reset --soft HEAD~1\n'
   git reset --soft HEAD~1
 }
 
-# Checkout de rama con preview del histórico
+# @cmd gcof   Checkout de rama con preview del histórico
 # - Comprueba que estás en un repo git.
 # - Incluye rama actual destacada
 # - Evita fallo si no eliges nada
-
 gcof() {
   _req git fzf || return 1
   _git_root_or_die || return 1
@@ -142,69 +139,86 @@ gcof() {
   local current
   current="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 
-  local branch
-  branch="$(
-    git for-each-ref --format='%(refname:short)' refs/heads |
-      sed '/^$/d' |
-      fzf --ansi \
-        --prompt=' branch > ' \
-        --header="Actual: ${current}" \
-        --preview='git log --oneline --decorate --graph -n 30 {}' \
-        --preview-window=right,70%
-  )" || return 0
+  local target
+  target="$(
+    git for-each-ref --sort=-committerdate \
+      --format='%(refname:short)|%(committerdate:relative)|%(authorname)|%(subject)' refs/heads |
+      sed "s#^${current}|#* ${current}|#" |
+      fzf \
+        --with-nth=1,2,3,4 \
+        --delimiter='|' \
+        --prompt=' checkout > ' \
+        --header="Rama actual: ${current}" \
+        --preview='
+            branch=$(echo {} | cut -d"|" -f1 | sed "s/^* //");
+            git log -n 20 --oneline --decorate --graph "$branch"
+        ' \
+        --preview-window=right,70% |
+      sed 's/^\* //' |
+      cut -d'|' -f1
+  )" || true
 
-  [ -z "$branch" ] && return 0
+  if [ -z "$target" ]; then
+    printf 'Sin selección. Nada que hacer. \n' >&2
+    return 0
+  fi
 
-  _git_switch "$branch"
+  _git_switch "$target"
 }
 
-# Limpia ramas locales ya mergeadas
+# @cmd gclean   Limpia ramas locales ya mergeadas en la rama base
 gclean() {
-  _req git || return 1
+  _req git fzf || return 1
   _git_root_or_die || return 1
 
   git fetch --all --prune >/dev/null 2>&1
 
-  local base
+  local base current branches sel
   base="$(_git_main_branch)" || {
     printf 'No puedo determinar rama base. Abortando limpieza.\n' >&2
     return 1
   }
 
-  if ! git rev-parse --verify "$base" >/dev/null 2>&1; then
-    printf 'Rama base "%s" no existe localmente. Haz primero:\n  git fetch origin %s:%s\n' "$base" "$base" "$base" >&2
+  if ! git rev-parse --verify "%base" >/dev/null 2>&1; then
+    printf 'Rama base "%s" no existe localmente. Haz primero:\n git fetch origin %s:%s\n' "$base" "$base" "$base" >&2
     return 1
   fi
 
-  local current
-  current="$(git rev-parse --abbrev-ref HEAD)"
+  current="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
 
-  local merged
-  merged="$(
-    git branch --merged "$base" |
+  branches="$(
+    git branch --merged "$base" 2>/dev/null |
       sed 's/^[* ] *//' |
-      grep -v "^$base$" |
-      grep -v "^$current$"
+      grep -v -E "^(${base}|${current})$" || true
   )"
 
-  if [ -z "$merged" ]; then
-    printf 'No hay ramas mergeadas para limpiar.\n' >&2
+  if [ -z "$branches" ]; then
+    printf 'No hay ramas mergeadas para borrar.\n' >&2
     return 0
   fi
 
-  printf 'Las siguientes ramas ya están mergeadas en %s:\n' "$base" >&2
-  printf '%s\n' "$merged" >&2
-  printf '¿Borrarlas localmente con "git branch -d"? [y/N] ' >&2
-  read -r ans
-  [ "$ans" = "y" ] || return 0
+  sel="$(
+    printf '%s\n' "$branches" |
+      fzf --multi \
+        --prompt=' gclean > ' \
+        --header="Ramas mergeadas en ${base} (SPACE marca, ENTER confirma)"
+  )" || return 0
 
-  printf '%s\n' "$merged" | while read -r br; do
+  [ -z "$sel" ] && return 0
+
+  printf 'Vas a borrar localmente:\n%s\n' "$sel" >&2
+  if ! _confirm '¿Continuar? [y/N] '; then
+    return 0
+  fi
+
+  local br
+  while IFS= read -r br; do
     [ -z "$br" ] && continue
-    git branch -d "$br"
-  done
+    git branch -d -- "$br"
+  done <<<"$sel"
 }
 
-# Watcher de cambios locales en vivo
+# @cmd watchdiff  Watcher de cambios locales en vivo
 # - Refresca cada 2s
 # - Muestra status corto + diff truncado
 watchdiff() {
@@ -228,21 +242,21 @@ watchdiff() {
   done
 }
 
-# Guarda el stash de trabajo con nombre legible
-
+# @cmd checkpoint   Guarda el stash de trabajo con nombre legible
 checkpoint() {
   _req git || return 1
   _git_root_or_die || return 1
 
   local msg="${*:-work-in-progress}"
 
+  git add -A
   git stash push --include-untracked -m "$msg"
 
   printf "✔ Guardado como checkpoint: %s\n" "$msg" >&2
   git stash list | head -n 5
 }
 
-# Commit rapido "Work in progress"
+# @cmd wip  Commit rapido "Work in progress"
 # - despues reescribir con rebase -i  o  git commit --amend
 wip() {
   _req git || return 1
@@ -256,17 +270,22 @@ wip() {
   printf '✔ WIP guardado.\n' >&2
 }
 
-# Generear commits "fixup!" contra el ultimo commit
+# @cmd fixup  Generear commits "fixup!" contra el ultimo commit
 # - Para luego hacer autosquash en un rebase interactivo
 fixup() {
   _req git || return 1
   _git_root_or_die || return 1
 
   local target msg
-  target="$(git rev-parse --verify HEAD)" || return 1
-  msg="$(git log -1 --pretty=format:%s)"
+  target="${1:-HEAD}"
 
-  git add -A
+  if [ "$target" = "HEAD" ]; then
+    msg="$(git log -1 --pretty=format:'%s')"
+  else
+    msg="$(git log -1 --pretty=format:'%s' "$target")"
+  fi
+
+  printf 'Creando commit fixup! para: %s\n' "$msg" >&2
   git commit --fixup "$target" || {
     printf 'Nada que fixupear.\n' >&2
     return 0
@@ -276,7 +295,7 @@ fixup() {
   printf 'Para plegar historia luego:\n  git rebase -i --autosquash <base>\n' >&2
 }
 
-# Archivos tocados recientemente (últimos 3 días)
+# @cmd recent   Archivos tocados recientemente (últimos 3 días)
 # - Selección con fzf
 # - Preview con bat
 # - Abre en tu editor
@@ -299,7 +318,7 @@ recent() {
   _edit_at "$file"
 }
 
-# Push protegido
+# @cmd gp   Push protegido
 # - Muestra rama actual
 # - Si el push falla por falta de upstream, lo crea
 gp() {
@@ -308,6 +327,8 @@ gp() {
 
   local branch
   branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+
+  printf 'Rama actual: %s\n' "$branch" >&2
 
   printf 'Vas a pushear la rama "%s". ¿Seguro? [y/N] ' "$branch" >&2
   read -r ans
@@ -321,7 +342,7 @@ gp() {
   git push -u origin "$branch"
 }
 
-# Lista ramas (locales y remotas) ordenadas por última actividad
+# @cmd br   Lista ramas (locales y remotas) ordenadas por última actividad
 br() {
   _req git || return 1
   _git_root_or_die || return 1

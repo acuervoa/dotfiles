@@ -1,44 +1,59 @@
-# Buscar archivo/directorio y abrir
+# nav.sh - navegación de ficheros y clipboard
+
+## Buscar archivo/directorio y abrir
 # - No peta si no eliges nada
 # - Soporta rutas con espacios.
 # - Excluye basura típica (node_modules, vendor, dist, .venv...) para no saturar fzf.
 # - Si eliges un directorio: te deja elegir cd o abrir en editor.
-
+# cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
 fo() {
   _req fd fzf bat eza || return 1
 
+  local root="${1:-.}"
+  local -a fd_args
   local sel
+
+  # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
+  local -a excludes
+  if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
+    # shellcheck disable=SC2206
+    excludes=($FD_DEFAULT_EXCLUDES)
+  else
+    excludes=(.git node_modules vendor .venv dist build target .cache)
+  fi
+
+  fd_args=(--hidden --follow --colo=never)
+  local ex
+  for ex in "${excludes[@]}"; do
+    fd_args+=(--exclude "$ex")
+  done
+
   sel="$(
-    fd --hidden --follow --color=never \
-      --exclude .git \
-      --exclude node_modules \
-      --exclude vendor \
-      --exclude .venv \
-      --exclude dist \
-      --exclude target |
-      fzf --ansi \
-        --prompt ' abrir > ' \
-        --preview='
-                  if [ -d "{}" ]; then
-                      eza -la --color=always "{}"
-                  else
-                      bat --style=numbers --color=always "{}" 2>/dev/null | head -500
-                  fi
-            ' \
-        --preview-window=right,70%
+    fd "${fd_args[@]}" . "$root" 2>/dev/null |
+      fzf --prompt=' fo > ' --preview='
+        if [ -d "{}" ]; then
+          if command -v eza >/dev/null 2>&1; then
+            eza -la --color=always "{}"
+          else
+            \ls -lah {}
+          fi 
+        else 
+          if command -v bat >/dev/null 2>&1; then
+            bat --style=numbers --color=always "{}" 2>/dev/null || file {}
+          else
+            file {}
+          fi
+        fi
+      ' --preview-window=right,60%
   )" || return 0
 
   [ -z "$sel" ] && return 0
 
   if [ -d "$sel" ]; then
-    printf 'Has elegido un directorio: %s\n' "$sel" >&2
-    printf '¿Entrar con "cd" (c) o abrir en editor (e)? [c/e] ' >&2
-    read -r ans
-    if [ "$ans" = "c" ]; then
+    printf 'Directorio seleccionado: %s\n' "$sel" >&2
+    if _confirm '¿cd a este directorio? [y/N] '; then
       cd -- "$sel" || printf 'No pude hacer cd.\n' >&2
-      return
     fi
-    _edit_at "$sel"
   else
     _edit_at "$sel"
   fi
@@ -50,6 +65,7 @@ fo() {
 # - Filtra vacíos y duplicados.
 # - Preview con eza correctamente quoteado.
 # - Verifica que el destino sigue existiendo.
+# @cmd cdf  Buscar directorio con fd+fzf y hacer cd
 cdf() {
   _req zoxide fzf eza || return 1
 
@@ -77,6 +93,7 @@ cdf() {
 # mkdir + cd
 # - Crea (mkdir -p) y entra.
 # - Usa cd -- para rutas raras con espacios o guiones iniciales.
+# @cmd take   mkdir -p y cd al directorio
 take() {
   if [ -z "$1" ]; then
     printf "Uso: take <directorio>\n" >&2
@@ -88,6 +105,7 @@ take() {
 # descomprimir un archivo según su extensión
 # - Comprueba que el archivo existe.
 # - Comprueba que la herramienta necesaria está instalada antes de llamar.
+# @cmd extract  Descomprimir un archivo según su extensión
 extract() {
   local file="$1"
   if [ -z "$1" ] || [ ! -f "$1" ]; then
@@ -152,12 +170,13 @@ extract() {
 # - Acepta stdin (echo foo | cb) o argumentos (cb foo bar baz).
 # - Soporta wl-copy, xclip y pbcopy.
 # - No añade salto de línea adicional.
+# @cmd cb   Copiar texto al portapapeles (stdin, arg o fichero)
 cb() {
   local data
 
-  if [ ! -t 0 ]; then
+  if [ "$#" -eq 0 ]; then
     data="$(cat)"
-  elif [ $# -eq 1 ] && [ -f "$1" ]; then
+  elif [ "$#" -eq 1 ] && [ -f "$1" ]; then
     data="$(cat -- "$1")"
   else
     data="$*"
