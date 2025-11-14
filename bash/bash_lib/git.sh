@@ -128,6 +128,16 @@ gundo() {
   git reset --soft HEAD~1
 }
 
+_gcof_preview() {
+  local line="$*"
+  local branch
+
+  branch="$(printf '%s\n' "$line" | cut -d'|' -f1 | sed 's/^\* //')"
+  [ -n "$branch" ] || return 0
+
+  git log -n 20 --oneline --decorate --graph --color=always "$branch"
+}
+
 # @cmd gcof   Checkout de rama con preview del histórico
 # - Comprueba que estás en un repo git.
 # - Incluye rama actual destacada
@@ -149,10 +159,7 @@ gcof() {
         --delimiter='|' \
         --prompt=' checkout > ' \
         --header="Rama actual: ${current}" \
-        --preview='
-            branch=$(echo {} | cut -d"|" -f1 | sed "s/^* //");
-            git log -n 20 --oneline --decorate --graph "$branch"
-        ' \
+        --preview='_gcof_preview {}' \
         --preview-window=right,70% |
       sed 's/^\* //' |
       cut -d'|' -f1

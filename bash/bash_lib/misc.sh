@@ -20,7 +20,7 @@ fhist() {
   fi
 
   local hist
-  hist="$(HISTTIMEFORMAT= history 2>/dev/null | sed 's/^ *[0-9]\+ *//')" || true
+  hist="$(HISTTIMEFORMAT='' history 2>/dev/null | sed 's/^ *[0-9]\+ *//')" || true
   if [ -z "$hist" ]; then
     printf 'No hay historial disponible en esta sesión.\n' >&2
     return 1
@@ -64,7 +64,8 @@ fhist() {
 # - Evita crear el archivo con permisos abiertos. Lo fuerza a 600.
 # @cmd todo   Añadir entrada a un TODO plano con timestamp
 todo() {
-  local file="$HOME/.todo.cli.txt"
+  local file="${TODO_FILE:-$HOME/.todo.cli.txt}"
+  mkdir -p -- "$(dirname "$file")" 2>/dev/null || true
 
   if [ ! -f "$file" ]; then
     : >"$file"
@@ -100,7 +101,7 @@ bench() {
     date %s | awk '{ print $1 * 1000 }'
   }
 
-  local start end delta secs
+  local start end delta
   start="$(_now_ms)"
   ("$@")
   local status=$?
@@ -134,9 +135,20 @@ envswap() {
   local name="${2:-}"
 
   if [ "$cmd" = "list" ]; then
-    ls -1 .env.* 2>/dev/null |
-      sed 's/^\.env\.//' |
-      sort || true
+    local f
+    local -a envs=()
+
+    for f in .env.*; do
+      # si no hay coincidencias, el glob se queda literal
+      [ -e "$f" ] || continue
+      envs+=("${f#.env.}")
+    done
+
+    # Nada que listar
+    ((${#envs[@]} == 0)) && return 0
+
+    # Ordenado
+    printf '%s\n' "${envs[@]}" | sort
     return 0
   fi
 
@@ -226,7 +238,7 @@ r() {
   chmod 600 "$tmp" 2>/dev/null || true
 
   last="$(
-    HISTTIMEFORMAT= history 2>/dev/null |
+    HISTTIMEFORMAT='' history 2>/dev/null |
       sed 's/^ *[0-9]\+ *//' |
       tail -n 2 | head -n 1
   )"
@@ -279,9 +291,14 @@ y() {
   local tmp cwd
   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
   yazi "$@" --cwd-file="$tmp"
+
   if ! IFS= read -r -d '' cwd <"$tmp"; then
     cwd="$(cat -- "$tmp")"
   fi
-  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+
+  if [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd" || printf 'y: no pude hacer cd a "%s"\n' "$cwd" >&2
+  fi
+
   rm -f -- "$tmp"
 }

@@ -142,6 +142,15 @@ fkill() {
   fi
 }
 
+_rfg_preview() {
+  local file="$1" line="$2"
+
+  if command -v bat >/dev/null 2>&1; then
+    bat --style=numbers --color=always --highlight-line="$line" "$file"
+  else
+    nl -ba "$file" | sed -n "$((line - 5)),$((line + 5))p"
+  fi
+}
 # Buscar en el repo con ripgrep + abrir en el editor
 # - Maneja patrón vacio
 # - Soporta múltiples selecciones
@@ -164,14 +173,7 @@ rgf() {
         --prompt=' rg > ' \
         --delimiter=':' \
         --nth=4.. \
-        --preview='
-          file={1};line={2}
-          if command -v bat >/dev/null 2>&1; then
-            bat --style=numbers --color=always --highlight-line="$line" "$file"
-          else
-            nl ba "$file" | sed -n "$((line-5)),$((line+5))p"
-          fi 
-        ' \
+        --preview='_rfg_preview {1} {2}' \
         --preview-window=right,70%
   )" || return 0
 
@@ -208,7 +210,7 @@ t() {
 redo() {
   local last
   last="$(
-    HISTTIMEFORMAT= history 2>/dev/null |
+    HISTTIMEFORMAT='' history 2>/dev/null |
       sed 's/^ *[0-9]\+ *//' |
       tail -n 2 | head -n 1
   )"
