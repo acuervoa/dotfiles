@@ -65,27 +65,63 @@ fo() {
 # - Filtra vacíos y duplicados.
 # - Preview con eza correctamente quoteado.
 # - Verifica que el destino sigue existiendo.
-# @cmd cdf  Buscar directorio con fd+fzf y hacer cd
+# @cmd cdf  Ir a un directorio (zoxide+fzf si esta disponible; si no, fd+fzf)
 cdf() {
-  _req zoxide fzf eza || return 1
+  _req fzf || return 1
 
+  local root="${1:-.}"
   local dir
-  dir="$(
-    zoxide query -l 2>/dev/null |
-      sed '/^$/d' |
-      awk '!seen[0]++' |
-      fzf --ansi \
-        --prompt ' cd > ' \
-        --preview 'eza -la --color=always "{}"' \
-        --preview-window=right,60%
-  )" || return 0
+
+  if command -v zoxide >/dev/null 2>&1; then
+    dir="$(
+      zoxide query -l 2>/dev/null |
+        fzf --prompt=' cdf(zoxide) > ' \
+          --preview='
+              if command -v eza >/dev/null 2>&1; then
+                eza -lah --color=always {}
+              else
+                \ls -lah {}
+              fi 
+            ' \
+          --preview-window=right,60%
+    )" || return 0
+  else
+    _req fd || return 1
+
+    local -a fd_args
+    local -a excludes
+    if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
+      # shellcheck disable=SC2206
+      excludes=($FD_DEFAULT_EXCLUDES)
+    else
+      excludes=(.git node_modules vendor .venv dist build target .cache)
+    fi
+
+    fd_args=(--type d --hidden --follow --color=never)
+    local ex
+    for ex in "${excludes[@]}"; do
+      fd_args+=(--exclude "$ex")
+    done
+
+    dir="$(
+      fd "${fd_args[@]}" . "$root" 2>/dev/null |
+        fzf --prompt=' cdf(fd) > ' \
+          --preview='
+              if command -v eza >/dev/null 2>&1; then
+                eza -lah --color=always {}
+              else
+                \ls -lah {}
+              fi 
+            ' \
+          --preview-window=right,60%
+    )" || return 0
+  fi
 
   [ -z "$dir" ] && return 0
-
-  if [ ! -d "$dir" ]; then
+  [ ! -d "$dir" ] && {
     printf 'Ruta elegida ya no existe: %s\n' "$dir" >&2
     return 1
-  fi
+  }
 
   cd -- "$dir" || printf 'No pude hacer cd.\n' >&2
 }
@@ -170,19 +206,31 @@ extract() {
 # - Acepta stdin (echo foo | cb) o argumentos (cb foo bar baz).
 # - Soporta wl-copy, xclip y pbcopy.
 # - No añade salto de línea adicional.
-# @cmd cb   Copiar texto al portapapeles (stdin, arg o fichero)
+# @cmd cb   Copiar texto al portapapeles (stdin, texto o contenido de archivos)
 cb() {
   local data
 
   if [ "$#" -eq 0 ]; then
+    # stdin
     data="$(cat)"
-  elif [ "$#" -eq 1 ] && [ -f "$1" ]; then
-    data="$(cat -- "$1")"
   else
-    data="$*"
-    if [ -z "$data" ]; then
-      printf 'Uso:\techo "texto" | cb\n\tcb "texto libre"\n\tcb fichero.txt\n' >&2
-      return 1
+    local all_files=1 f
+    for f in "$@"; do
+      if [ ! -f "$f" ]; then
+        all_files=0
+        break
+      fi
+    done
+
+    if [ "$all_files" -eq 1 ]; then
+      # contenido de todos los ficheros
+      data="$(cat -- "$@")"
+    elif [ "$#" -eq 1 ]; then
+      # un solo argumento, se interpreta como texto literal
+      data="$1"
+    else
+      # varios argumentos no todos ficheros: los concateno como texto
+      data="$"
     fi
   fi
 

@@ -225,6 +225,11 @@ redo() {
 # @cmd dothelp  Listar funciones del bash_lib con descripción
 dothelp() {
   local dir="${1:-$HOME/dotfiles/bash/bash_lib}"
+  local BOLD CYAN RESET
+  BOLD="$(printf '\033[1m')"
+  CYAN="$(printf '\033[36m')"
+  RESET="$(printf '\033[0m')"
+
   if [ ! -d "$dir" ]; then
     printf 'Directorio no encontrado: %s\n' "$dir" >&2
     return 1
@@ -232,5 +237,13 @@ dothelp() {
 
   grep -h '^# @cmd' "$dir"/*.sh 2>/dev/null |
     sed 's/^# @cmd[[:space:]]\+//' |
-    sort
+    sort |
+    while IFS= read -r line; do
+      [ -z "$line" ] && contiunue
+      local name desc
+      name="${line%%[[:space:]]*}"
+      desc="${line#"$name"}"
+      desc="${desc#" "}"
+      printf '%s%-18s%s %s\n' "${BOLD}${CYAN}" "$name" "$RESET" "$desc"
+    done
 }
