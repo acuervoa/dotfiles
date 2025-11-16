@@ -5,8 +5,6 @@
 ble-import integration/fzf-completion
 ble-import integration/fzf-key-bindings
 
-
-
 # --- Autosuggestions tipo zsh-autosuggestions/fish ---
 
 # Sugerencias automáticas rápidas pero no agresivas (en ms)
@@ -32,18 +30,3 @@ ble-bind -f 'C-g' 'accept-line'
 
 # Asegurar que Alt+. inserta el último argumento
 ble-bind -f 'M-.' insert-last-argument
-
-
-# Despues de cargar fzf, si Atuin está disponible, forzar C-r -> Atuin
-#if command -v __atuin_history >/dev/null 2&1; then
-  ble-bind -x 'C-r' __atuin_history
-#fi
-# --- Comportamiento de completado tipo zsh ---
-
-# De serie ble.sh ya:
-# - Hace sintaxis highlighting tipo zsh-syntax-highlighting
-# - Muestra menú de completado navegable con TAB / Shift-TAB
-# - Da autosuggestions al estilo fish/zsh sobre la línea actual
-# Aquí solo documentamos el uso:
-#   - TAB / Shift-TAB: moverte por el menú de completado
-#   - Flechas / teclas de movimiento: aceptar sugerencias cuando estés al final de la línea

@@ -38,8 +38,9 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 # - ble.sh (autosuggestions + syntax highlighting tipo zsh)
-if [[ $- == *i* ]] && [ -f "/usr/share/blesh/ble.sh" ]; then
+if [[ $- == *i* ]] && [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
   # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
+  # shellcheck source=/usr/share/blesh/ble-sh disable=SC1094,SC1090,SC1091
   source /usr/share/blesh/ble.sh --noattach
 fi
 
@@ -142,11 +143,6 @@ fi
 # Carga de aliases y funciones
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
 [ -f "$HOME/.bash_lib/bash_lib.sh" ] && source "$HOME/.bash_lib/bash_lib.sh"
-# [ -f "$HOME/.bash_lib/core.sh" ] && . "$HOME/.bash_lib/core.sh"
-# [ -f "$HOME/.bash_lib/git.sh" ] && . "$HOME/.bash_lib/git.sh"
-# [ -f "$HOME/.bash_lib/nav.sh" ] && . "$HOME/.bash_lib/nav.sh"
-# [ -f "$HOME/.bash_lib/docker.sh" ] && . "$HOME/.bash_lib/docker.sh"
-# [ -f "$HOME/.bash_lib/misc.sh" ] && . "$HOME/.bash_lib/misc.sh"
 
 #-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
 PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
@@ -167,11 +163,29 @@ if [ -d "$HOME/.config/composer/vendor/bin" ]; then
 fi
 
 # -- Atuin (historial avanzado) + binding robusto de C-r ----
+HIST_BACKEND="fzf" # valor por defecto si no hay Atuin
 if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash --disable-up-arrow)"
+  HIST_BACKEND="atuin"
 fi
 
-# Adjuntar ble.sh una vez que todo lo demás está configurado
+# --- Integración Atuin/FZF con ble: un solo dueño de Ctrl-t ---
+if [[ ${BLE_VERSION-} ]]; then
+  case "$HIST_BACKEND" in
+  atuin)
+    ble-bind -x 'C-r' __atuin_history
+    ;;
+  *)
+    if declare -F fhist >/dev/null 2>&1; then
+      ble-bind -x 'C-r' fhist
+    else
+      ble-bind -f 'C-r' historyi
+    fi
+    ;;
+  esac
+fi
+
+# --- Adjuntar ble.sh una vez que todo lo demás está configurado --
 if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
   ble-attach
 fi

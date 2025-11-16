@@ -1,5 +1,5 @@
 # git.sh
-
+# shellcheck shell=bash
 # Helpers
 
 # @cmd _git_root_or_die   Asegura que estamos en un repo git
@@ -40,7 +40,7 @@ _git_switch() {
   if git help -a | grep -qE '^\s+switch$'; then
     git switch -- "$target"
   else
-    git checkout -- "$target"
+    git checkout "$target"
   fi
 }
 
@@ -102,15 +102,14 @@ gbr() {
     return
   fi
 
-  printf 'Rama "%s" no existe. ¿Crear desde HEAD actual? [y/N] ' "$branch" >&2
-  read -r ans
-  [ "$ans" = "y" ] || return 0
+  printf 'Rama "%s" no existe. Se creará desde HEAD actual.\n' "$branch" >&2
+  _confirm '¿Continuar? [y/N] ' || return 0
   _git_switch_new "$branch" HEAD
 }
 
 # @cmd gstaged  Que vamos a commitear realmente (diff staged bonito)
 gstaged() {
-  _req git bat || return 1
+  _req git || return 1
   _git_root_or_die || return 1
 
   git diff --cached --color=always
@@ -128,20 +127,11 @@ gundo() {
   git reset --soft HEAD~1
 }
 
-_gcof_preview() {
-  local line="$*"
-  local branch
-
-  branch="$(printf '%s\n' "$line" | cut -d'|' -f1 | sed 's/^\* //')"
-  [ -n "$branch" ] || return 0
-
-  git log -n 20 --oneline --decorate --graph --color=always "$branch"
-}
-
 # @cmd gcof   Checkout de rama con preview del histórico
 # - Comprueba que estás en un repo git.
 # - Incluye rama actual destacada
 # - Evita fallo si no eliges nada
+# shellcheck disable=SC2016
 gcof() {
   _req git fzf || return 1
   _git_root_or_die || return 1
@@ -152,17 +142,20 @@ gcof() {
   local target
   target="$(
     git for-each-ref --sort=-committerdate \
-      --format='%(refname:short)|%(committerdate:relative)|%(authorname)|%(subject)' refs/heads |
-      sed "s#^${current}|#* ${current}|#" |
+      --format='%(objectname:short)|%(refname:short)|%(committerdate:relative)|%(authorname)|%(subject)' refs/heads |
+      awk -F'|' '{ OFS="|"; print }' |
       fzf \
-        --with-nth=1,2,3,4 \
+        --with-nth=2,3,4,5 \
         --delimiter='|' \
         --prompt=' checkout > ' \
         --header="Rama actual: ${current}" \
-        --preview='_gcof_preview {}' \
+        --preview='hash=$(printf "%s\n" {} | cut -d"|" -f1 | tr -d "[:space:]");
+            [ -z "$hash" ] && exit 0;
+            git log -n 20 --oneline --decorate --graph --color=always "$hash"
+        ' \
         --preview-window=right,70% |
       sed 's/^\* //' |
-      cut -d'|' -f1
+      cut -d'|' -f2
   )" || true
 
   if [ -z "$target" ]; then
@@ -186,7 +179,7 @@ gclean() {
     return 1
   }
 
-  if ! git rev-parse --verify "%base" >/dev/null 2>&1; then
+  if ! git rev-parse --verify "$base" >/dev/null 2>&1; then
     printf 'Rama base "%s" no existe localmente. Haz primero:\n git fetch origin %s:%s\n' "$base" "$base" "$base" >&2
     return 1
   fi
@@ -337,10 +330,8 @@ gp() {
 
   printf 'Rama actual: %s\n' "$branch" >&2
 
-  printf 'Vas a pushear la rama "%s". ¿Seguro? [y/N] ' "$branch" >&2
-  read -r ans
-  [ "$ans" = "y" ] || return 0
-
+  printf 'Vas a pushear la rama "%s".\n' "$branch" >&2
+  _confirm '¿Seguro? [y/N] ' || return 0
   if git push; then
     return 0
   fi
@@ -349,8 +340,8 @@ gp() {
   git push -u origin "$branch"
 }
 
-# @cmd br   Lista ramas (locales y remotas) ordenadas por última actividad
-br() {
+# @cmd branch   Lista ramas (locales y remotas) ordenadas por última actividad
+branch() {
   _req git || return 1
   _git_root_or_die || return 1
 

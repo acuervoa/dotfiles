@@ -241,7 +241,7 @@ dothelp() {
     sed 's/^# @cmd[[:space:]]\+//' |
     sort |
     while IFS= read -r line; do
-      [ -z "$line" ] && contiunue
+      [ -z "$line" ] && continue
       local name desc
       name="${line%%[[:space:]]*}"
       desc="${line#"$name"}"

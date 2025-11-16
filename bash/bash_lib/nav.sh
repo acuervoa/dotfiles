@@ -7,7 +7,7 @@
 # - Si eliges un directorio: te deja elegir cd o abrir en editor.
 # cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
 fo() {
-  _req fd fzf bat eza || return 1
+  _req fd fzf || return 1
 
   local root="${1:-.}"
   local -a fd_args
@@ -22,7 +22,7 @@ fo() {
     excludes=(.git node_modules vendor .venv dist build target .cache)
   fi
 
-  fd_args=(--hidden --follow --colo=never)
+  fd_args=(--hidden --follow --color=never)
   local ex
   for ex in "${excludes[@]}"; do
     fd_args+=(--exclude "$ex")
@@ -51,9 +51,10 @@ fo() {
 
   if [ -d "$sel" ]; then
     printf 'Directorio seleccionado: %s\n' "$sel" >&2
-    if _confirm '¿cd a este directorio? [y/N] '; then
-      cd -- "$sel" || printf 'No pude hacer cd.\n' >&2
+    if ! _confirm '¿Cambiar a este directorio? [y/N] '; then
+      return 0
     fi
+    cd -- "$sel" || printf 'No pude hacer cd.\n' >&2
   else
     _edit_at "$sel"
   fi
@@ -230,7 +231,7 @@ cb() {
       data="$1"
     else
       # varios argumentos no todos ficheros: los concateno como texto
-      data="$"
+      data="$*"
     fi
   fi
 

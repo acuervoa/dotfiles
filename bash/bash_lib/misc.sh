@@ -73,7 +73,7 @@ todo() {
   fi
 
   if [ $# -eq 0 ]; then
-    nl -ba "$file" 2>/dev/null || printf '(lista vacia)\n'
+    nl -ba "$file" 2>/dev/null || printf 'Lista vacía.\n'
     return 0
   fi
 
@@ -98,7 +98,7 @@ bench() {
       return
     fi
 
-    date %s | awk '{ print $1 * 1000 }'
+    date +%s | awk '{ print $1 * 1000 }'
   }
 
   local start end delta
@@ -181,7 +181,7 @@ envswap() {
 }
 
 # Quien escucha en que puerto
-# @cmd ports  Ver puertos en eschucha (ss/netstat simplificado)
+# @cmd ports  Ver puertos en escucha (ss/netstat simplificado)
 ports() {
   _req awk || return 1
 
@@ -200,7 +200,7 @@ ports() {
           printf "%-6s %-30s %-24s %-10s\n", proto, laddr, prog, user
         }
       '
-  elif comand -v netstat >/dev/null 2>&1; then
+  elif command -v netstat >/dev/null 2>&1; then
     netstat -tulpen 2>/dev/null |
       awk '
         NR==1 {
@@ -231,9 +231,13 @@ ports() {
 # - Pregunta antes de ejecutar con `source`
 # @cmd r  Editar y re-ejecutar el penúltimo comando del history
 r() {
-  _req "${EDITOR:-nvim}" >/dev/null 2>&1 || true
+  # Nos aseguramos que hay editor
+  if ! _req "${VISUAL:-${EDITOR:-nvim}}"; then
+    printf 'No encuentro editor (VISUAL/EDITOR/nvim).\n' >&2
+    return 1
+  fi
 
-  local tmp last ans
+  local tmp last
   tmp="$(mktemp)"
   chmod 600 "$tmp" 2>/dev/null || true
 
@@ -252,9 +256,8 @@ r() {
   printf '%s\n' "$last" >"$tmp"
   "${VISUAL:-${EDITOR:-nvim}}" "$tmp"
 
-  printf 'Esto se va a ejectuar en la shell actual. ¿Ejecutar? [y/N] ' >&2
-  read -r ans
-  if [ "$ans" != "y" ]; then
+  printf 'Esto se va a ejecutar en la shell actual.\n' >&2
+  if ! _confirm '¿Ejecutar? [y/N] '; then
     rm -f -- "$tmp"
     return 0
   fi

@@ -41,11 +41,7 @@ if command -v docker >/dev/null 2>&1; then
   alias dcud='docker compose up -d'
   alias dcd='docker compose down'
   alias dcr='docker compose restart'
-  alias dcps='docker compose ps'
   alias dps='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
-  alias dcl='docker compose logs'
-  alias dclf='docker compose logs -f'
-  alias dce='docker compose exec'
   alias dil='docker images'
 fi
 
@@ -64,6 +60,3 @@ fi
 alias cls="clear"
 alias reload="source ~/.bashrc"
 alias path='echo "$PATH" | tr ":" "\n"'
-if command -v tldr >/dev/null 2>&1; then
-  alias help='tldr'
-fi
