@@ -214,7 +214,7 @@ gclean() {
   local br
   while IFS= read -r br; do
     [ -z "$br" ] && continue
-    git branch -d -- "$br"
+    git branch -d "$br"
   done <<<"$sel"
 }
 
