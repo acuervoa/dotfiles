@@ -306,34 +306,53 @@ y() {
   rm -f -- "$tmp"
 }
 
-# @cmd dev  Crear/adjuntar sesión tmux ligada al proyecto actual
+# @cmd dev  Crear/adjuntar sesión tmux ligada al proyecto actual (layout estándar en paneles)
 dev() {
   _req tmux || return 1
 
-  local dest name
+  local dest name editor_cmd logs_cmd
 
   if [ -n "${1:-}" ]; then
+    # dev /ruta/al/proyecto
     if [ -d "$1" ]; then
       dest="$(cd -- "$1" && pwd)"
     else
-      printf 'Directorio no existe: %s\n' "$1" >&2
+      printf 'dev: directorio no existe: %s\n' "$1" >&2
       return 1
     fi
   else
-    if git-rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    # Si estamos en repo git, usamos su raíz
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
       dest="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
     else
+      # Si no, usamos proj pero SIN cambiar el cwd de esta shell
       if ! command -v proj >/dev/null 2>&1; then
-        printf 'proj no esta definido. No puedo seleccionar proyecto.\n' >&2
+        printf 'dev: proj no está definido y no estás en un repo git.\n' >&2
         return 1
       fi
-      proj || return 1
-      dest="$PWD"
+
+      local prev_pwd="$PWD"
+
+      # Ejecutamos proj en subshell y capturamos el cwd resultante
+      dest="$(
+        cd -- "$prev_pwd" || exit 1
+        proj || exit 1
+        pwd
+      )" || {
+        printf 'dev: selección de proyecto cancelada.\n' >&2
+        return 1
+      }
+
+      # Si seguimos en el mismo dir, lo tratamos como “no se ha elegido nada”
+      if [ "$dest" = "$prev_pwd" ]; then
+        printf 'dev: no se ha seleccionado ningún proyecto.\n' >&2
+        return 1
+      fi
     fi
   fi
 
   if [ -z "$dest" ] || [ ! -d "$dest" ]; then
-    printf 'Destino inválido: %s\n' "${dest:-<vacío>}" >&2
+    printf 'dev: destino inválido: %s\n' "${dest:-<vacío>}" >&2
     return 1
   fi
 
@@ -348,11 +367,50 @@ dev() {
     return 0
   fi
 
+  # Editor por defecto: VISUAL > EDITOR > nvim > vim > nano
+  if [ -n "${VISUAL:-}" ]; then
+    editor_cmd="$VISUAL"
+  elif [ -n "${EDITOR:-}" ]; then
+    editor_cmd="$EDITOR"
+  elif command -v nvim >/dev/null 2>&1; then
+    editor_cmd="nvim"
+  elif command -v vim >/dev/null 2>&1; then
+    editor_cmd="vim"
+  else
+    editor_cmd="nano"
+  fi
+
+  # Comando para pane de logs (preferimos mise, luego docker compose)
+  logs_cmd='(command -v mise >/dev/null 2>&1 && (mise run logs-openresty || mise run logs-php)) || (command -v docker >/dev/null 2>&1 && (docker compose logs -f openresty || docker compose logs -f php)) || echo "No hay tarea de logs disponible (mise/docker)"'
+
+  # Creamos sesión: 1 window llamada "dev" con 1 pane (será el pane izquierdo)
+  tmux new-session -ds "$name" -c "$dest" -n dev
+
+  # Creamos layout 3 paneles en la misma window:
+  #   - split horizontal → izquierda (editor) / derecha (logs+shell)
+  #   - split vertical sobre pane derecho → arriba derecha (logs) / abajo derecha (shell)
+  tmux split-window -h -t "$name:dev" -c "$dest" # ahora la derecha es activa
+  tmux split-window -v -t "$name:dev" -c "$dest" # divide la derecha en dos; abajo derecha queda activa
+
+  # En este punto (ventana dev):
+  #   pane activo: abajo derecha  → lo dejamos como shell “libre”
+  #   pane arriba derecha        → logs
+  #   pane izquierda             → editor
+
+  # 3.1. Logs en arriba derecha
+  tmux select-pane -t "$name:dev" -U # subimos: vamos a arriba derecha
+  tmux send-keys -t "$name:dev" "$logs_cmd" C-m
+
+  # 3.2. Editor en izquierda
+  tmux select-pane -t "$name:dev" -L # vamos a la izquierda
+  tmux send-keys -t "$name:dev" "$editor_cmd" C-m
+
+  # Dejamos el foco en el editor (izquierda). Abajo derecha queda como shell normal.
+
   if [ -n "${TMUX:-}" ]; then
-    tmux new-session -ds "$name" -c "$dest"
     tmux switch-client -t "$name"
   else
-    tmux new-session -s "$name" -c "$dest"
+    tmux attach -t "$name"
   fi
 }
 
