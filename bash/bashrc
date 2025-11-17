@@ -38,7 +38,7 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 # - ble.sh (autosuggestions + syntax highlighting tipo zsh)
-if [[ $- == *i* ]] && [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
+if [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
   # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
   # shellcheck source=/usr/share/blesh/ble-sh disable=SC1094,SC1090,SC1091
   source /usr/share/blesh/ble.sh --noattach

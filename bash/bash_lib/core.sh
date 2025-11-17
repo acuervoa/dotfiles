@@ -26,7 +26,7 @@ _confirm() {
 # Abre archivo en el editor preferido.
 # Respeta $VISUAL, luego $EDITOR. Fallback a nvim/vim/nano.
 # Si se pasa número de línea y el editor soporta "+<line>", lo usa.
-# @ cmd _edit_at  Abrir fichero en $EDITOR en una linea concreta (si se facilita)
+# @cmd _edit_at  Abrir fichero en $EDITOR en una linea concreta (si se facilita)
 _edit_at() {
   local file="$1" line="$2" editor
 
@@ -226,7 +226,7 @@ redo() {
 
 # @cmd dothelp  Listar funciones del bash_lib con descripción
 dothelp() {
-  local dir="${1:-$HOME/dotfiles/bash/bash_lib}"
+  local dir="${1:-${BASH_LIB_DIR:-$HOME/.bash_lib}}"
   local BOLD CYAN RESET
   BOLD="$(printf '\033[1m')"
   CYAN="$(printf '\033[36m')"
@@ -248,4 +248,65 @@ dothelp() {
       desc="${desc#" "}"
       printf '%s%-18s%s %s\n' "${BOLD}${CYAN}" "$name" "$RESET" "$desc"
     done
+}
+
+# @cmd blib-help  Buscar funciones de bash_lib con fzf
+blib-help() {
+  _req fzf || return 1
+
+  local dir="${BASH_LIB_DIR:-$HOME/.bash_lib}"
+  if [ ! -d "$dir" ]; then
+    printf 'Directorio bash_lib no encontrado: %s\n' "$dir" >&2
+    return 1
+  fi
+
+  local entries
+  entries="$(
+    grep -Hn '^# @cmd' "$dir"/*.sh 2>/dev/null |
+      while IFS=: read -r file line rest; do
+        # rest empieza por "# @cmd "
+        rest="${rest#'# @cmd '}"
+        name="${rest%%[[:space:]]*}"
+        desc="${rest#"$name"}"
+        desc="${desc#" "}"
+        printf '%s\t%s\t%s:%s\n' "$name" "$desc" "$file" "$line"
+      done
+  )" || true
+
+  if [ -z "$entries" ]; then
+    printf 'No se han encontrado funciones documentadas con # @cmd en %s\n' "$dir" >&2
+    return 1
+  fi
+
+  local sel
+  sel="$(
+    printf '%s\n' "$entries" |
+      fzf --prompt=' bash_lib > ' \
+        --delimiter=$'\t' \
+        --with-nth=1,2 \
+        --no-sort \
+        --preview='
+            file=$(echo {3} | cut -d: -f1)
+            line=$(echo {3} | cut -d: -f2)
+            if [ -f "$file" ]; then
+              start=$(( line > 5 ? line - 5 : 1 ))
+              end=$(( line + 20 ))
+              if command -v bat >/dev/null 2>&1; then
+                bat --style=numbers --color=always "$file" \
+                  | sed -n "${start},${end}p"
+              else
+                nl -ba "$file" | sed -n "${start},${end}p"
+              fi
+            fi
+          ' \
+        --preview-window=right,70%
+  )" || return 0
+
+  [ -z "$sel" ] && return 0
+
+  local name
+  name="${sel%%$'\t'*}"
+
+  printf 'Función seleccionada: %s\n' "$name" >&2
+  printf '%s\n' "$name"
 }

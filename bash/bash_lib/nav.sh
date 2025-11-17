@@ -5,7 +5,7 @@
 # - Soporta rutas con espacios.
 # - Excluye basura típica (node_modules, vendor, dist, .venv...) para no saturar fzf.
 # - Si eliges un directorio: te deja elegir cd o abrir en editor.
-# cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
+# @cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
 fo() {
   _req fd fzf || return 1
 
@@ -245,4 +245,70 @@ cb() {
     printf "No hay wl-copy, xclip ni pbcopy instalados\n" >&2
     return 1
   fi
+}
+
+# @cmd proj Ir a un proyecto (fzf sobre PROJECTS_ROOT)
+proj() {
+  _req fzf || return 1
+
+  local root="${PROJECTS_ROOT:-$HOME/Workspace}"
+
+  # Permite sobreescribir raiz al vuelo: proj ~/otra/carpeta
+  if [ -n "${1:-}" ]; then
+    root="$1"
+  fi
+
+  if [ ! -d "$root" ]; then
+    printf 'Directorio de proyectos no existe: %s\n' "$root" >&2
+    return 1
+  fi
+
+  local projects
+  projects="$(
+    find "$root" -mindepth 1 -maxdepth 3 -type d -name '.git' -print 2>/dev/null |
+      sed "s|^$root/||; s|/.git$||" |
+      sort -u
+  )"
+
+  if [ -z "$projects" ]; then
+    printf 'No se han encontrado proyectos (directorios con .git) bajo %s\n' "$root" >&2
+    return 1
+  fi
+
+  local rel
+  rel="$(
+    printf '%s\n' "$projects" |
+      fzf --prompt=' proj > ' \
+        --preview='
+            target="'"$root"'/"{}
+            if [ -d "$target" ]; then
+              if command -v eza >/dev/null 2>&1; then 
+                eza -lah --color=always "$target"
+              else
+                \ls -lah "$target"
+              fi 
+            fi 
+          ' \
+        --preview-window=right,60%
+  )" || return 0
+
+  [ -z "$rel" ] && return 0
+
+  local dest="$root/$rel"
+
+  if [ ! -d "$dest" ]; then
+    printf 'Destino ya no existe: %s\n' "$dest" >&2
+    return 1
+  fi
+
+  builtin cd -- "$dest" || {
+    printf 'No pude hacer cd a %s\n' "$dest" >&2
+    return 1
+  }
+
+  # Alimentar zoxide para que aprenda este proyecto
+  if command -v zoxide >/dev/null 2>&1; then
+    zoxide add "$dest" >/dev/null 2>&1 || true
+  fi
+
 }
