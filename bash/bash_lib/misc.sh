@@ -305,3 +305,82 @@ y() {
 
   rm -f -- "$tmp"
 }
+
+# @cmd dev  Crear/adjuntar sesión tmux ligada al proyecto actual
+dev() {
+  _req tmux || return 1
+
+  local dest name
+
+  if [ -n "${1:-}" ]; then
+    if [ -d "$1" ]; then
+      dest="$(cd -- "$1" && pwd)"
+    else
+      printf 'Directorio no existe: %s\n' "$1" >&2
+      return 1
+    fi
+  else
+    if git-rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      dest="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+    else
+      if ! command -v proj >/dev/null 2>&1; then
+        printf 'proj no esta definido. No puedo seleccionar proyecto.\n' >&2
+        return 1
+      fi
+      proj || return 1
+      dest="$PWD"
+    fi
+  fi
+
+  if [ -z "$dest" ] || [ ! -d "$dest" ]; then
+    printf 'Destino inválido: %s\n' "${dest:-<vacío>}" >&2
+    return 1
+  fi
+
+  name="$(basename "$dest")"
+
+  if tmux has-session -t "$name" 2>/dev/null; then
+    if [ -n "${TMUX:-}" ]; then
+      tmux switch-client -t "$name"
+    else
+      tmux attach -t "$name"
+    fi
+    return 0
+  fi
+
+  if [ -n "${TMUX:-}" ]; then
+    tmux new-session -ds "$name" -c "$dest"
+    tmux switch-client -t "$name"
+  else
+    tmux new-session -s "$name" -c "$dest"
+  fi
+}
+
+# @cmd tswitch  Cambiar a otra sesión de tmux y cerrar la actual (fzf)
+tswitch() {
+  _req tmux fzf || return 1
+  [ -z "${TMUX:-}" ] && {
+    printf 'tswitch: no estás dentro de tmux.\n' >&2
+    return 1
+  }
+
+  local current target
+
+  current="$(tmux display-message -p '#S')"
+
+  target="$(
+    tmux list-sessions -F '#S' |
+      grep -v "^${current}$" |
+      fzf --prompt=' tmux session > '
+  )" || return 0
+
+  [ -z "$target" ] && return 0
+
+  # Cambiamos el Destino
+  tmux switch-client -t "$target"
+
+  # Matamos la sesión anteriorf sólo si sigue existiendo
+  if tmux has-session -t "$current" 2>/dev/null; then
+    tmux kill-session -t "$current"
+  fi
+}
