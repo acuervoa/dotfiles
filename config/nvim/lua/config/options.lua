@@ -22,8 +22,14 @@ o.smartcase = true
 o.splitright = true
 o.splitbelow = true
 o.wrap = false
-o.undofile = true
+o.smartindent = true
+o.completeopt = "menu,menuone,noselect"
+o.list = true
+o.listchars = { tab = "󰌒 ", trail = "·", extends = "▶", precedes = "◀" }
+o.splitkeep = "screen"
 
 -- Desactiar providers
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0

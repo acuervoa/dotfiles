@@ -61,7 +61,7 @@ return {
 			vim.lsp.config("intelephense", {
 				capabilities = caps,
 				on_attach = on_attach,
-				settings = { intelephense = { files = { maxSize = 5000000 }, format = { enable = true } } },
+				settings = { intelephense = { files = { maxSize = 5000000 }, format = { enable = false } } },
 			})
 			vim.lsp.config("lua_ls", {
 				capabilities = caps,
@@ -101,7 +101,6 @@ return {
 						[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
 						[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
 					},
-					severity_sort = true,
 				},
 				underline = true,
 				update_in_insert = false,

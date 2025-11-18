@@ -2,13 +2,8 @@
 
 -- Keymaps "globales" no atados a plugins concretos
 local map = vim.keymap.set
-local opt = { silent = true, noremap = true }
 
 -- Navegación de ventanas/paneles (Neovim <-> tmux)
--- map("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Focus left (nvim/tmux)" })
--- map("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Focus down (nvim/tmux)" })
--- map("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Focus up (nvim/tmux)" })
--- map("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Focus right (nvim/tmux)" })
 map("n", "<M-h>", "<C-w>h", { desc = "Go to left window (Alt)" })
 map("n", "<M-l>", "<C-w>l", { desc = "Go to right window (Alt)" })
 
@@ -33,7 +28,7 @@ map("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "VSplit (%)" })
 map("n", "<leader><BS>", "<cmd>only<cr>", { desc = "Close other windows (only)" })
 
 -- Selector de buffers (análogo a choose-tree)
-map("n", "<leader>s", "<cmd>ls<CR>:b ", { desc = "Switch buffer" })
+map("n", "<leader>bb", "<cmd>ls<CR>:b ", { desc = "Switch buffer" })
 
 -- Resize tipo tmux (Alt+Shift+Flechas) — se mantiene Ctrl+Flechas también
 map("n", "<A-S-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease width (A-S-Left)" })
