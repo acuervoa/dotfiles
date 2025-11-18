@@ -442,3 +442,191 @@ tswitch() {
     tmux kill-session -t "$current"
   fi
 }
+
+# @cmd qa  Ejecutar pruebas/QA del proyecto actual (prefiere mise, luego heurística PHP)
+qa() {
+  # 1) Preferir tareas de mise (qa > test)
+  if command -v mise >/dev/null 2>&1; then
+    # Listamos tareas una vez
+    local tasks
+    tasks="$(mise tasks ls --no-header 2>/dev/null | awk '{print $1}')" || tasks=""
+
+    if printf '%s\n' "$tasks" | grep -qx 'qa'; then
+      mise run qa "$@"
+      return $?
+    fi
+
+    if printf '%s\n' "$tasks" | grep -qx 'test'; then
+      mise run test "$@"
+      return $?
+    fi
+  fi
+
+  # 2) Heurística PHP: composer + phpunit
+  if [ -f composer.json ]; then
+    # Con docker compose y servicio php
+    if command -v docker >/dev/null 2>&1 && docker compose config >/dev/null 2>&1; then
+      if docker compose ps php >/dev/null 2>&1; then
+        docker compose exec php php vendor/bin/phpunit "$@"
+        return $?
+      fi
+    fi
+
+    # Sin docker: phpunit local
+    if [ -x vendor/bin/phpunit ]; then
+      php vendor/bin/phpunit "$@"
+      return $?
+    fi
+
+    printf 'qa: composer.json detectado pero no encuentro phpunit (ni docker php, ni vendor/bin/phpunit).\n' >&2
+    return 1
+  fi
+
+  printf 'qa: no hay tareas de mise (qa/test) ni heurística conocida para este proyecto.\n' >&2
+  printf '    Define una tarea [tasks.qa] o [tasks.test] en mise.toml.\n' >&2
+  return 1
+}
+
+# @cmd rtest  Ejecutar tests del proyecto actual según stack (mise/composer/npm/etc)
+rtest() {
+  local root cmd=""
+
+  # Si estamos en repo git, vamos a la raíz
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+    cd -- "$root" || {
+      printf 'rtest: no puedo hacer cd a %s\n' "$root" >&2
+      return 1
+    }
+  fi
+
+  # 1) mise: tarea "test"
+  if command -v mise >/dev/null 2>&1 && [ -f "mise.toml" ]; then
+    cmd="mise run test"
+
+  # 2) composer: asumimos script "test"
+  elif [ -f "composer.json" ] && command -v composer >/dev/null 2>&1; then
+    cmd="composer test"
+
+  # 3) Node: pnpm > npm > yarn
+  elif [ -f "package.json" ]; then
+    if command -v pnpm >/dev/null 2>&1; then
+      cmd="pnpm test"
+    elif command -v npm >/dev/null 2>&1; then
+      cmd="npm test"
+    elif command -v yarn >/dev/null 2>&1; then
+      cmd="yarn test"
+    fi
+
+  # 4) PHPUnit standalone
+  elif [ -x "vendor/bin/phpunit" ]; then
+    cmd="vendor/bin/phpunit"
+
+  # 5) Makefile: target test
+  elif [ -f "Makefile" ] && command -v make >/dev/null 2>&1; then
+    cmd="make test"
+  fi
+
+  if [ -z "$cmd" ]; then
+    printf 'rtest: no sé qué comando de tests usar en %s\n' "${root:-$PWD}" >&2
+    printf '  Define una tarea \"test\" (mise/composer/npm) o un target \"test\" en Makefile.\n' >&2
+    return 1
+  fi
+
+  printf 'rtest: ejecutando %s\n' "$cmd" >&2
+  eval "$cmd"
+}
+
+# @cmd rserve  Arrancar servidor/dev del proyecto actual (mise/npm/composer/docker)
+rserve() {
+  local root cmd=""
+
+  # Ir a la raíz del repo si hay Git
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+    cd -- "$root" || {
+      printf 'rserve: no puedo hacer cd a %s\n' "$root" >&2
+      return 1
+    }
+  fi
+
+  # --- Preferencia 1: mise.toml (dev > up) ---
+  if command -v mise >/dev/null 2>&1 && [ -f "mise.toml" ]; then
+    # Listamos tareas una vez
+    local tasks
+    tasks="$(mise tasks 2>/dev/null | awk '{print $1}')" || tasks=""
+
+    if printf '%s\n' "$tasks" | grep -qx "dev"; then
+      cmd="mise run dev"
+    elif printf '%s\n' "$tasks" | grep -qx "up"; then
+      cmd="mise run up"
+    fi
+  fi
+
+  # --- Preferencia 2: Node (dev) ---
+  if [ -z "$cmd" ] && [ -f "package.json" ]; then
+    if command -v pnpm >/dev/null 2>&1; then
+      cmd="pnpm dev"
+    elif command -v npm >/dev/null 2>&1; then
+      cmd="npm run dev"
+    elif command -v yarn >/dev/null 2>&1; then
+      cmd="yarn dev"
+    fi
+  fi
+
+  # --- Preferencia 3: Symfony CLI ---
+  if [ -z "$cmd" ] && [ -f "composer.json" ] && command -v symfony >/dev/null 2>&1; then
+    cmd="symfony serve"
+  fi
+
+  # --- Preferencia 4: docker compose directo ---
+  if [ -z "$cmd" ] && { [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ] ||
+    [ -f "compose.yml" ] || [ -f "compose.yaml" ]; }; then
+    if command -v docker-compose >/dev/null 2>&1; then
+      cmd="docker-compose up"
+    elif command -v docker >/dev/null 2>&1; then
+      cmd="docker compose up"
+    fi
+  fi
+
+  if [ -z "$cmd" ]; then
+    printf 'rserve: no sé qué comando de servidor usar en %s\n' "${root:-$PWD}" >&2
+    printf '  Define una tarea \"dev\" o \"up\" en mise, o un comando \"dev\" en package.json,\n' >&2
+    printf '  o un compose.yml.\n' >&2
+    return 1
+  fi
+
+  printf 'rserve: ejecutando %s\n' "$cmd" >&2
+  eval "$cmd"
+}
+
+# @cmd rqa  Ejecutar pipeline de calidad del proyecto actual (mise qa, si existe)
+rqa() {
+  local root cmd=""
+
+  # Ir a raíz del repo si hay Git
+  if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    root="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+    cd -- "$root" || {
+      printf 'rqa: no puedo hacer cd a %s\n' "$root" >&2
+      return 1
+    }
+  fi
+
+  # 1) mise: tarea qa
+  if command -v mise >/dev/null 2>&1 && [ -f "mise.toml" ]; then
+    local tasks
+    tasks="$(mise tasks 2>/dev/null | awk '{print $1}')" || tasks=""
+    if printf '%s\n' "$tasks" | grep -qx "qa"; then
+      cmd="mise run qa"
+    fi
+  fi
+
+  # 2) Fallback: rtest
+  if [ -z "$cmd" ]; then
+    cmd="rtest"
+  fi
+
+  printf 'rqa: ejecutando %s\n' "$cmd" >&2
+  eval "$cmd"
+}

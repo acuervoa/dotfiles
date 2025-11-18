@@ -310,3 +310,80 @@ blib-help() {
   printf 'Función seleccionada: %s\n' "$name" >&2
   printf '%s\n' "$name"
 }
+
+# @cmd php_new  Crear nuevo microservicio PHP a partir del skeleton
+# Uso:
+#   php_new NOMBRE           -> crea $WORKSPACE_ROOT/NOMBRE (o $PWD/NOMBRE)
+#
+php_new() {
+  local name="$1"
+
+  if [[ -z "$name" ]]; then
+    printf 'Uso: php_new NOMBRE_PROYECTO\n' >&2
+    return 1
+  fi
+
+  # Directorio de la plantilla (ajusta si la tienes en otro sitio)
+  local template_dir="${PHP_APP_TEMPLATE_DIR:-$HOME/Templates/php-microservice-skel}"
+
+  if [[ ! -d "$template_dir" ]]; then
+    printf 'ERROR: plantilla no encontrada en %s\n' "$template_dir" >&2
+    return 1
+  fi
+
+  # Raíz de trabajo (si tienes WORKSPACE_ROOT, úsalo; si no, PWD)
+  local base="${WORKSPACE_ROOT:-$PWD}"
+  local dest="$base/$name"
+
+  if [[ -e "$dest" ]]; then
+    printf 'ERROR: el destino "%s" ya existe.\n' "$dest" >&2
+    return 1
+  fi
+
+  printf 'Creando proyecto en %s usando plantilla %s\n' "$dest" "$template_dir"
+
+  # Copia limpia
+  cp -a "$template_dir" "$dest" || {
+    printf 'ERROR: fallo al copiar la plantilla.\n' >&2
+    return 1
+  }
+
+  # Limpia historial git de la plantilla e inicializa uno nuevo
+  rm -rf "$dest/.git"
+
+  (
+    cd "$dest" || exit 1
+    git init >/dev/null 2>&1 || true
+    git add . >/dev/null 2>&1 || true
+    git commit -m "Bootstrap from php-microservice-skel" >/dev/null 2>&1 || true
+  )
+
+  # Confía en .mise.toml si existe y está mise
+  if command -v mise >/dev/null 2>&1 && [[ -f "$dest/.mise.toml" ]]; then
+    (
+      cd "$dest" || exit 1
+      mise trust .mise.toml || {
+        printf 'AVISO: "mise trust .mise.toml" ha fallado, revisalo en %s.\n' "$dest" >&2
+      }
+    )
+  fi
+
+  # Instala dependencias dentro del contenedor, si docker está disponible
+  if command -v docker >/dev/null 2>&1 && [[ -f "$dest/docker-compose.yml" ]]; then
+    printf 'Instalando dependencias con docker compose run php composer install...\n'
+    (
+      cd "$dest" || exit 1
+      docker compose run --rm php composer install || {
+        printf 'AVISO: "composer install" ha fallado, revísalo manualmente en %s.\n' "$dest" >&2
+      }
+    )
+  else
+    printf 'AVISO: no se ha encontrado docker o docker-compose.yml; instala dependencias manualmente.\n' >&2
+  fi
+
+  printf 'Proyecto PHP creado en: %s\n' "$dest"
+  printf 'Siguiente pasos típicos:\n'
+  printf '  cd %s\n' "$dest"
+  printf '  mise run up   # levanta el servicio\n'
+  printf '  mise run test # ejecuta tests\n'
+}
