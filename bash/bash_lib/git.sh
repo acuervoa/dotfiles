@@ -355,7 +355,10 @@ gfeat() {
   _git_root_or_die || return 1
   local main
   main="$(_git_main_branch)"
-  [ -z "$1" ] && { printf 'Uso: gfeat nombre-breve\n' >&2; return 1; }
+  [ -z "$1" ] && {
+    printf 'Uso: gfeat nombre-breve\n' >&2
+    return 1
+  }
   local branch="feat/$1"
   git checkout "$main" || return 1
   git pull --ff-only || return 1
@@ -367,7 +370,10 @@ gfix() {
   _git_root_or_die || return 1
   local main
   main="$(_git_main_branch)"
-  [ -z "$1" ] && { printf 'Uso: gfix bug-descriptivo\n' >&2; return 1; }
+  [ -z "$1" ] && {
+    printf 'Uso: gfix bug-descriptivo\n' >&2
+    return 1
+  }
   local branch="fix/$1"
   git checkout "$main" || return 1
   git pull --ff-only || return 1
@@ -381,4 +387,3 @@ gmain() {
   main="$(_git_main_branch)"
   git checkout "$main"
 }
-
