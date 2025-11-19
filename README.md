@@ -23,7 +23,7 @@ Repositorio de uso diario para **Arch Linux** orientado a productividad: i3 + tm
 ## Pila y highlights
 
 - **Bootstrap reproducible** mediante `scripts/bootstrap.sh` con backups timestamp en `.backups/<TS>` y manifiestos en `.manifests/<TS>.manifest`.
-- **Rollback automático**: `scripts/rollback.sh <timestamp|latest>` deshace symlinks y restaura backups.
+- **Rollback automático**: `scripts/rollback.sh <timestamp|latest>` elimina los symlinks listados en el manifest y luego restaura backups (con flag `--manifest` para apuntar a manifiestos antiguos).
 - **Librería Bash modular** (`bash/bash_lib/*.sh`) con helpers para git, docker, navegación y productividad (`cb`, `rgf`, `grt`, `fo`, `docps`, etc.).
 - **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, conform.nvim + nvim-lint, Overseer y tooling git/telescope.
 - **tmux** con prefix `Ctrl+s`, integración NeoVim (vim-tmux-navigator), TPM (resurrect, continuum, menus, fzf, extrakto) y scripts personalizados.
@@ -121,6 +121,7 @@ bash ./scripts/rollback.sh latest
 ```
 
 - Detecta el backup más reciente en `.backups/` (o en `~/.dotfiles_backup_*` para versiones antiguas).
+- Lee el manifest asociado (por defecto `./.manifests/<TS>.manifest`) y elimina los symlinks creados por el bootstrap para evitar que apunten al repo.
 - Restaura el contenido sobre `$HOME` usando `rsync -a` con `--backup-dir` para guardar los ficheros actuales en `~/.dotfiles_rollback_conflicts_*`.
 
 Rollback por timestamp (directorio dentro de `.backups/` o ruta absoluta):
@@ -129,8 +130,15 @@ Rollback por timestamp (directorio dentro de `.backups/` o ruta absoluta):
 bash ./scripts/rollback.sh 20251020-120000
 ```
 
-- Lee el manifest correspondiente, ejecuta `stow -D` y elimina symlinks listados.
+- Usa el manifest derivado del timestamp (`.manifests/<TS>.manifest`) o el indicado con `--manifest /ruta/al/archivo` para eliminar symlinks.
 - Restaura backup con `rsync -a .backups/<TS>/ $HOME/`.
+- Si no se encuentra manifest, el script avisa y no borra los enlaces, por lo que podrías tener que eliminarlos manualmente antes de aplicar el backup.
+
+Rollback apuntando a un manifest concreto (útil si el backup viene de otra ruta o el nombre no sigue el patrón de timestamp):
+
+```bash
+bash ./scripts/rollback.sh --manifest /ruta/a/.manifests/20251020_120000.manifest /ruta/al/backup
+```
 
 ---
 
