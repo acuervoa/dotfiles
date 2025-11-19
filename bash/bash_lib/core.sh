@@ -192,6 +192,22 @@ rgf() {
 # @cmd t  Crear/adjuntar sesión tmux
 t() {
   _req tmux || return 1
+
+  if [ "${1:-}" = "net-if" ]; then
+    shift
+    local value="$*"
+
+    if [ $# -eq 0 ]; then
+      tmux set -g @net_if ""
+      printf 'Limpiado @net_if; la pastilla de red autodetectará interfaces activas.\n' >&2
+    else
+      tmux set -g @net_if "$value"
+      printf 'Establecido tmux @net_if -> %s\n' "$value" >&2
+    fi
+
+    return 0
+  fi
+
   local name="${1:-main}"
 
   if tmux has-session -t "$name" 2>/dev/null; then

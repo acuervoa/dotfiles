@@ -115,3 +115,10 @@
 - **Árbol**: `choose-tree -Zw`  |  **Prompt**: `command-prompt`
 
 > Nota: todos los comandos son **nativos** de tmux. Revisa `man tmux` para detalles finos (flags o cambios entre versiones).
+
+## 13) Indicador de red (`@net_if`, `IF_OVERRIDE`, `--detect-ifaces`)
+- La pastilla de red (`tmux/scripts/status_pill.sh`) usa la lista en `@net_if` (o la variable `IF_OVERRIDE` si la ejecutas a mano) para calcular RX/TX y estado E/WiFi.
+- Si `@net_if` está vacío el script llama internamente a `--detect-ifaces`, que autodetecta interfaces `UP` evitando `lo`, `docker*`, `veth*`, etc. (fallback por defecto y seguro).
+- Para fijar orden o filtrar interfaces en caliente: `t net-if eth0 wlan0` (acepta espacios/comas/`;`; limpia con `t net-if` para volver a autodetección).
+- Para persistir en tu máquina añade en `~/.tmux.conf.local`: `set -g @net_if "eth0 wlan0"` (o elimínalo/deja vacío para autodetectar).
+- Puedes ver qué detectaría el script fuera de tmux con `~/.tmux/scripts/status_pill.sh --detect-ifaces`.
