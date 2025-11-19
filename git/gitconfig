@@ -36,6 +36,7 @@
 
 [commit]
     verbose = true
+    template = ~/.gitmessage
 
 [status]
     submoduleSummary = true

@@ -71,3 +71,11 @@ type gbr gcof gclean docps dlogs dsh fo cdf rgf cb bench >/dev/null
 ```bash
 bash ./scripts/rollback.sh latest
 ```
+# Flujo de cambios
+
+- Cambios pequeños: commits directos en `main` con mensajes estructurados
+- Cambios grandes (Neovim, tmux, i3, bootstrap):
+	- Crear rama `feat` (Usamos gfeat nombre-breve)
+	- Probar localmente
+	- Merge a `main` cuando sea estable
+- Estados estables etiquetados como `stable-YYYYMM`

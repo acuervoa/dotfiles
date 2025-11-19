@@ -1,0 +1,10 @@
+# tipo: resumen breve (feat, fix, refactor, docs, chore)
+#
+# Contexto:
+#	- Qué problema de workflow/productividad resuelve
+#
+# Detalles:
+#	- Archivos o áreas claves (bash, tmux, nvim, i3...)
+#
+# Riesgos:
+#	- Qué podría romperse (login, shell, X, bindings...)

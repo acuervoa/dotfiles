@@ -349,3 +349,36 @@ branch() {
     --format='%(refname:short)|%(committerdate:relative)|%(authorname)|%(subject)' refs/heads refs/remotes |
     column -t -s'|'
 }
+
+# @cmd gfeat 	git feature
+gfeat() {
+  _git_root_or_die || return 1
+  local main
+  main="$(_git_main_branch)"
+  [ -z "$1" ] && { printf 'Uso: gfeat nombre-breve\n' >&2; return 1; }
+  local branch="feat/$1"
+  git checkout "$main" || return 1
+  git pull --ff-only || return 1
+  git checkout -b "$branch"
+}
+
+# @cmd gfix 	git fix
+gfix() {
+  _git_root_or_die || return 1
+  local main
+  main="$(_git_main_branch)"
+  [ -z "$1" ] && { printf 'Uso: gfix bug-descriptivo\n' >&2; return 1; }
+  local branch="fix/$1"
+  git checkout "$main" || return 1
+  git pull --ff-only || return 1
+  git checkout -b "$branch"
+}
+
+# @cmd gmain	Volver a rama main
+gmain() {
+  _git_root_or_die || return 1
+  local main
+  main="$(_git_main_branch)"
+  git checkout "$main"
+}
+
