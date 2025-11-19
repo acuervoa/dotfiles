@@ -76,14 +76,18 @@ bash ./scripts/bootstrap.sh --dry-run
 bash ./scripts/bootstrap.sh
 ```
 
-#### ¿Qué hace?
+Acciones principales:
 
-- Genera backup en `.backups/<TS>/` y manifest en `.manifests/<TS>.manifest`.
-- Stow por paquetes (`bash`, `git`, `tmux`, `vim`, `config/{kitty,lazygit,nvim,polybar,picom,i3,dunst,rofi}`) sobre `$HOME`/`~/.config`.
-- Acepta `--packages=kitty,polybar` para aplicar sólo subconjuntos.
-- Permite `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para entornos compartidos.
+- Crea backups con timestamp en `.backups/<TS>/` (dentro del repo) y manifiesto en `.manifests/<TS>.manifest`.
+- Enlaza Bash (`bashrc`, `bash_profile`, `bash_aliases`, `bash_functions`, `bash_lib`), Git (`gitconfig`, `gitalias`, `git-hooks`), tmux (`tmux.conf`, `tmux/`) y Vim (`vimrc`, `vim/`) directamente sobre `$HOME`.
+- Genera enlaces simbólicos de `config/{atuin,blesh,dunst,i3,kitty,lazygit,mise,nvim,picom,polybar,rofi,yazi}` sobre `~/.config/<pkg>`.
+- Acepta `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para seleccionar el repo y `--dry-run` para validar sin modificar nada.
 
-### Plan B (manual, sin scripts)
+El manifiesto (`.manifests/<TS>.manifest`) registra cada symlink aplicado (`LINK src -> dest`) para facilitar el rollback.
+
+### Plan B (si no usas scripts)
+
+> Requiere stow (`sudo pacman -S stow`). Ejecuta los comandos desde la raíz del repo.
 
 ```bash
 # Bash / Git / tmux / Vim hacia $HOME
@@ -114,8 +118,14 @@ done
 ```bash
 # Último manifest
 bash ./scripts/rollback.sh latest
+```
 
-# Rollback por timestamp
+- Detecta el backup más reciente en `.backups/` (o en `~/.dotfiles_backup_*` para versiones antiguas).
+- Restaura el contenido sobre `$HOME` usando `rsync -a` con `--backup-dir` para guardar los ficheros actuales en `~/.dotfiles_rollback_conflicts_*`.
+
+Rollback por timestamp (directorio dentro de `.backups/` o ruta absoluta):
+
+```bash
 bash ./scripts/rollback.sh 20251020-120000
 ```
 

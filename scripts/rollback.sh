@@ -1,67 +1,95 @@
 #!/usr/bin/env bash
-# Restaura un backup creado por bootstrap.sh en $HOME
-# Usa rsync con --backup para guardar los ficheros/symlinks actuales que se pisen.
-
 set -euo pipefail
 
-HOME_DIR="${HOME:?}"
-
 usage() {
-	cat <<EOF
-Uso: $(basename "$0") [RUTA_BACKUP]
+        cat <<'USAGE'
+Uso: rollback.sh [DIRECTORIO|latest]
 
-Sin argumentos, usa el último directorio ~/.dotfiles_backup_*.
-Con argumento, puedes pasar una ruta absoluta o relativa al HOME.
+Sin argumentos o con "latest", restaura el backup más reciente.
+Puedes pasar un directorio absoluto o uno relativo a:
+  - $DOTFILES/.backups
+  - $HOME
 
-Ejemplos:
-  $(basename "$0")
-  $(basename "$0") ~/.dotfiles_backup_20251113_170000
-  $(basename "$0") .dotfiles_backup_20251113_170000
-EOF
+Variables de entorno:
+  DOTFILES   Ruta al repo (por defecto, carpeta raíz del script).
+USAGE
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
+REPO_DIR="${REPO_DIR/#\~/$HOME}"
+
+if [[ ! -d "$REPO_DIR" ]]; then
+        echo "[ERROR] Repo no encontrado en: $REPO_DIR" >&2
+        exit 1
+fi
+
 if [[ "${1-}" == "-h" || "${1-}" == "--help" ]]; then
-	usage
-	exit 0
+        usage
+        exit 0
 fi
 
-# --- Resolver BACKUP_DIR ---
+resolve_input_path() {
+        local input="$1"
+        if [[ -z "$input" ]]; then
+                echo ""
+                return
+        fi
+        case "$input" in
+        latest | last)
+                echo ""
+                return
+                ;;
+        esac
+        if [[ "$input" == /* ]]; then
+                echo "$input"
+                return
+        fi
+        if [[ -d "$REPO_DIR/.backups/$input" ]]; then
+                echo "$REPO_DIR/.backups/$input"
+                return
+        fi
+        echo "$HOME/$input"
+}
 
-BACKUP_DIR="${1-}"
+find_latest_backup() {
+        local candidates=()
+        if [[ -d "$REPO_DIR/.backups" ]]; then
+                while IFS= read -r path; do
+                        candidates+=("$path")
+                done < <(find "$REPO_DIR/.backups" -mindepth 1 -maxdepth 1 -type d | sort)
+        fi
+        while IFS= read -r path; do
+                candidates+=("$path")
+        done < <(find "$HOME" -mindepth 1 -maxdepth 1 -type d -name '.dotfiles_backup_*' | sort)
+        if ((${#candidates[@]} == 0)); then
+                return 1
+        fi
+        printf '%s' "${candidates[-1]}"
+}
 
-if [[ -n "$BACKUP_DIR" ]]; then
-	# Si es ruta relativa, asúmela desde $HOME
-	if [[ "$BACKUP_DIR" != /* ]]; then
-		BACKUP_DIR="$HOME_DIR/$BACKUP_DIR"
-	fi
-	if [[ ! -d "$BACKUP_DIR" ]]; then
-		echo "[ERROR] Directorio de backup no existe: $BACKUP_DIR" >&2
-		exit 1
-	fi
-else
-	# Buscar el último ~/.dotfiles_backup_*
-	mapfile -t backups < <(find "$HOME_DIR" -maxdepth 1 -type d -name '.dotfiles_backup_*' | sort)
-	if ((${#backups[@]} == 0)); then
-		echo "[ERROR] No se han encontrado directorios ~/.dotfiles_backup_* en $HOME_DIR" >&2
-		exit 1
-	fi
-	BACKUP_DIR="${backups[-1]}"
+SELECTED_DIR="$(resolve_input_path "${1-}")"
+if [[ -z "$SELECTED_DIR" ]]; then
+        if ! latest="$(find_latest_backup)"; then
+                echo "[ERROR] No se encontraron directorios de backup en $REPO_DIR/.backups ni en $HOME" >&2
+                exit 1
+        fi
+        SELECTED_DIR="$latest"
 fi
 
-if [[ ! -d "$BACKUP_DIR" ]]; then
-	echo "[ERROR] $BACKUP_DIR no es un directorio válido." >&2
-	exit 1
+if [[ ! -d "$SELECTED_DIR" ]]; then
+        echo "[ERROR] Directorio de backup no válido: $SELECTED_DIR" >&2
+        exit 1
 fi
-
-# --- Comprobar rsync ---
 
 if ! command -v rsync >/dev/null 2>&1; then
-	echo "[ERROR] Este script requiere 'rsync' instalado." >&2
-	exit 1
+        echo "[ERROR] Este script requiere 'rsync' instalado." >&2
+        exit 1
 fi
 
-echo "[INFO] Directorio de backup seleccionado: $BACKUP_DIR"
-echo "[INFO] Se restaurará su contenido sobre $HOME_DIR"
+echo "[INFO] Directorio de backup seleccionado: $SELECTED_DIR"
+echo "[INFO] Se restaurará su contenido sobre $HOME"
 echo "[INFO] Los ficheros actuales que se sobrescriban se guardarán en un directorio de conflictos."
 echo
 
@@ -69,30 +97,25 @@ read -r -p "¿Continuar con el rollback? [y/N] " ans
 case "$ans" in
 [yY][eE][sS] | [yY]) ;;
 *)
-	echo "[INFO] Operación cancelada."
-	exit 0
-	;;
+        echo "[INFO] Operación cancelada."
+        exit 0
+        ;;
 esac
 
-# --- Directorio para conflictos (lo que haya ahora y se pise) ---
-
-CONFLICT_DIR="$HOME_DIR/.dotfiles_rollback_conflicts_$(date +%Y%m%d_%H%M%S)"
+CONFLICT_DIR="$HOME/.dotfiles_rollback_conflicts_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$CONFLICT_DIR"
 
 echo "[INFO] Directorio de conflictos: $CONFLICT_DIR"
 echo "[INFO] Ejecutando rsync..."
 echo
 
-# Nota:
-# - "$BACKUP_DIR"/ -> "$HOME_DIR"/ copia el CONTENIDO del backup a $HOME.
-# - --backup y --backup-dir mueven lo que exista ahora en $HOME a CONFLICT_DIR antes de sobrescribir.
 rsync -a \
-	--backup \
-	--backup-dir="$CONFLICT_DIR" \
-	"$BACKUP_DIR"/ \
-	"$HOME_DIR"/
+        --backup \
+        --backup-dir="$CONFLICT_DIR" \
+        "$SELECTED_DIR"/ \
+        "$HOME"/
 
 echo
 echo "[OK] Rollback completado."
-echo "[INFO] Ficheros restaurados desde: $BACKUP_DIR"
+echo "[INFO] Ficheros restaurados desde: $SELECTED_DIR"
 echo "[INFO] Ficheros/symlinks anteriores guardados en: $CONFLICT_DIR"
