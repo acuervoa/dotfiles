@@ -312,3 +312,51 @@ proj() {
   fi
 
 }
+
+tproj() {
+  local name="$1"
+
+  if [ -z "$name" ]; then
+    printf 'Uso: tproj <nombre-proyecto>\n' >&2
+    return 1
+  fi
+
+  local dir="$HOME/Workspace/$name"
+
+  if [ ! -d "$dir" ]; then
+    printf 'No existe el directorio %s\n' "$dir" >&2
+    return 1
+  fi
+
+  local session="proj-$name"
+
+  # Si la sesión ya existe, cambias a ella y listo
+  if tmux has-session -t "$session" 2>/dev/null; then
+    if [ -n "${TMUX-}" ]; then
+      tmux switch-client -t "$session"
+    else
+      tmux attach -t "$session"
+    fi
+    return 0
+  fi
+
+  # Crear nueva sesión en background
+  tmux new-session -d -s "$session" -c "$dir" -n dev
+
+  # Ventana dev: Neovim
+  tmux send-keys -t "$session:dev" 'nvim .' C-m
+
+  # Ventana shell
+  tmux new-window -t "$session" -n shell -c "$dir"
+
+  # Ventana logs
+  tmux new-window -t "$session" -n logs -c "$dir"
+  tmux send-keys -t "$session:logs" 'docker compose logs -f php' C-m
+
+  # Adjuntar o cambiar cliente según estés ya dentro de tmux o no
+  if [ -n "${TMUX-}" ]; then
+    tmux switch-client -t "$session"
+  else
+    tmux attach -t "$session"
+  fi
+}

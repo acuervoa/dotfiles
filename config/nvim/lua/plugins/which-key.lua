@@ -23,7 +23,7 @@ return {
 			{ "<leader>s", group = "Switch/Search" },
 			{ "<leader>u", group = "UI" },
 			{ "<leader>w", group = "Write" },
-			{ "<leader>t", gruip = "Toggles" },
+			{ "<leader>t", group = "Toggles" },
 			{ "<leader>x", group = "Diagnostics/Trouble" },
 		},
 	},
