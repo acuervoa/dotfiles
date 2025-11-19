@@ -5,7 +5,17 @@ return {
 		"mason-org/mason-lspconfig.nvim",
 		opts = {
 			-- servidores por nombre de lspconfig
-			ensure_installed = { "intelephense", "lua_ls", "ts_ls", "html", "cssls", "jsonls" },
+			ensure_installed = {
+				"intelephense",
+				"lua_ls",
+				"ts_ls",
+				"html",
+				"cssls",
+				"jsonls",
+				"bashls",
+				"dockerls",
+				"yamlls",
+			},
 			-- en v2 ya no existe 'automatic_installation'; usar automatic_enable (por defecto true)
 			automatic_enable = true,
 		},
@@ -80,6 +90,9 @@ return {
 			vim.lsp.config("html", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("cssls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("jsonls", { capabilities = caps, on_attach = on_attach })
+			vim.lsp.config("bashls", { capabilities = caps, on_attach = on_attach })
+			vim.lsp.config("yamlls", { capabilities = caps, on_attach = on_attach })
+			vim.lsp.config("dockerls", { capabilities = caps, on_attach = on_attach })
 
 			-- Habilitar (0.11+)
 			vim.lsp.enable({ "intelephense", "lua_ls", "ts_ls", "html", "cssls", "jsonls" })
