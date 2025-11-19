@@ -35,14 +35,14 @@ bash ./scripts/bootstrap.sh --dry-run
 bash ./scripts/bootstrap.sh
 ```
 
-Acciones (modo `stow`, por defecto):
+Acciones principales:
 
-- Crea backup en `.backups/<TS>/` y manifest en `.manifests/<TS>.manifest`.
-- Enlaza explícitamente Bash (`bashrc`, `bash_profile`, `bash_aliases`, `bash_functions`, `bash_lib`), Git (`gitconfig`, `gitalias`, `git-hooks`), tmux (`tmux.conf`, `tmux/`), Vim (`vimrc`, `vim/`).
-- Stow de `config/{dunst,i3,kitty,lazygit,nvim,picom,polybar,rofi}` sobre `~/.config`. Personaliza con `--packages=kitty,polybar`.
-- Acepta `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para entornos compartidos.
+- Crea backups con timestamp en `.backups/<TS>/` (dentro del repo) y manifiesto en `.manifests/<TS>.manifest`.
+- Enlaza Bash (`bashrc`, `bash_profile`, `bash_aliases`, `bash_functions`, `bash_lib`), Git (`gitconfig`, `gitalias`, `git-hooks`), tmux (`tmux.conf`, `tmux/`) y Vim (`vimrc`, `vim/`) directamente sobre `$HOME`.
+- Genera enlaces simbólicos de `config/{atuin,blesh,dunst,i3,kitty,lazygit,mise,nvim,picom,polybar,rofi,yazi}` sobre `~/.config/<pkg>`.
+- Acepta `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para seleccionar el repo y `--dry-run` para validar sin modificar nada.
 
-Manifiesto (`.manifests/<TS>.manifest`) registra los symlinks aplicados (`LINK src -> dest`) y la lista de paquetes stoweados.
+El manifiesto (`.manifests/<TS>.manifest`) registra cada symlink aplicado (`LINK src -> dest`) para facilitar el rollback.
 
 ### Plan B (si no usas scripts)
 
@@ -84,10 +84,10 @@ done
 bash ./scripts/rollback.sh latest
 ```
 
-- Lee el último manifest, aplica `stow -D` sobre los paquetes listados y borra los symlinks registrados.
-- Restaura el backup (`rsync -a .backups/<TS>/ $HOME/`).
+- Detecta el backup más reciente en `.backups/` (o en `~/.dotfiles_backup_*` para versiones antiguas).
+- Restaura el contenido sobre `$HOME` usando `rsync -a` con `--backup-dir` para guardar los ficheros actuales en `~/.dotfiles_rollback_conflicts_*`.
 
-Rollback por timestamp:
+Rollback por timestamp (directorio dentro de `.backups/` o ruta absoluta):
 
 ```bash
 bash ./scripts/rollback.sh 20251020-120000
