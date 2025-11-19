@@ -51,6 +51,10 @@ Preferimos [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/
   ```
 - Navegación cruzada: `Ctrl+h/j/k/l` entre vim/tmux (plugin/vinculación).
 - Docker compose: `docps` y `dlogs` deben funcionar con v1/v2.
+- Pruebas manuales recomendadas:
+  - `bash ./scripts/bootstrap.sh` → verificar symlinks creados y manifest generado en `.manifests/<TS>.manifest`.
+  - Editar un dotfile enlazado (p.ej. añadir comentario en `~/.bashrc`) y ejecutar `bash ./scripts/rollback.sh --manifest .manifests/<TS>.manifest <TS>` para comprobar que los symlinks desaparecen y se restaura el backup.
+  - Repetir el rollback con un manifest inexistente para validar que el script avisa y no borra enlaces.
 
 ## Checklist de PR
 - [ ] Cambios mínimos y compatibles con Arch estable.

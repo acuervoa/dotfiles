@@ -1,7 +1,7 @@
 # README-BOOTSTRAP
 
 Guía práctica para desplegar estos **dotfiles** en Arch Linux (o derivadas) mediante `scripts/bootstrap.sh`.
-Incluye los paquetes recomendados, el flujo de symlinks/backup, validaciones y un plan B manual con `stow`/`ln -s`.
+Incluye los paquetes recomendados, el flujo de symlinks/backup/manifest, validaciones y un plan B manual con `stow`/`ln -s`.
 
 ## 1. Paquetes base (pacman)
 
@@ -32,7 +32,7 @@ cd dotfiles
 ## 3. Bootstrap automatizado
 
 El script enlaza Bash, Git, tmux, NeoVim/Vim, Kitty, i3, polybar, rofi, picom, dunst, lazygit, atuin, blesh, mise, yazi, etc.,
-creando copias de seguridad previas en `~/.dotfiles_backup_<TS>`.
+creando copias de seguridad previas en `<repo>/.backups/<TS>` y registrando cada symlink en `<repo>/.manifests/<TS>.manifest`.
 
 ```bash
 cd ~/dotfiles
@@ -69,7 +69,7 @@ done
 
 ## 5. Rollback
 
-Todos los backups siguen el patrón `~/.dotfiles_backup_YYYYmmdd_HHMMSS`. Para restaurar el último:
+Todos los backups siguen el patrón `<repo>/.backups/YYYYmmdd_HHMMSS` (o `~/.dotfiles_backup_*` en versiones antiguas). Para restaurar el último:
 
 ```bash
 bash ./scripts/rollback.sh
@@ -81,8 +81,9 @@ O bien pasa la ruta concreta del backup que quieras reaplicar:
 bash ./scripts/rollback.sh ~/.dotfiles_backup_20250101_120000
 ```
 
-`rollback.sh` usa `rsync` con `--backup-dir` para guardar en `~/.dotfiles_rollback_conflicts_<TS>` cualquier archivo actual que
-vaya a sobrescribir.
+`rollback.sh` intenta resolver el manifest `./.manifests/<TS>.manifest` para eliminar los symlinks creados por el bootstrap antes de restaurar. Si el manifest no existe (p.ej. backups muy antiguos), puedes pasarlo a mano con `--manifest /ruta/al/archivo`; de lo contrario tendrás que borrar los enlaces manualmente.
+
+`rollback.sh` usa `rsync` con `--backup-dir` para guardar en `~/.dotfiles_rollback_conflicts_<TS>` cualquier archivo actual que vaya a sobrescribir.
 
 ## 6. Plan B (sin script)
 
