@@ -22,6 +22,10 @@ Open Neovim with this config:
 NVIM_APPNAME=acuervoa/dotfiles/config/nvim nvim
 ```
 
+## Usage
+
+- Consulta [USAGE.md](USAGE.md) para un onboarding rápido (primer arranque, atajos, flujos LSP/DAP/Overseer/conform).
+
 ## Plugins
 
 ### bars-and-lines
