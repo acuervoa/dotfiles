@@ -17,7 +17,7 @@ return {
 				"yamlls",
 			},
 			-- en v2 ya no existe 'automatic_installation'; usar automatic_enable (por defecto true)
-			automatic_enable = true,
+			automatic_enable = false,
 		},
 		dependencies = { "neovim/nvim-lspconfig" },
 	},

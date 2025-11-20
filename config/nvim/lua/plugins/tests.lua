@@ -41,7 +41,7 @@ return {
 			adapters = {
 				require("neotest-phpunit")({
 					phpunit_cmd = function()
-						return { "docker", "compose", "exec", "php", "php", "vendor/bin/phpunit2" }
+						return { "docker", "compose", "exec", "php", "php", "vendor/bin/phpunit" }
 					end,
 				}),
 			},

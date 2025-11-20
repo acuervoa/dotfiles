@@ -3,6 +3,16 @@
 -- move backup, swap and undo files to .cache
 local cache = os.getenv("HOME") .. "/.cache/nvim"
 
+local function ensure_dir(path)
+	if vim.fn.isdirectory(path) == 0 then
+		vim.fn.mkdir(path, "p")
+	end
+end
+
+ensure_dir(cache .. "/backup")
+ensure_dir(cache .. "/swap")
+ensure_dir(cache .. "undo")
+
 vim.opt.backup = true
 vim.opt.backupext = ".bak"
 vim.opt.backupdir = { cache .. "/backup//" }
