@@ -27,6 +27,7 @@ o.completeopt = "menu,menuone,noselect"
 o.list = true
 o.listchars = { tab = "󰌒 ", trail = "·", extends = "▶", precedes = "◀" }
 o.splitkeep = "screen"
+o.scrolloff = 8
 
 -- Desactiar providers
 vim.g.loaded_perl_provider = 0

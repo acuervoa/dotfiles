@@ -143,16 +143,30 @@ return {
 		},
 	},
 
+	-- Todo-comments
+	{
+		"folke/todo-comments.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		event = { "BufReadPost", "BufNewFile" },
+		cmd = { "TodoTelescope", "TodoQuickFix", "TodoLocList" }, -- crea comandos aunque esté Lazy
+		opts = {},
+	},
 	-- Trouble (panel de problemas)
 	{
 		"folke/trouble.nvim",
 		cmd = "Trouble",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+			"folke/todo-comments.nvim",
+		},
 		opts = { use_diagnostic_signs = true },
 		keys = {
 			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (workspace)" },
 			{ "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Diagnostics (buffer)" },
 			{ "<leader>xq", "<cmd>Trouble quickfix toggle<cr>", desc = "Quickfix" },
 			{ "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Loclist" },
+			{ "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "TODOs (Trouble)" },
+			{ "<leader>xT", "<cmd>TodoTelescope<cr>", desc = "TODOS (Telescope)" },
 		},
 	},
 }

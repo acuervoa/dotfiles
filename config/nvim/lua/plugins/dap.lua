@@ -92,6 +92,15 @@ return {
 			mode = { "n", "v" },
 			desc = "Debug: Eval",
 		},
+		{
+			"<leader>dq",
+			function()
+				require("dap").terminate()
+				require("dapui").close()
+			end,
+			mode = { "n", "v" },
+			desc = "Debug: Terminate and close",
+		},
 	},
 	config = function()
 		local dap, dapui = require("dap"), require("dapui")
