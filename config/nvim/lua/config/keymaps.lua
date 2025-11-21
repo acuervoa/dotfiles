@@ -69,4 +69,11 @@ end, { desc = "Toggle wrap" })
 map("n", "<leader>tn", function()
 	vim.opt.relativenumber = not vim.opt.relativenumber:get()
 end, { desc = "Toggle relativenumber" })
-map("n", "<leader>ts", "<cmd>setlocal spell! spelllang=es,en<cr>", { desc = "Toggle spell (es/en)" })
+map("n", "<leader>ts", function()
+	local es_spell = vim.fn.stdpath("config") .. "/spell/es.utf-8.spl"
+	if vim.fn.filereadable(es_spell) == 1 then
+		vim.cmd("setlocal spell! spelllang=es,en")
+	else
+		vim.cmd("setlocal spell! spelllang=en")
+	end
+end, { desc = "Toggle spell (es/en)" })

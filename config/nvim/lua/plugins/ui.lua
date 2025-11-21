@@ -54,6 +54,23 @@ return {
 				end
 				return "  " .. table.concat(names, ", ")
 			end
+
+			-- Diccionario de spell actual
+			local function spell_status()
+				-- Si spell está desactivado en este buffer, no mostramos nada
+				if not vim.wo.spell then
+					return ""
+				end
+
+				-- spelling puede ser una lista: {"es", "en"}
+				local langs = vim.opt.spelllang:get() or {}
+				if #langs == 0 then
+					return "Spell: (none)"
+				end
+				-- Ejemplo: "Spell: es,en"
+				return "Spell: " .. table.concat(langs, ",")
+			end
+
 			return {
 				options = { theme = "vscode", globalstatus = true, component_separators = "", section_separators = "" },
 				sections = {
@@ -63,6 +80,7 @@ return {
 					lualine_x = {
 						{ "diagnostics", sources = { "nvim_diagnostic" } },
 						{ lsp_status },
+						{ spell_status },
 						"encoding",
 						"fileformat",
 						"filetype",
