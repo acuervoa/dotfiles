@@ -13,6 +13,9 @@ return {
 	},
 	config = function()
 		require("luasnip.loaders.from_vscode").lazy_load()
+		require("luasnip.loaders.from_lua").lazy_load({
+			paths = vim.fn.stdpath("config") .. "/lua/snippets",
+		})
 		local cmp, luasnip, lspkind = require("cmp"), require("luasnip"), require("lspkind")
 		cmp.setup({
 			snippet = {
@@ -62,10 +65,14 @@ return {
 				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources(
-				{ { name = "nvim_lsp", priority = 1000 }, { name = "luasnip", priority = 750 }, {
-					name = "path",
-					priority = 500,
-				} },
+				{
+					{ name = "nvim_lsp", priority = 1000 },
+					{ name = "luasnip", priority = 750 },
+					{
+						name = "path",
+						priority = 500,
+					},
+				},
 				{ { name = "buffer", priority = 250, keyword_length = 3 } }
 			),
 			experimental = { ghost_text = { hl_group = "Comment" } },

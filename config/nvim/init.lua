@@ -27,7 +27,7 @@ vim.opt.undodir = { cache .. "/undo//" }
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
--- Acelera arranque cacheando rquire()
+-- Acelera arranque cacheando require()
 if vim.loader then
 	vim.loader.enable()
 end
