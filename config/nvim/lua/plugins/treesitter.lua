@@ -5,8 +5,8 @@ return {
 	event = { "BufReadPost", "BufNewFile" },
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter-textobjects",
-    "windwp/nvim-ts-autotag",
-    "JoosepAlviste/nvim-ts-context-commentstring",
+		"windwp/nvim-ts-autotag",
+		"JoosepAlviste/nvim-ts-context-commentstring",
 	},
 	config = function()
 		require("nvim-treesitter.configs").setup({
@@ -32,11 +32,7 @@ return {
 			auto_install = true,
 			highlight = { enable = true, additional_vim_regex_highlighting = false },
 			indent = { enable = true },
-      autotag = { enable = true },
-      context_commentstring = {
-        enable = true,
-        enable-autocmd = false,
-      },
+			autotag = { enable = true },
 			incremental_selection = {
 				enable = true,
 				keymaps = {
@@ -58,7 +54,7 @@ return {
 						["ic"] = "@class.inner",
 					},
 				},
-				move = { 
+				move = {
 					enable = true,
 					set_jumps = true,
 					goto_next_start = { ["]f"] = "@function.outer" },

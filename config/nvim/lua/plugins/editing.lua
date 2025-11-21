@@ -1,18 +1,34 @@
 return {
+	-- ts-context-commentstring (API nueva)
+	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		lazy = true,
+		init = function()
+			-- Evita cargar el módulo viejo de nvim-treesitter y acelera el arranque
+			vim.g.skip_ts_context_commentstring_module = true
+		end,
+		opts = {
+			-- Usamos Comment.nvim para aplicar el commentstring, asi que desactivamos los autocmd propios
+			enable_autocmd = false,
+		},
+		config = function(_, opts)
+			require("ts_context_commentstring").setup(opts)
+		end,
+	},
 	-- Comentarios (Ctrl+/ = <C-_>)
 	{
 		"numToStr/Comment.nvim",
 		event = { "BufReadPost", "BufNewFile" },
-    dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+		dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
 		opts = function()
-      local ok, ts_integration = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
-      if ok then
-        return {
-          pre_hook = ts_integration.create_pre_hook(),
-        }
-      end
-      return {}
-    end,
+			local ok, ts_integration = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
+			if ok then
+				return {
+					pre_hook = ts_integration.create_pre_hook(),
+				}
+			end
+			return {}
+		end,
 		keys = {
 			{
 				"<C-_>",
@@ -54,9 +70,9 @@ return {
 	-- Surround
 	{ "kylechui/nvim-surround", version = "*", event = "VeryLazy", config = true },
 
-  -- Detectar indentación por fichero
-  {
-    "tpope/vim-sleuth",
-    event = { "BufReadPost","BufNewFile" },
-  },
+	-- Detectar indentación por fichero
+	{
+		"tpope/vim-sleuth",
+		event = { "BufReadPost", "BufNewFile" },
+	},
 }
