@@ -3,7 +3,16 @@ return {
 	{
 		"numToStr/Comment.nvim",
 		event = { "BufReadPost", "BufNewFile" },
-		opts = {},
+    dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+		opts = function()
+      local ok, ts_integration = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
+      if ok then
+        return {
+          pre_hook = ts_integration.create_pre_hook(),
+        }
+      end
+      return {}
+    end,
 		keys = {
 			{
 				"<C-_>",
@@ -45,11 +54,9 @@ return {
 	-- Surround
 	{ "kylechui/nvim-surround", version = "*", event = "VeryLazy", config = true },
 
-	-- TODO/FIXME destacados
-	{
-		"folke/todo-comments.nvim",
-		event = { "BufReadPost", "BufNewFile" },
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = {},
-	},
+  -- Detectar indentación por fichero
+  {
+    "tpope/vim-sleuth",
+    event = { "BufReadPost","BufNewFile" },
+  },
 }

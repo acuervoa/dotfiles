@@ -22,11 +22,11 @@ return {
 			desc = "Test más fichero",
 		},
 		{
-			"<leader>ts",
+			"<leader>tS",
 			function()
 				require("neotest").summary.toggle()
 			end,
-			desc = "Panel tests",
+			desc = "Resumen tests",
 		},
 		{
 			"<leader>to",
