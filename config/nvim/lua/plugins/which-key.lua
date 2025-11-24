@@ -19,6 +19,7 @@ return {
 			{ "<leader>f", group = "File/Find" },
 			{ "<leader>g", group = "Git" },
 			{ "<leader>h", group = "Hunk" },
+			{ "<leader>m", group = "Markdown" },
 			{ "<leader>o", group = "Overseer" },
 			{ "<leader>s", group = "Switch/Search" },
 			{ "<leader>u", group = "UI" },

@@ -1,119 +1,72 @@
-# Shell aquí
 [[mgr.prepend_keymap]]
-on = "!"
-run = 'shell "$SHELL" --block'
+on  = "!"
+run = 'shell --block -- "$SHELL"'
 desc = "Shell aquí"
 
-
-# Abrir con reglas / Open with 
 [[mgr.prepend_keymap]]
-on = "<Enter>"
+on  = "<Enter>"
 run = "plugin smart-enter"
 desc = "Entrar si es dir, abrir si es archivo"
 
-# Pegar intelignete sin entrar al dir
 [[mgr.prepend_keymap]]
-on = "p"
+on  = "p"
 run = "plugin smart-paste"
 desc = "Pegar aquí"
 
-
-# Filtro continuo + abrir si único
 [[mgr.prepend_keymap]]
-on = "f"
+on  = "f"
 run = "plugin smart-filter"
 desc = "Filtrar"
 
-# Alternar paneles (padre/actual/preview) y maximizar
 [[mgr.prepend_keymap]]
-on = "T"
-run = "plugin toggle-pane"
-desc = "Alternar panel"
+on  = "T"
+run = "plugin toggle-pane min-preview"
+desc = "Mostrar/ocultar preview"
 
-# Git linemode (requiere repo)
 [[mgr.prepend_keymap]]
-on = "g"
+on  = "<C-t>"
+run = "plugin toggle-pane max-preview"
+desc = "Maximizar/restaurar preview"
+
+# Git sin romper prefijos g...
+[[mgr.prepend_keymap]]
+on  = [ "g", "s" ]
 run = "plugin git"
 desc = "Git status linemode"
 
-# Zoom en previews de imagen
 [[mgr.prepend_keymap]]
-on = "+"
+on  = "+"
 run = "plugin zoom in"
+desc = "Zoom in preview"
 
 [[mgr.prepend_keymap]]
-on = "-"
+on  = "-"
 run = "plugin zoom out"
+desc = "Zoom out preview"
 
-# Copiar rutas al portapapeles al yankeado (X11 ejemplo)
 [[mgr.prepend_keymap]]
-on = "y"
-run = [ 'shell -- sh -lc "printf "%s\n \"$@\" | xclip -i -selection clipboard; }"', "yank"]
+on  = "y"
+run = [ 'shell -- echo "$@" | xclip -i -selection clipboard -t text/uri-list', "yank" ]
 desc = "Copiar URIs y yank"
 
-# Papelera: menú y restaurar (plugins trash-cli)
 [[mgr.prepend_keymap]]
-on = "R"
+on  = "R"
 run = "plugin recycle-bin"
 desc = "Reciclar / vaciar / restaurar"
 
 [[mgr.prepend_keymap]]
-on = "<S-r>"
+on  = "<S-r>"
 run = "plugin restore"
 desc = "Restaurar último borrado"
 
-# --- Splits con nvim (no bloquea Yazi) ---
 [[mgr.prepend_keymap]]
-on  = ["s","v"]
-run = 'shell -- if [ -n "$TMUX" ]; then tmux split-window -h "nvim \"$@\""; fi'
-desc = "nvim split horizontal"
-
-[[mgr.prepend_keymap]]
-on  = ["s","s"]
-run = 'shell -- if [ -n "$TMUX" ]; then tmux split-window -v "nvim \"$@\""; fi'
-desc = "nvim split vertical"
-
-# --- Abrir nvim en pane actual o en nueva ventana ---
-[[mgr.prepend_keymap]]
-on  = ["c","v"]
-run = 'open --with tmux_here'
-desc = "nvim en pane actual"
-
-[[mgr.prepend_keymap]]
-on  = ["c","n"]
-run = 'open --with tmux_win'
-desc = "nvim en nueva ventana"
-
-# --- Mover foco de tmux sin salir de Yazi ---
-[[mgr.prepend_keymap]]
-on  = "<A-h>"
-run = 'shell -- if [ -n "$TMUX" ]; then tmux select-pane -L; fi'
-desc = "tmux pane left"
-
-[[mgr.prepend_keymap]]
-on  = "<A-j>"
-run = 'shell -- if [ -n "$TMUX" ]; then tmux select-pane -D; fi'
-desc = "tmux pane down"
-
-[[mgr.prepend_keymap]]
-on  = "<A-k>"
-run = 'shell -- if [ -n "$TMUX" ]; then tmux select-pane -U; fi'
-desc = "tmux pane up"
-
-[[mgr.prepend_keymap]]
-on  = "<A-l>"
-run = 'shell -- if [ -n "$TMUX" ]; then tmux select-pane -R; fi'
-desc = "tmux pane right"
-
-# --- Saltos rápidos y ocultos ---
-[[mgr.prepend_keymap]]
-on  = ["g","w"]
-run = 'cd ~/Workspace'
+on  = [ "g", "w" ]
+run = "cd ~/Workspace"
 desc = "Workspace"
 
 [[mgr.prepend_keymap]]
-on  = ["g","d"]
-run = 'cd ~/Downloads'
+on  = [ "g", "d" ]
+run = "cd ~/Downloads"
 desc = "Downloads"
 
 [[mgr.prepend_keymap]]
@@ -121,3 +74,20 @@ on  = "."
 run = "hidden toggle"
 desc = "Toggle ocultos"
 
+[[mgr.prepend_keymap]]
+on = ["c","v"]
+run = 'open --with tmux_here'
+desc = "nvim en pane actual"
+
+[[mgr.prepend_keymap]]
+on = ["c","n"]
+run = 'open --with tmux_win'
+desc = "nvim en nueva ventana"
+
+[[mgr.prepend_keymap]]
+on = ["s","v"]
+run = 'open --with tmux_vsplit'
+
+[[mgr.prepend_keymap]]
+on = ["s","s"]
+run = 'open --with tmux_hsplit'

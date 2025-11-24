@@ -28,6 +28,7 @@ o.list = true
 o.listchars = { tab = "󰌒 ", trail = "·", extends = "▶", precedes = "◀" }
 o.splitkeep = "screen"
 o.scrolloff = 8
+o.formatoptions:remove({ "r", "o" })
 
 -- Desactiar providers
 vim.g.loaded_perl_provider = 0

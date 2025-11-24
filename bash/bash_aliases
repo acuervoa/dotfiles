@@ -60,3 +60,4 @@ fi
 alias cls="clear"
 alias reload="source ~/.bashrc"
 alias path='echo "$PATH" | tr ":" "\n"'
+

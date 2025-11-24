@@ -293,7 +293,7 @@ topme() {
 y() {
   local tmp cwd
   tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-  yazi "$@" --cwd-file="$tmp"
+  command yazi "$@" --cwd-file="$tmp"
 
   if ! IFS= read -r -d '' cwd <"$tmp"; then
     cwd="$(cat -- "$tmp")"

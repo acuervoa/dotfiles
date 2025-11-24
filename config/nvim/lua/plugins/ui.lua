@@ -115,6 +115,11 @@ return {
 				end,
 				desc = "Dismiss notifications",
 			},
+			{
+				"<leader>uh",
+				"<cmd>Notifications<CR>",
+				desc = "Notificacion history",
+			},
 		},
 	},
 

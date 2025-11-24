@@ -1,0 +1,90 @@
+# ----------- Manager / UI ----------
+[mgr]
+ratio = [1, 4 ,3]     # padre | actual | preview
+linemode = "mtime"
+show_hidden = true
+sort_by = "natural"
+sort_dir_first = true
+title_format = "{cwd}"
+
+[preview]
+wrap = "no"         # wrap en previews de texto
+tab_size = 2
+max_width = 1920
+max_height = 1080
+image_filer = "triangle"
+image_quality = 70
+image_delay = 60
+
+# ----------- Openers -------------
+[opener]
+edit = [
+  { run = '$EDITOR "$@"', block = true, for = "unix" }
+]
+# abrir en el mismo pane con GUI por si procede
+open = [
+  { run = 'xdg-open "$@"', desc = "Open", orphan = true, for = "unix" }
+]
+# visores dedicados
+pdf = [
+  { run = 'zathura "$@"', desc = "PDF (zathura)", block = true, for = "unix" }
+]
+play = [
+  { run = 'mpv "$@"', desc = "Media (mpv)", orphan = true, for = "unix" } 
+]
+img = [
+  { run = 'feh \"$@\"', desc = "Image (feh)", orphan = true, for = "unix" }
+]
+term = [
+  { run = 'kitty +kitten icat "$@"', desc = "Kitty icat", orphan = true, for = "linux" }
+]
+# Abrir en el PANE ACTUAL de tmux, sin bloquear Yazi
+tmux_here = [
+  { run = 'tmux respawn-pane -k "nvim \"$@\""', desc = "nvim en pane actual", for = "unix" }
+]
+# Nueva ventana de tmux con nvim en el cwd de Yazi
+tmux_win = [
+  { run = 'tmux new-window -c "$PWD" "nvim \"$@\""', desc = "nvim en nueva ventana", orphan = true, for = "unix" },
+]
+
+extract = [
+  { run = '''sh -lc 'for f in "$@"; do 7z x -aoa -o"$PWD" -- "$f"; done' ''', desc = "Extraer aquí (7z)", for = "unix" }
+]
+
+inspect = [
+{ run = '''sh -lc 'exiftool "$1"; echo; read -p "Enter para sair..." _' ''', block = true, desc = "Mostrar EXIF", for = "unix" }
+]
+
+# ----------- Reglas de apertura -------------
+[open]
+# Ajusta preferebcus por tipo
+prepend_rules = [
+  { mime = "text/*",              use = "edit" },
+  { mime = "application/json",    use = "edit" },
+  { mime = "application/pdf",     use = [ "pdf", "open" ] },
+  { mime = "image/*",             use = ["img","open","term"] },
+  { mime = "video/*",             use = "play" },
+  { mime = "audio/*",             use = "play" },
+  { name = "*.md",                use = "edit" },
+  { mime = "application/zip",             use = [ "extract", "inspect" ] },
+	{ mime = "application/gzip",            use = [ "extract", "inspect" ] },
+	{ mime = "application/x-tar",           use = [ "extract", "inspect" ] },
+	{ mime = "application/x-bzip",          use = [ "extract", "inspect" ] },
+	{ mime = "application/x-bzip2",         use = [ "extract", "inspect" ] },
+	{ mime = "application/x-7z-compressed", use = [ "extract", "inspect" ] },
+	{ mime = "application/x-rar",           use = [ "extract", "inspect" ] },
+	{ mime = "application/xz",              use = [ "extract", "inspect" ] },
+]
+
+# fallback genérico
+append_rules = [
+  { name = "*", use = "open" }
+]
+
+[plugin]
+prepend_previewers = [
+  { name = "*.md",        run = 'piper -- sh -lc "mdcat \"$1\""' },
+  { name = "*.markdown",  run = 'piper -- sh -lc "mdcat \"$1\""' },
+  { name = "README*",     run = 'piper -- sh -lc "mdcat \"$1\""' }
+]
+
