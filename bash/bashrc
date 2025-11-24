@@ -39,6 +39,12 @@ shopt -s cdspell      # corrige pequeñas faltas al hacer cd
 export EDITOR=nvim
 export VISUAL=nvim
 
+# --- fzf completions para ble (sin keybinding) ---
+if [ -f /usr/share/doc/fzf/examples/completion.bash ]; then
+  # shellcheck disable=SC1091
+  . /usr/share/doc/fzf/examples/completion.bash
+fi 
+
 # - ble.sh (autosuggestions + syntax highlighting tipo zsh)
 if [[ ! ${BLE_VERSION-} ]]; then
   _ble_candidates=(
