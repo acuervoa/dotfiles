@@ -1,6 +1,6 @@
 # ===========================
-# ~/.bashrc - Arch
-# Autor: Andrés Cuervo (ajustado por ChatGPT)
+# ~/.bashrc - WSL2/Ubuntu 
+# Autor: Andrés Cuervo (rama WSL2)
 # ===========================
 
 # Cargar sólo shells interactivas
@@ -14,11 +14,13 @@ if [ -z "${PROFILE_LOADED:-}" ] && [ -r "$HOME/.profile" ]; then
   . "$HOME/.profile"
 fi
 
+# Detectar WSL2
+if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
+  export IS_WSL=1
+fi
+
 # Teclas y flujo
-# - Libera Ctrl+S
-stty -ixon 2>/dev/null || true
-# - Edición tipo Vim en linea de comandos
-#set -o vi
+stty -ixon 2>/dev/null || true  # libera Ctrl+S
 
 # Historial
 export HISTCONTROL=ignoredups:erasedups
@@ -38,10 +40,21 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 # - ble.sh (autosuggestions + syntax highlighting tipo zsh)
-if [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
-  # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
-  # shellcheck source=/usr/share/blesh/ble-sh disable=SC1094,SC1090,SC1091
-  source /usr/share/blesh/ble.sh --noattach
+if [[ ! ${BLE_VERSION-} ]]; then
+  _ble_candidates=(
+    "$HOME/.local/share/blesh/ble.sh"
+    "$HOME/.local/lib/blesh/ble.sh"
+    "/usr/share/blesh/ble.sh"
+    )
+    for _ble in "${_ble_candidates[@]}"; do 
+      if [ -f "$_ble" ]; then
+        # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
+        # shellcheck disable=SC1090
+        source "$_ble" --noattach
+        break 
+      fi 
+    done
+    unset _ble_candidates _ble
 fi
 
 # Readline/completion más cómodo (case-insensitive, menú)
@@ -59,6 +72,8 @@ if command -v rg >/dev/null 2>&1; then
   export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!.git"'
 elif command -v fd >/dev/null 2>&1; then
   export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+elif command -v fdfind >/dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
 else
   export FZF_DEFAULT_COMMAND='find . -type f'
 fi
@@ -72,32 +87,46 @@ export FZF_DEFAULT_OPTS="
     --margin=1,1
 "
 
-# Keybindings de FZF
-# Lo gestionamos via ble.sh (integration/fzf-*)
-# para que no pisen las bindings de atuin/ble.
-# if [ -f /usr/share/fzf/key-bindings.bash ]; then
-#   source /usr/share/fzf/key-bindings.bash
-# fi
-# if [ -f /usr/share/fzf/completion.bash ]; then
-#   source /usr/share/fzf/completion.bash
-# fi
-# if [ -f ~/.fzf.bash ]; then
-#   source ~/.fzf.bash
-# fi
 
 # bash-completion (completado más cercano a ecosistema zsh)
 if [ -f /usr/share/bash-completion/bash_completion ]; then
   . /usr/share/bash-completion/bash_completion
 fi
 
-# pbcopy/pbpaste
-if command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
+# --- Clipboard en WSL2 (usar clipboard de windows) ---
+# pbcopy/pbpaste +  cb() se apoyarán en esto
+if command -v clip.exe >/dev/null 2>&1; then
+  pbcopy() {
+    # lee de stdin y manda a clipboard de windows
+    clip.exe 
+  }
+  pbpaste() {
+    # Get-Clipboard mete CRLF (limpiamos \r)
+    powershell.exe -NoProfile -Command 'Get-Clipboard' | tr -d '\r'
+  }
+elif command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
   pbcopy() { wl-copy; }
   pbpaste() { wl-paste; }
 elif command -v xclip >/dev/null 2>&1; then
   pbcopy() { xclip -selection clipboard; }
   pbpaste() { xclip -selection clipboard -o; }
 fi
+
+# PATH: asegurar ~/.local/bin delante
+if [ -d "$HOME/.local/bin" ]; then
+  PATH="$HOME/.local/bin:$PATH"
+fi 
+
+# PATH composer global
+if [ -d "$HOME/.config/composer/vendor/bin" ]; then
+  PATH="$HOME/.config/composer/vendor/bin:$PATH"
+fi
+
+#-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
+PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
+export PATH
+
+
 
 # Iniciar herramientas
 
@@ -117,19 +146,9 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 # - mise (gestor de versiones de lenguajes)
-if [ -z "${MISE_INITIALIZED:-}" ]; then
-  if command -v mise >/dev/null 2>&1; then
-    eval "$(mise activate bash)"
-    export MISE_INITIALIZED=1
-  fi
-fi
-
-# - fnm (gestor de versiones de node)
-if [ -z "${FNM_INITIALIZED:-}" ]; then
-  if command -v fnm >/dev/null 2>&1; then
-    eval "$(fnm env --use-on-cd --shell=bash)"
-    export FNM_INITIALIZED=1
-  fi
+if [ -z "${MISE_INITIALIZED:-}" ] && command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate bash)"
+  export MISE_INITIALIZED=1
 fi
 
 # Desactiva titulo dentro de tmux
@@ -144,26 +163,11 @@ fi
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
 [ -f "$HOME/.bash_lib/bash_lib.sh" ] && source "$HOME/.bash_lib/bash_lib.sh"
 
-#-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
-PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
-
-#- Mover Nix al final para evitar sombras
-move_to_end() {
-  local p="$1"
-  PATH="$(/usr/bin/tr ':' '\n' <<<"$PATH" | /usr/bin/awk -v p="$p" '$0!=p{a[++n]=$0; next} {b[++m]=$0} END{for(i=1;i<=n;i++)print a[i]; for(j=1;j<=m;j++)print b[j]}' | paste -sd: -)"
-}
-move_to_end "$HOME/.nix-profile/bin"
-move_to_end "/nix/var/nix/profiles/default/bin"
-
-export PATH
-
-# PATH y extras ligeros
-if [ -d "$HOME/.config/composer/vendor/bin" ]; then
-  PATH="$HOME/.config/composer/vendor/bin:$PATH"
-fi
 
 # -- Atuin (historial avanzado) + binding robusto de C-r ----
+
 HIST_BACKEND="fzf" # valor por defecto si no hay Atuin
+
 if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash --disable-up-arrow)"
   HIST_BACKEND="atuin"

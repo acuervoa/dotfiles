@@ -46,8 +46,9 @@ if command -v docker >/dev/null 2>&1; then
 fi
 
 # Modernos y seguros
-if command -v bat >/dev/null 2>&1; then
-  alias cat="bat -p --paging=never"
+if command -v batcat >/dev/null 2>&1; then
+  alias batt="batcat -p --paging=never"
+  alias bat="batcat"
 fi
 alias grep="grep --color=auto"
 alias rgrep="rg --color=auto"

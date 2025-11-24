@@ -53,3 +53,7 @@
     navigate = true
     whitespace-error-style = 22 reverse
 
+[credential]
+	helper = /usr/lib/git-core/git-credential-libsecret
+[credential "https://github.com"]
+	username = acuervoa

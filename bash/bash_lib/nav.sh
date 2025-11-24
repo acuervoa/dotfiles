@@ -235,12 +235,12 @@ cb() {
     fi
   fi
 
-  if command -v wl-copy >/dev/null 2>&1; then
+  if command -v pbcopy >/dev/null 2>&1; then
+    printf '%s' "$data" | pbcopy
+  elif command -v wl-copy >/dev/null 2>&1; then
     printf '%s' "$data" | wl-copy
   elif command -v xclip >/dev/null 2>&1; then
     printf '%s' "$data" | xclip -selection clipboard
-  elif command -v pbcopy >/dev/null 2>&1; then
-    printf '%s' "$data" | pbcopy
   else
     printf "No hay wl-copy, xclip ni pbcopy instalados\n" >&2
     return 1

@@ -1,6 +1,6 @@
 # ~/.profile  - entorno general para shells de login (POSIX)
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:/snap/bin:$PATH"
 
 export EDITOR="nvim"
 export VISUAL="nvim"
@@ -9,3 +9,5 @@ export VISUAL="nvim"
 
 export PROJECTS_ROOT="$HOME/Workspace"
 export PROFILE_LOADED="yes"
+
+. "$HOME/.atuin/bin/env"
