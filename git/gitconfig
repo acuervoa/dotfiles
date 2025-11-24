@@ -12,6 +12,7 @@
     editor = nvim
     pager = delta
     hooksPath = ~/.git-hooks
+    autocrlf = input
 
 [color]
     ui = auto
@@ -54,6 +55,6 @@
     whitespace-error-style = 22 reverse
 
 [credential]
-	helper = /usr/lib/git-core/git-credential-libsecret
+	helper = store
 [credential "https://github.com"]
 	username = acuervoa

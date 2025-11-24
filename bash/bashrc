@@ -193,3 +193,6 @@ fi
 if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
   ble-attach
 fi
+
+
+export NODE_EXTRA_CA_CERTS="$HOME/.local/share/cacert/zscaler.pem"
