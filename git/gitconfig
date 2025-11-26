@@ -56,5 +56,6 @@
 
 [credential]
 	helper = store
+	useHttpPath = true
 [credential "https://github.com"]
 	username = acuervoa
