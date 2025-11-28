@@ -1,0 +1,143 @@
+return {
+	-- cmp.lua
+	--	{ "hrsh7th/nvim-cmp", enabled = false },
+	--		{"hrsh7th/cmp-nvim-lsp",enabled = false },
+	--		{"hrsh7th/cmp-buffer",enabled = false },
+	--		{"hrsh7th/cmp-path",enabled = false },
+	--		{"L3MON4D3/LuaSnip",enabled = false },
+	--		{"saadparwaiz1/cmp_luasnip",enabled = false },
+	--		{"rafamadriz/friendly-snippets",enabled = false },
+	--		{"onsails/lspkind.nvim",enabled = false },
+	---- editing.lua
+	--	{"JoosepAlviste/nvim-ts-context-commentstring",enabled = false },
+	--		
+	--	{"numToStr/Comment.nvim",enabled = false },
+	--		{ "JoosepAlviste/nvim-ts-context-commentstring",enabled = false },
+	--		
+	--	{"windwp/nvim-autopairs",enabled = false },
+	--		{ "hrsh7th/nvim-cmp", enabled = false },
+	--	
+	--	{"kylechui/nvim-surround",enabled = false },
+	--	
+	--	{"tpope/vim-sleuth",enabled = false },
+	--	
+	---- dap.lua
+	--	{"mfussenegger/nvim-dap",enabled=false},
+	--		{ "rcarriga/nvim-dap-ui", enabled= false},
+	--			{ "nvim-neotest/nvim-nio", enabled= false } ,
+	--		{ "theHamsta/nvim-dap-virtual-text", enabled=false},
+	--
+	---- format_lint.lua
+	--	{ "stevearc/conform.nvim", enabled= false},
+	--	
+	--	{ "mfussenegger/nvim-lint", enabled=false},
+	--	
+	---- git.lua
+	--	{ "lewis6991/gitsigns.nvim", enabled= false},
+	--	{ "kdheepak/lazygit.nvim", enabled = false},
+	--		{ "nvim-lua/plenary.nvim", enabled = false },
+	--		
+	---- lsp.lua
+	--	{ "mason-org/mason.nvim", enabled = false},
+	--	
+	--	{"mason-org/mason-lspconfig.nvim",enabled = false},
+	--		{"neovim/nvim-lspconfig",enabled = false},
+	--		
+	--	{"neovim/nvim-lspconfig",enabled = false},
+	--	
+	--	{"hedyhli/outline.nvim",enabled = false},
+	--	
+	---- markdown.lua
+	--	{"MeanderingProgrammer/render-markdown.nvim",enabled = false},
+	--		{"nvim-treesitter/nvim-treesitter",enabled = false},
+	--		{"nvim-tree/nvim-web-devicons",enabled = false},
+	--		
+	--	{"iamcco/markdown-preview.nvim",enabled = false},
+	--	
+	---- mini-icons.lua
+	--	{ "nvim-mini/mini.icons", enabled=false},
+	--	
+	---- motion.lua
+	--	{"folke/flash.nvim",enabled=false},
+	--	
+	---- neo-tree.lua
+	--	{"nvim-neo-tree/neo-tree.nvim",enabled=false},
+	--  		{ "nvim-lua/plenary.nvim",enabled=false},
+	--		{ "nvim-tree/nvim-web-devicons",enabled=false},
+	--		{ "MunifTanjim/nui.nvim", enabled=false},
+	--		
+	---- search.lua
+	--	{"nvim-pack/nvim-spectre", enabled = false},
+	--		{ "nvim-lua/plenary.nvim", enabled = false },
+	--
+	---- session.lua
+	--	{ "folke/persistence.nvim", enabled = false},
+	--	
+	---- tasks.lua
+	--	{ "stevearc/overseer.nvim", enabled = false },
+	--	
+	---- telescope.lua
+	--	{"nvim-telescope/telescope.nvim", enabled = false },
+	--		{ "nvim-lua/plenary.nvim",enabled = false },
+	--		{ "nvim-telescope/telescope-fzf-native.nvim",enabled = false },
+	--		{ "nvim-telescope/telescope-ui-select.nvim",enabled = false },
+	--		{ "nvim-tree/nvim-web-devicons",enabled = false },
+	--		
+	---- templates.lua
+	--	{"otavioschwanck/new-file-template.nvim", enabled = false },
+	--	
+	---- tests.lua
+	--	{"nvim-neotest/neotest", enabled = false },
+	--		{"nvim-lua/plenary.nvim", enabled = false },
+	--		{"antoinemadec/FixCursorHold.nvim", enabled = false },
+	--		{"olimorris/neotest-phpunit", enabled = false },
+	--		
+	---- tmux-navigator.lua
+	--	{ "christoomey/vim-tmux-navigator", enabled = false },
+	--	
+	---- treesitter.lua
+	--	{"nvim-treesitter/nvim-treesitter", enabled = false },
+	--		{"nvim-treesitter/nvim-treesitter-textobjects", enabled = false },
+	--		{"windwp/nvim-ts-autotag", enabled = false },
+	--		{"JoosepAlviste/nvim-ts-context-commentstring", enabled = false },
+	--	
+	---- ui.lua
+	--	{"Mofiqul/vscode.nvim", enabled = false },
+	--	
+	--	{ "nvim-tree/nvim-web-devicons", enabled = false },
+	--	
+	--	{"akinsho/bufferline.nvim", enabled = false },
+	--		{ "nvim-tree/nvim-web-devicons", enabled = false },
+	--		
+	--	{"nvim-lualine/lualine.nvim", enabled = false },
+	--		{ "nvim-tree/nvim-web-devicons", enabled = false },
+	--		
+	--	{ "rcarriga/nvim-notify", enabled = false },
+	--	
+	--	{"utilyre/barbecue.nvim", enabled = false },
+	--		{ "SmiteshP/nvim-navic", enabled = false },
+	--		{ "nvim-tree/nvim-web-devicons", enabled = false },
+	--		
+	--	{ "lukas-reineke/indent-blankline.nvim", enabled = false },
+	--	
+	--	{ "stevearc/dressing.nvim", enabled = false },
+	--	
+	--	{ "karb94/neoscroll.nvim", enabled = false },
+	--	
+	--	{"akinsho/toggleterm.nvim", enabled = false},
+	--	
+	--	{"folke/todo-comments.nvim", enabled = false },
+	--		{ "nvim-lua/plenary.nvim", enabled = false },
+	--		
+	--	{ "folke/trouble.nvim", enabled = false },
+	--		{ "nvim-tree/nvim-web-devicons", enabled = false },
+	--		{ "folke/todo-comments.nvim", enabled = false },
+	--		
+	---- which-key.lua
+	--
+	--	{"folke/which-key.nvim",enabled = false},
+	--
+	---- others
+	--{ "autoskel.nvim", enabled = false },
+	--	
+}

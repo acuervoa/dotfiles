@@ -24,7 +24,7 @@ o.splitbelow = true
 o.wrap = false
 o.smartindent = true
 o.completeopt = "menu,menuone,noselect"
-o.list = true
+o.list = false
 o.listchars = { tab = "󰌒 ", trail = "·", extends = "▶", precedes = "◀" }
 o.splitkeep = "screen"
 o.scrolloff = 8

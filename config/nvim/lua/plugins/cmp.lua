@@ -75,7 +75,7 @@ return {
 				},
 				{ { name = "buffer", priority = 250, keyword_length = 3 } }
 			),
-			experimental = { ghost_text = { hl_group = "Comment" } },
+			experimental = { ghost_text =  false }, -- l_group = "Comment" } },
 		})
 	end,
 }
