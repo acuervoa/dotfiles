@@ -3,6 +3,28 @@
 -- Keymaps "globales" no atados a plugins concretos
 local map = vim.keymap.set
 
+-- Borrar buffert actual sin cerrar Neovim
+local function smart_bdelete(force)
+	local cmd = force and "bd!" or "bd"
+	local bufs = vim.fn.getbufinfo({ buflisted = 1 })
+	local cur = vim.api.nvim_get_current_buf()
+
+	-- Sin no hay buffers listados, no hacemos nada raro
+	if #bufs == 0 then
+		return
+	end
+
+	-- Caso especial: solo hay un buffer listado -> crea uno nuevoy borra el anterior
+	if #bufs == 1 then
+		vim.cmd("enew") -- nuevo buffer vacio, pasa a ser el actual
+		vim.cmd(string.format("%s %d", cmd, cur))
+		return
+	end
+
+	-- Caso normal: Hay mas de un buffer -> bdelete el actual
+	vim.cmd(cmd)
+end
+
 -- Navegación de ventanas/paneles (Neovim <-> tmux)
 map("n", "<M-h>", "<C-w>h", { desc = "Go to left window (Alt)" })
 map("n", "<M-l>", "<C-w>l", { desc = "Go to right window (Alt)" })
@@ -57,8 +79,13 @@ map("n", "<leader>bp", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
 map("n", "<leader>bn", "<cmd>bnext<cr>", { desc = "Next buffer" })
 
 -- Cierre de buffers (sin cerrar Neovim)
-map("n", "<leader>bd>", "<cmd>bd<cr>", { desc = "Delete current buffer" })
-map("n", "<leader>bD>", "<cmd>bd!<cr>", { desc = "Force delete current buffer" })
+map("n", "<leader>bd", function()
+	smart_bdelete(false)
+end, { desc = "Delete current buffer" })
+
+map("n", "<leader>bD", function()
+	smart_bdelete(true)
+end, { desc = "Force delete current buffer" })
 
 -- Cerrar todos los buffers excepto el actual
 map("n", "<leader>bo", function()

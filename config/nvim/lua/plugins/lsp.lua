@@ -32,6 +32,8 @@ return {
 			local ok, cmp_caps = pcall(require, "cmp_nvim_lsp")
 			local caps = ok and cmp_caps.default_capabilities() or vim.lsp.protocol.make_client_capabilities()
 
+			local php = require("lang.php")
+
 			local function on_attach(client, bufnr)
 				local function map(mode, lhs, rhs, desc)
 					vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
@@ -71,7 +73,7 @@ return {
 			vim.lsp.config("intelephense", {
 				capabilities = caps,
 				on_attach = on_attach,
-				settings = { intelephense = { files = { maxSize = 5000000 }, format = { enable = false } } },
+				settings = { intelephense = php.lsp.settings },
 			})
 			vim.lsp.config("lua_ls", {
 				capabilities = caps,

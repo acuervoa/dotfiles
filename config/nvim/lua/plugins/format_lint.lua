@@ -15,9 +15,10 @@ return {
 			},
 		},
 		config = function()
+			local php = require("lang.php")
 			require("conform").setup({
 				formatters_by_ft = {
-					php = { "pint", "php_cs_fixer" },
+					php = php.format.formatters,
 					lua = { "stylua" },
 					javascript = { "prettierd", "prettier" },
 					typescript = { "prettierd", "prettier" },
@@ -47,8 +48,13 @@ return {
 		"mfussenegger/nvim-lint",
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
+			local php = require("lang.php")
 			local lint = require("lint")
-			lint.linters_by_ft = { php = { "phpstan" }, javascript = { "eslint_d" }, typescript = { "eslint_d" } }
+			lint.linters_by_ft = {
+				php = php.lint.linters,
+				javascript = { "eslint_d" },
+				typescript = { "eslint_d" }
+			}
 			-- require("lint").linters.phpstan.cmd = "vendor/bin/phpstan"  -- si lo usas en el repo
 			local grp = vim.api.nvim_create_augroup("lint", { clear = true })
 			-- vim.api.nvim_create_autocmd({ "BufEnter","BufWritePost","InsertLeave" }, { group = grp, callback = function() lint.try_lint() end })

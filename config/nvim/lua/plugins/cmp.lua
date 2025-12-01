@@ -64,7 +64,7 @@ return {
 				["<CR>"] = cmp.mapping(function(fallback)
 					if cmp.visible() and cmp.get_selected_entry() then
 						cmp.confirm({
-							behavior = cmp.confirmBehavior.Replace,
+							behavior = cmp.ConfirmBehavior.Replace,
 							select = false,
 						})
 					else

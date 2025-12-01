@@ -37,14 +37,11 @@ return {
 		},
 	},
 	opts = function()
+		local php = require("lang.php")
 		return {
 			adapters = {
-				require("neotest-phpunit")({
-					phpunit_cmd = function()
-						return { "docker", "compose", "exec", "php", "php", "vendor/bin/phpunit" }
-					end,
-				}),
-			},
-		}
+				require("neotest-phpunit")(php.tests.neotest.phpunit),
+				},
+			}
 	end,
 }
