@@ -16,8 +16,8 @@ return {
 				"dockerls",
 				"yamlls",
 				"gopls",
+				"pyright",
 				"rust_analyzer",
-				"jdtls",
 			},
 			-- en v2 ya no existe 'automatic_installation'; usar automatic_enable (por defecto true)
 			automatic_enable = false,
@@ -38,6 +38,9 @@ return {
 			local php = require("lang.php")
 			local bash = require("lang.bash")
 			local lua_lang = require("lang.lua")
+			local go_lang = require("lang.go")
+			local python = require("lang.python")
+			local rust = require("lang.rust")
 
 			local function on_attach(client, bufnr)
 				if vim.b.bigfile then
@@ -95,34 +98,49 @@ return {
 			vim.lsp.config("html", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("cssls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("jsonls", { capabilities = caps, on_attach = on_attach })
-			vim.lsp.config(bash.lsp.server, { capabilities = caps, on_attach = on_attach })
+
+			vim.lsp.config(bash.lsp.server, {
+				capabilities = caps,
+				on_attach = on_attach,
+				settings = bash.lsp.settings,
+			})
+
 			vim.lsp.config("yamlls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("dockerls", { capabilities = caps, on_attach = on_attach })
 
-			vim.lsp.config("gopls", {
+			vim.lsp.config(go_lang.lsp.server, {
 				capabilities = caps,
 				on_attach = on_attach,
-				settings = {
-					gopls = {
-						analyses = { unusedparams = true, shadow = true },
-						staticcheck = true,
-					},
-				},
+				settings = go_lang.lsp.settings,
 			})
 
-			vim.lsp.config("rust_analyzer", {
+			vim.lsp.config(python.lsp.server, {
 				capabilities = caps,
 				on_attach = on_attach,
-				settings = {
-					["rust_analyzer"] = {
-						cargo = { allFeatures = true },
-						checkOnSave = { command = "clippy" },
-					},
-				},
+				setings = python.lsp.settings,
+			})
+
+			vim.lsp.config(rust.lsp.server, {
+				capabilities = caps,
+				on_attach = on_attach,
+				settings = rust.lsp.settings,
 			})
 
 			-- Habilitar (0.11+)
-			vim.lsp.enable({ "intelephense", "lua_ls", "ts_ls", "html", "cssls", "jsonls" })
+			vim.lsp.enable({
+				"intelephense",
+				"lua_ls",
+				"ts_ls",
+				"html",
+				"cssls",
+				"jsonls",
+				"bashls",
+				"yamlls",
+				"dockerls",
+				"gopls",
+				"pyright",
+				"rust_analyzer",
+			})
 
 			-- Diagnósticos
 			vim.diagnostic.config({

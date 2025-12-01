@@ -20,12 +20,18 @@ return {
 			local php = require("lang.php")
 			local bash = require("lang.bash")
 			local lua_lang = require("lang.lua")
+			local go_lang = require("lang.go")
+			local python = require("lang.python")
+			local rust = require("lang.rust")
 
 			require("conform").setup({
 				formatters_by_ft = {
 					php = php.format.formatters,
 					[bash.ft] = bash.format.formatters,
 					lua = lua_lang.format.formatters,
+					go = go_lang.format.formatters,
+					python = python.format.formatters,
+					rust = rust.formt.formatters,
 					javascript = { "prettierd", "prettier" },
 					typescript = { "prettierd", "prettier" },
 					json = { "prettierd", "prettier" },
@@ -68,12 +74,18 @@ return {
 			local php = require("lang.php")
 			local bash = require("lang.bash")
 			local lua_lang = require("lang.lua")
+			local go_lang = require("lang.go")
+			local python = require("lang.python")
+			local rust = require("lang.rust")
 			local lint = require("lint")
 
 			lint.linters_by_ft = {
 				php = php.lint.linters,
 				[bash.ft] = bash.lint.linters,
 				lua = lua_lang.lint.linters,
+				go = go_lang.lint.linters,
+				python = python.lint.linters,
+				rust = rust.lint.linters,
 				javascript = { "eslint_d" },
 				typescript = { "eslint_d" },
 			}
