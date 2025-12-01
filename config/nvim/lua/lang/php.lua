@@ -2,6 +2,8 @@
 -- Configuración especifica para PHP (LSP, formateo, lint, tests, etc.)
 -- Objetivo: centralizar todo lo propio de PHP en un único módulo.
 
+local env = require("config.env")
+
 local M = {}
 
 -- LSP (intelephense)
@@ -26,13 +28,28 @@ M.lint = {
 }
 
 -- Tests (neotest-phpunit)
+--
+local function phpunit_cmd()
+  if env.is_aws then
+    return { "php", "vendor/bin/phpunit" }
+  end
+
+  if env.is_wls then
+    return { "docker", "compose", "exec", "php" ,"php", "vendor/bin/phpunit" }
+  end
+
+  if env.is_desktop_linux then
+    return { "docker", "compose", "exec", "php" ,"php", "vendor/bin/phpunit" }
+  end
+
+  -- Fallback
+  return { "php", "vendor/bin/phpunit" }
+end
+
 M.tests = {
   neotest = {
     phpunit = {
-      -- Comando actual (via docker compose) para ejecutar PHPUni
-      phpunit_cmd = function()
-        return { "docker", "compose", "exec", "php", "php", "vendor/bin/phpunit" }
-      end,
+      phpunit_cmd = phpunit_cmd,
     },
   },
 }
