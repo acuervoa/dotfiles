@@ -67,3 +67,33 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = ev.buf, silent = true })
 	end,
 })
+
+-- Big file mode: desactivar cosas caras en archivos grandes
+do
+	local bigfile_group = vim.api.nvim_create_augroup("bigfile_mode", { clear = true })
+
+	vim.api.nvim_create_autocmd("BufReadPre", {
+		group = bigfile_group,
+		callback = function(ev)
+			local ok, stat = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(ev.buf))
+			if not ok or not stat then
+				return
+			end
+
+			-- Umbral ajustable: 512KB
+			if stat.size > 512 * 1024 then
+				vim.b.bigfile = true
+
+				-- Treesitter: desactivar highlight/indent
+				pcall(vim.cmd, "TSBufDisable highlight")
+				pcall(vim.cmd, "TSBuifDisable indent")
+
+				-- Opciones locales mas ligeras
+				vim.opt_local.foldmethod = "manual"
+				vim.opt_local.swapfile = false
+				vim.opt_local.undofile = false
+				vim.opt_local.wrap = false
+			end
+		end,
+	})
+end

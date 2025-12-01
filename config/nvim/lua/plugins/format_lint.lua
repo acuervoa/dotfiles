@@ -1,3 +1,5 @@
+-- Formateo (conform.nvim) + Lint (nvim-lint)
+-- Centraliza la configuración por lenguaje (PHP, Bash, Lua, etc.)
 return {
 	-- Formateo
 	{
@@ -17,12 +19,13 @@ return {
 		config = function()
 			local php = require("lang.php")
 			local bash = require("lang.bash")
+			local lua_lang = require("lang.lua")
 
 			require("conform").setup({
 				formatters_by_ft = {
 					php = php.format.formatters,
 					[bash.ft] = bash.format.formatters,
-					lua = { "stylua" },
+					lua = lua_lang.format.formatters,
 					javascript = { "prettierd", "prettier" },
 					typescript = { "prettierd", "prettier" },
 					json = { "prettierd", "prettier" },
@@ -64,13 +67,15 @@ return {
 		config = function()
 			local php = require("lang.php")
 			local bash = require("lang.bash")
+			local lua_lang = require("lang.lua")
 			local lint = require("lint")
 
 			lint.linters_by_ft = {
 				php = php.lint.linters,
 				[bash.ft] = bash.lint.linters,
+				lua = lua_lang.lint.linters,
 				javascript = { "eslint_d" },
-				typescript = { "eslint_d" }
+				typescript = { "eslint_d" },
 			}
 			-- require("lint").linters.phpstan.cmd = "vendor/bin/phpstan"  -- si lo usas en el repo
 			local grp = vim.api.nvim_create_augroup("lint", { clear = true })

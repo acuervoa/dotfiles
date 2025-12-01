@@ -11,7 +11,7 @@ end
 
 ensure_dir(cache .. "/backup")
 ensure_dir(cache .. "/swap")
-ensure_dir(cache .. "undo")
+ensure_dir(cache .. "/undo")
 
 vim.opt.backup = true
 vim.opt.backupext = ".bak"

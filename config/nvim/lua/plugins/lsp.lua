@@ -15,6 +15,9 @@ return {
 				"bashls",
 				"dockerls",
 				"yamlls",
+				"gopls",
+				"rust_analyzer",
+				"jdtls",
 			},
 			-- en v2 ya no existe 'automatic_installation'; usar automatic_enable (por defecto true)
 			automatic_enable = false,
@@ -33,11 +36,19 @@ return {
 			local caps = ok and cmp_caps.default_capabilities() or vim.lsp.protocol.make_client_capabilities()
 
 			local php = require("lang.php")
+			local bash = require("lang.bash")
+			local lua_lang = require("lang.lua")
 
 			local function on_attach(client, bufnr)
+				if vim.b.bigfile then
+					client.server_capabilities.semanticTokensProvider = nil
+					return
+				end
+
 				local function map(mode, lhs, rhs, desc)
 					vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
 				end
+
 				-- VSCode-like (sin pisar 'gr*' nativos)
 				map("n", "gd", vim.lsp.buf.definition, "Go to Definition")
 				map("n", "<F12>", vim.lsp.buf.definition, "Go to Definition (F12)")
@@ -70,31 +81,45 @@ return {
 			end
 
 			-- Servidores
-			vim.lsp.config("intelephense", {
+			vim.lsp.config(php.lsp.server, {
 				capabilities = caps,
 				on_attach = on_attach,
 				settings = { intelephense = php.lsp.settings },
 			})
-			vim.lsp.config("lua_ls", {
+			vim.lsp.config(lua_lang.lsp.server, {
 				capabilities = caps,
 				on_attach = on_attach,
-				settings = {
-					Lua = {
-						runtime = { version = "LuaJIT" },
-						diagnostics = { globals = { "vim" } },
-						workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
-						telemetry = { enable = false },
-						hint = { enable = true },
-					},
-				},
+				settings = lua_lang.lsp.settings,
 			})
 			vim.lsp.config("ts_ls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("html", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("cssls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("jsonls", { capabilities = caps, on_attach = on_attach })
-			vim.lsp.config("bashls", { capabilities = caps, on_attach = on_attach })
+			vim.lsp.config(bash.lsp.server, { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("yamlls", { capabilities = caps, on_attach = on_attach })
 			vim.lsp.config("dockerls", { capabilities = caps, on_attach = on_attach })
+
+			vim.lsp.config("gopls", {
+				capabilities = caps,
+				on_attach = on_attach,
+				settings = {
+					gopls = {
+						analyses = { unusedparams = true, shadow = true },
+						staticcheck = true,
+					},
+				},
+			})
+
+			vim.lsp.config("rust_analyzer", {
+				capabilities = caps,
+				on_attach = on_attach,
+				settings = {
+					["rust_analyzer"] = {
+						cargo = { allFeatures = true },
+						checkOnSave = { command = "clippy" },
+					},
+				},
+			})
 
 			-- Habilitar (0.11+)
 			vim.lsp.enable({ "intelephense", "lua_ls", "ts_ls", "html", "cssls", "jsonls" })
@@ -137,4 +162,11 @@ return {
 			preview_window = { auto_preview = true },
 		},
 	},
+
+	-- -- Rust  - alternativa al rust_analyzer (si el flujo Rust crece)
+	-- {
+	-- 	"mrcjkb/rustaceanvim",
+	-- 	version = "^6",
+	-- 	ft = { "rust"}
+	-- }
 }
