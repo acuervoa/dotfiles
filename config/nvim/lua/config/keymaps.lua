@@ -27,8 +27,6 @@ map("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "VSplit (%)" })
 -- Cerrar otras ventanas (análogo a kill-pane -a)
 map("n", "<leader><BS>", "<cmd>only<cr>", { desc = "Close other windows (only)" })
 
--- Selector de buffers (análogo a choose-tree)
-map("n", "<leader>bb", "<cmd>ls<CR>:b ", { desc = "Switch buffer" })
 
 -- Resize tipo tmux (Alt+Shift+Flechas) — se mantiene Ctrl+Flechas también
 map("n", "<A-S-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease width (A-S-Left)" })
@@ -51,9 +49,26 @@ map("n", "<C-f>", function()
 end, { desc = "Search prompt (/)" })
 map("n", "<leader>/", "/", { desc = "Buscar (/)" })
 
+-- Selector de buffers (análogo a choose-tree)
+map("n", "<leader>bb", "<cmd>ls<CR>:b ", { desc = "Switch buffer" })
+
 -- Navegación de buffers (rápido, sin plugins)
-map("n", "H", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
-map("n", "L", "<cmd>bnext<cr>", { desc = "Next buffer" })
+map("n", "<leader>bp", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
+map("n", "<leader>bn", "<cmd>bnext<cr>", { desc = "Next buffer" })
+
+-- Cierre de buffers (sin cerrar Neovim)
+map("n", "<leader>bd>", "<cmd>bd<cr>", { desc = "Delete current buffer" })
+map("n", "<leader>bD>", "<cmd>bd!<cr>", { desc = "Force delete current buffer" })
+
+-- Cerrar todos los buffers excepto el actual
+map("n", "<leader>bo", function()
+	local current = vim.api.nvim_get_current_buf()
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted and bufnr ~= current then
+			vim.cmd("bd " .. bufnr)
+		end
+	end
+end, { desc = "Delete other buffers" })
 
 -- Conserva el comportamiento nativo de H/L (top/bottom of screen) en gH/gL
 map("n", "gH", "<cmd>normal! H<cr>", { desc = "Screen top" })
