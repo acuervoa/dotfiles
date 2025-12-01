@@ -16,9 +16,12 @@ return {
 		},
 		config = function()
 			local php = require("lang.php")
+			local bash = require("lang.bash")
+
 			require("conform").setup({
 				formatters_by_ft = {
 					php = php.format.formatters,
+					[bash.ft] = bash.format.formatters,
 					lua = { "stylua" },
 					javascript = { "prettierd", "prettier" },
 					typescript = { "prettierd", "prettier" },
@@ -28,7 +31,10 @@ return {
 					css = { "prettierd", "prettier" },
 					scss = { "prettierd", "prettier" },
 					markdown = { "prettierd", "prettier" },
+					markdown_inline = { "prettierd", "prettier" },
 				},
+
+				-- Autoformato en guardado, con fallback a LSP si no hay formateador externo
 				format_on_save = function(bufnr)
 					if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
 						return
@@ -36,10 +42,18 @@ return {
 					return { timeout_ms = 500, lsp_fallback = true }
 				end,
 			})
+
+			-- Toggle global del formato en guardado
 			vim.api.nvim_create_user_command("FormatToggle", function()
 				vim.g.disable_autoformat = not vim.g.disable_autoformat
 				vim.notify("Format on save: " .. (vim.g.disable_autoformat and "OFF" or "ON"))
-			end, {})
+			end, { desc = "Toggle format o save (global)" })
+
+			-- Toggle por buffer del formato en guardado
+			vim.api.nvim_create_user_command("FormatToggleBuffer", function()
+				vim.b.disable_autoformat = not vim.b.disable_autoformat
+				vim.notify("Format on save (buffer): " .. (vim.b.disable_autoformat and "OFF" or "ON"))
+			end, { desc = "Toggle format on save (buffer)" })
 		end,
 	},
 
@@ -49,9 +63,12 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			local php = require("lang.php")
+			local bash = require("lang.bash")
 			local lint = require("lint")
+
 			lint.linters_by_ft = {
 				php = php.lint.linters,
+				[bash.ft] = bash.lint.linters,
 				javascript = { "eslint_d" },
 				typescript = { "eslint_d" }
 			}
@@ -62,11 +79,16 @@ return {
 				group = grp,
 				callback = function()
 					local ft = vim.bo.filetype
-					if ft == "php" or ft == "javascript" or ft == "typescript" then
+					if lint.linters_by_ft[ft] ~= nil then
 						lint.try_lint()
 					end
 				end,
 			})
+
+			-- Comando manual por si hay que invocarlo a mano
+			vim.api.nvim_create_user_command("Lint", function()
+				require("lint").try_lint()
+			end, { desc = "Run linter for current buffer" })
 		end,
 	},
 }
