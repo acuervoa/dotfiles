@@ -31,7 +31,7 @@ return {
 					lua = lua_lang.format.formatters,
 					go = go_lang.format.formatters,
 					python = python.format.formatters,
-					rust = rust.formt.formatters,
+					rust = rust.format.formatters,
 					javascript = { "prettierd", "prettier" },
 					typescript = { "prettierd", "prettier" },
 					json = { "prettierd", "prettier" },

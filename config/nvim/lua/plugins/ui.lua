@@ -95,16 +95,28 @@ return {
 	-- Notify
 	{
 		"rcarriga/nvim-notify",
-		opts = {
-			timeout = 3000,
-			max_height = function()
-				return math.floor(vim.o.lines * 0.75)
-			end,
-			max_width = function()
-				return math.floor(vim.o.columns * 0.75)
-			end,
-		},
+		event = "VeryLazy",
+		opts = function()
+			-- Intentar heredar el fondo de Normal; si no caer a negro
+			local ok, normal = pcall(vim.api.nvim_get_hl, 0, { name = "Normal", link = false })
+			local bg = "#000000"
+			if ok and normal and normal.bg then
+				bg = string.format("#%06x", normal.bg)
+			end
+
+			return {
+				timeout = 3000,
+				background_colour = bg,
+				max_height = function()
+					return math.floor(vim.o.lines * 0.75)
+				end,
+				max_width = function()
+					return math.floor(vim.o.columns * 0.75)
+				end,
+			}
+		end,
 		init = function()
+			-- redirigir vim.notify a nvim-notify
 			vim.notify = require("notify")
 		end,
 		keys = {
