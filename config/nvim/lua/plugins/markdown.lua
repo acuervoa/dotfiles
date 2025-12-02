@@ -1,31 +1,31 @@
 -- lua/plugins/markdown.lua
 return {
-	{
-		"MeanderingProgrammer/render-markdown.nvim",
-		main = "render-markdown",
-		ft = { "markdown" }, -- se carga solo en .md
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-tree/nvim-web-devicons",
-		},
-		opts = {
-			enabled = false,
-			preset = "lazy",
-			file_types = { "markdown" },
-			render_modes = { "n", "c", "t" },
-			latex = { enabled = false },
-		},
-		keys = {
-			{
-				"<leader>mt",
-				function()
-					-- Toggle render inline en el propio buffer
-					vim.cmd("RenderMarkdown buf_toggle")
-				end,
-				desc = "Markdown render toggle (solo buffer actual)",
-			},
-		},
-	},
+	-- {
+	-- 	"MeanderingProgrammer/render-markdown.nvim",
+	-- 	main = "render-markdown",
+	-- 	ft = { "markdown" }, -- se carga solo en .md
+	-- 	dependencies = {
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 		"nvim-tree/nvim-web-devicons",
+	-- 	},
+	-- 	opts = {
+	-- 		enabled = false,
+	-- 		preset = "lazy",
+	-- 		file_types = { "markdown" },
+	-- 		render_modes = { "n", "c", "t" },
+	-- 		latex = { enabled = false },
+	-- 	},
+	-- 	keys = {
+	-- 		{
+	-- 			"<leader>mt",
+	-- 			function()
+	-- 				-- Toggle render inline en el propio buffer
+	-- 				vim.cmd("RenderMarkdown buf_toggle")
+	-- 			end,
+	-- 			desc = "Markdown render toggle (solo buffer actual)",
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },

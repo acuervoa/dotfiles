@@ -34,7 +34,7 @@ local function phpunit_cmd()
     return { "php", "vendor/bin/phpunit" }
   end
 
-  if env.is_wls then
+  if env.is_wsl then
     return { "docker", "compose", "exec", "php" ,"php", "vendor/bin/phpunit" }
   end
 

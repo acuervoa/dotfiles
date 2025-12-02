@@ -117,7 +117,7 @@ return {
 			vim.lsp.config(python.lsp.server, {
 				capabilities = caps,
 				on_attach = on_attach,
-				setings = python.lsp.settings,
+				settings = python.lsp.settings,
 			})
 
 			vim.lsp.config(rust.lsp.server, {

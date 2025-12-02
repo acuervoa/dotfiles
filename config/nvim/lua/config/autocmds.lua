@@ -80,13 +80,14 @@ do
 				return
 			end
 
-			-- Umbral ajustable: 512KB
-			if stat.size > 512 * 1024 then
+			-- Umbral ajustable: 2MB
+			local BIGFILE_THRESHOLD = vim.g.bigfile_treshhold or (2 * 1024 * 1024)
+			if stat.size > BIGFILE_THRESHOLD then
 				vim.b.bigfile = true
 
 				-- Treesitter: desactivar highlight/indent
 				pcall(vim.cmd, "TSBufDisable highlight")
-				pcall(vim.cmd, "TSBuifDisable indent")
+				pcall(vim.cmd, "TSBufDisable indent")
 
 				-- Opciones locales mas ligeras
 				vim.opt_local.foldmethod = "manual"

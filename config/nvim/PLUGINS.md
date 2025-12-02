@@ -1,444 +1,308 @@
 # Neovim config (VSCode-like)
 
-Configuración de Neovim orientada a desarrollo diario (PHP, JS/TS, etc.) con experiencia tipo VSCode: LSP, autocompletado, tests, debug, tareas y navegación rápida.
+Configuración de Neovim orientada a desarrollo diario (PHP, Bash, Lua, Go, Rust, Python) con foco en:
 
-- Neovim mínimo: 0.11+
-- `runtime` principal: `~/.config/nvim`
-- `<leader>` = **espacio**
+- LSP moderno (API 0.11+), autocompletado y diagnósticos integrados.
+- Formateo y lint centralizados por lenguaje.
+- Tests (neotest), debug (DAP), tareas (Overseer).
+- Navegación rápida tipo VSCode (Telescope, neo-tree, Outline, Trouble).
 
----
+Requisitos mínimos:
 
-## Convenciones de teclado
+- Neovim **0.11+** (por la API nueva de LSP).
+- Node.js, PHP, Go, Rust, Python según los lenguajes que se usen.
+- Herramientas externas instaladas vía `mason.nvim`, sistema o `mise`.
 
-- `<leader>` → barra espaciadora.
-- Prefijos principales (según `which-key`):
-  - `<leader>b` → buffers
-  - `<leader>c` → código / LSP
-  - `<leader>d` → debug
-  - `<leader>f` → ficheros / búsqueda
-  - `<leader>g` → Git
-  - `<leader>h` → hunks (GitSigns)
-  - `<leader>o` → Overseer (tareas)
-  - `<leader>t` → toggles / tests
-  - `<leader>u` → UI (notificaciones, etc.)
-  - `<leader>w` → escribir / guardar
-  - `<leader>x` → diagnósticos / Trouble
+`runtime` principal: `~/.config/nvim`
+`<leader>` = barra espaciadora (`" "`)
 
 ---
 
-## 1. Core / framework de plugins
+## 1. Infraestructura y dependencias
 
-### `folke/which-key.nvim`
+### Núcleo
 
-Muestra un menú de ayuda de atajos al pulsar `<leader>` y otros prefijos.
+- **folke/lazy.nvim**
+  Gestor de plugins. Se carga en `init.lua` y resuelve todo el árbol de `lua/plugins/`.
 
-- Ejemplo: pulsa `<leader>` y espera un momento → aparece una ventana con todos los grupos (`b`, `f`, `g`, etc.).
+- **nvim-lua/plenary.nvim**
+  Librería de utiliddes para muchos plugins (Telescope, neotest, gitsigns, Spectre...).
 
-### `nvim-lua/plenary.nvim`
+- **nvim-tree/nvim-web-devicons** + **echasnovski/mini.icos**
+  Iconos de archivos unificados en barra de buffers, explorador, Telescope, etc.
 
-Librería de utilidades Lua usada por Telescope, Neo-tree, LazyGit, todo-comments, etc.
+- **MunifTanjim/nui.nvim**
+  Componentes de UI (ventanas, popups) usados y principalmente por `neo-tree.nvim`.
 
-- Ejemplo: no se usa directamente; si desinstalas `plenary`, varios plugins dejarían de funcionar.
+- **nvim-neotest/nvim-nio**
+  Infraestructura async usada por `nvim-dap-ui` y otros plugins.
 
-### `MunifTanjim/nui.nvim`
-
-Toolkit de UI para ventanas flotantes, menús, etc. Lo usa sobre todo Neo-tree.
-
-- Ejemplo: la ventana lateral de Neo-tree se construye con `nui` (no hay comando directo).
-
-### `nvim-tree/nvim-web-devicons` + `nvim-mini/mini.icons`
-
-Iconos para ficheros y tipos de LSP.
-
-- Ejemplo: abre Neo-tree o el bufferline y verás iconos distintos para `.php`, `.js`, `.md`, etc.
+- **antoinemadec/FixCursorHold.nvim**
+  Fix para el evento `CursorHold` (evita flicker y problemas con UIs lentas, neotest)
 
 ---
 
 ## 2. Apariencia y UI
 
-### `Mofiqul/vscode.nvim`
+- **Mofiqul/vscode.nvim**
+  Tema de colores principal de tipo VSCode.
+  Se configura en `lua/plugins/ui.lua` y se aplica en el arranque:
+  - `:colorscheme vscode` para re-aplicarlo.
 
-Tema de colores principal tipo VSCode.
+- **nvim-lualine/lualine.nvim**
+  Statusline con información de modo, LSP, diagnósticos, etc.
 
-- Ejemplo: `:colorscheme vscode` para volver al tema si cambias a otro.
+- **akinsho/bufferline.nvim**
+  Barra de buffers estilo "pestañas" con integración de diagnósticos.
 
-### `akinsho/bufferline.nvim`
+- **lukas-reineke/indent-blankline.nvim**
+  Lineas de indentación (`|`) con soporte Treesitter.
 
-Barra de pestañas de buffers en la parte superior con integración de diagnósticos.
+- **rcarriga/nvim-notify**
+  Reemplaza `vim.notify` por notificaciones bonitas en ventana flotante-
+  Atajo importante:
+  - `<leader>uh` abre el histórico de notificaciones.
 
-- Ejemplo: `:BufferLineCycleNext` para ir al siguiente buffer en la barra.
+- **folke/which-key.nvim**
+  Muestra un menú de combinaciones cuando pulsas `<leader>`.
+  Usa `lua/plugins/which-key.lua` para agrupar atajos por tema (`<leader>b`, `<leader>f`, etc.).
 
-### `nvim-lualine/lualine.nvim`
+- **utilyre/barbecue.nvim** + **SmithesP/nvim-navic**
+  "Breadcrumbs" (ruta de símbolos) basada en LSP en la parte superior.
 
-Statusline global (modo, rama, diffs, diagnósticos, LSP, encoding, etc.).
+- **karb94/neoscroll.nvim**
+  Scroll suave en movimientos grandes (`<C-d>`, `<C-u>`, etc.).
 
-- Ejemplo: mira la barra inferior; cuando conectas un LSP verás los nombres de los clientes (p.ej. `intelephense`) en la sección central/derecha.
-
-### `lukas-reineke/indent-blankline.nvim`
-
-Muestra guías verticales de indentación.
-
-- Ejemplo: abre un fichero con bloques anidados → verás líneas `│` marcando cada nivel de indent.
-
-### `karb94/neoscroll.nvim`
-
-Scroll suave para los movimientos estándar.
-
-- Ejemplo: usa `<C-d>` / `<C-u>` en un fichero largo → el scroll se anima suavemente en lugar de “saltar”.
-
-### `rcarriga/nvim-notify`
-
-Sistema de notificaciones más cómodo que `:echo`.
-
-- Ejemplo: tras varios mensajes, usa `<leader>un` para limpiar todas las notificaciones pendientes.
-
-### `stevearc/dressing.nvim`
-
-Mejora las ventanas de entrada/selección (`vim.ui.input` y `vim.ui.select`).
-
-- Ejemplo: ejecuta `:lua vim.lsp.buf.code_action()` → el listado de acciones aparece en una ventana flotante “bonita” (vía Telescope o builtin).
-
-### `utilyre/barbecue.nvim` + `SmiteshP/nvim-navic`
-
-Breadcrumbs de símbolos (tipo ruta: módulo → clase → método) encima de la ventana.
-
-- Ejemplo: abre un fichero PHP con clases/métodos → verás la ruta actual en la parte superior de la ventana (barbecue usa `nvim-navic` como fuente LSP).
+- **akinsho/toggleterm.nvim**
+  Terminal flotante integrada:
+  - `<C-\>` abre/cierra una terminal flotante.
+  - `<leader>\` abre/cierra una terminal de "fallback".
 
 ---
 
-## 3. Terminal integrado
+## 3. Navegación, archivos y búsqueda
 
-### `akinsho/toggleterm.nvim`
+- **nvim-neo.tree/neo.tree.nvim**
+  Explorador de archivs, buffers y estado Git.
+  Atajos:
+  - `<C-b>` -> toggle del panel izquierdo.
+  - `<leader>e` -> foco en el explorador.
 
-Terminal flotante integrado en Neovim.
+- **nvim-telescope/telescope.nvim**
+  Buscador principal (ficheros, buffers, símbolos, comandos).
+  Extensiones usadas:
+  - `telescope-fzf-native.nvim` -> ordenación rápida nativa.
+  - `telescope-ui-select.nvim` -> reemplaza `vim.ui.select`.
+  - extension `notify` -> histórico de notificaciones.
+  Atajos importantes:
+  - `<C-p>` / `<leader>ff` -> buscar archivos.
+  - `<leader>fg` -> búsqueda en todo el proyecto (ripgrep).
+  - `<leader>fb` -> buffers.
+  - `<leader>fr` -> archivos recientes.
+  - `<leader>fs` -> símbolos de documento
+  - `<leader>fn` -> histórico de notificaciones. 
 
-- Ejemplo 1: pulsa `<C-\`>` para abrir/cerrar un terminal flotante.
-- Ejemplo 2: `<leader>\`` hace de “fallback” para `:ToggleTerm` en modo normal/terminal.
+- **nvim-pack/nvim-spectre**
+  Búsqueda u reemplazo global en múltiples archivos.
+  Atajos:
+  - `<leader>sr` -> abrir Spectre global
+  - `<leader>sw` -> buscar palabra bajo el cursor. 
+  - `<leader>sp` -> buscar en el archivo actual.
 
----
+- **hedyhli/outline.nvim**
+  Vista de símbolos del LSP en un panel lateral (similar al Outline de VSCode).
+  Atajo:
+  - `<leader>cs` -> abrir/cerrar Outline.
 
-## 4. Explorador, búsqueda y símbolos
+- **folke/todo-comments.nvim**
+  Resalta y lista `TODO`, `FIXME`, etc. Integrado con Trouble y Telescope.
 
-### `nvim-neo-tree/neo-tree.nvim`
-
-Explorador de ficheros lateral.
-
-- Ejemplo:
-  - `<C-b>` → abre/cierra el árbol a la izquierda.
-  - `<leader>e` → mueve el foco al panel de Neo-tree.
-
-### `nvim-telescope/telescope.nvim`
-
-Buscador difuso para ficheros, texto, buffers, comandos, símbolos, etc.
-
-- Ejemplos:
-  - `<C-p>` o `<leader>ff` → `find_files` (buscar archivo en el proyecto).
-  - `<leader>fg` → `live_grep` (buscar texto en todo el árbol).
-  - `<leader>fb` → lista de buffers abiertos.
-  - `<leader>fs` → símbolos del documento vía LSP.
-
-### `nvim-telescope/telescope-fzf-native.nvim`
-
-Extensión de Telescope que usa FZF como motor más rápido.
-
-- Ejemplo: ninguna acción extra; simplemente acelera y mejora el ranking de las búsquedas de Telescope.
-
-### `nvim-telescope/telescope-ui-select.nvim`
-
-Reemplaza los menús de selección estándar por Telescope.
-
-- Ejemplo: ejecuta `:lua vim.lsp.buf.code_action()` → las acciones se muestran en un popup de Telescope en vez de una lista simple.
-
-### `hedyhli/outline.nvim`
-
-Panel lateral de símbolos (Outline) similar al de VSCode.
-
-- Ejemplo: `<leader>cs` → abre `:Outline` a la derecha con funciones, clases, etc., del fichero actual.
+- **folke/trouble.nvim**
+  Panel unificado para diagnósticos, quickfix, loclist y TODOs.
+  Atajos:
+  - `<leader>xx` -> diagnósticos workspace.
+  - `<leader>xd` -> diagnósticos del buffer.
+  - `<leader>xq` -> quickfix
+  - `<leader>xl` -> loclist
+  - `<leader>xt` -> TODOs en Trouble.
+  - `<leader>xT` -> TODOs en Telescope.
 
 ---
 
-## 5. Movimiento y edición
+## 4. Movimiento y edición
 
-### `folke/flash.nvim`
+- **folke/flash.nvim**
+  Sustituye `f`/`F` por saltos inteligentes con resaltado.
+  Atajos:
+  - `f` (normal/visual/op-pending) -> salto con Flash.
+  - `F` -> salto basado en Treesitter.
 
-Saltos rápidos a texto usando resaltado inteligente.
+- **numToStr/Comment.nvim** + **JoosepAlviste/nvim-ts-context-commentstring**
+  Comentado de líneas/bloques con soporte de lenguaje embebidos.
+  Atajos:
+  - `gc`, `gcc`, `gbc`, etc. (por defecto de Comment.nvim).
+  - `<C-/>` en normal/visual -> toggle de comentario.
 
-- Ejemplos:
-  - Pulsa `f` en modo normal y escribe unas letras → saltas rápido a esa posición.
-  - Pulsa `F` → salto basado en árbol sintáctico (Treesitter) hacia bloques/símbolos.
+- **windwp/nvim-autopairs**
+  Inserta y cierra paréntesis, comillas, etc. Integrado con `nvim-cmp`.
 
-### `numToStr/Comment.nvim`
+- **kylechui/nvim-surround**
+  Añadir/cambiar/eliminar envolturas ( `()`, `[]`, `""`, etc.).
 
-Comentar/descomentar líneas y bloques.
+- **tpope/vim-sleuth**
+  Detecta automáticamente indentación por archivo (`shiftwidth`, `expandtab`, etc.).
 
-- Ejemplos:
-  - `<C-/>` (`<C-_>`) en modo normal → comenta/descomenta la línea actual.
-  - Selecciona varias líneas en visual y pulsa `<C-/>` → comenta/descomenta el bloque.
-
-### `windwp/nvim-autopairs`
-
-Inserta automáticamente cierres de paréntesis, llaves y comillas.
-
-- Ejemplo: escribe `(` en Insert → se inserta automáticamente `)` y el cursor queda en medio.
-
-### `kylechui/nvim-surround`
-
-Gestión de “envolturas” (comillas, paréntesis, etc.).
-
-- Ejemplos:
-  - `ysiw)` → rodea la palabra bajo el cursor con `(...)`.
-  - `cs"'` → cambia envoltura de `"` a `'` alrededor del texto actual.
-
-### `folke/todo-comments.nvim`
-
-Resalta `TODO`, `FIXME`, `BUG`, etc., y permite listarlos.
-
-- Ejemplos:
-  - Escribe `// TODO: revisar esta función` → se resalta en color específico.
-  - `<leader>xT` → `:TodoTelescope` (lista todos los TODO/FIXME en el proyecto).
-  - `<leader>xt` → abre los TODOs en una vista tipo Trouble.
+- **otavioschwanck/new-file-template.nvim**
+  Aplica plantillas según tipo de archivo para nuevos ficheros (p.ej. boilerplate PHP, scripts, bash).
+  Configurado en `lua/plugins/templates.lua` y `lua/templates/`.
 
 ---
 
-## 6. LSP, completado y snippets
+## 5. Treesitter
 
-### `mason-org/mason.nvim`
+- **nvim-treesitter/nvim-treesitter**
+  Highligt, indentación y parsing incremental para múltiples lenguajes.
 
-Gestor de binarios (LSP, formatters, linters, DAP).
+- **nvim-treesitter/nvim-treesitter-textobjects**
+  Textobjects avanzados basados en AST (select alrededor de funciones, clases, etc.).
 
-- Ejemplo: `:Mason` → abre UI para instalar/actualizar servidores como `intelephense`, `lua_ls`, etc.
+- **windwp/nvim-ts-autotag**
+  Auto-cierre y actualización de etiquetas HTML/JSX.
 
-### `mason-org/mason-lspconfig.nvim`
-
-Integra Mason con `nvim-lspconfig` para configurar servidores LSP automáticamente.
-
-- Ejemplo: se encarga de que `intelephense` o `tsserver` se registren y arranquen sin config manual por cada uno (no hay comando extra).
-
-### `neovim/nvim-lspconfig`
-
-Configuración de LSP y mapeos de código.
-
-- Ejemplos:
-  - `gd` o `<F12>` → ir a definición.
-  - `gr` → referencias.
-  - `<leader>cr` → renombrar símbolo.
-  - `<leader>ca` → acciones de código (code actions).
-  - `<leader>cd` → mostrar diagnósticos LSP en un popup en la línea actual.
-
-### `hrsh7th/nvim-cmp`
-
-Motor de autocompletado.
-
-- Ejemplos:
-  - En Insert, pulsa `<C-Space>` para abrir el menú de completado manualmente.
-  - Usa `<Tab>` / `<S-Tab>` para moverte por las sugerencias.
-  - `<CR>` acepta la sugerencia seleccionada.
-
-### `hrsh7th/cmp-nvim-lsp`
-
-Fuente de completado de LSP para `nvim-cmp`.
-
-- Ejemplo: cuando escribes el nombre de una función/método de la API de PHP/TS, las sugerencias vienen del LSP (marcadas con `[LSP]` en el menú).
-
-### `hrsh7th/cmp-buffer`
-
-Propone palabras ya presentes en el buffer actual como completado.
-
-- Ejemplo: escribe las primeras letras de un identificador largo ya usado en el fichero → aparecerá como sugerencia `[Buffer]`.
-
-### `hrsh7th/cmp-path`
-
-Completado de rutas de ficheros.
-
-- Ejemplo: escribe `./` o `/` en un string o comando → `nvim-cmp` sugiere rutas `[Path]`.
-
-### `L3MON4D3/LuaSnip`
-
-Motor de snippets.
-
-- Ejemplo: cuando `nvim-cmp` ofrece una entrada con icono de snippet (`[Snippet]`), al aceptarla se expande el snippet y puedes saltar entre “huecos” con `<Tab>` / `<S-Tab>`.
-
-### `saadparwaiz1/cmp_luasnip`
-
-Conecta `LuaSnip` con `nvim-cmp`.
-
-- Ejemplo: los snippets definidos en `LuaSnip` y `friendly-snippets` aparecen como sugerencias de tipo `[Snippet]` en el menú de `nvim-cmp`.
-
-### `rafamadriz/friendly-snippets`
-
-Colección de snippets predefinidos para muchos lenguajes.
-
-- Ejemplo: en ficheros JavaScript/TypeScript/PHP verás snippet suggestions habituales (funciones, estructuras, etc.) sin definir nada a mano.
-
-### `onsails/lspkind.nvim`
-
-Añade iconos y anotaciones tipo VSCode al menú de completado.
-
-- Ejemplo: en el menú de `nvim-cmp` ves iconos distintos para funciones, variables, clases, snippets, y etiquetas `[LSP]`, `[Buffer]`, etc.
+- **MeanderiProgrammer/render-markdown.nvim** (opcional)
+  Renderiza Markdown dentro de Neovim (encabezados, listas, tablas).
+  Actualmente esta **deshabilitado** en la configuración -> se mantiene como experimento.
 
 ---
 
-## 7. Treesitter y textobjects
+## 6. LSP, completado y ayudas al código
 
-### `nvim-treesitter/nvim-treesitter`
+- **mason-org/mason.nvim**
+  Gestor de binarios (LSP, DAP, linters, formatters) via UI `:Mason`.
 
-Highlight, indentación y selección basada en árbol sintáctico.
+- **mason-org/mason-lspconfig.nvim**
+  `ensure_installed` de servidores LSP (PHP, Lua, Bash, tsserver, HTML, CSS, JSON, Docker, YAML, Go, Rust, Python...).
 
-- Ejemplos:
-  - Usa `<leader><CR>` varias veces para expandir la selección (de símbolo → expresión → función → archivo).
-  - Usa `<BS>` (Backspace) para reducir la selección.
+- **neovim/nvim.lspconfig**
+  Registro de servidores LSP mediante la **API nueva** `vim.lsp.config()/enable()`.
+  Integrado con:
+  - `lua/lang/*.lua` (PHP, Bash, Lua, Go, Rust, Python, etc.) para ajustes por lenguaje.
+  - Keymaps LSP en `on_attach` (ver `USAGE.md` y `SHORTCUTS.md`).
 
-### `nvim-treesitter/nvim-treesitter-textobjects`
+- **hrsh7th/nvim-cmp** + fuentes:
+  - `cmp-nvim-lsp` (LSP)
+  - `cmp-buffer` (buffer)
+  - `cmp-path` (rutas)
+  - `cmp_luasnip` (snippets)
+  - **L3MON4D3/LuaSnip** + **rafamadriz//friendly-snippets**
+  - **onsails/lspkind.nvim** (iconos en el menú de completado)
 
-Textobjects semánticos (funciones, clases, etc.).
+  Enter se comporta de forma segura:
+  - solo confirma si hay un item  **seleccionado**
+  - si no, hace `Enter` normal.
 
-- Ejemplos:
-  - `vaf` / `vif` → seleccionar toda la función o solo su cuerpo.
-  - `vac` / `vic` → seleccionar toda la clase o su interior.
-  - `[f` / `]f` → saltar a la función anterior/siguiente.
+- **hedyhli/outline.nvim**
+  (mencionado arriba) como UI de símbolos LSP.
 
 ---
 
-## 8. Formateo y lint
+## 7. Formateo y lint
 
-### `stevearc/conform.nvim`
+- **stevearc/conform.nvim**
+  Capa única de formateo por lenguaje.
+  - Hook en `BufWritePre` para *format on save* (configurable).
+  - `<leader>cf` -> formatear buffer/selección.
+  - `:ConformInfo` -> ver formatters disponibles
+  - Comandos:
+    - `:FormatToggle` -> habilitar/deshabilitar format on save (gloabl).
+    - `:FormatToggleBuffer` -> idem pero solo para el buffer actual.
 
-Framework de formateo por fichero.
+- **mfussenegger/nvim-lint**
+  Linting asíncrono disparado en `BufReadPost`, `BufWritePost` e `InsertLeave`.
+  - Usa `linters_by_ft` definido en `lua/lang/*.lua`.
+  - Comando manual: `:Lint`.
 
-- Ejemplos:
-  - `<leader>cf` → formatea el buffer o selección (`php-cs-fixer`/`pint` para PHP, `prettier(d)` para JS/TS/JSON/etc., `stylua` para Lua, etc.).
-  - Se ejecuta automáticamente en `BufWritePre` para ciertos lenguajes (según tu configuración).
+---
 
-### `mfussenegger/nvim-lint`
+## 8. Tests, debug y tareas
 
-Lanzador asíncrono de linters.
+- **nvim-neotest/neotest**
+  Orquestador de tests multi-lenguaje. Adaptadores:
+  - **olimorris/neotest-phpunit** (PHP)
+  - **nvim-neotest/neotest-go** (Go)
+  - **nvim-neotest/neotest.python** (Python)
+  - **rouge8/neotest-rust** (Rust)
+  Atajos clave (`lua/plugins/test.lua`):
+  - `<leader>tt` -> test más cercano.
+  - `<leader>tT` -> tests del fichero.
+  - `<leader>ta` -> tests de todo el proyecto.
+  - `<leader>ts` -> resumen de tests.
+  - `<leader>to` -> output del últmo test.
+  - `<leader>tO` -> toggle panel de salida.
 
-- Ejemplo: guarda un fichero PHP (`phpstan`) o JS/TS (`eslint_d`) → verás diagnósticos adicionales (warning/error) aparecer como diagnósticos de Neovim.
+- **mfussenegger/nvim-dap**
+  Core de debug.
+  - **rcarriga/nvim-dap-ui** -> UI de paneles (stacks, watches, etc.).
+  - **theHamsta/nvim-dap-virtual-text** -> valores inline.
+  - **leoluz/nvim-dap-go** (opcional, Go) -> helpers para Delve.
+
+  Atajos (`lua/plugins/dap.lua`)_
+  - `<F5>` -> Iniciar/continur debug.
+  - `<F9>` / `<leader>db`-> togle breakpoint.
+  - `<leader>dB` -> breakpoint condicional.
+  - `<leader>d0`/`<leader>dI`/`<leader>dU`-> step over/into/out.
+  - `<leader>du` -> toggle UI DAP
+  - `<leader>dq` -> terminar y cerrar.
+
+- **stevearc/overseer.nvim**
+  Sistema de tareas (tests, linters, comandos `mise`, etc.)
+  - `<leader>ot` -> abrir/cerrar panel de tareas.
+  - `<leader>or` -> ejecuta plantilla (p.ej. `phpunit`, `phpstan`, tareas Go/Rust).
+  Plantillas por lenguaje en `lua/lang/*.lua`
 
 ---
 
 ## 9. Git
 
-### `lewis6991/gitsigns.nvim`
+- **lewis6991/gitsigns.nvim**
+  Integración Git por línea: signos, blame, preview, diff.
+  Atajos (en bufers con Git):
+  - `]c` / `[c` -> siguiente/anterior hunk.
+  - `<leader>hs` / `<leader>hr` -> stage/reset hunk.
+  - `<leader>hS` / `<leader>hR` -> stage/reset buffer.
+  - `<leader>hp` / `<leader>hb` -> preview/blame line.
+  - `<leader>hd` / `<leader>hD` -> diff (buffer/contra `~`).
 
-Signs de Git en el margen y acciones sobre “hunks”.
-
-- Ejemplos:
-  - `[c` / `]c` → ir al hunk previo/siguiente.
-  - `<leader>hs` → stage del hunk actual.
-  - `<leader>hr` → reset del hunk actual.
-  - `<leader>hd` → diff del fichero actual.
-
-### `kdheepak/lazygit.nvim`
-
-Integra LazyGit dentro de Neovim.
-
-- Ejemplo: `<leader>gg` → abre LazyGit en una ventana flotante dentro de Neovim.
+- **kdheepak/lazygit.nvim**
+  UI de Git basada en LazyGit.
+  - `<leader>gg` -> abre LazyGit en el proyecto actual.
 
 ---
 
-## 10. Tests
+## 10. Markdown y documentación
 
-### `nvim-neotest/neotest`
+- **iamcco/markdown-preview.nvim**
+  Vista de Markdown en navegador.
+  - `<leader>mp` -> `MarkdownPreviewToggle`.
 
-Framework para lanzar tests desde Neovim con UI unificada.
-
-- Ejemplos:
-  - `<leader>tt` → ejecuta el test más cercano al cursor.
-  - `<leader>tT` → ejecuta todos los tests del fichero actual.
-  - `<leader>ts` → abre/cierra el panel de resumen de tests.
-  - `<leader>to` → abre el output detallado del último test.
-
-### `olimorris/neotest-phpunit`
-
-Adaptador de `neotest` para PHPUnit (PHP).
-
-- Ejemplo: cuando estás en un fichero de tests PHP y usas `<leader>tt`, internamente se ejecuta `phpunit` vía Docker/`docker compose` según tu plantilla (no hay comando extra).
-
-### `antoinemadec/FixCursorHold.nvim`
-
-Arreglo para el evento `CursorHold` que usan plugins como `neotest`.
-
-- Ejemplo: evita problemas de refresco/parpadeo y hace que eventos como el hover o paneles de tests se actualicen correctamente (no lo usas directamente).
+- **MeanderingProgrammer/render-markdown.nvim** *(opcional)*
+  Render de Markdown dentro de Neovim. Actualmente deshabilitado en `opts`.
 
 ---
 
-## 11. Debug (DAP)
+## 11. Sesiones, terminal y utilidades varias
 
-### `mfussenegger/nvim-dap`
+- **folke/persistence.nvim**
+  Manejo de sesiones automáticas por proyecto.
+  - `<leader>qs` -> cargar sesión actual.
+  - `<leader>ql` -> cargar última sesión.
+  - `<leader>qd` -> desactivar guardado de sesión.
 
-Core del debug adapter protocol (breakpoints, step, etc.).
+- **christoomey/vim-tmux-navigator**
+  Navegación entre splits de Neovim y panes de tmux.
+  - `<C.h/j/k/l>` y `<C-\>` (pane anterior).
 
-- Ejemplos:
-  - `<F5>` → start/continue debug.
-  - `<leader>d0` → step over.
-  - `<leader>dI` / `<leader>dU` → step into / step out.
-  - `<leader>db` → toggle breakpoint.
-  - `<leader>dB` → breakpoint condicional (pide condición).
-
-### `rcarriga/nvim-dap-ui`
-
-UI para `nvim-dap` (paneles de variables, breakpoints, etc.).
-
-- Ejemplos:
-  - `<leader>du` → abrir/cerrar la UI de debug (scopes, breakpoints, pilas…).
-  - Se abre automáticamente al arrancar una sesión DAP.
-
-### `theHamsta/nvim-dap-virtual-text`
-
-Muestra valores de variables inline mientras depuras.
-
-- Ejemplo: en una sesión de debug con Xdebug, verás el valor de variables directamente al lado de las líneas de código relevantes.
-
-### `nvim-neotest/nvim-nio`
-
-Infraestructura asíncrona para `nvim-dap-ui` y `neotest`.
-
-- Ejemplo: no se usa directamente; permite que las UIs de debug/tests sean reactivas sin bloquear Neovim.
-
----
-
-## 12. Sesiones, tareas y tmux
-
-### `stevearc/overseer.nvim`
-
-Gestor de tareas reproducibles (build, test, QA, etc.).
-
-- Ejemplos:
-  - `<leader>ot` → abre/cierra la lista de tareas.
-  - `<leader>or` → ejecuta una plantilla (p.ej. “PHP: PHPUnit nearest test”, “mise: run qa”, etc.) definida en tu `tasks.lua`.
-
-### `folke/persistence.nvim`
-
-Gestión automática de sesiones (buffers, ventanas, etc.).
-
-- Ejemplos:
-  - `<leader>qs` → restaurar la sesión actual.
-  - `<leader>ql` → cargar la última sesión usada.
-  - `<leader>qd` → desactivar guardado de sesión para la sesión actual.
-
-### `christoomey/vim-tmux-navigator`
-
-Navegación fluida entre splits de Neovim y panes de tmux.
-
-- Ejemplos:
-  - `<C-h>`, `<C-j>`, `<C-k>`, `<C-l>` → moverte entre ventanas/panes sin pensar si estás en tmux o en Neovim.
-  - `<C-\>` → saltar al último pane visitado.
-
----
-
-## 13. Resumen rápido
-
-- **Tema y UI**: `vscode.nvim`, `bufferline.nvim`, `lualine.nvim`, `indent-blankline.nvim`, `neoscroll.nvim`, `nvim-notify`, `dressing.nvim`, `barbecue.nvim` + `nvim-navic`, `toggleterm.nvim`.
-- **Exploración / búsqueda**: `neo-tree.nvim`, `telescope.nvim` (+ `telescope-fzf-native`, `telescope-ui-select`), `outline.nvim`.
-- **Edición / movimiento**: `flash.nvim`, `Comment.nvim`, `nvim-autopairs`, `nvim-surround`, `todo-comments.nvim`.
-- **LSP, completado, snippets**: `mason.nvim`, `mason-lspconfig.nvim`, `nvim-lspconfig`, `nvim-cmp` + fuentes (`cmp-nvim-lsp`, `cmp-buffer`, `cmp-path`, `cmp_luasnip`), `LuaSnip`, `friendly-snippets`, `lspkind.nvim`.
-- **Árbol sintáctico**: `nvim-treesitter` + `nvim-treesitter-textobjects`.
-- **Formateo / lint**: `conform.nvim`, `nvim-lint`.
-- **Git**: `gitsigns.nvim`, `lazygit.nvim`.
-- **Tests**: `neotest`, `neotest-phpunit`, `FixCursorHold.nvim`.
-- **Debug**: `nvim-dap`, `nvim-dap-ui`, `nvim-dap-virtual-text`, `nvim-nio`.
-- **Sesiones / tareas / tmux**: `overseer.nvim`, `persistence.nvim`, `vim-tmux-navigator`.
-- **Infra**: `plenary.nvim`, `nui.nvim`, `web-devicons`, `mini.icons`.
+- **stevearc/dressing.nvim**
+  Mejora `vim.ui.select`/`vim.ui.input` con popups bonitos (usa Telescope y la UI integrada).
 
 ---
