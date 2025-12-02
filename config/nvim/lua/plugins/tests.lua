@@ -1,6 +1,8 @@
 -- lua/plugins/tests.lua
 return {
 	"nvim-neotest/neotest",
+	ft = { "php", "go", "python", "rust" },
+
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"antoinemadec/FixCursorHold.nvim",

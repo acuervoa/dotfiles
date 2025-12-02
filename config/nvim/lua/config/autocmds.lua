@@ -80,9 +80,10 @@ do
 				return
 			end
 
+			local env = require("config.env")
+
 			-- Umbral ajustable: 2MB
-			local BIGFILE_THRESHOLD = vim.g.bigfile_treshhold or (2 * 1024 * 1024)
-			if stat.size > BIGFILE_THRESHOLD then
+			if stat.size > env.bigfile_threshold then
 				vim.b.bigfile = true
 
 				-- Treesitter: desactivar highlight/indent

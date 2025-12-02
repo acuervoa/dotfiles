@@ -1,7 +1,11 @@
--- nvim-dap
+-- lua/plugins/dap.lua
+
+local env = require("config.env")
+
 return {
 	{
 		"mfussenegger/nvim-dap",
+		enabled = not env.is_aws and not env.is_ci,
 		dependencies = {
 			{ "rcarriga/nvim-dap-ui", dependencies = { "nvim-neotest/nvim-nio" } },
 			{ "theHamsta/nvim-dap-virtual-text", opts = {} },

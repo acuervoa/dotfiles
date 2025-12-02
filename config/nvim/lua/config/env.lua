@@ -1,66 +1,36 @@
 -- lua/config/env.lua
--- Detección de entorno (SO / distro / WSL / AWS, etc.)
--- Uso previsto:
---		local env = require("config.env")
---		if env.is_wsl then ... end
+-- Fuente única de verdad sobre el entorno en el que corre Neovim.
 
 local M = {}
 
 local uname = vim.loop.os_uname()
 local sysname = uname.sysname or ""
-local release = uname.release or ""
 
-M.sysname = sysname
-M.release = release
-
+-- OS base
 M.is_linux = sysname == "Linux"
 M.is_macos = sysname == "Darwin"
 M.is_windows = sysname:match("Windows") ~= nil
 
--- WSL: suele aparecer "microsoft" en release y/o WSL_INTEROP definido
-M.is_wsl = (release:lower():match("microsoft") ~= nil) or (vim.env.WSL_INTEROP ~= nil)
+-- WSL detection
+M.is_wsl = (vim.fn.has("wsl") == 1) or (vim.env.WSL_INTEROP ~= nil)
 
--- Lee /etc/os-release si existe
-local function read_os_release()
-	local ok, f = pcall(io.open, "/etc/os-release", "r")
-	if not ok or not f then
-		return {}
-	end
+-- Linux "de escritorio": Linux no-WSL sin SSH
+M.is_desktop_linux = M.is_linux and not M.is_wsl and not vim.env.SSH_CONNECTION
 
-	local data = {}
-	for line in f:lines() do
-		local key, val = line:match("^(%w+)%=(.+)$")
-		if key and val then
-			-- quita comillas
-			val = val:gsub('^"', ""):gsub('"$', "")
-			data[key] = val
-		end
-	end
-	f:close()
-	return data
-end
+-- AWS / entornos server "remotos"
+M.is_aws = (vim.env.AWS_EXECUTION_ENV ~= nil)
+	or (vim.env.ECS_CONTAINER_METADATA_URI ~= nil)
+	or (vim.env.NVIM_AWS == "1")
 
-local osr = {}
-if M.is_linux then
-	osr = read_os_release()
-end
+-- Headless (sin UI attach)
+M.is_headless = (#vim.api.nvim_list_uis() == 0)
 
-local id = (osr.ID or ""):lower()
-local id_like = (osr.ID_LIKE or ""):lower()
+-- CI / pipelines
+M.is_ci = vim.env.CI == "true" or vim.env.GITHUB_ACTIONS == "true"
 
-M.distro_id = id
-M.distro_like = id_like
-
--- Detecciones concretas
-M.is_arch = id == "arch"
-M.is_ubuntu = id == "ubuntu"
-M.is_debian_like = (id == "debian") or (id_like:match("debian") ~= nil)
-M.is_amazon_linux = (id == "amzn") or (id_like:match("amazon") ~= nil)
-
--- Heuristica para entorno AWS (EC2, contenedores gestionados, etc.)
-M.is_aws = M.is_amazon_linux or (vim.env.AWS_EXECUTION_ENV ~= nil) or (id_like:match("aws") ~=nil)
-
--- Atajos de alto nivel
-M.is_desktop_linux = M.is_linux and not M.is_wsl and not M.is_aws
+-- Umbral bigfile en bytes (configurable por env)
+local default_bigfile = 2 * 1024 * 1024 -- 2MB por defecto
+local env_bigfile = tonumber(vim.env.NVIM_BIGFILE_THRESHOLD or "")
+M.bigfile_threshold = env_bigfile or default_bigfile
 
 return M
