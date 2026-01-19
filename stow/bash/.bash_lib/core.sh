@@ -189,7 +189,7 @@ rgf() {
 }
 
 # Lanzar/adjuntar a una sesión tmux por nombre (default: main)
-# @cmd t  Crear/adjuntar sesión tmux
+# @cmd t  Crear/adjuntar sesión tmux (y gestionar @net_if)
 t() {
   _req tmux || return 1
 
