@@ -81,7 +81,9 @@ main() {
   fi
 
   action SHELLCHECK "Lint (shellcheck)"
-  shellcheck "${files[@]}"
+  # Default a warnings+errors. Infos are often intentional in dotfiles.
+  # Run `shellcheck` manually if you want the full verbosity.
+  shellcheck -S warning "${files[@]}"
 }
 
 main
