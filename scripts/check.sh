@@ -57,6 +57,7 @@ main() {
   local -a files=()
   files+=("$REPO_ROOT"/scripts/*.sh)
   files+=("$REPO_ROOT"/stow/bash/.bash_lib/*.sh)
+  files+=("$REPO_ROOT"/stow/dotfiles/.config/dotfiles/hosts/*.sh)
 
   if [ "${#files[@]}" -eq 0 ]; then
     warn "No shell files found to check."

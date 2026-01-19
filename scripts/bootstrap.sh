@@ -69,14 +69,52 @@ BACKUP_DIR="$REPO_DIR/.backups/$TIMESTAMP"
 MANIFEST_DIR="$REPO_DIR/.manifests"
 MANIFEST_FILE="$MANIFEST_DIR/$TIMESTAMP.manifest"
 
-# Paquetes que van a $HOME
-HOME_PKGS=(bash git tmux vim)
+# Paquetes por defecto (se pueden sobreescribir por perfil de host)
+HOME_PKGS=()
+CONFIG_CORE_PKGS=()
+CONFIG_GUI_PKGS=()
+CONFIG_PKGS=()
 
-# Paquetes que van a $HOME/.config
-# - Separados en core vs GUI para poder soportar WSL/servers.
-CONFIG_CORE_PKGS=(atuin blesh lazygit mise nvim yazi)
-CONFIG_GUI_PKGS=(dunst i3 kitty picom polybar rofi)
-CONFIG_PKGS=("${CONFIG_CORE_PKGS[@]}" "${CONFIG_GUI_PKGS[@]}")
+resolve_host() {
+  if [ -n "${DOTFILES_HOST:-}" ]; then
+    printf '%s' "$DOTFILES_HOST"
+    return 0
+  fi
+
+  if command -v hostname >/dev/null 2>&1; then
+    hostname -s 2>/dev/null || hostname 2>/dev/null || true
+  fi
+}
+
+load_host_profile() {
+  local host profile_dir default_profile host_profile
+
+  host="$(resolve_host)"
+  profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
+  default_profile="$profile_dir/default.sh"
+
+  if [ -f "$default_profile" ]; then
+    # shellcheck source=/dev/null
+    source "$default_profile"
+  else
+    warn "Perfil default no encontrado: $default_profile"
+  fi
+
+  if [ -n "$host" ]; then
+    host_profile="$profile_dir/$host.sh"
+    if [ -f "$host_profile" ]; then
+      info "Cargando perfil de host: $host"
+      # shellcheck source=/dev/null
+      source "$host_profile"
+    else
+      info "Sin perfil especifico para host '$host' (uso default)"
+    fi
+  else
+    warn "No pude determinar hostname; uso perfil default"
+  fi
+
+  CONFIG_PKGS=("${CONFIG_CORE_PKGS[@]}" "${CONFIG_GUI_PKGS[@]}")
+}
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
@@ -139,11 +177,15 @@ write_manifest() {
     return 0
   fi
 
+  local host
+  host="$(resolve_host || true)"
+
   cat >"$MANIFEST_FILE" <<EOF
 # dotfiles manifest (auto-generado)
 # timestamp: $TIMESTAMP
 
 timestamp="$TIMESTAMP"
+host="${host:-}"
 home_pkgs=(${HOME_PKGS[*]})
 config_pkgs=(${CONFIG_PKGS[*]})
 backup_dir_rel=".backups/$TIMESTAMP"
@@ -221,6 +263,8 @@ main() {
     exit 1
   }
 
+  load_host_profile
+
   local include_gui=true
   if is_wsl; then
     include_gui=false
@@ -238,6 +282,7 @@ main() {
     esac
   fi
 
+  # Flags siguen pudiendo ajustar el modo GUI.
   CONFIG_PKGS=("${CONFIG_CORE_PKGS[@]}")
   if [ "$include_gui" = "true" ]; then
     CONFIG_PKGS+=("${CONFIG_GUI_PKGS[@]}")
@@ -253,6 +298,7 @@ main() {
   echo
   info "Paquetes -> $HOME: ${HOME_PKGS[*]}"
   info "Paquetes -> $HOME/.config: ${CONFIG_PKGS[*]}"
+  info "Paquete -> $HOME/.config: dotfiles (perfiles de host)"
   echo
 
   if [ "$DRY_RUN" != "true" ]; then
@@ -273,6 +319,15 @@ main() {
     action STOW "Instalando '$pkg' en $HOME"
     run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
   done
+
+  # Paquete meta (perfiles de host). Se instala siempre.
+  if [ -d "$STOW_DIR/dotfiles" ]; then
+    handle_conflicts "dotfiles" "$HOME"
+    action STOW "Instalando 'dotfiles' (bajo $HOME/.config)"
+    run_cmd stow -d "$STOW_DIR" -t "$HOME" -S dotfiles
+  else
+    warn "Paquete stow inexistente (omito): dotfiles"
+  fi
 
   # Procesar paquetes que viven bajo $HOME/.config.
   # Nota: los paquetes en stow/* suelen incluir el prefijo `.config/`, así que

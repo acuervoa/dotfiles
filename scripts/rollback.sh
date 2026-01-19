@@ -173,6 +173,45 @@ main() {
     exit 1
   }
 
+  resolve_host() {
+    if [ -n "${DOTFILES_HOST:-}" ]; then
+      printf '%s' "$DOTFILES_HOST"
+      return 0
+    fi
+
+    if command -v hostname >/dev/null 2>&1; then
+      hostname -s 2>/dev/null || hostname 2>/dev/null || true
+    fi
+  }
+
+  load_host_profile() {
+    local host profile_dir default_profile host_profile
+
+    host="$(resolve_host)"
+    profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
+    default_profile="$profile_dir/default.sh"
+
+    if [ -f "$default_profile" ]; then
+      # shellcheck source=/dev/null
+      source "$default_profile"
+    else
+      warn "Perfil default no encontrado: $default_profile"
+    fi
+
+    if [ -n "$host" ]; then
+      host_profile="$profile_dir/$host.sh"
+      if [ -f "$host_profile" ]; then
+        info "Cargando perfil de host: $host"
+        # shellcheck source=/dev/null
+        source "$host_profile"
+      else
+        info "Sin perfil especifico para host '$host' (uso default)"
+      fi
+    else
+      warn "No pude determinar hostname; uso perfil default"
+    fi
+  }
+
   local manifest=""
   if manifest="$(pick_manifest 2>/dev/null)"; then
     info "Usando manifest: $manifest"
@@ -182,7 +221,14 @@ main() {
       warn "Se encontró manifest: ignorando --core-only/--gui (usa el manifest)."
     fi
   else
-    warn "No se encontró manifest; usando listas por defecto."
+    warn "No se encontró manifest; usando perfil de host (o default)."
+
+    # Definidos por el perfil (default + host). Inicializamos para shellcheck.
+    HOME_PKGS=()
+    CONFIG_CORE_PKGS=()
+    CONFIG_GUI_PKGS=()
+
+    load_host_profile
 
     local include_gui=true
     if is_wsl; then
@@ -198,14 +244,11 @@ main() {
       esac
     fi
 
-    home_pkgs=(bash git tmux vim)
+    home_pkgs=("${HOME_PKGS[@]}")
 
-    local -a config_core_pkgs=(atuin blesh lazygit mise nvim yazi)
-    local -a config_gui_pkgs=(dunst i3 kitty picom polybar rofi)
-
-    config_pkgs=("${config_core_pkgs[@]}")
+    config_pkgs=("${CONFIG_CORE_PKGS[@]}")
     if [ "$include_gui" = "true" ]; then
-      config_pkgs+=("${config_gui_pkgs[@]}")
+      config_pkgs+=("${CONFIG_GUI_PKGS[@]}")
     fi
 
     backup_dir_rel=""
@@ -252,6 +295,12 @@ main() {
     action STOW "Desinstalando '$pkg' de $HOME"
     run_cmd stow -d "$STOW_DIR" -t "$HOME" -D "$pkg"
   done
+
+  # Paquete meta (perfiles de host)
+  if [ -d "$STOW_DIR/dotfiles" ]; then
+    action STOW "Desinstalando 'dotfiles' (bajo $HOME/.config)"
+    run_cmd stow -d "$STOW_DIR" -t "$HOME" -D dotfiles
+  fi
 
   run_cmd mkdir -p "$HOME/.config"
   for pkg in "${config_pkgs[@]}"; do
