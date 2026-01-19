@@ -11,6 +11,7 @@
 #   fhist           -> busca, pregunta, ejecuta en subshell si dices "y"
 #   fhist --live    -> ejecuta en shell (eval) si dices "y"
 # @cmd fhist  Buscar en history con fzf y ejecutar (subshell o live)
+# Nota: evitar conflicto con 't' (tmux), usa 'ts' para tmux-session
 fhist() {
   _req fzf || return 1
 

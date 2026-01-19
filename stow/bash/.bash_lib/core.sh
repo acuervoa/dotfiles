@@ -189,8 +189,8 @@ rgf() {
 }
 
 # Lanzar/adjuntar a una sesión tmux por nombre (default: main)
-# @cmd t  Crear/adjuntar sesión tmux (y gestionar @net_if)
-t() {
+# @cmd ts  Crear/adjuntar sesión tmux (y gestionar @net_if)
+ts() {
   _req tmux || return 1
 
   if [ "${1:-}" = "net-if" ]; then
