@@ -1,6 +1,9 @@
-# Dotfiles · Arch Linux · Entorno de trabajo
+# Dotfiles · Linux (Arch/Debian/Fedora/WSL2) · Entorno de trabajo
 
-Repositorio de uso diario para **Arch Linux** orientado a productividad: i3 + tmux + NeoVim, kitty, rofi, dunst, picom y polybar bajo el tema **Catppuccin Mocha**. La filosofía es mantener **rendimiento**, **estética homogénea**, **atajos consistentes** y **cambios reversibles** mediante scripts de bootstrap/rollback.
+Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, rofi, dunst, picom y polybar) bajo el tema **Catppuccin Mocha**. La filosofía es mantener **rendimiento**, **estética homogénea**, **atajos consistentes** y **cambios reversibles** mediante scripts de bootstrap/rollback.
+
+- Español (este archivo)
+- English docs: `README.en.md`
 
 ![stack](https://img.shields.io/badge/i3-4.23-blue?style=flat-square) ![tmux](https://img.shields.io/badge/tmux-3.4-green?style=flat-square) ![neovim](https://img.shields.io/badge/NeoVim-%3E%3D0.11-57A143?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
 
@@ -25,8 +28,8 @@ Repositorio de uso diario para **Arch Linux** orientado a productividad: i3 + tm
 ## Pila y highlights
 
 - **Gestión con GNU Stow**: El versionado se basa en `stow` para gestionar los symlinks de forma declarativa.
-- **Bootstrap reproducible**: `scripts/bootstrap.sh` automatiza la instalación con `stow` y crea backups timestamp en `.backups/<TS>`.
-- **Rollback automático**: `scripts/rollback.sh <timestamp|latest>` elimina los symlinks con `stow` y restaura el backup elegido.
+- **Bootstrap reproducible**: `scripts/bootstrap.sh` automatiza la instalación con `stow`, crea backups en `.backups/<TS>` (si hay conflictos) y genera un manifest en `.manifests/<TS>.manifest`.
+- **Rollback automático**: `scripts/rollback.sh [latest|<timestamp>]` elimina los symlinks con `stow -D` y restaura el backup elegido.
 - **Gestión de secretos**: Soporte para ficheros locales (ej. `~/.bashrc_local`) no versionados para información sensible.
 - **Documentación dinámica**: Script para generar `SHORTCUTS.md` a partir de los ficheros de configuración.
 - **Librería Bash modular** (`stow/bash/.bash_lib/*.sh`) con helpers para git, docker, navegación y productividad.
@@ -52,21 +55,40 @@ dotfiles/
 │   ├── rollback.sh   # Script de rollback (usa stow)
 │   └── install_deps.sh # Script de instalación de dependencias
 ├── .backups/         # Backups de configuraciones existentes
-└── pkglist-arch.txt  # Lista de paquetes para Arch Linux
+├── .manifests/       # Manifests (bootstrap/rollback)
+├── .gitmodules       # Plugins (tmux/vim) como submódulos
+├── pkglist-arch.txt  # Lista de paquetes para Arch Linux
+├── pkglist-debian.txt  # Lista de paquetes para Debian/Ubuntu
+├── pkglist-fedora.txt  # Lista de paquetes para Fedora
+└── pkglist-wsl.txt   # Lista de paquetes para WSL2 (CLI)
 ```
 
 ---
 
 ## Requisitos
 
-1.  **GNU Stow**: `sudo pacman -S stow`.
-2.  **Paquetes base**: El script `scripts/install_deps.sh` se encarga de instalar las dependencias.
+1. **GNU Stow** (y herramientas básicas): el script `scripts/install_deps.sh` instala dependencias en Arch/Debian/Fedora/WSL2.
+2. **Submódulos** (plugins tmux/vim): si clonas el repo, inicializa submódulos para traer los plugins.
 
-Para instalar los paquetes, ejecuta:
+Instalar dependencias (CLI core, recomendado para empezar):
+
 ```bash
-bash ./scripts/install_deps.sh
+bash ./scripts/install_deps.sh --core
 ```
-El script detectará tu sistema operativo y te pedirá confirmación para instalar los paquetes listados en `pkglist-arch.txt`.
+
+Instalar también entorno gráfico (solo escritorio Linux, no WSL):
+
+```bash
+bash ./scripts/install_deps.sh --all
+# o
+bash ./scripts/install_deps.sh --core --gui
+```
+
+Inicializar submódulos:
+
+```bash
+git submodule update --init --recursive
+```
 
 ---
 
@@ -74,8 +96,14 @@ El script detectará tu sistema operativo y te pedirá confirmación para instal
 
 El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups.
 
-1.  **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
-2.  **Aplicar**: `bash ./scripts/bootstrap.sh`
+1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
+2. **Aplicar** (interactivo): `bash ./scripts/bootstrap.sh`
+
+Opcional:
+- Instalar solo paquetes no-GUI (WSL/servers): `bash ./scripts/bootstrap.sh --core-only`
+- Forzar GUI (desktop): `bash ./scripts/bootstrap.sh --gui`
+- Inicializar submódulos durante el bootstrap: `bash ./scripts/bootstrap.sh --init-submodules`
+- Modo no interactivo: `bash ./scripts/bootstrap.sh --yes`
 
 **Acciones principales:**
 - **Detecta conflictos** y mueve los ficheros existentes a `.backups/<TIMESTAMP>/`.
@@ -87,8 +115,10 @@ El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups
 
 El script `rollback.sh` revierte los cambios hechos por el bootstrap.
 
-- **Último backup**: `bash ./scripts/rollback.sh latest`
-- **Backup específico**: `bash ./scripts/rollback.sh <timestamp>`
+- **Último manifest/backup**: `bash ./scripts/rollback.sh latest`
+- **Por timestamp**: `bash ./scripts/rollback.sh <timestamp>`
+- **Usando un manifest concreto**: `bash ./scripts/rollback.sh --manifest .manifests/<timestamp>.manifest`
+- **Omitir GUI (solo si NO hay manifest)**: `bash ./scripts/rollback.sh --core-only latest`
 
 **Acciones principales:**
 - **Elimina symlinks** con `stow -D`.

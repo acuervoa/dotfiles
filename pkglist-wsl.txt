@@ -1,0 +1,24 @@
+# Core (CLI) — WSL2-friendly
+# This list is intentionally GUI-free.
+
+git
+stow
+bash
+curl
+wget
+rsync
+unzip
+gzip
+tmux
+neovim
+fzf
+ripgrep
+fd-find
+
+# QoL
+bat
+zoxide
+trash-cli
+
+# WSL utilities (Ubuntu/Debian)
+# wslu

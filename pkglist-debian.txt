@@ -1,0 +1,36 @@
+# Core (CLI)
+# Debian/Ubuntu package names
+git
+stow
+bash
+curl
+wget
+rsync
+unzip
+gzip
+tmux
+neovim
+fzf
+ripgrep
+fd-find
+
+# Quality-of-life (CLI)
+bat
+zoxide
+trash-cli
+
+# Clipboard (optional, may not exist on minimal installs)
+wl-clipboard
+xclip
+
+# Docker (optional; Debian/Ubuntu naming differs by release)
+docker.io
+docker-compose-plugin
+
+# GUI (desktop-only)
+# i3-wm
+# kitty
+# rofi
+# polybar
+# dunst
+# picom

@@ -1,4 +1,5 @@
 # misc.sh - utilidades varias
+# shellcheck shell=bash
 
 # buscar en historial con fzf y (opcionalmente) ejecutar
 # - Si no hay historial disponible, aborta limpio.

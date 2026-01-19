@@ -3,9 +3,9 @@
 ¡Gracias por contribuir! Este entorno busca **paridad de atajos**, **rendimiento** y **mantenibilidad**.
 
 ## Requisitos locales
-- Arch Linux (o similar) y Bash.
-- Herramientas: `git`, `bash`, `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `trash-cli`, `tmux`, `neovim`, `docker`.
-- Dev helpers (opcionales pero recomendados): `shellcheck`, `shfmt` (aur/extra), `prettier` para `.md`.
+- Linux (Arch/Debian/Fedora) o WSL2 + Bash.
+- Herramientas: `git`, `bash`, `stow`, `fzf`, `ripgrep`, `tmux`, `neovim`.
+- Dev helpers (opcionales pero recomendados): `shellcheck`, `shfmt`.
 
 ## Flujo de trabajo
 1. Crea rama desde `main`:
@@ -15,9 +15,12 @@
 2. Cambios mínimos y comentados. Mantén la **paridad de atajos** (i3 ↔ tmux ↔ (Neo)Vim ↔ kitty).
 3. Ejecuta **checks** locales (ver abajo).
 4. Añade/actualiza documentación si procede:
-   - `CHANGELOG.md` (entrada con fecha y secciones Añadido/Cambiado/Corregido/Eliminado).
-   - `README.md`, `README-BOOTSTRAP.md`, `SHORTCUTS.md`.
-   - Este `CONTRIBUTING.md` si afecta al proceso.
+    - `CHANGELOG.md` (entrada con fecha y secciones Añadido/Cambiado/Corregido/Eliminado).
+    - Docs ES: `README.md`, `README-BOOTSTRAP.md`.
+    - Docs EN: `README.en.md`, `README-BOOTSTRAP.en.md`.
+    - `SHORTCUTS.md` (si cambian bindings/atajos).
+    - Este `CONTRIBUTING.md` si afecta al proceso.
+
 5. Abre PR con descripción clara (qué y por qué).
 
 ## Estilo de commits
@@ -52,9 +55,10 @@ Preferimos [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/
 - Navegación cruzada: `Ctrl+h/j/k/l` entre vim/tmux (plugin/vinculación).
 - Docker compose: `docps` y `dlogs` deben funcionar con v1/v2.
 - Pruebas manuales recomendadas:
-  - `bash ./scripts/bootstrap.sh` → verificar symlinks creados y manifest generado en `.manifests/<TS>.manifest`.
-  - Editar un dotfile enlazado (p.ej. añadir comentario en `~/.bashrc`) y ejecutar `bash ./scripts/rollback.sh --manifest .manifests/<TS>.manifest <TS>` para comprobar que los symlinks desaparecen y se restaura el backup.
-  - Repetir el rollback con un manifest inexistente para validar que el script avisa y no borra enlaces.
+  - `bash ./scripts/bootstrap.sh --dry-run` → revisar acciones.
+  - `bash ./scripts/bootstrap.sh` → verificar symlinks creados y manifest en `.manifests/<TS>.manifest`.
+  - Editar un dotfile enlazado (p.ej. `~/.bashrc`) y ejecutar `bash ./scripts/rollback.sh --manifest .manifests/<TS>.manifest`.
+  - Probar `bash ./scripts/rollback.sh --dry-run latest` para validar que lista acciones sin tocar nada.
 
 ## Checklist de PR
 - [ ] Cambios mínimos y compatibles con Arch estable.

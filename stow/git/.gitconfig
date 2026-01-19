@@ -1,6 +1,8 @@
-[user]
-    name = Andres Cuervo
-    email = kuerbo@gmail.com
+# Nota: define tu identidad en ~/.gitconfig_local (no versionado)
+# Ejemplo:
+#   [user]
+#       name = Tu Nombre
+#       email = tu@email.com
 
 [init]
     defaultBranch = main
@@ -10,7 +12,9 @@
 
 [core]
     editor = nvim
-    pager = delta
+    # Si tienes `delta`, puedes activarlo en ~/.gitconfig_local:
+    #   [core]
+    #       pager = delta
     hooksPath = ~/.git-hooks
 
 [color]
@@ -44,14 +48,6 @@
 [diff]
     renames = true
     mnemonicPrefix = true
-
-[interactive]
-    diffFilter = delta --color-only --features=interactive
-
-[delta]
-    features = side-by-side line-numbers decorations
-    navigate = true
-    whitespace-error-style = 22 reverse
 
 [credential]
 	useHttpPath = true

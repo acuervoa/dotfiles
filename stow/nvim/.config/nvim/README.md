@@ -1,25 +1,18 @@
-# dotfiles/config/nvim
+# Neovim config (`stow/nvim`)
 
-<a href="https://dotfyle.com/acuervoa/dotfiles-config-nvim"><img src="https://dotfyle.com/acuervoa/dotfiles-config-nvim/badges/plugins?style=flat" /></a>
-<a href="https://dotfyle.com/acuervoa/dotfiles-config-nvim"><img src="https://dotfyle.com/acuervoa/dotfiles-config-nvim/badges/leaderkey?style=flat" /></a>
-<a href="https://dotfyle.com/acuervoa/dotfiles-config-nvim"><img src="https://dotfyle.com/acuervoa/dotfiles-config-nvim/badges/plugin-manager?style=flat" /></a>
+> Requiere Neovim 0.11+ (API nueva de LSP: `vim.lsp.config` / `vim.lsp.enable`).
 
+Este directorio es parte del repo de dotfiles y normalmente se despliega con
+`stow` (ver `README.md` en la raíz).
 
-## Install Instructions
+## Instalación
 
- > Install requires Neovim 0.11+. (new API LSP: vim.lsp.config / vim.lsp.enable)
- > Always review the code before installing a configuration.
- 
-Clone the repository and install the plugins:
+- Vía dotfiles (recomendado): usa `bash ./scripts/bootstrap.sh`.
+- Uso standalone (para probar sin tocar tu `~/.config/nvim`):
 
 ```sh
-git clone git@github.com:acuervoa/dotfiles ~/.config/acuervoa/dotfiles
-```
-
-Open Neovim with this config:
-
-```sh
-NVIM_APPNAME=acuervoa/dotfiles/config/nvim nvim
+git clone https://github.com/<tu-usuario>/dotfiles.git ~/dotfiles
+NVIM_APPNAME=dotfiles-test nvim --clean -u ~/dotfiles/stow/nvim/.config/nvim/init.lua
 ```
 
 ## Usage

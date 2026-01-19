@@ -190,8 +190,10 @@ if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
   ble-attach
 fi
 
-# opencode
-export PATH=/home/acuervo/.opencode/bin:$PATH
+# opencode (si existe)
+if [ -d "$HOME/.opencode/bin" ]; then
+  PATH="$HOME/.opencode/bin:$PATH"
+fi
 
 # Cargar configuraciones locales si existen
 if [ -f "${HOME}/.bashrc_local" ]; then

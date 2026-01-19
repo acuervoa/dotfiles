@@ -1,0 +1,211 @@
+[submodule "stow/tmux/.tmux/plugins/extrakto"]
+	path = stow/tmux/.tmux/plugins/extrakto
+	url = https://github.com/laktak/extrakto.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux"]
+	path = stow/tmux/.tmux/plugins/tmux
+	url = https://github.com/catppuccin/tmux.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-battery"]
+	path = stow/tmux/.tmux/plugins/tmux-battery
+	url = https://github.com/tmux-plugins/tmux-battery.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-continuum"]
+	path = stow/tmux/.tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-cpu"]
+	path = stow/tmux/.tmux/plugins/tmux-cpu
+	url = https://github.com/tmux-plugins/tmux-cpu.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-fzf"]
+	path = stow/tmux/.tmux/plugins/tmux-fzf
+	url = https://github.com/sainnhe/tmux-fzf.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-menus"]
+	path = stow/tmux/.tmux/plugins/tmux-menus
+	url = https://github.com/jaclu/tmux-menus.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-net-speed"]
+	path = stow/tmux/.tmux/plugins/tmux-net-speed
+	url = https://github.com/tmux-plugins/tmux-net-speed.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-prefix-highlight"]
+	path = stow/tmux/.tmux/plugins/tmux-prefix-highlight
+	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-resurrect"]
+	path = stow/tmux/.tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-sensible"]
+	path = stow/tmux/.tmux/plugins/tmux-sensible
+	url = https://github.com/tmux-plugins/tmux-sensible.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-sessionx"]
+	path = stow/tmux/.tmux/plugins/tmux-sessionx
+	url = https://github.com/omerxx/tmux-sessionx.git
+
+[submodule "stow/tmux/.tmux/plugins/tmux-yank"]
+	path = stow/tmux/.tmux/plugins/tmux-yank
+	url = https://github.com/tmux-plugins/tmux-yank.git
+
+[submodule "stow/tmux/.tmux/plugins/tokyo-night-tmux"]
+	path = stow/tmux/.tmux/plugins/tokyo-night-tmux
+	url = https://github.com/janoamaral/tokyo-night-tmux.git
+
+[submodule "stow/tmux/.tmux/plugins/tpm"]
+	path = stow/tmux/.tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm.git
+
+[submodule "stow/tmux/.tmux/plugins/vim-tmux-navigator"]
+	path = stow/tmux/.tmux/plugins/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator.git
+
+[submodule "stow/vim/.vim/plugged/ale"]
+	path = stow/vim/.vim/plugged/ale
+	url = https://github.com/dense-analysis/ale.git
+
+[submodule "stow/vim/.vim/plugged/auto-pairs"]
+	path = stow/vim/.vim/plugged/auto-pairs
+	url = https://github.com/jiangmiao/auto-pairs.git
+
+[submodule "stow/vim/.vim/plugged/coc.nvim"]
+	path = stow/vim/.vim/plugged/coc.nvim
+	url = https://github.com/neoclide/coc.nvim.git
+
+[submodule "stow/vim/.vim/plugged/dracula"]
+	path = stow/vim/.vim/plugged/dracula
+	url = https://github.com/dracula/vim.git
+
+[submodule "stow/vim/.vim/plugged/emmet-vim"]
+	path = stow/vim/.vim/plugged/emmet-vim
+	url = https://github.com/mattn/emmet-vim.git
+
+[submodule "stow/vim/.vim/plugged/fern-renderer-nerdfont.vim"]
+	path = stow/vim/.vim/plugged/fern-renderer-nerdfont.vim
+	url = https://github.com/lambdalisue/fern-renderer-nerdfont.vim.git
+
+[submodule "stow/vim/.vim/plugged/fern.vim"]
+	path = stow/vim/.vim/plugged/fern.vim
+	url = https://github.com/lambdalisue/fern.vim.git
+
+[submodule "stow/vim/.vim/plugged/fzf"]
+	path = stow/vim/.vim/plugged/fzf
+	url = https://github.com/junegunn/fzf.git
+
+[submodule "stow/vim/.vim/plugged/fzf.vim"]
+	path = stow/vim/.vim/plugged/fzf.vim
+	url = https://github.com/junegunn/fzf.vim.git
+
+[submodule "stow/vim/.vim/plugged/gruvbox"]
+	path = stow/vim/.vim/plugged/gruvbox
+	url = https://github.com/morhetz/gruvbox.git
+
+[submodule "stow/vim/.vim/plugged/indentLine"]
+	path = stow/vim/.vim/plugged/indentLine
+	url = https://github.com/Yggdroot/indentLine.git
+
+[submodule "stow/vim/.vim/plugged/lightline.vim"]
+	path = stow/vim/.vim/plugged/lightline.vim
+	url = https://github.com/itchyny/lightline.vim.git
+
+[submodule "stow/vim/.vim/plugged/nerdtree"]
+	path = stow/vim/.vim/plugged/nerdtree
+	url = https://github.com/preservim/nerdtree.git
+
+[submodule "stow/vim/.vim/plugged/php.vim"]
+	path = stow/vim/.vim/plugged/php.vim
+	url = https://github.com/StanAngeloff/php.vim.git
+
+[submodule "stow/vim/.vim/plugged/rust.vim"]
+	path = stow/vim/.vim/plugged/rust.vim
+	url = https://github.com/rust-lang/rust.vim.git
+
+[submodule "stow/vim/.vim/plugged/typescript-vim"]
+	path = stow/vim/.vim/plugged/typescript-vim
+	url = https://github.com/leafgarland/typescript-vim.git
+
+[submodule "stow/vim/.vim/plugged/vim-addon-mw-utils"]
+	path = stow/vim/.vim/plugged/vim-addon-mw-utils
+	url = https://github.com/MarcWeber/vim-addon-mw-utils.git
+
+[submodule "stow/vim/.vim/plugged/vim-code-dark"]
+	path = stow/vim/.vim/plugged/vim-code-dark
+	url = https://github.com/tomasiser/vim-code-dark.git
+
+[submodule "stow/vim/.vim/plugged/vim-colors-solarized"]
+	path = stow/vim/.vim/plugged/vim-colors-solarized
+	url = https://github.com/altercation/vim-colors-solarized.git
+
+[submodule "stow/vim/.vim/plugged/vim-commentary"]
+	path = stow/vim/.vim/plugged/vim-commentary
+	url = https://github.com/tpope/vim-commentary.git
+
+[submodule "stow/vim/.vim/plugged/vim-devicons"]
+	path = stow/vim/.vim/plugged/vim-devicons
+	url = https://github.com/ryanoasis/vim-devicons.git
+
+[submodule "stow/vim/.vim/plugged/vim-easymotion"]
+	path = stow/vim/.vim/plugged/vim-easymotion
+	url = https://github.com/easymotion/vim-easymotion.git
+
+[submodule "stow/vim/.vim/plugged/vim-floaterm"]
+	path = stow/vim/.vim/plugged/vim-floaterm
+	url = https://github.com/voldikss/vim-floaterm.git
+
+[submodule "stow/vim/.vim/plugged/vim-fugitive"]
+	path = stow/vim/.vim/plugged/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+
+[submodule "stow/vim/.vim/plugged/vim-gitgutter"]
+	path = stow/vim/.vim/plugged/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter.git
+
+[submodule "stow/vim/.vim/plugged/vim-go"]
+	path = stow/vim/.vim/plugged/vim-go
+	url = https://github.com/fatih/vim-go.git
+
+[submodule "stow/vim/.vim/plugged/vim-highlightedyank"]
+	path = stow/vim/.vim/plugged/vim-highlightedyank
+	url = https://github.com/machakann/vim-highlightedyank.git
+
+[submodule "stow/vim/.vim/plugged/vim-javascript"]
+	path = stow/vim/.vim/plugged/vim-javascript
+	url = https://github.com/pangloss/vim-javascript.git
+
+[submodule "stow/vim/.vim/plugged/vim-markdown"]
+	path = stow/vim/.vim/plugged/vim-markdown
+	url = https://github.com/plasticboy/vim-markdown.git
+
+[submodule "stow/vim/.vim/plugged/vim-rhubarb"]
+	path = stow/vim/.vim/plugged/vim-rhubarb
+	url = https://github.com/tpope/vim-rhubarb.git
+
+[submodule "stow/vim/.vim/plugged/vim-snipmate"]
+	path = stow/vim/.vim/plugged/vim-snipmate
+	url = https://github.com/garbas/vim-snipmate.git
+
+[submodule "stow/vim/.vim/plugged/vim-snippets"]
+	path = stow/vim/.vim/plugged/vim-snippets
+	url = https://github.com/honza/vim-snippets.git
+
+[submodule "stow/vim/.vim/plugged/vim-surround"]
+	path = stow/vim/.vim/plugged/vim-surround
+	url = https://github.com/tpope/vim-surround.git
+
+[submodule "stow/vim/.vim/plugged/vim-tmux-navigator"]
+	path = stow/vim/.vim/plugged/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator.git
+
+[submodule "stow/vim/.vim/plugged/vim-which-key"]
+	path = stow/vim/.vim/plugged/vim-which-key
+	url = https://github.com/liuchengxu/vim-which-key.git
+
+[submodule "stow/vim/.vim/plugged/vimrc"]
+	path = stow/vim/.vim/plugged/vimrc
+	url = https://github.com/amix/vimrc.git
+
+[submodule "stow/vim/.vim/plugged/vimspector"]
+	path = stow/vim/.vim/plugged/vimspector
+	url = https://github.com/puremourning/vimspector.git

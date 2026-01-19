@@ -1,4 +1,5 @@
 # nav.sh - navegación de ficheros y clipboard
+# shellcheck shell=bash
 
 ## Buscar archivo/directorio y abrir
 # - No peta si no eliges nada

@@ -1,4 +1,5 @@
 # ~/.bash_lib/bash_lib.sh
+# shellcheck shell=bash
 # Punto de entrada de bash_lib
 
 # Directorio base de módulos.

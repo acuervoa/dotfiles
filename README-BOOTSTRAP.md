@@ -1,27 +1,14 @@
-# README-BOOTSTRAP
+# README-BOOTSTRAP (ES)
 
-Guía práctica para desplegar estos **dotfiles** en Arch Linux (o derivadas) mediante `scripts/bootstrap.sh`.
-Incluye los paquetes recomendados, el flujo de symlinks/backup/manifest, validaciones y un plan B manual con `stow`/`ln -s`.
+Guía práctica para desplegar estos **dotfiles** en una instalación limpia.
 
-## 1. Paquetes base (pacman)
+- Linux desktop (Arch/Debian/Fedora)
+- WSL2 (modo CLI; sin i3/polybar/picom)
 
-```bash
-sudo pacman -S --needed git stow bash fzf ripgrep fd bat eza zoxide zsh \
-  wl-clipboard xclip trash-cli docker docker-compose bc tmux neovim i3-wm kitty \
-  rofi polybar dunst picom lazygit pamixer playerctl brightnessctl bluez bluez-utils \
-  python rsync unzip gzip curl wget
-```
+> Importante: `scripts/bootstrap.sh` y `scripts/rollback.sh` modifican `$HOME`.
+> Haz `--dry-run` antes y entiende qué va a mover a `.backups/`.
 
-> Añade tu compositor favorito o paquetes adicionales (p.ej. `pipewire`, `network-manager-applet`) según tu instalación.
-> Para animaciones en picom necesitas una build con `--experimental-backends`; si no lo tienes, edita `config/picom/picom.conf`
-> y pon `animations = false` tras el bootstrap.
-
-### Extras sugeridos
-- **Fuentes:** `ttf-meslo-nerd`, `noto-fonts-emoji`.
-- **Gestión de versiones:** `mise` (ver `config/mise/config.toml`).
-- **Bluetooth:** `bluez` + `bluez-utils` para los módulos Polybar (incluidos arriba).
-
-## 2. Clonar el repo
+## 1) Clonar el repo
 
 ```bash
 cd ~
@@ -29,92 +16,133 @@ git clone https://github.com/<tu-usuario>/dotfiles.git
 cd dotfiles
 ```
 
-## 3. Bootstrap automatizado
+### Submódulos (plugins tmux/vim)
 
-El script enlaza Bash, Git, tmux, NeoVim/Vim, Kitty, i3, polybar, rofi, picom, dunst, lazygit, atuin, blesh, mise, yazi, etc.,
-creando copias de seguridad previas en `<repo>/.backups/<TS>` y registrando cada symlink en `<repo>/.manifests/<TS>.manifest`.
+Este repo incluye plugins de tmux/vim como **submódulos**. Tras clonar:
 
 ```bash
-cd ~/dotfiles
+git submodule update --init --recursive
+```
+
+(Alternativa: `bash ./scripts/bootstrap.sh --init-submodules`.)
+
+## 2) Instalar dependencias (multi-distro)
+
+El script `scripts/install_deps.sh` detecta Arch/Debian/Fedora y usa un pkglist
+por distro:
+
+- `pkglist-arch.txt`
+- `pkglist-debian.txt`
+- `pkglist-fedora.txt`
+- `pkglist-wsl.txt`
+
+### Core (CLI) — recomendado para empezar
+
+```bash
+bash ./scripts/install_deps.sh --core
+```
+
+### Core + GUI (solo desktop Linux, no WSL)
+
+```bash
+bash ./scripts/install_deps.sh --all
+# o
+bash ./scripts/install_deps.sh --core --gui
+```
+
+Tips:
+- En WSL2 el script fuerza `--core`.
+- Si algún paquete no existe en tu distro/release, el script lo reporta como
+  “fallido” para que lo instales o ajustes el pkglist.
+
+## 3) Bootstrap (Stow + backup + manifest)
+
+Siempre empieza con simulación:
+
+```bash
+bash ./scripts/bootstrap.sh --dry-run
+```
+
+Aplicar (interactivo):
+
+```bash
 bash ./scripts/bootstrap.sh
 ```
 
-El script:
-1. Detecta el directorio del repo a partir de la ubicación del script.
-2. Para cada archivo/dir enlazado, mueve el destino existente al backup antes de crear el symlink.
-3. Crea enlaces simbólicos hacia:
-   - `bash/*` → `~/.bashrc`, `~/.bash_profile`, `~/.bash_lib`, etc.
-   - `config/*` → `~/.config/{atuin,blesh,dunst,i3,kitty,lazygit,mise,nvim,picom,polybar,rofi,yazi}`.
-   - `git/gitconfig`, `git/gitalias`, `git/git-hooks`.
-   - `tmux/tmux.conf`, `tmux/`.
-   - `vim/vimrc`, `vim/`, `vim/vim-tmp`.
-4. Informa de la ruta del backup generado o avisa si no hizo falta copiar nada.
+El bootstrap:
+- Detecta conflictos (targets existentes que no son symlinks)
+- Mueve esos archivos a `.backups/<TS>/`
+- Crea symlinks con `stow`
+- Genera `.manifests/<TS>.manifest`
 
-> Los backups son carpetas completas que puedes restaurar con `scripts/rollback.sh` (ver sección 5).
+Opciones útiles:
+- `--core-only` para omitir GUI (WSL/servers)
+- `--gui` para forzar GUI (desktop)
+- `--yes` para no preguntar confirmación
+- `--init-submodules` para inicializar submódulos
 
-## 4. Validaciones rápidas
+## 4) Después del bootstrap
+
+- **tmux**: abre `tmux` y luego `prefix + I` para instalar plugins vía TPM.
+- **Neovim**: abre `nvim` y ejecuta `:Lazy sync` / `:Mason`.
+- **mise** (si lo usas): `mise install`.
+
+## 5) Validaciones rápidas
 
 ```bash
-# Bash + librería modular
-source ~/.bashrc
-for lib in ~/.bash_lib/*.sh; do bash -n "$lib" && . "$lib"; done
-
 # Symlinks críticos
 for p in \
-  ~/.config/{kitty/kitty.conf,lazygit/config.yml,polybar/config.ini,picom/picom.conf,i3/config,dunst/dunstrc,rofi/config.rasi,nvim} \
+  ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi,nvim} \
   ~/.bashrc ~/.gitconfig ~/.tmux.conf ~/.vimrc; do
   [ -L "$p" ] && echo "OK -> $(readlink -f "$p")" || echo "MISSING $p"
 done
+
+# Neovim carga headless
+nvim --headless "+checkhealth" +qa
 ```
 
-## 5. Rollback
+## 6) Rollback
 
-Todos los backups siguen el patrón `<repo>/.backups/YYYYmmdd_HHMMSS` (o `~/.dotfiles_backup_*` en versiones antiguas). Para restaurar el último:
+Restaurar el último backup/manifest:
 
 ```bash
-bash ./scripts/rollback.sh
+bash ./scripts/rollback.sh latest
 ```
 
-O bien pasa la ruta concreta del backup que quieras reaplicar:
+Restaurar por timestamp:
 
 ```bash
-bash ./scripts/rollback.sh ~/.dotfiles_backup_20250101_120000
+bash ./scripts/rollback.sh <timestamp>
 ```
 
-`rollback.sh` intenta resolver el manifest `./.manifests/<TS>.manifest` para eliminar los symlinks creados por el bootstrap antes de restaurar. Si el manifest no existe (p.ej. backups muy antiguos), puedes pasarlo a mano con `--manifest /ruta/al/archivo`; de lo contrario tendrás que borrar los enlaces manualmente.
-
-`rollback.sh` usa `rsync` con `--backup-dir` para guardar en `~/.dotfiles_rollback_conflicts_<TS>` cualquier archivo actual que vaya a sobrescribir.
-
-## 6. Plan B (sin script)
-
-Si prefieres hacerlo a mano:
+Usar un manifest específico:
 
 ```bash
-cd ~/dotfiles
-for f in bash/bashrc bash/bash_profile bash/profile bash/xprofile bash/bash_aliases bash/bash_functions; do
-  base=$(basename "$f"); [ -f "$HOME/.${base}" ] && cp -a "$HOME/.${base}" "$HOME/.${base}.bak"
-  ln -sfn "$PWD/$f" "$HOME/.${base}"
-done
-ln -sfn "$PWD/bash/bash_lib" "$HOME/.bash_lib"
-ln -sfn "$PWD/git/gitconfig" "$HOME/.gitconfig"
-ln -sfn "$PWD/git/gitalias" "$HOME/.gitalias"
-ln -sfn "$PWD/git/git-hooks" "$HOME/.git-hooks"
-ln -sfn "$PWD/tmux/tmux.conf" "$HOME/.tmux.conf"
-ln -sfn "$PWD/tmux/tmux" "$HOME/.tmux"
-ln -sfn "$PWD/vim/vimrc" "$HOME/.vimrc"
-ln -sfn "$PWD/vim/vim" "$HOME/.vim"
-ln -sfn "$PWD/vim/vim-tmp" "$HOME/.vim-tmp"
-
-for pkg in atuin blesh dunst i3 kitty lazygit mise nvim picom polybar rofi yazi; do
-  mkdir -p "$HOME/.config/$pkg"
-  stow -vt "$HOME/.config" "config/$pkg" -S
-done
+bash ./scripts/rollback.sh --manifest .manifests/<timestamp>.manifest
 ```
 
-## 7. Después del bootstrap
+Opciones útiles:
+- `--dry-run` para ver acciones sin tocar nada
+- `--core-only` para omitir GUI (sin manifest)
+- `--gui` para forzar GUI (sin manifest)
+- `--yes` para no preguntar confirmación
 
-- `mise install` para instalar los runtimes declarados en `config/mise/config.toml`.
-- `direnv allow` en los proyectos que lo usen (el hook ya está en `~/.bashrc`).
-- `tmux` + `prefix + I` para instalar los plugins de TPM.
-- `nvim` → `:Lazy sync` / `:Mason` para descargar plugins y toolchains.
-- Ejecuta `polybar/launch.sh`, `picom --config ~/.config/picom/picom.conf` o reinicia i3 para aplicar la parte gráfica.
+Rollback:
+- Desinstala paquetes con `stow -D`
+- Restaura `.backups/<TS>/` con `rsync` (guardando conflictos en
+  `~/.dotfiles_rollback_conflicts_<TS>`)
+
+## 7) Plan B (manual con stow)
+
+Si prefieres no usar scripts:
+
+```bash
+# $HOME
+stow -d stow -t "$HOME" -S bash git tmux vim
+
+# $HOME/.config
+mkdir -p "$HOME/.config"
+stow -d stow -t "$HOME/.config" -S atuin blesh dunst i3 kitty lazygit mise nvim picom polybar rofi yazi
+```
+
+> Nota: el plan B no crea backups/manifest automáticamente.

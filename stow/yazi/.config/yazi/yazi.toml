@@ -45,11 +45,11 @@ tmux_win = [
 ]
 
 tmux_vsplit = [
-  { run = 'tmux split-window -v -c "$P"D" "nvim \"$@\""', orphan = true, desc = "nvim vsplit", for = "unix" }
+  { run = 'tmux split-window -v -c "$PWD" "nvim \"$@\""', orphan = true, desc = "nvim vsplit", for = "unix" }
 ]
 
 tmux_hsplit = [
-  { run = 'tmux split-window -h -c "$P"D" "nvim \"$@\""', orphan = true, desc = "nvim vsplit", for = "unix" }
+  { run = 'tmux split-window -h -c "$PWD" "nvim \"$@\""', orphan = true, desc = "nvim hsplit", for = "unix" }
 ]
 
 extract = [

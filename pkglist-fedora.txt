@@ -1,4 +1,5 @@
 # Core (CLI)
+# Fedora package names
 git
 stow
 bash
@@ -7,17 +8,16 @@ wget
 rsync
 unzip
 gzip
-fzf
-ripgrep
-fd
-bat
-eza
-zoxide
-trash-cli
-bc
 tmux
 neovim
-lazygit
+fzf
+ripgrep
+fd-find
+
+# Quality-of-life (CLI)
+bat
+zoxide
+trash-cli
 
 # Clipboard
 wl-clipboard
@@ -28,9 +28,9 @@ docker
 docker-compose
 
 # GUI (desktop-only)
-i3-wm
-kitty
-rofi
-polybar
-dunst
-picom
+# i3
+# kitty
+# rofi
+# polybar
+# dunst
+# picom

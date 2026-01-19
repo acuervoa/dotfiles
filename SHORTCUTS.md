@@ -338,50 +338,49 @@
 | `trash` | `bash/bash_lib/core.sh` | Envía archivos a la papelera usando `trash-put`. |
 | `redo` | `bash/bash_lib/core.sh` | Repite el penúltimo comando del historial (evitando bucles). |
 | `_have_compose` | `bash/bash_lib/docker.sh` | Comprueba disponibilidad de `docker compose` o `docker-compose`. |
-| `_docker_compose` | `bash/bash_lib/docker.sh` | Ejecuta `docker compose` usando v1 o v2 según disponibilidad. |
-| `_cd_repo_root_if_compose` | `bash/bash_lib/docker.sh` | Cambia a la raíz del repo si contiene `docker-compose.yml`. |
-| `docps` | `bash/bash_lib/docker.sh` | Lista servicios activos con `docker compose ps`. |
-| `dlogs` | `bash/bash_lib/docker.sh` | Selecciona servicio con `fzf` y hace `logs -f` tail 200. |
-| `dsh` | `bash/bash_lib/docker.sh` | Abre shell interactiva (`bash`/`sh`) en servicio en ejecución. |
-| `dclean` | `bash/bash_lib/docker.sh` | Ejecuta `docker system prune` tras confirmación explícita. |
-| `fo` | `bash/bash_lib/nav.sh` | Busca archivos/dirs con `fd` + `fzf`, abre o `cd`. |
-| `cdf` | `bash/bash_lib/nav.sh` | Navega a directorios recientes vía `zoxide`. |
-| `take` | `bash/bash_lib/nav.sh` | `mkdir -p` + `cd` en una sola orden. |
-| `extract` | `bash/bash_lib/nav.sh` | Descomprime archivo según extensión (tar, zip, 7z, etc.). |
-| `cb` | `bash/bash_lib/nav.sh` | Copia entrada (stdin/args/archivo) al portapapeles (wl-copy/xclip/pbcopy). |
-| `_git_root_or_die` | `bash/bash_lib/git.sh` | Asegura que se está dentro de un repo git. |
-| `_git_main_branch` | `bash/bash_lib/git.sh` | Detecta rama principal (`main/master/origin/HEAD`). |
-| `_git_switch` | `bash/bash_lib/git.sh` | Cambia de rama usando `git switch` o `checkout`. |
-| `_git_switch_new` | `bash/bash_lib/git.sh` | Crea y cambia a nueva rama desde ref dada. |
-| `grt` | `bash/bash_lib/git.sh` | Hace `cd` a la raíz del repo. |
-| `gbr` | `bash/bash_lib/git.sh` | Selecciona rama (local/remota) con `fzf`, crea tracking si hace falta. |
-| `gstaged` | `bash/bash_lib/git.sh` | Muestra diff staged (color). |
-| `gundo` | `bash/bash_lib/git.sh` | Reset soft del último commit con confirmación. |
-| `gcof` | `bash/bash_lib/git.sh` | Cambia de rama local con preview de historial. |
-| `gclean` | `bash/bash_lib/git.sh` | Borra ramas locales mergeadas tras confirmar. |
-| `watchdiff` | `bash/bash_lib/git.sh` | Monitoriza status/diff en loop cada 2s. |
-| `checkpoint` | `bash/bash_lib/git.sh` | Guarda stash con mensaje legible (incluye untracked). |
-| `wip` | `bash/bash_lib/git.sh` | Crea commit WIP con timestamp (tras `git add -A`). |
-| `fixup` | `bash/bash_lib/git.sh` | Genera `commit --fixup` contra `HEAD`. |
-| `recent` | `bash/bash_lib/git.sh` | Selecciona archivo modificado recientemente y lo abre. |
-| `gp` | `bash/bash_lib/git.sh` | Push con confirmación y creación de upstream si falta. |
-| `br` | `bash/bash_lib/git.sh` | Lista ramas (locales/remotas) ordenadas por actividad. |
-| `fhist` | `bash/bash_lib/misc.sh` | Navega historial con `fzf` y permite re-ejecutar. |
-| `todo` | `bash/bash_lib/misc.sh` | Lista o añade entradas en `~/.todo.cli.txt`. |
-| `bench` | `bash/bash_lib/misc.sh` | Cronometra ejecución de un comando (ms). |
-| `envswap` | `bash/bash_lib/misc.sh` | Lista/activa `.env.<nombre>` con backup y permisos 600. |
-| `r` | `bash/bash_lib/misc.sh` | Edita el último comando y lo ejecuta opcionalmente en shell actual. |
-| `ports` | `bash/bash_lib/misc.sh` | Lista puertos en escucha (via `ss` o `lsof`). |
-| `topme` | `bash/bash_lib/misc.sh` | Filtra procesos relevantes (php/node/docker…) por CPU. |
-| `tt` | `bash/bash_lib/misc.sh` | Temporizador interactivo simple. |
-| `move_to_end` | `bash/bashrc` | Reordena `$PATH` enviando ruta indicada al final. |
+| `_docker_compose` | `stow/bash/.bash_lib/docker.sh` | Ejecuta `docker compose` usando v1 o v2 según disponibilidad. |
+| `_cd_repo_root_if_compose` | `stow/bash/.bash_lib/docker.sh` | Cambia a la raíz del repo si contiene `docker-compose.yml`. |
+| `docps` | `stow/bash/.bash_lib/docker.sh` | Lista servicios activos con `docker compose ps`. |
+| `dlogs` | `stow/bash/.bash_lib/docker.sh` | Selecciona servicio con `fzf` y hace `logs -f` tail 200. |
+| `dsh` | `stow/bash/.bash_lib/docker.sh` | Abre shell interactiva (`bash`/`sh`) en servicio en ejecución. |
+| `dclean` | `stow/bash/.bash_lib/docker.sh` | Ejecuta `docker system prune` tras confirmación explícita. |
+| `fo` | `stow/bash/.bash_lib/nav.sh` | Busca archivos/dirs con `fd` + `fzf`, abre o `cd`. |
+| `cdf` | `stow/bash/.bash_lib/nav.sh` | Navega a directorios recientes vía `zoxide`. |
+| `take` | `stow/bash/.bash_lib/nav.sh` | `mkdir -p` + `cd` en una sola orden. |
+| `extract` | `stow/bash/.bash_lib/nav.sh` | Descomprime archivo según extensión (tar, zip, 7z, etc.). |
+| `cb` | `stow/bash/.bash_lib/nav.sh` | Copia entrada (stdin/args/archivo) al portapapeles (wl-copy/xclip/pbcopy). |
+| `_git_root_or_die` | `stow/bash/.bash_lib/git.sh` | Asegura que se está dentro de un repo git. |
+| `_git_main_branch` | `stow/bash/.bash_lib/git.sh` | Detecta rama principal (`main/master/origin/HEAD`). |
+| `_git_switch` | `stow/bash/.bash_lib/git.sh` | Cambia de rama usando `git switch` o `checkout`. |
+| `_git_switch_new` | `stow/bash/.bash_lib/git.sh` | Crea y cambia a nueva rama desde ref dada. |
+| `grt` | `stow/bash/.bash_lib/git.sh` | Hace `cd` a la raíz del repo. |
+| `gbr` | `stow/bash/.bash_lib/git.sh` | Selecciona rama (local/remota) con `fzf`, crea tracking si hace falta. |
+| `gstaged` | `stow/bash/.bash_lib/git.sh` | Muestra diff staged (color). |
+| `gundo` | `stow/bash/.bash_lib/git.sh` | Reset soft del último commit con confirmación. |
+| `gcof` | `stow/bash/.bash_lib/git.sh` | Cambia de rama local con preview de historial. |
+| `gclean` | `stow/bash/.bash_lib/git.sh` | Borra ramas locales mergeadas tras confirmar. |
+| `watchdiff` | `stow/bash/.bash_lib/git.sh` | Monitoriza status/diff en loop cada 2s. |
+| `checkpoint` | `stow/bash/.bash_lib/git.sh` | Guarda stash con mensaje legible (incluye untracked). |
+| `wip` | `stow/bash/.bash_lib/git.sh` | Crea commit WIP con timestamp (tras `git add -A`). |
+| `fixup` | `stow/bash/.bash_lib/git.sh` | Genera `commit --fixup` contra `HEAD`. |
+| `recent` | `stow/bash/.bash_lib/git.sh` | Selecciona archivo modificado recientemente y lo abre. |
+| `gp` | `stow/bash/.bash_lib/git.sh` | Push con confirmación y creación de upstream si falta. |
+| `br` | `stow/bash/.bash_lib/git.sh` | Lista ramas (locales/remotas) ordenadas por actividad. |
+| `fhist` | `stow/bash/.bash_lib/misc.sh` | Navega historial con `fzf` y permite re-ejecutar. |
+| `todo` | `stow/bash/.bash_lib/misc.sh` | Lista o añade entradas en `~/.todo.cli.txt`. |
+| `bench` | `stow/bash/.bash_lib/misc.sh` | Cronometra ejecución de un comando (ms). |
+| `envswap` | `stow/bash/.bash_lib/misc.sh` | Lista/activa `.env.<nombre>` con backup y permisos 600. |
+| `r` | `stow/bash/.bash_lib/misc.sh` | Edita el último comando y lo ejecuta opcionalmente en shell actual. |
+| `ports` | `stow/bash/.bash_lib/misc.sh` | Lista puertos en escucha (via `ss` o `lsof`). |
+| `topme` | `stow/bash/.bash_lib/misc.sh` | Filtra procesos relevantes (php/node/docker…) por CPU. |
+| `tt` | `stow/bash/.bash_lib/misc.sh` | Temporizador interactivo simple. |
+| `move_to_end` | `stow/bash/.bashrc` | Reordena `$PATH` enviando ruta indicada al final. |
 | `usage` | `scripts/bootstrap.sh` | Muestra ayuda del bootstrap. |
-| `note` | `scripts/bootstrap.sh` | Loguea mensajes informativos. |
-| `die` | `scripts/bootstrap.sh` | Aborta con mensaje de error. |
-| `act` | `scripts/bootstrap.sh` | Ejecuta comando respetando modo `--dry-run`. |
-| `backup_path` | `scripts/bootstrap.sh` | Guarda backup de destino antes de enlazar. |
-| `link_to` | `scripts/bootstrap.sh` | Crea symlink (backup + manifest). |
-| `pick_manifest` | `scripts/rollback.sh` | Resuelve manifest a usar (`latest` o timestamp). |
+| `confirm` | `scripts/bootstrap.sh` | Confirmación interactiva (omite con `--yes`). |
+| `handle_conflicts` | `scripts/bootstrap.sh` | Detecta conflictos y mueve targets a `.backups/<TS>/`. |
+| `write_manifest` | `scripts/bootstrap.sh` | Genera `.manifests/<TS>.manifest`. |
+| `pick_manifest` | `scripts/rollback.sh` | Selecciona manifest (`--manifest`, `latest` o `<TS>`). |
+| `load_manifest` | `scripts/rollback.sh` | Carga arrays `home_pkgs`/`config_pkgs` desde manifest. |
 | `join_by_slash` | `tmux/scripts/shorten_path.sh` | Une componentes con `/` manteniendo formato. |
 | `shorten_keep_last_two` | `tmux/scripts/shorten_path.sh` | Abrevia rutas dejando los dos últimos directorios completos. |
 | `collapse_to_ellipsis_last` | `tmux/scripts/shorten_path.sh` | Reduce ruta a `.../basename` cuando es demasiado larga. |
