@@ -31,6 +31,10 @@ return {
         return vim.fn.executable(cmd) == 1
       end
 
+      local function has_compose()
+        return has_file("docker-compose.yml") or has_file("docker-compose.yaml") or has_file("compose.yml") or has_file("compose.yaml")
+      end
+
       -- JS/TS (elige gestor por lockfile)
       local function js_pm()
         if has_file("pnpm-lock.yaml") then
@@ -45,6 +49,17 @@ return {
         return nil
       end
 
+      local function js_test_watch_cmd()
+        local pm = js_pm()
+        if not pm then
+          return nil
+        end
+        if pm[1] == "yarn" then
+          return { "yarn", "test", "--watch" }
+        end
+        return vim.list_extend(pm, { "test", "--", "--watch" })
+      end
+
       add({
         name = "JS/TS: test",
         builder = function()
@@ -57,6 +72,20 @@ return {
         condition = { callback = function() return js_pm() ~= nil end },
         tags = { "js", "ts", "test" },
         priority = 60,
+      })
+
+      add({
+        name = "JS/TS: test (watch)",
+        builder = function()
+          local cmd = js_test_watch_cmd()
+          if not cmd then
+            return nil
+          end
+          return { cmd = cmd, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = function() return js_test_watch_cmd() ~= nil end },
+        tags = { "js", "ts", "test", "watch" },
+        priority = 55,
       })
 
       add({
@@ -99,6 +128,19 @@ return {
       })
 
       add({
+        name = "Python: test (watch)",
+        builder = function()
+          if not cmd_exists("ptw") then
+            return nil
+          end
+          return { cmd = { "ptw" }, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = function() return cmd_exists("ptw") end },
+        tags = { "python", "test", "watch" },
+        priority = 55,
+      })
+
+      add({
         name = "Python: lint (ruff)",
         builder = function()
           if not cmd_exists("ruff") then
@@ -136,6 +178,23 @@ return {
       })
 
       add({
+        name = "Go: test (watch)",
+        builder = function()
+          if not cmd_exists("watchexec") then
+            return nil
+          end
+          return {
+            cmd = { "watchexec", "-e", "go", "--", "go", "test", "./..." },
+            cwd = vim.fn.getcwd(),
+            components = { "default" },
+          }
+        end,
+        condition = { callback = function() return has_file("go.mod") and cmd_exists("watchexec") end },
+        tags = { "go", "test", "watch" },
+        priority = 55,
+      })
+
+      add({
         name = "Go: fmt (gofumpt)",
         builder = function()
           local fmt = cmd_exists("gofumpt") and "gofumpt" or "gofmt"
@@ -158,6 +217,19 @@ return {
       })
 
       add({
+        name = "Rust: test (watch)",
+        builder = function()
+          if not cmd_exists("cargo-watch") then
+            return nil
+          end
+          return { cmd = { "cargo", "watch", "-x", "test" }, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = function() return has_file("Cargo.toml") and cmd_exists("cargo-watch") end },
+        tags = { "rust", "test", "watch" },
+        priority = 55,
+      })
+
+      add({
         name = "Rust: clippy",
         builder = function()
           return { cmd = { "cargo", "clippy" }, cwd = vim.fn.getcwd(), components = { "default" } }
@@ -175,6 +247,37 @@ return {
         condition = { callback = function() return has_file("Cargo.toml") end },
         tags = { "rust", "format" },
         priority = 40,
+      })
+
+      -- Docker compose (básico)
+      add({
+        name = "Docker: compose up -d",
+        builder = function()
+          return { cmd = { "docker", "compose", "up", "-d" }, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = has_compose },
+        tags = { "docker" },
+        priority = 30,
+      })
+
+      add({
+        name = "Docker: compose down",
+        builder = function()
+          return { cmd = { "docker", "compose", "down" }, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = has_compose },
+        tags = { "docker" },
+        priority = 25,
+      })
+
+      add({
+        name = "Docker: compose logs -f",
+        builder = function()
+          return { cmd = { "docker", "compose", "logs", "-f" }, cwd = vim.fn.getcwd(), components = { "default" } }
+        end,
+        condition = { callback = has_compose },
+        tags = { "docker", "logs" },
+        priority = 20,
       })
 
       -- PHP (reusar plantillas definidas en lang/php.lua si existen)
@@ -205,6 +308,8 @@ return {
         { "<leader>h4", function() harpoon:list():select(4) end, desc = "Harpoon 4" },
         { "<leader>hn", function() harpoon:list():next() end, desc = "Harpoon next" },
         { "<leader>hp", function() harpoon:list():prev() end, desc = "Harpoon prev" },
+        { "<leader>hQ", function() harpoon:list():clear() end, desc = "Harpoon clear" },
+        { "<leader>hd", function() harpoon:list():remove() end, desc = "Harpoon delete current" },
       }
     end,
     config = function()
