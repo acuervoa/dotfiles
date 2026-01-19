@@ -34,6 +34,8 @@ NO_CONFLICTS=false
 INIT_SUBMODULES=false
 GUI_MODE="auto" # auto|on|off
 
+TMPDIR_APPLY=""
+
 while (($# > 0)); do
   case "$1" in
   --dry-run)
@@ -78,6 +80,17 @@ REPO_DIR="${REPO_DIR/#\~/$HOME}"
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
 
+resolve_host() {
+  if [ -n "${DOTFILES_HOST:-}" ]; then
+    printf '%s' "$DOTFILES_HOST"
+    return 0
+  fi
+
+  if command -v hostname >/dev/null 2>&1; then
+    hostname -s 2>/dev/null || hostname 2>/dev/null || true
+  fi
+}
+
 action() {
   local kind="$1"
   shift
@@ -102,6 +115,11 @@ confirm() {
 main() {
   local -a doctor_args=()
   local -a bootstrap_args=()
+
+  local host
+  host="$(resolve_host || true)"
+  info "Repo: $REPO_DIR"
+  info "Host: ${host:-unknown}"
 
   if [ "$NO_LINT" = "true" ]; then
     doctor_args+=(--no-lint)
@@ -139,11 +157,34 @@ main() {
     return 1
   fi
 
+  local tmpdir plan_log apply_log
+  tmpdir="$(mktemp -d)"
+  TMPDIR_APPLY="$tmpdir"
+  plan_log="$tmpdir/bootstrap_dry_run.log"
+  apply_log="$tmpdir/bootstrap_apply.log"
+  trap 'rm -rf "$TMPDIR_APPLY"' EXIT
+
   action DOCTOR "Ejecutando doctor"
   bash "$doctor" "${doctor_args[@]}"
 
   action PLAN "Ejecutando bootstrap --dry-run"
-  bash "$bootstrap" --dry-run "${bootstrap_args[@]}"
+  bash "$bootstrap" --dry-run "${bootstrap_args[@]}" 2>&1 | tee "$plan_log"
+  local plan_status=${PIPESTATUS[0]}
+  if [ "$plan_status" -ne 0 ]; then
+    warn "bootstrap --dry-run fallo (exit=$plan_status)"
+    return "$plan_status"
+  fi
+
+  local plan_manifest plan_backup
+  plan_manifest="$(sed -n 's/^\[INFO\] Manifest: //p' "$plan_log" | tail -n 1)"
+  plan_backup="$(sed -n 's/^\[INFO\] Backup: //p' "$plan_log" | tail -n 1)"
+
+  if [ -n "$plan_backup" ]; then
+    info "Plan: Backup: $plan_backup"
+  fi
+  if [ -n "$plan_manifest" ]; then
+    info "Plan: Manifest: $plan_manifest"
+  fi
 
   if [ "$DRY_RUN" = "true" ]; then
     info "Dry-run completado (no se aplicaron cambios)."
@@ -156,7 +197,25 @@ main() {
   }
 
   action APPLY "Ejecutando bootstrap (apply real)"
-  bash "$bootstrap" -y "${bootstrap_args[@]}"
+  bash "$bootstrap" -y "${bootstrap_args[@]}" 2>&1 | tee "$apply_log"
+  local apply_status=${PIPESTATUS[0]}
+  if [ "$apply_status" -ne 0 ]; then
+    warn "bootstrap fallo (exit=$apply_status)"
+    return "$apply_status"
+  fi
+
+  local apply_manifest apply_backup
+  apply_manifest="$(sed -n 's/^\[INFO\] Manifest: //p' "$apply_log" | tail -n 1)"
+  apply_backup="$(sed -n 's/^\[INFO\] Backup: //p' "$apply_log" | tail -n 1)"
+
+  if [ -n "$apply_manifest" ]; then
+    info "Apply: Manifest: $apply_manifest"
+  fi
+  if [ -n "$apply_backup" ]; then
+    info "Apply: Backup: $apply_backup"
+  fi
+
+  info "Apply OK."
 }
 
 main
