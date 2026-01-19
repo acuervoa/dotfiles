@@ -96,7 +96,10 @@ git_cmd() {
 }
 
 main() {
-  [ -d "$REPO_DIR" ] || { err "Repo no encontrado: $REPO_DIR"; return 1; }
+  [ -d "$REPO_DIR" ] || {
+    err "Repo no encontrado: $REPO_DIR"
+    return 1
+  }
 
   if ! command -v git >/dev/null 2>&1; then
     err "git no esta instalado"
@@ -117,7 +120,7 @@ main() {
   info "Repo: $REPO_DIR"
 
   local dirty
-  dirty="$(git_cmd status --porcelain=v1)" || return 1
+  dirty="$(git_cmd status --porcelain=v1 --ignore-submodules=untracked)" || return 1
   if [ -n "$dirty" ] && [ "$ALLOW_DIRTY" != "true" ]; then
     err "Working tree sucio; abortando. (Usa --allow-dirty si lo quieres forzar)"
     git_cmd status -sb

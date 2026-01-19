@@ -1,8 +1,5 @@
-/tmux/tmux/plugins/
-/vim/vim/plugged/
-/vim/vim/autoload/*
-!/vim/vim/autoload/plug.vim
-
+stow/tmux/.tmux/plugins/
+stow/vim/.vim/plugged/
 
 /config/yazi/plugins/
 /config/yazi/flavors/
