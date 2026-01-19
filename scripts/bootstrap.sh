@@ -26,6 +26,7 @@ DRY_RUN=false
 ASSUME_YES=false
 INIT_SUBMODULES=false
 GUI_MODE="auto" # auto|on|off
+BACKUP_NEEDED=false
 
 while (($# > 0)); do
   case "$1" in
@@ -177,12 +178,14 @@ handle_conflicts() {
   local conflicts
   conflicts="$(
     stow -d "$STOW_DIR" -t "$target_dir" -nS "$pkg" 2>&1 |
-      grep -F 'CONFLICT: existing target is not a symlink:' || true
+      grep -E 'existing target is not (a symlink|owned by stow|a directory|a link nor a directory):' || true
   )"
 
   if [ -z "$conflicts" ]; then
     return 0
   fi
+
+  BACKUP_NEEDED=true
 
   warn "Conflictos detectados para '$pkg'. Se creará un backup en $BACKUP_DIR"
   action BACKUP "mkdir -p $BACKUP_DIR"
@@ -192,7 +195,11 @@ handle_conflicts() {
     [ -z "$line" ] && continue
 
     local file_path
-    file_path="${line#*CONFLICT: existing target is not a symlink: }"
+    file_path="$line"
+    file_path="${file_path#*CONFLICT: existing target is not a symlink: }"
+    file_path="${file_path#*existing target is not owned by stow: }"
+    file_path="${file_path#*existing target is not a directory: }"
+    file_path="${file_path#*existing target is not a link nor a directory: }"
 
     local full_path="$target_dir/$file_path"
 
@@ -267,19 +274,26 @@ main() {
     run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
   done
 
-  # Procesar paquetes de $HOME/.config
+  # Procesar paquetes que viven bajo $HOME/.config.
+  # Nota: los paquetes en stow/* suelen incluir el prefijo `.config/`, así que
+  # el target correcto para stow es $HOME (no $HOME/.config), para evitar acabar
+  # con rutas tipo ~/.config/.config/<pkg>.
   run_cmd mkdir -p "$HOME/.config"
   for pkg in "${CONFIG_PKGS[@]}"; do
-    handle_conflicts "$pkg" "$HOME/.config"
-    action STOW "Instalando '$pkg' en $HOME/.config"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME/.config" -S "$pkg"
+    handle_conflicts "$pkg" "$HOME"
+    action STOW "Instalando '$pkg' (bajo $HOME/.config)"
+    run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
   done
 
   echo
   info "Bootstrap completado."
   info "Manifest: $MANIFEST_FILE"
-  if [ -d "$BACKUP_DIR" ]; then
-    info "Backup: $BACKUP_DIR"
+  if [ "$BACKUP_NEEDED" = "true" ]; then
+    if [ "$DRY_RUN" = "true" ]; then
+      info "Backup: se crearía en $BACKUP_DIR"
+    else
+      info "Backup: $BACKUP_DIR"
+    fi
   else
     info "Backup: no fue necesario"
   fi

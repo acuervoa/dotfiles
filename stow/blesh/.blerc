@@ -1,0 +1,13 @@
+# ~/.blerc - compat shim for ble.sh
+#
+# Canonical config lives in XDG:
+#   ${XDG_CONFIG_HOME:-$HOME/.config}/blesh/blerc
+#
+# This file keeps ble.sh working even when it only looks for ~/.blerc.
+
+_blerc_xdg="${XDG_CONFIG_HOME:-$HOME/.config}/blesh/blerc"
+
+if [ -r "$_blerc_xdg" ]; then
+  # shellcheck source=/dev/null
+  source "$_blerc_xdg"
+fi

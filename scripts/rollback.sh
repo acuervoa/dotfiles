@@ -259,8 +259,10 @@ main() {
       warn "Paquete stow inexistente (omito): $pkg"
       continue
     fi
-    action STOW "Desinstalando '$pkg' de $HOME/.config"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME/.config" -D "$pkg"
+    action STOW "Desinstalando '$pkg' (bajo $HOME/.config)"
+    # Los paquetes en stow/* suelen incluir el prefijo `.config/`, por lo que el
+    # target correcto para stow es $HOME (igual que en bootstrap.sh).
+    run_cmd stow -d "$STOW_DIR" -t "$HOME" -D "$pkg"
   done
 
   if [ -n "$selected_backup" ]; then
