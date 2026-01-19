@@ -74,6 +74,14 @@ docps() {
   _docker_compose ps "$@"
 }
 
+# Rebuild rápido (build + up -d) sin cache
+# @cmd dorebuild  docker compose build --no-cache + up -d
+dorebuild() {
+  _have_compose || return 1
+  _cd_repo_root_if_compose || return 1
+  _docker_compose build --no-cache "$@" && _docker_compose up -d
+}
+
 # fzf para elegir servicio y ver logs en vivo
 # - añadimos --tail 200 para no tragarnos todo el histórico.
 # @cmd dlogs  Tail -f de logs de un servicio (fzf si no se pasa nombre)
@@ -125,7 +133,9 @@ dsh() {
 
   [ -z "$svc" ] && return 0
 
-  _docker_compose exec "$svc" bash 2>/dev/null || _docker_compose exec "$svc" sh
+  # Soporta override de shell: DSH_SHELL=bash|sh
+  local shell="${DSH_SHELL:-bash}"
+  _docker_compose exec "$svc" "$shell" 2>/dev/null || _docker_compose exec "$svc" sh
 }
 
 # Limpiar recursos docker sin uso tras confirmación explícita

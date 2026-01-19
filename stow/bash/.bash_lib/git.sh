@@ -407,6 +407,20 @@ gfix() {
   git checkout -b "$branch"
 }
 
+# @cmd glast  Ver último commit (graph corto)
+glast() {
+  _req git || return 1
+  _git_root_or_die || return 1
+  git show -1 --stat --color=always
+}
+
+# @cmd ggraph  Log breve decorado (últimos 20)
+ggraph() {
+  _req git || return 1
+  _git_root_or_die || return 1
+  git log --oneline --decorate --graph -n 20
+}
+
 # @cmd gmain	Volver a rama main
 gmain() {
   _git_root_or_die || return 1

@@ -7,18 +7,25 @@
 # - Excluye basura típica (node_modules, vendor, dist, .venv...) para no saturar fzf.
 # - Si eliges un directorio: te deja elegir cd o abrir en editor.
 # @cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
+# Opciones:
+#   FO_DEFAULT_ROOT (default .)
+#   FO_EXCLUDES (lista separada por espacios; sobreescribe los excludes base)
+#   FO_AUTO_CD=1 para no pedir confirm al cd
 fo() {
   _req fd fzf || return 1
 
-  local root="${1:-.}"
+  local root="${FO_DEFAULT_ROOT:-${1:-.}}"
   local -a fd_args
   local sel
   local auto_cd="${FO_AUTO_CD:-0}"
 
   # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
   local -a excludes
-  if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
+  if [ -n "${FO_EXCLUDES:-}" ]; then
     # shellcheck disable=SC2206
+    excludes=($FO_EXCLUDES)
+  elif [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
+    # compat anterior
     excludes=($FD_DEFAULT_EXCLUDES)
   else
     excludes=(.git node_modules vendor .venv dist build target .cache)
