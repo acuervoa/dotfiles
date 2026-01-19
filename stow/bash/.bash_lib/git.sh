@@ -321,6 +321,13 @@ recent() {
 # @cmd gp   Push protegido
 # - Muestra rama actual
 # - Si el push falla por falta de upstream, lo crea
+# - Si pasas --force o --force-with-lease, pregunta antes
+# - Usa --force-with-lease por defecto cuando se indique
+# Uso:
+#   gp              (push normal)
+#   gp --lease      (alias de --force-with-lease)
+#   gp --force      (force con confirmación)
+#   gp --force-with-lease (force-with-lease con confirmación)
 gp() {
   _req git || return 1
   _git_root_or_die || return 1
@@ -328,12 +335,32 @@ gp() {
   local branch
   branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
 
+  local mode="normal"
+  case "${1:-}" in
+    --force) mode="force" ;;
+    --force-with-lease|--lease) mode="lease" ;;
+  esac
+
   printf 'Rama actual: %s\n' "$branch" >&2
 
-  printf 'Vas a pushear la rama "%s".\n' "$branch" >&2
-  _confirm '¿Seguro? [y/N] ' || return 0
-  if git push; then
-    return 0
+  if [ "$mode" = "force" ]; then
+    printf 'Vas a pushear con --force.\n' >&2
+    _confirm '¿Seguro? [y/N] ' || return 0
+    if git push --force; then
+      return 0
+    fi
+  elif [ "$mode" = "lease" ]; then
+    printf 'Vas a pushear con --force-with-lease.\n' >&2
+    _confirm '¿Seguro? [y/N] ' || return 0
+    if git push --force-with-lease; then
+      return 0
+    fi
+  else
+    printf 'Vas a pushear la rama "%s".\n' "$branch" >&2
+    _confirm '¿Seguro? [y/N] ' || return 0
+    if git push; then
+      return 0
+    fi
   fi
 
   printf 'Push directo falló. Intento crear upstream: origin/%s\n' "$branch" >&2

@@ -13,6 +13,7 @@ fo() {
   local root="${1:-.}"
   local -a fd_args
   local sel
+  local auto_cd="${FO_AUTO_CD:-0}"
 
   # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
   local -a excludes
@@ -52,8 +53,10 @@ fo() {
 
   if [ -d "$sel" ]; then
     printf 'Directorio seleccionado: %s\n' "$sel" >&2
-    if ! _confirm '¿Cambiar a este directorio? [y/N] '; then
-      return 0
+    if [ "$auto_cd" != "1" ]; then
+      if ! _confirm '¿Cambiar a este directorio? [y/N] '; then
+        return 0
+      fi
     fi
     cd -- "$sel" || printf 'No pude hacer cd.\n' >&2
   else
@@ -232,6 +235,17 @@ cb() {
   elif command -v pbcopy >/dev/null 2>&1; then
     clip_cmd=(pbcopy)
   else
+    # Fallback OSC52 si estamos en TTY (tmux/screen/SSH sin X/Wayland)
+    if [ -t 1 ]; then
+      local data
+      if [ "$#" -eq 0 ]; then
+        data=$(cat)
+      else
+        data="$*"
+      fi
+      printf '\e]52;c;%s\a' "$(printf '%s' "$data" | base64 | tr -d '\n')"
+      return 0
+    fi
     printf "cb: no hay portapapeles disponible (Wayland/X11/macOS). Instala wl-clipboard o xclip/xsel, o ejecuta bajo sesión gráfica.\n" >&2
     return 1
   fi
