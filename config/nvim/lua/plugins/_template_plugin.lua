@@ -1,33 +1,33 @@
--- lua/plugins/_template_plugin.lua
--- Plantilla para añadir un nuevo plugin con lazy.nvim
-
+-- -- lua/plugins/_template_plugin.lua
+-- -- Plantilla para añadir un nuevo plugin con lazy.nvim
+--
 return {
-	"owner/name.nvim",
-	-- Opciones de carga: elegir uno o combinar varias
-	lazy = true, -- por defecto true si hay keys/cmd/ft/event
-	event = "VeryLazy", -- o "BufReadPost", "InsertEnter", etc.
-	ft = { "lua", "php" }, -- si solo aplica a ciertos filetypes
-	cmd = { "CommandName" }, -- si el plugin define comandos
-	keys = {
-		{
-			"<leader>?",
-			function()
-				require("name").do_something()
-			end,
-			desc = "Descipción corta para which-key",
-		},
-	},
-
-	dependencies = {
-		-- "nvim-lua/plenary.nvim"
-	},
-
-	opts = {
-		-- configuración declarativa sencilla, sin lófica
-	},
-
-	-- usar config sólo cuando necesitas lógica imperativa
-	config = function(_, opts)
-		require("name").setup(opts)
-	end,
+	-- 	"owner/name.nvim",
+	-- 	-- Opciones de carga: elegir uno o combinar varias
+	-- 	lazy = true, -- por defecto true si hay keys/cmd/ft/event
+	-- 	event = "VeryLazy", -- o "BufReadPost", "InsertEnter", etc.
+	-- 	ft = { "lua", "php" }, -- si solo aplica a ciertos filetypes
+	-- 	cmd = { "CommandName" }, -- si el plugin define comandos
+	-- 	keys = {
+	-- 		{
+	-- 			"<leader>?",
+	-- 			function()
+	-- 				require("name").do_something()
+	-- 			end,
+	-- 			desc = "Descipción corta para which-key",
+	-- 		},
+	-- 	},
+	--
+	-- 	dependencies = {
+	-- 		-- "nvim-lua/plenary.nvim"
+	-- 	},
+	--
+	-- 	opts = {
+	-- 		-- configuración declarativa sencilla, sin lófica
+	-- 	},
+	--
+	-- 	-- usar config sólo cuando necesitas lógica imperativa
+	-- 	config = function(_, opts)
+	-- 		require("name").setup(opts)
+	-- 	end,
 }

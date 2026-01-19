@@ -209,41 +209,54 @@ extract() {
 # - No añade salto de línea adicional.
 # @cmd cb   Copiar texto al portapapeles (stdin, texto o contenido de archivos)
 cb() {
-  local data
+  # Decide backend (Wayland -> wl-copy; X11 -> xclip/xsel; macOS -> pbcopy)
+  local runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  local wayland_sock=""
 
-  if [ "$#" -eq 0 ]; then
-    # stdin
-    data="$(cat)"
+  if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    wayland_sock="$runtime_dir/$WAYLAND_DISPLAY"
   else
-    local all_files=1 f
-    for f in "$@"; do
-      if [ ! -f "$f" ]; then
-        all_files=0
-        break
-      fi
-    done
-
-    if [ "$all_files" -eq 1 ]; then
-      # contenido de todos los ficheros
-      data="$(cat -- "$@")"
-    elif [ "$#" -eq 1 ]; then
-      # un solo argumento, se interpreta como texto literal
-      data="$1"
-    else
-      # varios argumentos no todos ficheros: los concateno como texto
-      data="$*"
-    fi
+    # No adivinamos wayland-0 a menos que exista
+    [ -S "$runtime_dir/wayland-0" ] && wayland_sock="$runtime_dir/wayland-0"
   fi
 
-  if command -v wl-copy >/dev/null 2>&1; then
-    printf '%s' "$data" | wl-copy
-  elif command -v xclip >/dev/null 2>&1; then
-    printf '%s' "$data" | xclip -selection clipboard
+  local -a clip_cmd=()
+
+  if command -v wl-copy >/dev/null 2>&1 && [ -n "$wayland_sock" ] && [ -S "$wayland_sock" ]; then
+    clip_cmd=(wl-copy)
+  elif [ -n "${DISPLAY:-}" ] && command -v xclip >/dev/null 2>&1; then
+    clip_cmd=(xclip -selection clipboard)
+  elif [ -n "${DISPLAY:-}" ] && command -v xsel >/dev/null 2>&1; then
+    clip_cmd=(xsel --clipboard --input)
   elif command -v pbcopy >/dev/null 2>&1; then
-    printf '%s' "$data" | pbcopy
+    clip_cmd=(pbcopy)
   else
-    printf "No hay wl-copy, xclip ni pbcopy instalados\n" >&2
+    printf "cb: no hay portapapeles disponible (Wayland/X11/macOS). Instala wl-clipboard o xclip/xsel, o ejecuta bajo sesión gráfica.\n" >&2
     return 1
+  fi
+
+  # Input: stdin | files | texto
+  if [ "$#" -eq 0 ]; then
+    "${clip_cmd[@]}"
+    return $?
+  fi
+
+  local all_files=1 f
+  for f in "$@"; do
+    [ -f "$f" ] || {
+      all_files=0
+      break
+    }
+  done
+
+  if [ "$all_files" -eq 1 ]; then
+    cat -- "$@" | "${clip_cmd[@]}"
+  else
+    if [ "$#" -eq 1 ]; then
+      printf '%s' "$1" | "${clip_cmd[@]}"
+    else
+      printf '%s' "$*" | "${clip_cmd[@]}"
+    fi
   fi
 }
 

@@ -189,3 +189,6 @@ fi
 if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
   ble-attach
 fi
+
+# opencode
+export PATH=/home/acuervo/.opencode/bin:$PATH
