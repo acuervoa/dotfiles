@@ -4,11 +4,13 @@
 alias ..='cd ..'
 alias ...='cd ../..'
 alias gs='git status -sb 2>/dev/null || git status'
+alias gst='git status'
 alias gc='git commit'
 alias gcm='git commit -m'
 alias gup='git pull --rebase --autostash'
 alias gfa='git fetch --all --prune'
 alias gpf='git push --force-with-lease'
+alias gp='gp'  # wrapper seguro con confirm y lease/force opcional
 alias gl='git log --oneline --graph -n 30'
 alias gd='git diff --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff'
 alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff --cached'
@@ -32,7 +34,7 @@ else
   alias la='ls -A --color=auto'
 fi
 
-# Docker comose V2
+# Docker compose V2
 if command -v docker >/dev/null 2>&1; then
   alias dc='docker compose'
   alias dcb='docker compose build'
@@ -41,6 +43,7 @@ if command -v docker >/dev/null 2>&1; then
   alias dcud='docker compose up -d'
   alias dcd='docker compose down'
   alias dcr='docker compose restart'
+  alias dcrb='docker compose build --no-cache && docker compose up -d'
   alias dps='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
   alias dil='docker images'
 fi
