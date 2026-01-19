@@ -11,3 +11,7 @@
 /.manifests/
 *.swp
 *.DS_Store
+
+# Archivos locales para secretos y personalización
+*_local
+.*_local

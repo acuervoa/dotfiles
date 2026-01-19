@@ -1,0 +1,27 @@
+# Core
+git
+stow
+bash
+fzf
+ripgrep
+fd
+bat
+eza
+zoxide
+wl-clipboard
+xclip
+trash-cli
+docker
+docker-compose
+bc
+tmux
+neovim
+lazygit
+
+# GUI
+i3-wm
+kitty
+rofi
+polybar
+dunst
+picom

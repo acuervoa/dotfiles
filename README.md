@@ -13,153 +13,140 @@ Repositorio de uso diario para **Arch Linux** orientado a productividad: i3 + tm
 3. [Requisitos](#requisitos)
 4. [Bootstrap](#bootstrap)
 5. [Rollback](#rollback)
-6. [Modo alternativo (git bare)](#modo-alternativo-git-bare)
-7. [Componentes principales](#componentes-principales)
-8. [Validaciones rápidas](#validaciones-rápidas)
-9. [Licencia](#licencia)
+6. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
+7. [Documentación dinámica](#documentación-dinámica)
+8. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
+9. [Componentes principales](#componentes-principales)
+10. [Validaciones rápidas](#validaciones-rápidas)
+11. [Licencia](#licencia)
 
 ---
 
 ## Pila y highlights
 
-- **Bootstrap reproducible** mediante `scripts/bootstrap.sh` con backups timestamp en `.backups/<TS>` y manifiestos en `.manifests/<TS>.manifest`.
-- **Rollback automático**: `scripts/rollback.sh <timestamp|latest>` elimina los symlinks listados en el manifest y luego restaura backups (con flag `--manifest` para apuntar a manifiestos antiguos).
-- **Librería Bash modular** (`bash/bash_lib/*.sh`) con helpers para git, docker, navegación y productividad (`cb`, `rgf`, `grt`, `fo`, `docps`, etc.).
-- **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, conform.nvim + nvim-lint, Overseer y tooling git/telescope.
-- **tmux** con prefix `Ctrl+s`, integración NeoVim (vim-tmux-navigator), TPM (resurrect, continuum, menus, fzf, extrakto) y scripts personalizados.
-- **Stack gráfico** tematizado (Catppuccin Mocha): i3, polybar, picom, dunst, rofi, kitty, con scripts para micrófono/volumen/animaciones y scratchpads.
-- **Git tooling**: `gitconfig`, `gitalias`, hooks reproducibles (`git/git-hooks/*`), plantilla ADR (`.adr/ADR-TEMPLATE.md`), configuración lazygit (`config/lazygit/`).
-- **Documentación bilingüe**: README, `README-BOOTSTRAP.md` (atajo rápido), `SHORTCUTS.md` (equivalencia de atajos i3 ↔ tmux ↔ NeoVim ↔ kitty ↔ polybar).
+- **Gestión con GNU Stow**: El versionado se basa en `stow` para gestionar los symlinks de forma declarativa.
+- **Bootstrap reproducible**: `scripts/bootstrap.sh` automatiza la instalación con `stow` y crea backups timestamp en `.backups/<TS>`.
+- **Rollback automático**: `scripts/rollback.sh <timestamp|latest>` elimina los symlinks con `stow` y restaura el backup elegido.
+- **Gestión de secretos**: Soporte para ficheros locales (ej. `~/.bashrc_local`) no versionados para información sensible.
+- **Documentación dinámica**: Script para generar `SHORTCUTS.md` a partir de los ficheros de configuración.
+- **Librería Bash modular** (`stow/bash/.bash_lib/*.sh`) con helpers para git, docker, navegación y productividad.
+- **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, etc.
+- **tmux** con prefix `Ctrl+s` e integración con NeoVim y TPM.
+- **Stack gráfico** tematizado (Catppuccin Mocha): i3, polybar, picom, dunst, rofi, kitty.
 
 ---
 
 ## Estructura del repositorio
 
+El repositorio usa una estructura compatible con `stow`. Todas las configuraciones residen en el directorio `stow/`, agrupadas por "paquetes".
+
 ```
 dotfiles/
-├── .adr/                 # Plantilla ADR
-├── bash/                 # rc/profile, aliases, funciones y bash_lib
-├── config/               # kitty, lazygit, nvim, polybar, picom, i3, dunst, rofi
-├── git/                  # gitconfig, gitalias y hooks
-├── scripts/              # bootstrap.sh, rollback.sh
-├── tmux/                 # tmux.conf + scripts auxiliares
-├── vim/                  # fallback para Vim + coc-settings
-├── README-BOOTSTRAP.md   # guía exprés
-├── SHORTCUTS.md          # atajos bilingües
-└── docs: CHANGELOG, CONTRIBUTING, LICENSE
+├── stow/
+│   ├── bash/         # Configs de Bash (van a $HOME)
+│   ├── git/          # Configs de Git (van a $HOME)
+│   ├── nvim/         # Configs de NeoVim (van a $HOME/.config)
+│   └── ...           # y así para cada paquete
+├── scripts/
+│   ├── bootstrap.sh  # Script de instalación (usa stow)
+│   ├── rollback.sh   # Script de rollback (usa stow)
+│   └── install_deps.sh # Script de instalación de dependencias
+├── .backups/         # Backups de configuraciones existentes
+└── pkglist-arch.txt  # Lista de paquetes para Arch Linux
 ```
 
 ---
 
 ## Requisitos
 
-1. **Paquetes base** (ver `README-BOOTSTRAP.md` para lista ampliada):
-   ```bash
-   sudo pacman -S git stow bash fzf ripgrep fd bat eza zoxide wl-clipboard xclip trash-cli docker docker-compose bc tmux neovim i3-wm kitty rofi polybar dunst picom lazygit
-   ```
-2. **Herramientas opcionales**: `playerctl`, `pamixer`, `brightnessctl`, `obsidian`, `wl-copy`, `pbcopy`.
-3. **Gnu Stow** es obligatorio para los scripts (aunque se puede ejecutar manualmente sin él, ver plan B abajo).
+1.  **GNU Stow**: `sudo pacman -S stow`.
+2.  **Paquetes base**: El script `scripts/install_deps.sh` se encarga de instalar las dependencias.
+
+Para instalar los paquetes, ejecuta:
+```bash
+bash ./scripts/install_deps.sh
+```
+El script detectará tu sistema operativo y te pedirá confirmación para instalar los paquetes listados en `pkglist-arch.txt`.
 
 ---
 
 ## Bootstrap
 
-### 1. Dry-run
-```bash
-cd ~/dotfiles
-bash ./scripts/bootstrap.sh --dry-run
-```
+El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups.
 
-### 2. Aplicar cambios
-```bash
-# DOTFILES apunta al repo (por defecto ~/dotfiles)
-bash ./scripts/bootstrap.sh
-```
+1.  **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
+2.  **Aplicar**: `bash ./scripts/bootstrap.sh`
 
-Acciones principales:
-
-- Crea backups con timestamp en `.backups/<TS>/` (dentro del repo) y manifiesto en `.manifests/<TS>.manifest`.
-- Enlaza Bash (`bashrc`, `bash_profile`, `bash_aliases`, `bash_functions`, `bash_lib`), Git (`gitconfig`, `gitalias`, `git-hooks`), tmux (`tmux.conf`, `tmux/`) y Vim (`vimrc`, `vim/`) directamente sobre `$HOME`.
-- Genera enlaces simbólicos de `config/{atuin,blesh,dunst,i3,kitty,lazygit,mise,nvim,picom,polybar,rofi,yazi}` sobre `~/.config/<pkg>`.
-- Acepta `DOTFILES=/otra/ruta ./scripts/bootstrap.sh` para seleccionar el repo y `--dry-run` para validar sin modificar nada.
-
-El manifiesto (`.manifests/<TS>.manifest`) registra cada symlink aplicado (`LINK src -> dest`) para facilitar el rollback.
-
-### Plan B (si no usas scripts)
-
-> Requiere stow (`sudo pacman -S stow`). Ejecuta los comandos desde la raíz del repo.
-
-```bash
-# Bash / Git / tmux / Vim hacia $HOME
-for f in bash/bashrc bash/bash_profile bash/profile bash/xprofile bash/bash_aliases bash/bash_functions; do
-  base=$(basename "$f"); [ -f "$HOME/.${base}" ] && cp -a "$HOME/.${base}" "$HOME/.${base}.bak"
-  ln -sfn "$PWD/$f" "$HOME/.${base}"
-done
-ln -sfn "$PWD/bash/bash_lib" "$HOME/.bash_lib"
-ln -sfn "$PWD/git/gitconfig" "$HOME/.gitconfig"
-ln -sfn "$PWD/git/gitalias" "$HOME/.gitalias"
-ln -sfn "$PWD/git/git-hooks" "$HOME/.git-hooks"
-ln -sfn "$PWD/tmux/tmux.conf" "$HOME/.tmux.conf"
-ln -sfn "$PWD/tmux/tmux" "$HOME/.tmux"
-ln -sfn "$PWD/vim/vimrc" "$HOME/.vimrc"
-ln -sfn "$PWD/vim/vim" "$HOME/.vim"
-
-# Config bajo ~/.config
-for pkg in dunst i3 kitty lazygit nvim picom polybar rofi; do
-  mkdir -p "$HOME/.config/$pkg"
-  stow -vt "$HOME/.config" "config/$pkg" -S
-done
-```
+**Acciones principales:**
+- **Detecta conflictos** y mueve los ficheros existentes a `.backups/<TIMESTAMP>/`.
+- **Crea symlinks** con `stow` para cada paquete en el directorio `stow/`.
 
 ---
 
 ## Rollback
 
+El script `rollback.sh` revierte los cambios hechos por el bootstrap.
+
+- **Último backup**: `bash ./scripts/rollback.sh latest`
+- **Backup específico**: `bash ./scripts/rollback.sh <timestamp>`
+
+**Acciones principales:**
+- **Elimina symlinks** con `stow -D`.
+- **Restaura backups** desde `.backups/` con `rsync`.
+
+---
+
+## Gestión de Secretos y Personalización
+
+Para evitar versionar información sensible (API keys, tokens, datos personales), este repositorio utiliza un sistema de ficheros locales no versionados. Simplemente crea un fichero con el sufijo `_local` (ej. `.bashrc_local`, `.gitconfig_local`) y será ignorado por Git.
+
+La configuración principal ya está preparada para cargar estos ficheros si existen.
+
+### Ejemplo de Bash
+Puedes crear un `~/.bashrc_local` para definir variables de entorno o alias privados:
 ```bash
-# Último manifest
-bash ./scripts/rollback.sh latest
+# ~/.bashrc_local
+export GITHUB_TOKEN="ghp_..."
+alias work="cd ~/proyectos/trabajo"
 ```
 
-- Detecta el backup más reciente en `.backups/` (o en `~/.dotfiles_backup_*` para versiones antiguas).
-- Lee el manifest asociado (por defecto `./.manifests/<TS>.manifest`) y elimina los symlinks creados por el bootstrap para evitar que apunten al repo.
-- Restaura el contenido sobre `$HOME` usando `rsync -a` con `--backup-dir` para guardar los ficheros actuales en `~/.dotfiles_rollback_conflicts_*`.
-
-Rollback por timestamp (directorio dentro de `.backups/` o ruta absoluta):
-
-```bash
-bash ./scripts/rollback.sh 20251020-120000
-```
-
-- Usa el manifest derivado del timestamp (`.manifests/<TS>.manifest`) o el indicado con `--manifest /ruta/al/archivo` para eliminar symlinks.
-- Restaura backup con `rsync -a .backups/<TS>/ $HOME/`.
-- Si no se encuentra manifest, el script avisa y no borra los enlaces, por lo que podrías tener que eliminarlos manualmente antes de aplicar el backup.
-
-Rollback apuntando a un manifest concreto (útil si el backup viene de otra ruta o el nombre no sigue el patrón de timestamp):
-
-```bash
-bash ./scripts/rollback.sh --manifest /ruta/a/.manifests/20251020_120000.manifest /ruta/al/backup
+### Ejemplo de Git
+Para tu configuración personal de Git (nombre y email), puedes crear un `~/.gitconfig_local`:
+```ini
+# ~/.gitconfig_local
+[user]
+    name = Tu Nombre
+    email = tu@email.com
 ```
 
 ---
 
-## Modo alternativo (git bare)
+## Uso manual de Stow (Alternativa)
 
-`bootstrap.sh --mode=bare` documenta la variante para versionar `$HOME` vía `git --bare` (sin symlinks). Útil para máquinas donde no quieres stow.
+Si prefieres no usar los scripts, puedes usar `stow` directamente desde la raíz del repositorio.
+
+- **Instalar un paquete**: `stow -d stow -t "$HOME" -S bash`
+- **Desinstalar un paquete**: `stow -d stow -t "$HOME" -D bash`
+
+---
+
+## Documentación dinámica
+
+Para asegurar que el fichero `SHORTCUTS.md` esté siempre actualizado, se ha creado un script que extrae automáticamente los atajos de teclado de los ficheros de configuración.
+
+Para generar o actualizar `SHORTCUTS.md`, ejecuta:
+```bash
+bash ./scripts/generate_shortcuts_doc.sh
+```
 
 ---
 
 ## Componentes principales
 
-- **Bash library**: `bash/bash_lib/{core,git,nav,docker,misc}.sh` expone helpers (`fo`, `rgf`, `cdf`, `grt`, `docps`, `dlogs`, `dsh`, `fkill`, `cb`, `todo`, …). `cb` admite stdin/args, detecta `wl-copy`, `xclip` o `pbcopy` y no añade newline extra.
-- **Git tooling**: `git/gitconfig`, `git/gitalias`, hooks (`git/git-hooks/{pre-commit,commit-msg}`) + configuración `config/lazygit/config.yml` que respeta `core.hooksPath` y considera `main/master` como trunk.
-- **tmux**: prefix `Ctrl+s`, navegación `Alt+h/j/k/l`, splits en cwd, zoom/pane sync, scripts en `tmux/tmux/scripts/` para status, TPM con sensible, yank, resurrect, continuum, vim-tmux-navigator, tmux-fzf, tmux-menus, tmux-sessionx, extrakto. `Prefix+m` abre menús contextuales.
-- **NeoVim**: `config/nvim/` usa lazy.nvim, Mason (v2), LSP (lua_ls, ts_ls, html, cssls, jsonls, intelephense), cmp, Treesitter, Telescope, Neo-tree, git UI, conform.nvim + nvim-lint, overseer, nvim-dap (+ UI/virtual text). Comandos clave: `:Lazy! sync`, `:Mason`, `:OverseerRun`, `:Trouble`, `:FormatToggle`.
-- **i3 + UX**: `config/i3/config` alinea bindings con tmux/NeoVim, scratchpads (kitty, Obsidian), modos de sistema, multimedia (playerctl, pamixer, micctl, volctl, brightnessctl) e integración con dunst/picom.
-- **Polybar**: config Catppuccin (`config/polybar/config.ini`, `mocha.ini`) con módulos de workspaces, notificaciones, bluetooth, actualizaciones pacman, FS, audio, red; `config/polybar/launch.sh` relanza las barras.
-- **Picom**: `config/picom/picom.conf` con blur/animaciones + perfil low-latency; `toggle-animations.sh` gestiona animaciones manteniendo backups y reiniciando picom.
-- **Dunst/Rofi/Kitty**: configs Catppuccin (`config/dunst/dunstrc`, `config/rofi/config.rasi`, `config/kitty/kitty.conf`) con scripts `micctl`/`volctl` usados desde i3/polybar.
-- **Documentación**: `SHORTCUTS.md` lista atajos equivalentes, `README-BOOTSTRAP.md` resume instalación, `.adr/ADR-TEMPLATE.md` guía decisiones de arquitectura.
-- **Vim fallback**: `vim/vimrc` + `vim/vim/coc-settings.json` para entornos sin NeoVim.
+- **Bash library**: `stow/bash/.bash_lib/{core,git,nav,docker,misc}.sh`.
+- **Git tooling**: `stow/git/.gitconfig`, `stow/git/.gitalias`, `stow/git/.git-hooks/*`.
+- **NeoVim**: `stow/nvim/.config/nvim/`.
+- ... y el resto de configuraciones siguen una estructura similar dentro de `stow/`.
 
 ---
 
@@ -167,41 +154,11 @@ bash ./scripts/rollback.sh --manifest /ruta/a/.manifests/20251020_120000.manifes
 
 ```bash
 # Verificar symlinks
-for p in ~/.config/{kitty/kitty.conf,lazygit/config.yml,polybar/config.ini,picom/picom.conf,i3/config,dunst/dunstrc,rofi/config.rasi,nvim}; do
-  [ -L "$p" ] && echo "OK $p -> $(readlink -f "$p")" || echo "MISSING $p"
+for p in ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi,nvim}; do
+  [ -L "$p" ] && echo "OK $p" || echo "MISSING $p"
 done
-
 # Lanzar servicios clave
-kitty --version
-pkill -x polybar 2>/dev/null; MONITOR=${MONITOR:-eDP-1} polybar -r main &
-pkill -x picom 2>/dev/null; picom --config ~/.config/picom/picom.conf
-notify-send "Test" "Dunst OK" && dunstctl is-paused
-nvim --headless "+checkhealth" +qa
-tmux -V
-```
-
-Polybar debe aparecer, picom aplicar blur/animaciones (o perfil low-latency), dunst recibir notificación, `:checkhealth` sin errores críticos y `Ctrl+s` como prefix tmux.
-
-### Polybar (monitores múltiples)
-```bash
-MONITOR=eDP-1 MONITOR2=DP-1 polybar -r main &
-```
-
-### Picom (perfiles)
-```bash
-picom --config ~/.config/picom/picom.conf -b
-picom --config ~/.config/picom/picom-lowlatency.conf -b
-~/.config/picom/toggle-animations.sh on
-~/.config/picom/toggle-animations.sh off
-```
-
-### Git hooks manuales
-```bash
-mkdir -p ~/.git-hooks
-cp -f ./git/git-hooks/pre-commit ~/.git-hooks/pre-commit
-cp -f ./git/git-hooks/commit-msg ~/.git-hooks/commit-msg
-chmod +x ~/.git-hooks/{pre-commit,commit-msg}
-git config --global core.hooksPath "$HOME/.git-hooks"
+kitty --version; tmux -V; nvim --headless "+checkhealth" +qa
 ```
 
 ---
