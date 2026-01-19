@@ -11,7 +11,6 @@
 #   fhist           -> busca, pregunta, ejecuta en subshell si dices "y"
 #   fhist --live    -> ejecuta en shell (eval) si dices "y"
 # @cmd fhist  Buscar en history con fzf y ejecutar (subshell o live)
-# Nota: evitar conflicto con 't' (tmux), usa 'ts' para tmux-session
 fhist() {
   _req fzf || return 1
 
@@ -130,7 +129,7 @@ bench() {
 # - Valida que exista .env.* antes de tocar nada.
 # - Hace backup con permisos 600.
 # - Fuerza permisos 600 en el .env final.
-# @cmd envswap  Gestionar .env.<nombre> -> .env con backup
+# @cmd envswap  Gestionar .env.<nombre> -> .env con backup (permiso 600)
 envswap() {
   local base=".env"
   local cmd="${1:-}"
