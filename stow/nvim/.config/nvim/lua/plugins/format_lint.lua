@@ -34,6 +34,8 @@ return {
 					rust = rust.format.formatters,
 					javascript = { "prettierd" },
 					typescript = { "prettierd" },
+					javascriptreact = { "prettierd" },
+					typescriptreact = { "prettierd" },
 					json = { "prettierd" },
 					yaml = { "prettierd" },
 					html = { "prettierd" },
@@ -88,12 +90,15 @@ return {
 				rust = rust.lint.linters,
 				javascript = { "eslint_d" },
 				typescript = { "eslint_d" },
-                json = { "jsonlint" },
-                yaml = { "yamllint" },
-                markdown = { "markdownlint" },
-                css = { "stylelint" },
-                scss = { "stylelint" },
+				javascriptreact = { "eslint_d" },
+				typescriptreact = { "eslint_d" },
+			    json = { "jsonlint" },
+			    yaml = { "yamllint" },
+			    markdown = { "markdownlint" },
+			    css = { "stylelint" },
+			    scss = { "stylelint" },
 			}
+
 			-- require("lint").linters.phpstan.cmd = "vendor/bin/phpstan"  -- si lo usas en el repo
 			local grp = vim.api.nvim_create_augroup("lint", { clear = true })
 			-- vim.api.nvim_create_autocmd({ "BufEnter","BufWritePost","InsertLeave" }, { group = grp, callback = function() lint.try_lint() end })

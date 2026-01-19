@@ -17,7 +17,7 @@ return {
         require("spectre").open_visual({ select_word = true })
       end,
       mode = { "n", "x" },
-      desc = "[S]earch [W]ord (Spectre),"
+      desc = "[S]earch [W]ord (Spectre)"
     },
     {
       "<leader>sp",
@@ -27,5 +27,5 @@ return {
       desc = "[S]earch in current file (Spectre)",
     },
   },
-  opts={}, 
+  opts = {},
 }
