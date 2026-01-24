@@ -1,32 +1,46 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+need_cmd() { command -v "$1" >/dev/null 2>&1; }
+need_cmd xrandr || exit 0
+need_cmd polybar || exit 0
 
 killall -q polybar || true
-
-while pgrep -u "$UID" -x polybar >/dev/null; do
+while pgrep -u "$UID" -x polybar >/dev/null 2>&1; do
   sleep 0.2
 done
 
-if command -v xrandr >/dev/null 2>&1; then
-  mapfile -t monitors < <(xrandr --query | awk '/ connected/{print $1}')
+mapfile -t connected < <(xrandr --query | awk '/ connected/{print $1}')
+((${#connected[@]})) || exit 0
 
-  if [ "${#monitors[@]}" -gt 0 ]; then
-    primary="$(xrandr --query | awk '/ primary/{print $1; exit}')"
+internal=""
+external=""
 
-    if [ -z "${primary:-}" ]; then
-      primary="${monitors[0]}"
-    fi
+for o in "${connected[@]}"; do
+  case "$o" in
+  eDP* | LVDS*)
+    internal="$o"
+    break
+    ;;
+  esac
+done
 
-    MONITOR="$primary" polybar --reload main &
-
-    for monitor in "${monitors[@]}"; do
-      [ "$monitor" = "$primary" ] && continue
-      MONITOR="$monitor" polybar --reload secondary &
-    done
-  else
-    polybar --reload main &
-  fi
-else
-  polybar --reload main &
+if [[ -z "$internal" ]]; then
+  internal="$(xrandr --query | awk '/ connected primary/{print $1; exit}' || true)"
+fi
+if [[ -z "$internal" ]]; then
+  internal="${connected[0]}"
 fi
 
-disown
+for o in "${connected[@]}"; do
+  if [[ "$o" != "$internal" ]]; then
+    external="$o"
+    break
+  fi
+done
+
+MONITOR="$internal" polybar -q main >/tmp/polybar-main.log 2>&1 &
+
+if [[ -n "${external:-}" ]]; then
+  MONITOR="$external" polybar -q secondary >/tmp/polybar-secondary.log 2>&1 &
+fi
