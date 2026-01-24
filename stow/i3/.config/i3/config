@@ -190,6 +190,7 @@ bindsym $mod+Ctrl+Right move container to output right
 # =======================
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/i3lock.sh
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'"
 bindsym control+mod1+Delete exec --no-startup-id ~/.config/i3/scripts/mode_system.sh
 bindsym $mod+q kill
