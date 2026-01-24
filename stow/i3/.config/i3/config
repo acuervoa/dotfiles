@@ -9,6 +9,7 @@ set $rofi rofi -font 'Noto Sans 13'
 set $volscript ~/.config/dunst/scripts/volctl
 set $micscript ~/.config/dunst/scripts/micctl
 set $refresh_polybar ~/.config/polybar/scripts/hook_refresh.sh
+set $ext_detect ~/.config/i3/scripts/outputs_apply.sh
 
 
 
@@ -84,8 +85,8 @@ bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/toggle_scrat
 # Notas rápidas (Obsidian scratch)
 bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh
 
-# Terminal por defecto (Kitty)
-bindsym $mod+Return exec --no-startup-id kitty
+# Terminal por defecto
+bindsym $mod+Return exec --no-startup-id $term
 
 
 
@@ -150,17 +151,8 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-# Distribuir escritorios en dos monitores
-workspace $ws1 output eDP-1
-workspace $ws3 output eDP-1
-workspace $ws5 output eDP-1
-workspace $ws7 output eDP-1
-workspace $ws9 output eDP-1
-workspace $ws2 output DP-1
-workspace $ws4 output DP-1
-workspace $ws6 output DP-1
-workspace $ws8 output DP-1
-workspace $ws10 output DP-1
+# Distribución dinámica de workspaces por salidas (genera ~/.config/i3/workspaces.local.conf)
+include ~/.config/i3/workspaces.local.conf
 
 # Cambiar entre escritorios
 bindsym $mod+1 workspace $ws1
@@ -229,8 +221,6 @@ bindsym $mod+Shift+F2 exec --no-startup-id flameshot gui -c
 # =======================
 # AUTOARRANQUE DE APLICACIONES
 # =======================
-exec --no-startup-id nm-applet
-exec --no-startup-id dunst
 exec_always --no-startup-id feh --bg-scale ~/Pictures/i3lock/2.jpg
 
 
