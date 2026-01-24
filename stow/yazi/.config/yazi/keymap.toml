@@ -46,7 +46,7 @@ desc = "Zoom out preview"
 
 [[mgr.prepend_keymap]]
 on  = "y"
-run = [ 'shell -- echo "$@" | xclip -i -selection clipboard -t text/uri-list', "yank" ]
+run = [ 'shell -- echo "$@" | ~/.local/bin/clipcopy --mime text/uri-list', "yank" ]
 desc = "Copiar URIs y yank"
 
 [[mgr.prepend_keymap]]

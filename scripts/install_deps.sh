@@ -23,7 +23,13 @@ USAGE
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
-error() { printf '[ERROR] %s\n' "$*" >&2; exit 1; }
+error() {
+  printf '[ERROR] %s\n' "$*" >&2
+  exit 1
+}
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 is_wsl() {
   [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
@@ -53,7 +59,7 @@ detect_distro() {
 pkglist_for() {
   local distro="$1"
   case "$distro" in
-  arch) printf 'pkglist-arch.txt' ;;
+  arch) printf '%s' "$REPO_ROOT/pkglist-arch.txt" ;;
   debian) printf 'pkglist-debian.txt' ;;
   fedora) printf 'pkglist-fedora.txt' ;;
   *) return 1 ;;
@@ -146,7 +152,8 @@ main() {
   local pkglist
   pkglist="$(pkglist_for "$distro")" || error "No hay pkglist para distro: $distro"
 
-  info "Distro: $distro"; $wsl && info "WSL2 detectado: modo core-only"
+  info "Distro: $distro"
+  $wsl && info "WSL2 detectado: modo core-only"
   info "Pkglist: $pkglist"
   if [ "$include_gui" = "true" ]; then
     info "Incluyendo GUI"

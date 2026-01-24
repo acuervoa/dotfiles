@@ -10,7 +10,6 @@ alias gcm='git commit -m'
 alias gup='git pull --rebase --autostash'
 alias gfa='git fetch --all --prune'
 alias gpf='git push --force-with-lease'
-alias gp='gp'  # wrapper seguro con confirm y lease/force opcional
 alias gl='git log --oneline --graph -n 30'
 alias gd='git diff --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff'
 alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff --cached'
