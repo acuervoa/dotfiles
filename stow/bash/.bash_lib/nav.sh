@@ -22,11 +22,10 @@ fo() {
   # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
   local -a excludes
   if [ -n "${FO_EXCLUDES:-}" ]; then
-    # shellcheck disable=SC2206
-    excludes=($FO_EXCLUDES)
+    read -r -a excludes <<<"${FO_EXCLUDES}"
   elif [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
     # compat anterior
-    excludes=($FD_DEFAULT_EXCLUDES)
+    read -r -a excludes <<<"${FD_DEFAULT_EXCLUDES}"
   else
     excludes=(.git node_modules vendor .venv dist build target .cache)
   fi
@@ -103,8 +102,7 @@ cdf() {
     local -a fd_args
     local -a excludes
     if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
-      # shellcheck disable=SC2206
-      excludes=($FD_DEFAULT_EXCLUDES)
+      read -r -a excludes <<<"${FD_DEFAULT_EXCLUDES}"
     else
       excludes=(.git node_modules vendor .venv dist build target .cache)
     fi

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Uso: clipcopy [--mime <mime>] [--primary]
+
+Copia stdin al portapapeles, soportando Wayland (wl-copy) o X11 (xclip/xsel).
+
+Opciones:
+  --mime <mime>    Tipo MIME (default: text/plain)
+  --primary        Usa selección PRIMARY (X11) en vez de CLIPBOARD
+  -h, --help       Ayuda
+USAGE
+}
+
+mime="text/plain"
+selection="clipboard"
+
+while (($#>0)); do
+  case "$1" in
+    --mime) shift; mime="${1:-}"; [ -n "$mime" ] || { echo "[clipcopy] Falta valor para --mime" >&2; exit 2; } ;;
+    --primary) selection="primary" ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "[clipcopy] Opción no reconocida: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
+if command -v wl-copy >/dev/null 2>&1 && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+  wl-copy --type "$mime"
+  exit 0
+fi
+
+if command -v xclip >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+  xclip -selection "$selection" -t "$mime" -i
+  exit 0
+fi
+
+if command -v xsel >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+  if [ "$selection" = "primary" ]; then xsel --primary --input; else xsel --clipboard --input; fi
+  exit 0
+fi
+
+echo "[clipcopy] No hay backend (wl-copy/xclip/xsel)" >&2
+exit 1
+

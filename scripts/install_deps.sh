@@ -60,8 +60,8 @@ pkglist_for() {
   local distro="$1"
   case "$distro" in
   arch) printf '%s' "$REPO_ROOT/pkglist-arch.txt" ;;
-  debian) printf 'pkglist-debian.txt' ;;
-  fedora) printf 'pkglist-fedora.txt' ;;
+  debian) printf '%s' "$REPO_ROOT/pkglist-debian.txt" ;;
+  fedora) printf '%s' "$REPO_ROOT/pkglist-fedora.txt" ;;
   *) return 1 ;;
   esac
 }
