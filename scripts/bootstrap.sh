@@ -61,12 +61,22 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
+
+# state dirs (XDG)
+STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
+BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
+MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
+mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
+
+# compat symlinks inside repo (optional but keeps old paths working)
+ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
+ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
 REPO_DIR="${REPO_DIR/#\~/$HOME}"
 STOW_DIR="$REPO_DIR/stow"
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-BACKUP_DIR="$REPO_DIR/.backups/$TIMESTAMP"
-MANIFEST_DIR="$REPO_DIR/.manifests"
+BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
+MANIFEST_DIR="$MANIFEST_DIR"
 MANIFEST_FILE="$MANIFEST_DIR/$TIMESTAMP.manifest"
 
 # Paquetes por defecto (se pueden sobreescribir por perfil de host)
@@ -188,8 +198,30 @@ timestamp="$TIMESTAMP"
 host="${host:-}"
 home_pkgs=(${HOME_PKGS[*]})
 config_pkgs=(${CONFIG_PKGS[*]})
-backup_dir_rel=".backups/$TIMESTAMP"
+backup_needed="pending"
+backup_dir_rel=""
+exit_code=""
 EOF
+}
+
+finalize_manifest() {
+  local ec="${1:-0}"
+
+  [ "$DRY_RUN" = "true" ] && return 0
+  [ -f "$MANIFEST_FILE" ] || return 0
+
+  {
+    echo
+    echo "# bootstrap result"
+    echo "exit_code=\"$ec\""
+    if [ "$BACKUP_NEEDED" = "true" ]; then
+      echo "backup_needed=\"true\""
+      echo "backup_dir_rel=\".backups/$TIMESTAMP\""
+    else
+      echo "backup_needed=\"false\""
+      echo "backup_dir_rel=\"\""
+    fi
+  } >>"$MANIFEST_FILE"
 }
 
 maybe_init_submodules() {
@@ -311,6 +343,7 @@ main() {
 
   maybe_init_submodules
   write_manifest
+  trap 'finalize_manifest "$?"' EXIT
 
   # Procesar paquetes de $HOME
   local pkg

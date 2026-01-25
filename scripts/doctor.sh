@@ -55,6 +55,16 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
+
+# state dirs (XDG)
+STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
+BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
+MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
+mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
+
+# compat symlinks inside repo (optional but keeps old paths working)
+ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
+ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
 REPO_DIR="${REPO_DIR/#\~/$HOME}"
 STOW_DIR="$REPO_DIR/stow"
 

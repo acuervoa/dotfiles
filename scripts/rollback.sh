@@ -64,12 +64,24 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
+
+# state dirs (XDG)
+STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
+BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
+MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
+mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
+
+# compat symlinks inside repo (optional but keeps old paths working)
+ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
+ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
 REPO_DIR="${REPO_DIR/#\~/$HOME}"
 STOW_DIR="$REPO_DIR/stow"
-BACKUP_BASE="$REPO_DIR/.backups"
-MANIFEST_DIR="$REPO_DIR/.manifests"
+BACKUP_BASE="$BACKUP_BASE"
+MANIFEST_DIR="$MANIFEST_DIR"
 
 SELECTED_INPUT="${1:-latest}"
+
+MANIFEST_USED=false
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
@@ -214,6 +226,7 @@ main() {
 
   local manifest=""
   if manifest="$(pick_manifest 2>/dev/null)"; then
+    MANIFEST_USED=true
     info "Usando manifest: $manifest"
     load_manifest "$manifest"
 
@@ -256,13 +269,35 @@ main() {
 
   local selected_backup=""
 
-  if [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
-    selected_backup="$REPO_DIR/$backup_dir_rel"
-  elif [ "$SELECTED_INPUT" = "latest" ]; then
-    selected_backup="$(find_latest_dir "$BACKUP_BASE" 2>/dev/null || true)"
+  if [ "$MANIFEST_USED" = "true" ]; then
+    if [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
+      selected_backup="$REPO_DIR/$backup_dir_rel"
+    else
+      case "${backup_needed:-legacy}" in
+        false)
+          selected_backup=""
+          ;;
+        true)
+          warn "Manifest indica backup_needed=true pero no existe el backup: ${backup_dir_rel:-<vacío>}"
+          selected_backup=""
+          ;;
+        legacy)
+          warn "Manifest legacy sin backup_needed; por seguridad no hay fallback automático a backups antiguos."
+          if [ "${DOTFILES_ROLLBACK_FALLBACK:-0}" = "1" ] && [ "$SELECTED_INPUT" = "latest" ]; then
+            selected_backup="$(find_latest_dir "$BACKUP_BASE" 2>/dev/null || true)"
+          fi
+          ;;
+      esac
+    fi
   else
-    if [ -d "$BACKUP_BASE/$SELECTED_INPUT" ]; then
-      selected_backup="$BACKUP_BASE/$SELECTED_INPUT"
+    if [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
+      selected_backup="$REPO_DIR/$backup_dir_rel"
+    elif [ "$SELECTED_INPUT" = "latest" ]; then
+      selected_backup="$(find_latest_dir "$BACKUP_BASE" 2>/dev/null || true)"
+    else
+      if [ -d "$BACKUP_BASE/$SELECTED_INPUT" ]; then
+        selected_backup="$BACKUP_BASE/$SELECTED_INPUT"
+      fi
     fi
   fi
 

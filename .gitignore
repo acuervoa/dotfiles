@@ -12,3 +12,7 @@ stow/vim/.vim/plugged/
 # Archivos locales para secretos y personalización
 *_local
 .*_local
+
+# runtime state
+.backups/
+.manifests/
