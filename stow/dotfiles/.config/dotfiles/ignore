@@ -1,0 +1,22 @@
+# Dotfiles: paths to ignore (one per line). Comments allowed.
+# runtime/state
+.backups
+.manifests
+.cache
+.local/state
+.local/share/Trash
+
+# common build/vendor
+node_modules
+dist
+build
+target
+.venv
+__pycache__
+
+# heavy vendored repos inside dotfiles
+stow/tmux/.tmux/plugins/**/.git
+stow/tmux/.tmux/plugins/**/docs
+stow/tmux/.tmux/plugins/**/doc
+stow/tmux/.tmux/plugins/**/images
+stow/tmux/.tmux/plugins/**/assets

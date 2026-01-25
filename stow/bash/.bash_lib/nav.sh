@@ -11,6 +11,34 @@
 #   FO_DEFAULT_ROOT (default .)
 #   FO_EXCLUDES (lista separada por espacios; sobreescribe los excludes base)
 #   FO_AUTO_CD=1 para no pedir confirm al cd
+
+dotfiles_excludes_nul() {
+  # prints NUL-separated excludes loaded from config + env overrides
+  local cfg="${DOTFILES_IGNORE_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/ignore}"
+  local -a out=()
+
+  if [ -f "$cfg" ]; then
+    # strip comments/blank lines
+    mapfile -t out < <(grep -vE '^[[:space:]]*(#|$)' "$cfg" || true)
+  fi
+
+  # Compatibility: allow space-separated env adds
+  if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
+    local -a tmp=()
+    read -r -a tmp <<<"${FD_DEFAULT_EXCLUDES}"
+    out+=("${tmp[@]}")
+  fi
+
+  # Per-invocation excludes (space-separated) can be passed in $1
+  if [ -n "${1:-}" ]; then
+    local -a tmp=()
+    read -r -a tmp <<<"${1}"
+    out+=("${tmp[@]}")
+  fi
+
+  printf '%s\0' "${out[@]}"
+}
+
 fo() {
   _req fd fzf || return 1
 
@@ -21,15 +49,7 @@ fo() {
 
   # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
   local -a excludes
-  if [ -n "${FO_EXCLUDES:-}" ]; then
-    read -r -a excludes <<<"${FO_EXCLUDES}"
-  elif [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
-    # compat anterior
-    read -r -a excludes <<<"${FD_DEFAULT_EXCLUDES}"
-  else
-    excludes=(.git node_modules vendor .venv dist build target .cache)
-  fi
-
+  mapfile -d '' -t excludes < <(dotfiles_excludes_nul "${FO_EXCLUDES:-}")
   fd_args=(--hidden --follow --color=never)
   local ex
   for ex in "${excludes[@]}"; do
@@ -38,7 +58,7 @@ fo() {
 
   sel="$(
     fd "${fd_args[@]}" . "$root" 2>/dev/null |
-      fzf --prompt=' fo > ' --preview='
+      FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' fo > ' --preview='
         if [ -d "{}" ]; then
           if command -v eza >/dev/null 2>&1; then
             eza -la --color=always "{}"
@@ -86,7 +106,7 @@ cdf() {
   if command -v zoxide >/dev/null 2>&1; then
     dir="$(
       zoxide query -l 2>/dev/null |
-        fzf --prompt=' cdf(zoxide) > ' \
+        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' cdf(zoxide) > ' \
           --preview='
               if command -v eza >/dev/null 2>&1; then
                 eza -lah --color=always {}
@@ -115,7 +135,7 @@ cdf() {
 
     dir="$(
       fd "${fd_args[@]}" . "$root" 2>/dev/null |
-        fzf --prompt=' cdf(fd) > ' \
+        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' cdf(fd) > ' \
           --preview='
               if command -v eza >/dev/null 2>&1; then
                 eza -lah --color=always {}
