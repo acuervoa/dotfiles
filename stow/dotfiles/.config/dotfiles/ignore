@@ -20,3 +20,13 @@ stow/tmux/.tmux/plugins/**/docs
 stow/tmux/.tmux/plugins/**/doc
 stow/tmux/.tmux/plugins/**/images
 stow/tmux/.tmux/plugins/**/assets
+
+# git internals (noise)
+.git
+
+# common tooling caches
+.direnv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage

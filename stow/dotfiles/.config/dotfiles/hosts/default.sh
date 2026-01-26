@@ -6,7 +6,7 @@
 
 # Packages that stow directly into $HOME
 # shellcheck disable=SC2034  # read by bootstrap.sh/rollback.sh via source
-HOME_PKGS=(bash git tmux vim)
+HOME_PKGS=(bash git tmux vim bin)
 
 # Packages that include the `.config/` prefix inside their stow package.
 # These should be stowed with target $HOME (not $HOME/.config).

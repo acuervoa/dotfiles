@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+p="${1:-}"
+[ -z "$p" ] && exit 0
+
+# Base dir: 2º arg tiene prioridad; si no, compat con env FO_PREVIEW_CWD
+base="${2:-${FO_PREVIEW_CWD:-}}"
+
+# 1) Normalización mínima (CRLF, ./)
+p="${p%$'\r'}"
+p="${p#./}"
+
+# 2) Sanitizar comillas espurias en BORDES (lo que te está rompiendo)
+#    fzf te está pasando p='GEMINI.md' (las comillas forman parte del argumento)
+#    Quitamos SOLO bordes, no tocamos comillas internas.
+while :; do
+  case "$p" in
+  \"*\")
+    p="${p#\"}"
+    p="${p%\"}"
+    continue
+    ;;
+  \'*\')
+    p="${p#\'}"
+    p="${p%\'}"
+    continue
+    ;;
+  esac
+  break
+done
+
+# A veces llega con comillas desbalanceadas/duplicadas al final: ...'GEMINI.md''
+# Limpiamos exceso solo en extremos.
+p="${p##\'}"
+p="${p%%\'}"
+p="${p##\"}"
+p="${p%%\"}"
+
+# 3) Resolver relativo contra base (si hay)
+if [ -n "$base" ] && [[ "$p" != /* ]]; then
+  p="$base/$p"
+fi
+
+# 4) Si aún no existe, no intentes abrir: muestra info útil en preview
+if [ ! -e "$p" ]; then
+  printf "fo-preview: not found\n  p=%s\n  base=%s\n  pwd=%s\n" "$p" "$base" "$(pwd -P)"
+  exit 0
+fi
+
+if [ -d "$p" ]; then
+  if command -v eza >/dev/null 2>&1; then
+    eza -la --color=always -- "$p"
+  else
+    ls -lah -- "$p"
+  fi
+  exit 0
+fi
+
+if command -v bat >/dev/null 2>&1; then
+  bat --style=numbers --color=always -- "$p" 2>/dev/null || file -- "$p"
+  exit 0
+fi
+
+if file --mime -- "$p" 2>/dev/null | grep -q "charset=binary"; then
+  file -- "$p"
+else
+  sed -n '1,200p' -- "$p" | nl -ba
+fi

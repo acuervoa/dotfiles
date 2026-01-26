@@ -1,6 +1,13 @@
 # nav.sh - navegación de ficheros y clipboard
 # shellcheck shell=bash
 
+# Quote seguro para inyectar valores en un comando que ejecutará /bin/sh -c
+# Devuelve el argumento entre comillas simples, escapando comillas simples internas.
+_dotfiles_shq() {
+  # usage: _dotfiles_shq "string"
+  printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
+}
+
 ## Buscar archivo/directorio y abrir
 # - No peta si no eliges nada
 # - Soporta rutas con espacios.
@@ -9,8 +16,10 @@
 # @cmd fo  Buscar archivo/directorio con fd+fzf y abrir (bat/eza)
 # Opciones:
 #   FO_DEFAULT_ROOT (default .)
-#   FO_EXCLUDES (lista separada por espacios; sobreescribe los excludes base)
+#   FO_EXCLUDES (lista separada por espacios; se añade a los excludes base)
 #   FO_AUTO_CD=1 para no pedir confirm al cd
+#   FO_FOLLOW=1 para seguir symlinks (default 0)
+#   FO_MAX_DEPTH=N (default 8; 0 sin límite)
 
 dotfiles_excludes_nul() {
   # prints NUL-separated excludes loaded from config + env overrides
@@ -43,36 +52,34 @@ fo() {
   _req fd fzf || return 1
 
   local root="${FO_DEFAULT_ROOT:-${1:-.}}"
-  local -a fd_args
-  local sel
   local auto_cd="${FO_AUTO_CD:-0}"
 
-  # Excludes por defecto, ampliables via FD_DEFAULT_EXCLUDES
-  local -a excludes
+  local preview_cwd preview_cmd
+  preview_cwd="$(pwd -P)"
+  preview_cmd="fo-preview \"{}\" $(_dotfiles_shq "$preview_cwd")"
+
+  local -a excludes fd_args
   mapfile -d '' -t excludes < <(dotfiles_excludes_nul "${FO_EXCLUDES:-}")
-  fd_args=(--hidden --follow --color=never)
+
+  fd_args=(--hidden --color=never)
+  [ "${FO_FOLLOW:-0}" = "1" ] && fd_args+=(--follow)
+
+  local max_depth="${FO_MAX_DEPTH:-8}"
+  [ "$max_depth" != "0" ] && fd_args+=(--max-depth "$max_depth")
+
   local ex
   for ex in "${excludes[@]}"; do
     fd_args+=(--exclude "$ex")
   done
 
+  local sel
   sel="$(
     fd "${fd_args[@]}" . "$root" 2>/dev/null |
-      FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' fo > ' --preview='
-        if [ -d "{}" ]; then
-          if command -v eza >/dev/null 2>&1; then
-            eza -la --color=always "{}"
-          else
-            \ls -lah {}
-          fi 
-        else 
-          if command -v bat >/dev/null 2>&1; then
-            bat --style=numbers --color=always "{}" 2>/dev/null || file {}
-          else
-            file {}
-          fi
-        fi
-      ' --preview-window=right,60%
+      sed 's|^\./||' |
+      FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf \
+        --prompt=' fo > ' \
+        --preview="$preview_cmd" \
+        --preview-window=right,60%
   )" || return 0
 
   [ -z "$sel" ] && return 0
@@ -88,46 +95,44 @@ fo() {
   else
     _edit_at "$sel"
   fi
-
 }
 
 # saltar a un directorio reciente (zoxide)
-# - Usa zoxide query -l.
-# - Filtra vacíos y duplicados.
-# - Preview con eza correctamente quoteado.
-# - Verifica que el destino sigue existiendo.
 # @cmd cdf  Ir a un directorio (zoxide+fzf si esta disponible; si no, fd+fzf)
+# Opciones (fallback fd):
+#   CDF_EXCLUDES (lista separada por espacios; se añade a excludes base)
+#   CDF_FOLLOW=1 para seguir symlinks (default 0)
+#   CDF_MAX_DEPTH=N (default 8; 0 sin límite)
 cdf() {
   _req fzf || return 1
 
   local root="${1:-.}"
   local dir
 
+  local preview_cwd preview_cmd
+  preview_cwd="$(pwd -P)"
+  preview_cmd="fo-preview \"{}\" $(_dotfiles_shq "$preview_cwd")"
+
   if command -v zoxide >/dev/null 2>&1; then
     dir="$(
       zoxide query -l 2>/dev/null |
-        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' cdf(zoxide) > ' \
-          --preview='
-              if command -v eza >/dev/null 2>&1; then
-                eza -lah --color=always {}
-              else
-                \ls -lah {}
-              fi 
-            ' \
+        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf \
+          --prompt=' cdf(zoxide) > ' \
+          --preview="$preview_cmd" \
           --preview-window=right,60%
     )" || return 0
   else
     _req fd || return 1
 
-    local -a fd_args
-    local -a excludes
-    if [ -n "${FD_DEFAULT_EXCLUDES:-}" ]; then
-      read -r -a excludes <<<"${FD_DEFAULT_EXCLUDES}"
-    else
-      excludes=(.git node_modules vendor .venv dist build target .cache)
-    fi
+    local -a excludes fd_args
+    mapfile -d '' -t excludes < <(dotfiles_excludes_nul "${CDF_EXCLUDES:-}")
 
-    fd_args=(--type d --hidden --follow --color=never)
+    fd_args=(--type d --hidden --color=never)
+    [ "${CDF_FOLLOW:-0}" = "1" ] && fd_args+=(--follow)
+
+    local max_depth="${CDF_MAX_DEPTH:-8}"
+    [ "$max_depth" != "0" ] && fd_args+=(--max-depth "$max_depth")
+
     local ex
     for ex in "${excludes[@]}"; do
       fd_args+=(--exclude "$ex")
@@ -135,14 +140,10 @@ cdf() {
 
     dir="$(
       fd "${fd_args[@]}" . "$root" 2>/dev/null |
-        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf --prompt=' cdf(fd) > ' \
-          --preview='
-              if command -v eza >/dev/null 2>&1; then
-                eza -lah --color=always {}
-              else
-                \ls -lah {}
-              fi 
-            ' \
+        sed 's|^\./||' |
+        FZF_DEFAULT_OPTS='' FZF_DEFAULT_COMMAND='' fzf \
+          --prompt=' cdf(fd) > ' \
+          --preview="$preview_cmd" \
           --preview-window=right,60%
     )" || return 0
   fi
@@ -157,11 +158,9 @@ cdf() {
 }
 
 # mkdir + cd
-# - Crea (mkdir -p) y entra.
-# - Usa cd -- para rutas raras con espacios o guiones iniciales.
 # @cmd take   mkdir -p y cd al directorio
 take() {
-  if [ -z "$1" ]; then
+  if [ -z "${1:-}" ]; then
     printf "Uso: take <directorio>\n" >&2
     return 1
   fi
@@ -169,12 +168,10 @@ take() {
 }
 
 # descomprimir un archivo según su extensión
-# - Comprueba que el archivo existe.
-# - Comprueba que la herramienta necesaria está instalada antes de llamar.
 # @cmd extract  Descomprimir un archivo según su extensión
 extract() {
-  local file="$1"
-  if [ -z "$1" ] || [ ! -f "$1" ]; then
+  local file="${1:-}"
+  if [ -z "$file" ] || [ ! -f "$file" ]; then
     printf "Uso: extract <archivo>\n" >&2
     return 1
   fi
@@ -225,27 +222,21 @@ extract() {
     fi
     ;;
   *)
-    printf "'%s' no es un formato soportado\n" "$1" >&2
+    printf "'%s' no es un formato soportado\n" "$file" >&2
     return 2
     ;;
   esac
 }
 
 # copiar texto al portapapeles
-#
-# - Acepta stdin (echo foo | cb) o argumentos (cb foo bar baz).
-# - Soporta wl-copy, xclip y pbcopy.
-# - No añade salto de línea adicional.
 # @cmd cb   Copiar texto al portapapeles (stdin, texto o contenido de archivos)
 cb() {
-  # Decide backend (Wayland -> wl-copy; X11 -> xclip/xsel; macOS -> pbcopy)
   local runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
   local wayland_sock=""
 
   if [ -n "${WAYLAND_DISPLAY:-}" ]; then
     wayland_sock="$runtime_dir/$WAYLAND_DISPLAY"
   else
-    # No adivinamos wayland-0 a menos que exista
     [ -S "$runtime_dir/wayland-0" ] && wayland_sock="$runtime_dir/wayland-0"
   fi
 
@@ -260,7 +251,6 @@ cb() {
   elif command -v pbcopy >/dev/null 2>&1; then
     clip_cmd=(pbcopy)
   else
-    # Fallback OSC52 si estamos en TTY (tmux/screen/SSH sin X/Wayland)
     if [ -t 1 ]; then
       local data
       if [ "$#" -eq 0 ]; then
@@ -275,7 +265,6 @@ cb() {
     return 1
   fi
 
-  # Input: stdin | files | texto
   if [ "$#" -eq 0 ]; then
     "${clip_cmd[@]}"
     return $?
@@ -306,7 +295,6 @@ proj() {
 
   local root="${PROJECTS_ROOT:-$HOME/Workspace}"
 
-  # Permite sobreescribir raiz al vuelo: proj ~/otra/carpeta
   if [ -n "${1:-}" ]; then
     root="$1"
   fi
@@ -335,12 +323,12 @@ proj() {
         --preview='
             target="'"$root"'/"{}
             if [ -d "$target" ]; then
-              if command -v eza >/dev/null 2>&1; then 
-                eza -lah --color=always "$target"
+              if command -v eza >/dev/null 2>&1; then
+                eza -lah --color=always -- "$target"
               else
-                \ls -lah "$target"
-              fi 
-            fi 
+                \ls -lah -- "$target"
+              fi
+            fi
           ' \
         --preview-window=right,60%
   )" || return 0
@@ -359,15 +347,13 @@ proj() {
     return 1
   }
 
-  # Alimentar zoxide para que aprenda este proyecto
   if command -v zoxide >/dev/null 2>&1; then
     zoxide add "$dest" >/dev/null 2>&1 || true
   fi
-
 }
 
 tproj() {
-  local name="$1"
+  local name="${1:-}"
 
   if [ -z "$name" ]; then
     printf 'Uso: tproj <nombre-proyecto>\n' >&2
@@ -383,7 +369,6 @@ tproj() {
 
   local session="proj-$name"
 
-  # Si la sesión ya existe, cambias a ella y listo
   if tmux has-session -t "$session" 2>/dev/null; then
     if [ -n "${TMUX-}" ]; then
       tmux switch-client -t "$session"
@@ -393,20 +378,13 @@ tproj() {
     return 0
   fi
 
-  # Crear nueva sesión en background
   tmux new-session -d -s "$session" -c "$dir" -n dev
-
-  # Ventana dev: Neovim
   tmux send-keys -t "$session:dev" 'nvim .' C-m
 
-  # Ventana shell
   tmux new-window -t "$session" -n shell -c "$dir"
-
-  # Ventana logs
   tmux new-window -t "$session" -n logs -c "$dir"
   tmux send-keys -t "$session:logs" 'docker compose logs -f php' C-m
 
-  # Adjuntar o cambiar cliente según estés ya dentro de tmux o no
   if [ -n "${TMUX-}" ]; then
     tmux switch-client -t "$session"
   else
