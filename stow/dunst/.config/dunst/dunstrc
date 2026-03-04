@@ -67,7 +67,7 @@
     mouse_right_click = close_all
 
     # TIPOGRAFÍA: (corrijo la línea)
-    font = MesloLGS Nerd Font 11
+    font = MesloLGLDZ Nerd Font 10
 
 [experimental]
     per_monitor_dpi = false
