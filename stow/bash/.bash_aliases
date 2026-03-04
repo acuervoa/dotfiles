@@ -45,6 +45,8 @@ if command -v docker >/dev/null 2>&1; then
   alias dcrb='docker compose build --no-cache && docker compose up -d'
   alias dps='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
   alias dil='docker images'
+  # dsh directo a php (tu servicio principal)
+  alias dshp='dsh php'
 fi
 
 # Modernos y seguros
@@ -62,4 +64,3 @@ fi
 alias cls="clear"
 alias reload="source ~/.bashrc"
 alias path='echo "$PATH" | tr ":" "\n"'
-
