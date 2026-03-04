@@ -16,6 +16,7 @@ o.cursorline = true
 o.scrolloff = 8
 o.sidescrolloff = 8
 o.mouse = "a"
+o.guifont = "MesloLGLDZ Nerd Font:h10"
 o.clipboard = "unnamedplus"
 o.ignorecase = true
 o.smartcase = true

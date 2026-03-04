@@ -1,16 +1,16 @@
 return {
-	-- Tema VSCode
+	-- Tema Catppuccin
 	{
-		"Mofiqul/vscode.nvim",
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000,
 		config = function()
-			local c = require("vscode.colors").get_colors()
-			require("vscode").setup({
-				italic_comments = true,
-				group_overrides = { Cursor = { fg = c.vscDarkBlue, bg = c.vscFront, bold = true } },
+			require("catppuccin").setup({
+				flavour = "mocha",
+				integrations = { lualine = true },
 			})
 			vim.o.background = "dark"
-			vim.cmd.colorscheme("vscode")
+			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
 
@@ -72,7 +72,7 @@ return {
 			end
 
 			return {
-				options = { theme = "vscode", globalstatus = true, component_separators = "", section_separators = "" },
+				options = { theme = "catppuccin", globalstatus = true, component_separators = "", section_separators = "" },
 				sections = {
 					lualine_a = { "mode" },
 					lualine_b = { "branch", "diff" },
@@ -142,7 +142,7 @@ return {
 		version = "*",
 		dependencies = { "SmiteshP/nvim-navic", "nvim-tree/nvim-web-devicons" },
 		event = "BufReadPost",
-		opts = { theme = "vscode", show_dirname = false, show_basename = true },
+		opts = { theme = "catppuccin", show_dirname = false, show_basename = true },
 	},
 
 	-- Indent guides (ibl v3)
