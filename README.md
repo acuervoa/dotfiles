@@ -12,16 +12,17 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 ## Tabla de contenidos
 
 1. [Pila y highlights](#pila-y-highlights)
-2. [Estructura del repositorio](#estructura-del-repositorio)
-3. [Requisitos](#requisitos)
-4. [Bootstrap](#bootstrap)
-5. [Rollback](#rollback)
-6. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
-7. [Documentación dinámica](#documentación-dinámica)
-8. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
-9. [Componentes principales](#componentes-principales)
-10. [Validaciones rápidas](#validaciones-rápidas)
-11. [Licencia](#licencia)
+2. [UX baseline](#ux-baseline)
+3. [Estructura del repositorio](#estructura-del-repositorio)
+4. [Requisitos](#requisitos)
+5. [Bootstrap](#bootstrap)
+6. [Rollback](#rollback)
+7. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
+8. [Documentación dinámica](#documentación-dinámica)
+9. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
+10. [Componentes principales](#componentes-principales)
+11. [Validaciones rápidas](#validaciones-rápidas)
+12. [Licencia](#licencia)
 
 ---
 
@@ -36,6 +37,14 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 - **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, overseer+harpoon, conform+nvim-lint y plantillas por lenguaje (JS/TS, Python, Go, Rust, PHP), tests con neotest.
 - **tmux** con prefix `Ctrl+s`, thumbs/copycat/fzf, binds de sesiones rápidas y popups.
 - **Stack gráfico** tematizado (Catppuccin Mocha): i3, polybar, picom, dunst, rofi, kitty.
+
+---
+
+## UX baseline
+
+- **Fuente**: MesloLGLDZ Nerd Font @ 10
+- **Tema**: Catppuccin (mocha)
+- **Prefijos**: tmux `C-s`, Neovim `Space`
 
 ---
 
@@ -56,7 +65,6 @@ dotfiles/
 │   └── install_deps.sh # Script de instalación de dependencias
 ├── .backups/         # Backups de configuraciones existentes
 ├── .manifests/       # Manifests (bootstrap/rollback)
-├── .gitmodules       # Plugins (tmux/vim) como submódulos
 ├── pkglist-arch.txt  # Lista de paquetes para Arch Linux
 ├── pkglist-debian.txt  # Lista de paquetes para Debian/Ubuntu
 ├── pkglist-fedora.txt  # Lista de paquetes para Fedora
@@ -68,7 +76,7 @@ dotfiles/
 ## Requisitos
 
 1. **GNU Stow** (y herramientas básicas): el script `scripts/install_deps.sh` instala dependencias en Arch/Debian/Fedora/WSL2.
-2. **Submódulos** (plugins tmux/vim): si clonas el repo, inicializa submódulos para traer los plugins.
+2. **tmux plugins (TPM)**: `bootstrap.sh` instala TPM y plugins automáticamente en `${XDG_DATA_HOME:-~/.local/share}/tmux/plugins`.
 
 Instalar dependencias (CLI core, recomendado para empezar):
 
@@ -84,11 +92,7 @@ bash ./scripts/install_deps.sh --all
 bash ./scripts/install_deps.sh --core --gui
 ```
 
-Inicializar submódulos:
-
-```bash
-git submodule update --init --recursive
-```
+No hay submódulos que inicializar.
 
 ---
 
@@ -102,7 +106,6 @@ El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups
 Opcional:
 - Instalar solo paquetes no-GUI (WSL/servers): `bash ./scripts/bootstrap.sh --core-only`
 - Forzar GUI (desktop): `bash ./scripts/bootstrap.sh --gui`
-- Inicializar submódulos durante el bootstrap: `bash ./scripts/bootstrap.sh --init-submodules`
 - Modo no interactivo: `bash ./scripts/bootstrap.sh --yes`
 
 **Acciones principales:**
