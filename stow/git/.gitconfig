@@ -12,9 +12,7 @@
 
 [core]
     editor = nvim
-    # Si tienes `delta`, puedes activarlo en ~/.gitconfig_local:
-    #   [core]
-    #       pager = delta
+    pager = delta
     hooksPath = ~/.git-hooks
 
 [color]
