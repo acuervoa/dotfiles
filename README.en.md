@@ -16,10 +16,7 @@ git clone https://github.com/<your-user>/dotfiles.git
 cd dotfiles
 ```
 
-Init submodules (tmux/vim plugins):
-```bash
-git submodule update --init --recursive
-```
+tmux plugins: bootstrap installs TPM + plugins under `${XDG_DATA_HOME:-$HOME/.local/share}/tmux/plugins`.
 
 Install deps:
 ```bash
@@ -63,7 +60,6 @@ scripts/   # bootstrap, rollback, install_deps
 .backups/  # backups from bootstrap
 .manifests/# manifests of applied operations
 pkglist-*.txt
-.gitmodules
 ```
 
 ---
