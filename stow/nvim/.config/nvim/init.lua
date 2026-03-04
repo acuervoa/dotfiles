@@ -2,6 +2,7 @@
 
 -- move backup, swap and undo files to .cache
 local cache = os.getenv("HOME") .. "/.cache/nvim"
+vim.g.coc_data_home = vim.fn.expand("~/.local/share/coc")
 
 local function ensure_dir(path)
 	if vim.fn.isdirectory(path) == 0 then
