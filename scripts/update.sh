@@ -77,9 +77,9 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
+
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }

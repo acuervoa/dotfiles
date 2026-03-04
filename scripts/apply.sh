@@ -73,23 +73,12 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
+
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
-
-resolve_host() {
-  if [ -n "${DOTFILES_HOST:-}" ]; then
-    printf '%s' "$DOTFILES_HOST"
-    return 0
-  fi
-
-  if command -v hostname >/dev/null 2>&1; then
-    hostname -s 2>/dev/null || hostname 2>/dev/null || true
-  fi
-}
 
 action() {
   local kind="$1"

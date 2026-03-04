@@ -62,22 +62,12 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
 
-# state dirs (XDG)
-STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
-BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
-MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
-mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
-# compat symlinks inside repo (optional but keeps old paths working)
-ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
-ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
-STOW_DIR="$REPO_DIR/stow"
-BACKUP_BASE="$BACKUP_BASE"
-MANIFEST_DIR="$MANIFEST_DIR"
+ensure_state_dirs
+ensure_compat_links
 
 SELECTED_INPUT="${1:-latest}"
 
@@ -129,12 +119,6 @@ require_cmd() {
   done
 }
 
-is_wsl() {
-  [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
-  [ -r /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version && return 0
-  return 1
-}
-
 find_latest_dir() {
   local base="$1"
   [ -d "$base" ] || return 1
@@ -157,19 +141,23 @@ pick_manifest() {
   fi
 
   if [ "$SELECTED_INPUT" = "latest" ]; then
-    find_latest_dir "$MANIFEST_DIR" || return 1
+    local latest=""
+    local f
+
+    shopt -s nullglob
+    for f in "$MANIFEST_DIR"/*.manifest; do
+      latest="$f"
+    done
+    shopt -u nullglob
+
+    [ -n "$latest" ] || return 1
+    printf '%s' "$latest"
     return 0
   fi
 
   local candidate="$MANIFEST_DIR/$SELECTED_INPUT.manifest"
   [ -f "$candidate" ] || return 1
   printf '%s' "$candidate"
-}
-
-load_manifest() {
-  local manifest="$1"
-  # shellcheck disable=SC1090
-  source "$manifest"
 }
 
 main() {
@@ -183,17 +171,6 @@ main() {
   [ -d "$STOW_DIR" ] || {
     printf '[ERROR] Directorio stow no encontrado en: %s\n' "$STOW_DIR" >&2
     exit 1
-  }
-
-  resolve_host() {
-    if [ -n "${DOTFILES_HOST:-}" ]; then
-      printf '%s' "$DOTFILES_HOST"
-      return 0
-    fi
-
-    if command -v hostname >/dev/null 2>&1; then
-      hostname -s 2>/dev/null || hostname 2>/dev/null || true
-    fi
   }
 
   load_host_profile() {
@@ -224,11 +201,21 @@ main() {
     fi
   }
 
+  local -a home_pkgs=()
+  local -a config_pkgs=()
+  local backup_dir_abs="" backup_dir_rel="" backup_dir_state_rel="" backup_needed=""
+
   local manifest=""
   if manifest="$(pick_manifest 2>/dev/null)"; then
     MANIFEST_USED=true
     info "Usando manifest: $manifest"
-    load_manifest "$manifest"
+
+    manifest_get_array "$manifest" home_pkgs home_pkgs
+    manifest_get_array "$manifest" config_pkgs config_pkgs
+    manifest_get_string "$manifest" backup_dir_abs backup_dir_abs
+    manifest_get_string "$manifest" backup_dir_rel backup_dir_rel
+    manifest_get_string "$manifest" backup_dir_state_rel backup_dir_state_rel
+    manifest_get_bool "$manifest" backup_needed backup_needed
 
     if [ "$GUI_MODE" != "auto" ]; then
       warn "Se encontró manifest: ignorando --core-only/--gui (usa el manifest)."
@@ -270,7 +257,11 @@ main() {
   local selected_backup=""
 
   if [ "$MANIFEST_USED" = "true" ]; then
-    if [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
+    if [ -n "${backup_dir_abs:-}" ] && [ -d "$backup_dir_abs" ]; then
+      selected_backup="$backup_dir_abs"
+    elif [ -n "${backup_dir_state_rel:-}" ] && [ -d "$BACKUP_BASE/$backup_dir_state_rel" ]; then
+      selected_backup="$BACKUP_BASE/$backup_dir_state_rel"
+    elif [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
       selected_backup="$REPO_DIR/$backup_dir_rel"
     else
       case "${backup_needed:-legacy}" in
@@ -278,7 +269,7 @@ main() {
           selected_backup=""
           ;;
         true)
-          warn "Manifest indica backup_needed=true pero no existe el backup: ${backup_dir_rel:-<vacío>}"
+          warn "Manifest indica backup_needed=true pero no existe el backup: ${backup_dir_abs:-${backup_dir_rel:-<vacío>}}"
           selected_backup=""
           ;;
         legacy)

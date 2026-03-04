@@ -53,20 +53,9 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
 
-# state dirs (XDG)
-STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
-BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
-MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
-mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
-
-# compat symlinks inside repo (optional but keeps old paths working)
-ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
-ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
-STOW_DIR="$REPO_DIR/stow"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
@@ -86,23 +75,6 @@ require_cmd() {
       return 1
     fi
   done
-}
-
-is_wsl() {
-  [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
-  [ -r /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version && return 0
-  return 1
-}
-
-resolve_host() {
-  if [ -n "${DOTFILES_HOST:-}" ]; then
-    printf '%s' "$DOTFILES_HOST"
-    return 0
-  fi
-
-  if command -v hostname >/dev/null 2>&1; then
-    hostname -s 2>/dev/null || hostname 2>/dev/null || true
-  fi
 }
 
 load_host_profile() {
@@ -170,6 +142,28 @@ check_stow_conflicts() {
   return 0
 }
 
+check_tmux_tpm() {
+  local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+  local tpm="$data_home/tmux/plugins/tpm/tpm"
+  if ! command -v tmux >/dev/null 2>&1; then
+    warn "tmux: no está instalado (TPM/plugins no aplican)"
+    return 0
+  fi
+  if ! command -v git >/dev/null 2>&1; then
+    warn "git: no está instalado (TPM no podrá clonar plugins)"
+    return 0
+  fi
+
+  if [ -x "$tpm" ]; then
+    info "tmux TPM: OK ($tpm)"
+    return 0
+  fi
+
+  warn "tmux TPM: no encontrado ($tpm)"
+  warn "bootstrap instalará TPM/plugins automáticamente (o puedes pasar --skip-tmux-plugins)."
+  return 0
+}
+
 main() {
   info "Repo: $REPO_DIR"
   info "Stow: $STOW_DIR"
@@ -233,6 +227,21 @@ main() {
     else
       warn "No existe scripts/check.sh (omito lint)"
     fi
+  fi
+
+  # Chequeos extra: tmux plugins
+  local have_tmux=false
+  local p
+  for p in "${home_pkgs[@]}"; do
+    if [ "$p" = "tmux" ]; then
+      have_tmux=true
+      break
+    fi
+  done
+
+  if [ "$have_tmux" = "true" ]; then
+    action TMUX "Verificando TPM"
+    check_tmux_tpm || return 1
   fi
 
   info "Doctor OK: listo para bootstrap/rollback."

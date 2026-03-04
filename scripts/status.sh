@@ -46,42 +46,12 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
 
-# state dirs (XDG)
-STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
-BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
-MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
-mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
-
-# compat symlinks inside repo (optional but keeps old paths working)
-ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
-ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
-STOW_DIR="$REPO_DIR/stow"
-MANIFEST_DIR="$MANIFEST_DIR"
-BACKUP_BASE="$BACKUP_BASE"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 info() { printf '[INFO] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*" >&2; }
-
-is_wsl() {
-  [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
-  [ -r /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version && return 0
-  return 1
-}
-
-resolve_host() {
-  if [ -n "${DOTFILES_HOST:-}" ]; then
-    printf '%s' "$DOTFILES_HOST"
-    return 0
-  fi
-
-  if command -v hostname >/dev/null 2>&1; then
-    hostname -s 2>/dev/null || hostname 2>/dev/null || true
-  fi
-}
 
 load_host_profile() {
   local host profile_dir default_profile host_profile
@@ -115,39 +85,6 @@ load_host_profile() {
   fi
 
   info "Perfil default: $default_profile"
-}
-
-latest_manifest() {
-  [ -d "$MANIFEST_DIR" ] || return 1
-
-  local latest=""
-  local f
-
-  shopt -s nullglob
-  for f in "$MANIFEST_DIR"/*.manifest; do
-    latest="$f"
-  done
-  shopt -u nullglob
-
-  [ -n "$latest" ] || return 1
-  printf '%s' "$latest"
-}
-
-latest_backup() {
-  [ -d "$BACKUP_BASE" ] || return 1
-
-  local latest=""
-  local d
-
-  shopt -s nullglob
-  for d in "$BACKUP_BASE"/*; do
-    [ -d "$d" ] || continue
-    latest="$d"
-  done
-  shopt -u nullglob
-
-  [ -n "$latest" ] || return 1
-  printf '%s' "$latest"
 }
 
 main() {
@@ -190,14 +127,44 @@ main() {
   info "Paquetes -> $HOME: ${home_pkgs[*]}"
   info "Paquetes -> $HOME/.config: dotfiles ${config_pkgs[*]}"
 
+  local have_tmux=false
+  local p
+  for p in "${home_pkgs[@]}"; do
+    if [ "$p" = "tmux" ]; then
+      have_tmux=true
+      break
+    fi
+  done
+
+  if [ "$have_tmux" = "true" ]; then
+    local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+    local tpm="$data_home/tmux/plugins/tpm/tpm"
+    if [ -x "$tpm" ]; then
+      info "tmux TPM: OK ($tpm)"
+    else
+      warn "tmux TPM: missing ($tpm)"
+    fi
+  fi
+
   echo
   local mf
   if mf="$(latest_manifest 2>/dev/null)"; then
     info "Manifest (latest): $mf"
-    # shellcheck disable=SC1090
-    source "$mf"
-    info "Manifest host: ${host:-}"
-    info "Manifest timestamp: ${timestamp:-}"
+    local mf_host mf_timestamp mf_backup_abs mf_backup_rel
+    manifest_get_string "$mf" host mf_host
+    manifest_get_string "$mf" timestamp mf_timestamp
+    manifest_get_string "$mf" backup_dir_abs mf_backup_abs
+    manifest_get_string "$mf" backup_dir_rel mf_backup_rel
+    info "Manifest host: ${mf_host:-}"
+    info "Manifest timestamp: ${mf_timestamp:-}"
+
+    if [ -n "$mf_backup_abs" ]; then
+      info "Manifest backup: $mf_backup_abs"
+    elif [ -n "$mf_backup_rel" ]; then
+      info "Manifest backup: $REPO_DIR/${mf_backup_rel}"
+    else
+      info "Manifest backup: (none)"
+    fi
   else
     info "Manifest: (ninguno)"
   fi

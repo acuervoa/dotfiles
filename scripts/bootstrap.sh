@@ -15,6 +15,8 @@ Opciones:
   --core-only            Instala solo paquetes no-GUI (útil en WSL/servers)
   --gui                  Fuerza incluir paquetes GUI (desktop)
   --init-submodules      Inicializa submódulos (git) si aplica
+  --skip-tmux-plugins     No instala plugins de tmux via TPM
+  --strict-tmux-plugins   Falla si TPM no puede instalar plugins
   -h, --help             Muestra esta ayuda
 
 Variables de entorno:
@@ -27,6 +29,8 @@ ASSUME_YES=false
 INIT_SUBMODULES=false
 GUI_MODE="auto" # auto|on|off
 BACKUP_NEEDED=false
+SKIP_TMUX_PLUGINS=false
+STRICT_TMUX_PLUGINS=false
 
 while (($# > 0)); do
   case "$1" in
@@ -45,6 +49,12 @@ while (($# > 0)); do
   --init-submodules)
     INIT_SUBMODULES=true
     ;;
+  --skip-tmux-plugins)
+    SKIP_TMUX_PLUGINS=true
+    ;;
+  --strict-tmux-plugins)
+    STRICT_TMUX_PLUGINS=true
+    ;;
   -h | --help)
     usage
     exit 0
@@ -59,24 +69,15 @@ while (($# > 0)); do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_DIR="${DOTFILES:-$DEFAULT_REPO}"
 
-# state dirs (XDG)
-STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
-BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
-MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
-mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
-# compat symlinks inside repo (optional but keeps old paths working)
-ln -sfn "$BACKUP_BASE" "$BACKUP_BASE" 2>/dev/null || true
-ln -sfn "$MANIFEST_DIR" "$MANIFEST_DIR" 2>/dev/null || true
-REPO_DIR="${REPO_DIR/#\~/$HOME}"
-STOW_DIR="$REPO_DIR/stow"
+ensure_state_dirs
+ensure_compat_links
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
-MANIFEST_DIR="$MANIFEST_DIR"
 MANIFEST_FILE="$MANIFEST_DIR/$TIMESTAMP.manifest"
 
 # Paquetes por defecto (se pueden sobreescribir por perfil de host)
@@ -147,6 +148,108 @@ run_cmd() {
   "$@"
 }
 
+maybe_install_tmux_plugins() {
+  [ "$SKIP_TMUX_PLUGINS" = "true" ] && return 0
+
+  if ! command -v tmux >/dev/null 2>&1; then
+    warn "tmux no está instalado; omito instalación de plugins."
+    return 0
+  fi
+  if ! command -v git >/dev/null 2>&1; then
+    warn "git no está instalado; TPM no podrá clonar plugins."
+    return 0
+  fi
+
+  local data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+  local plugins_dir="$data_home/tmux/plugins"
+  if [ -L "$plugins_dir" ]; then
+    printf '[ERROR] %s es un symlink; no instalo plugins para evitar escribir en un path inesperado.\n' "$plugins_dir" >&2
+    return 1
+  fi
+  if [ ! -d "$plugins_dir" ]; then
+    run_cmd mkdir -p "$plugins_dir"
+  fi
+
+  local tpm="$plugins_dir/tpm/tpm"
+  local install="$plugins_dir/tpm/bin/install_plugins"
+
+  if [ ! -x "$tpm" ]; then
+    if [ -e "$plugins_dir/tpm" ]; then
+      printf '[ERROR] Existe %s pero no parece un TPM válido (no ejecutable). Elíminalo y reintenta.\n' "$plugins_dir/tpm" >&2
+      return 1
+    fi
+
+    action TMUX "Clonando TPM -> $plugins_dir/tpm"
+    if [ "$DRY_RUN" = "true" ]; then
+      return 0
+    fi
+    git clone --depth 1 https://github.com/tmux-plugins/tpm "$plugins_dir/tpm"
+  fi
+
+  if [ ! -x "$tpm" ] || [ ! -x "$install" ]; then
+    printf '[ERROR] TPM no quedó instalado correctamente en %s\n' "$plugins_dir/tpm" >&2
+    return 1
+  fi
+
+  action TMUX "Instalando plugins via TPM (TMUX_PLUGIN_MANAGER_PATH=$plugins_dir)"
+  if [ "$DRY_RUN" = "true" ]; then
+    return 0
+  fi
+
+  tmux start-server
+  tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$plugins_dir/"
+  local out ec
+  out="$("$install" 2>&1)"
+  ec=$?
+  printf '%s\n' "$out"
+
+  if [ "$ec" -ne 0 ]; then
+    local -a failed_plugins=()
+    local p
+    while IFS= read -r p; do
+      [ -n "$p" ] && failed_plugins+=("$p")
+    done < <(printf '%s\n' "$out" | awk '/download fail/{gsub(/"/,"",$1); print $1}')
+
+    warn "TPM falló instalando uno o más plugins (posible causa: git auth/HTTPS con GitHub)."
+    if [ "${#failed_plugins[@]}" -gt 0 ]; then
+      warn "Plugins fallidos: ${failed_plugins[*]}"
+    fi
+    warn "Puedes reintentar: $install"
+    warn "O saltarlo: bootstrap --skip-tmux-plugins"
+    [ "$STRICT_TMUX_PLUGINS" = "true" ] && return 1
+  fi
+}
+
+cleanup_legacy_links() {
+  # Remove legacy stow-managed symlinks that are no longer part of the repo.
+  # This prevents "stow -S" from leaving stale links around on upgrades.
+  local -a paths=(
+    "$HOME/.vim"
+    "$HOME/.vimrc"
+    "$HOME/.tmux/plugins"
+  )
+
+  local p target rel
+  for p in "${paths[@]}"; do
+    [ -L "$p" ] || continue
+    target="$(readlink -- "$p" 2>/dev/null || true)"
+
+    case "$target" in
+    *"/stow/vim/"* | *"/stow/tmux/.tmux/plugins"*)
+      BACKUP_NEEDED=true
+
+      action BACKUP "mkdir -p $BACKUP_DIR"
+      run_cmd mkdir -p "$BACKUP_DIR"
+
+      rel="${p#$HOME/}"
+      action MOVE "Moviendo symlink legacy $p -> $BACKUP_DIR/$rel"
+      run_cmd mkdir -p "$BACKUP_DIR/$(dirname -- "$rel")"
+      run_cmd mv -- "$p" "$BACKUP_DIR/$rel"
+      ;;
+    esac
+  done
+}
+
 confirm() {
   local msg="${1:-¿Continuar? [y/N] }" ans
 
@@ -200,6 +303,8 @@ home_pkgs=(${HOME_PKGS[*]})
 config_pkgs=(${CONFIG_PKGS[*]})
 backup_needed="pending"
 backup_dir_rel=""
+backup_dir_abs=""
+backup_dir_state_rel=""
 exit_code=""
 EOF
 }
@@ -217,9 +322,13 @@ finalize_manifest() {
     if [ "$BACKUP_NEEDED" = "true" ]; then
       echo "backup_needed=\"true\""
       echo "backup_dir_rel=\".backups/$TIMESTAMP\""
+      echo "backup_dir_abs=\"$BACKUP_DIR\""
+      echo "backup_dir_state_rel=\"$TIMESTAMP\""
     else
       echo "backup_needed=\"false\""
       echo "backup_dir_rel=\"\""
+      echo "backup_dir_abs=\"\""
+      echo "backup_dir_state_rel=\"\""
     fi
   } >>"$MANIFEST_FILE"
 }
@@ -345,13 +454,23 @@ main() {
   write_manifest
   trap 'finalize_manifest "$?"' EXIT
 
+  cleanup_legacy_links
+
   # Procesar paquetes de $HOME
+  local installed_tmux=false
   local pkg
   for pkg in "${HOME_PKGS[@]}"; do
     handle_conflicts "$pkg" "$HOME"
     action STOW "Instalando '$pkg' en $HOME"
     run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
+    if [ "$pkg" = "tmux" ]; then
+      installed_tmux=true
+    fi
   done
+
+  if [ "$installed_tmux" = "true" ]; then
+    maybe_install_tmux_plugins
+  fi
 
   # Paquete meta (perfiles de host). Se instala siempre.
   if [ -d "$STOW_DIR/dotfiles" ]; then
