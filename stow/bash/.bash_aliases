@@ -71,3 +71,18 @@ if command -v tldr >/dev/null 2>&1; then
 else
   alias tldr() { echo "tldr not installed. Install: brew install tldr or sudo pacman -S tldr"; }
 fi
+
+# PHP shortcuts (docker compose exec php)
+if command -v docker >/dev/null 2>&1 && docker compose ps php >/dev/null 2>&1; then
+  alias p='docker compose exec php php'
+  alias part='docker compose exec php php artisan'
+  alias ptest='docker compose exec php php vendor/bin/phpunit'
+  alias pstan='docker compose exec php php vendor/bin/phpstan'
+  alias pint='docker compose exec php ./vendor/bin/pint'
+  alias pcc='docker compose exec php php artisan cache:clear'
+  alias pmig='docker compose exec php php artisan migrate'
+  alias pseed='docker compose exec php php artisan db:seed'
+  alias pcf='docker compose exec php php artisan config:cache'
+  alias proute='docker compose exec php php artisan route:list'
+  alias pclear='docker compose exec php php artisan view:clear && docker compose exec php php artisan cache:clear && docker compose exec php php artisan config:clear'
+fi
