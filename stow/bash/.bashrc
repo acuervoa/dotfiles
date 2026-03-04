@@ -37,6 +37,10 @@ shopt -s cdspell      # corrige pequeñas faltas al hacer cd
 export EDITOR=nvim
 export VISUAL=nvim
 
+# Composer
+export COMPOSER_HOME="$HOME/.local/share/composer"
+export COMPOSER_CACHE_DIR="$HOME/.cache/composer"
+
 export PAGER="less -R"
 export LESS="-RFX"
 
@@ -166,8 +170,8 @@ move_to_end "/nix/var/nix/profiles/default/bin"
 export PATH
 
 # PATH y extras ligeros
-if [ -d "$HOME/.config/composer/vendor/bin" ]; then
-  PATH="$HOME/.config/composer/vendor/bin:$PATH"
+if [ -d "$HOME/.local/share/composer/vendor/bin" ]; then
+  PATH="$HOME/.local/share/composer/vendor/bin:$PATH"
 fi
 
 # -- Atuin (historial avanzado) + binding robusto de C-r ----
