@@ -69,7 +69,6 @@ alias path='echo "$PATH" | tr ":" "\n"'
 if command -v tldr >/dev/null 2>&1; then
   alias tldr="tldr"
 fi
-fi
 # PHP shortcuts (docker compose exec php)
 if command -v docker >/dev/null 2>&1 && docker compose ps php >/dev/null 2>&1; then
   alias p='docker compose exec php php'
