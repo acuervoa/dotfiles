@@ -37,6 +37,9 @@ shopt -s cdspell      # corrige pequeñas faltas al hacer cd
 export EDITOR=nvim
 export VISUAL=nvim
 
+export PAGER="less -R"
+export LESS="-RFX"
+
 # - ble.sh (autosuggestions + syntax highlighting tipo zsh)
 if [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
   # --noattach: deja que el resto de cosas  (atuin, prompt, etc.) se inicializen primero
@@ -44,6 +47,11 @@ if [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
   source /usr/share/blesh/ble.sh --noattach
 fi
 
+
+# Zoxide - smarter cd
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init bash)"
+fi
 # Readline/completion más cómodo (case-insensitive, menú)
 # Sólo si NO esta ble.sh
 if [[ -z ${BLE_VERSION-} ]]; then
@@ -197,5 +205,8 @@ fi
 
 # Cargar configuraciones locales si existen
 if [ -f "${HOME}/.bashrc_local" ]; then
-    . "${HOME}/.bashrc_local"
+  . "${HOME}/.bashrc_local"
 fi
+
+# OpenClaw Completion
+source "/home/acuervo/.openclaw/completions/openclaw.bash"
