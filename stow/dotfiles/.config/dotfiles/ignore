@@ -14,13 +14,6 @@ target
 .venv
 __pycache__
 
-# heavy vendored repos inside dotfiles
-stow/tmux/.tmux/plugins/**/.git
-stow/tmux/.tmux/plugins/**/docs
-stow/tmux/.tmux/plugins/**/doc
-stow/tmux/.tmux/plugins/**/images
-stow/tmux/.tmux/plugins/**/assets
-
 # git internals (noise)
 .git
 

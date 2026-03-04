@@ -1,6 +1,3 @@
-stow/tmux/.tmux/plugins/
-stow/vim/.vim/plugged/
-
 /config/yazi/plugins/
 /config/yazi/flavors/
 

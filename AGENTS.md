@@ -143,6 +143,4 @@ Applies under `stow/nvim/.config/nvim`.
 
 ## Vendored / third-party code
 Avoid editing these unless explicitly asked:
-- `stow/vim/.vim/plugged/**`
-- `stow/tmux/.tmux/plugins/**`
 - `stow/yazi/.config/yazi/plugins/**` (often vendored)
