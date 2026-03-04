@@ -4,7 +4,7 @@ configuration {
 
   show-icons: true;
   icon-theme: "Papirus-Dark";
-  font: "MesloGLDZ Nerd Font 10";
+  font: "MesloLGLDZ Nerd Font 10";
 
   matching: "normal";
   tokenize: true;
@@ -40,4 +40,3 @@ window { width: 45%; }
 listview { columns: 3; spacing: 8px; dynamic: true; }
 
 @theme "~/.config/rofi/themes/catppuccin-mocha-andres-color.rasi"
-

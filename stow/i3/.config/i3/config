@@ -5,7 +5,7 @@
 # ------------ Variables base
 set $mod Mod4
 set $term kitty
-set $rofi rofi -font 'Noto Sans 13'
+set $rofi rofi -font 'MesloLGLDZ Nerd Font 10'
 set $volscript ~/.config/dunst/scripts/volctl
 set $micscript ~/.config/dunst/scripts/micctl
 set $refresh_polybar ~/.config/polybar/scripts/hook_refresh.sh
@@ -43,9 +43,9 @@ exec_always --no-startup-id $ext_detect
 # LANZADORES
 # =======================
 # Lanzador de aplicaciones (Rofi)
-bindsym $mod+d exec --no-startup-id rofi -modi run -show drun -show-icons -font "Noto Sans 13"
-bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "Noto Sans 13"
-bindsym $mod+Shift+d exec --no-startup-id rofi -show window -show-icons -font "Noto Sans 13"
+bindsym $mod+d exec --no-startup-id rofi -modi run -show drun -show-icons -font "MesloLGLDZ Nerd Font 10"
+bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10"
+bindsym $mod+Shift+d exec --no-startup-id rofi -show window -show-icons -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
 
 # =======================
@@ -244,5 +244,4 @@ for_window [window_role="task_dialog"] floating enable
 for_window [class="Pavucontrol|Nm-connection|Blueman-manager|flameshot|File-roller"] floating enable
 for_window [title="Picture-in-Picture"] floating enable, sticky enable
 for_window [class="Alacritty"] floating disable
-
 
