@@ -66,7 +66,7 @@ alias reload="source ~/.bashrc"
 alias path='echo "$PATH" | tr ":" "\n"'
 
 # tldr - simplified man pages (install: brew install tldr or sudo pacman -S tldr)
-if command -v tldr >/dev/null 2>&1; then
+if command -v tldr || command -v tldR >/dev/null 2>&1; then
   alias tldr="tldr"
 else
   alias tldr() { echo "tldr not installed. Install: brew install tldr or sudo pacman -S tldr"; }
