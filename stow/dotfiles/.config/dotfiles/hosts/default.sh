@@ -11,6 +11,6 @@ HOME_PKGS=(bash git tmux bin)
 # Packages that include the `.config/` prefix inside their stow package.
 # These should be stowed with target $HOME (not $HOME/.config).
 # shellcheck disable=SC2034  # read by bootstrap.sh/rollback.sh via source
-CONFIG_CORE_PKGS=(atuin blesh btop lazygit lnav mise nvim rclone yazi)
+CONFIG_CORE_PKGS=(atuin blesh btop cava lazygit lnav mise nvim rclone yazi)
 # shellcheck disable=SC2034  # read by bootstrap.sh/rollback.sh via source
 CONFIG_GUI_PKGS=(albert copyq dunst flameshot i3 kitty picom polybar rofi Nextcloud code obsidian)
