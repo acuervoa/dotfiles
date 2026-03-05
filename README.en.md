@@ -106,6 +106,7 @@ bash ./scripts/rollback.sh latest
 ---
 
 ## Repo layout
+
 ```
 stow/      # packages for stow (bash, git, nvim, tmux, ...)
 scripts/   # bootstrap, rollback, install_deps
@@ -117,6 +118,7 @@ pkglist-*.txt
 ---
 
 ## Manual Stow (alt)
+
 ```bash
 stow -d stow -t "$HOME" -S bash  # install
 stow -d stow -t "$HOME" -D bash  # uninstall
@@ -125,6 +127,7 @@ stow -d stow -t "$HOME" -D bash  # uninstall
 ---
 
 ## Quick checks
+
 ```bash
 for p in ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi,nvim}; do
   [ -L "$p" ] && echo "OK $p" || echo "MISSING $p"
