@@ -60,6 +60,11 @@ Use these instead:
 - Bootstrap safety: `bash ./scripts/bootstrap.sh --dry-run`
 - Neovim loads: `nvim --headless "+lua require('...')" +qa`
 
+Examples:
+- `bash -n scripts/bootstrap.sh` + `shellcheck scripts/bootstrap.sh`
+- `bash -n stow/bash/.bash_lib/aliases.sh` + `shellcheck stow/bash/.bash_lib/aliases.sh`
+- `nvim --headless "+lua require('config.options')" +qa`
+
 Note: Neovim config integrates external project tooling (e.g. `pytest`, `go test`,
 `phpunit`) for *other repos*, not for this dotfiles repo.
 
@@ -70,10 +75,12 @@ Note: Neovim config integrates external project tooling (e.g. `pytest`, `go test
 - Prefer updating existing scripts/configs over adding new ones.
 - Add new settings near related ones; don’t scatter knobs across files.
 - Avoid hardcoding machine-specific paths; prefer env vars (`$HOME`, `$XDG_*`).
+- Keep changes reversible and easy to rollback.
 
 ### Git + commits
 - Prefer Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`).
 - This repo’s `commit-msg` hook rejects messages containing `WIP`/`tmp`.
+- Do not bypass hooks (`--no-verify`) unless explicitly requested.
 
 ### Secrets & sensitive files (IMPORTANT)
 - Put machine-specific/secret values in untracked local files:
@@ -101,6 +108,7 @@ Applies to `scripts/*.sh` and `stow/bash/.bash_lib/*.sh`.
   - Ask confirmation before destructive actions (pattern: `_confirm`).
 - Naming:
   - Function names are short but descriptive (`rgf`, `docps`, `dlogs`); keep existing style.
+  - Variables are `snake_case`; keep existing casing per file.
 
 ### Lua (Neovim config)
 Applies under `stow/nvim/.config/nvim`.
@@ -115,6 +123,8 @@ Applies under `stow/nvim/.config/nvim`.
   - Do not add new plugins casually; if you do, also consider `lazy-lock.json` impact.
   - Keep plugin specs in `stow/nvim/.config/nvim/lua/plugins/*.lua`.
   - Keep language-specific config in `stow/nvim/.config/nvim/lua/lang/*.lua`.
+- Error handling:
+  - Prefer `vim.notify` for user-facing errors; avoid hard `error(...)` in config paths.
 - Tooling (optional on host):
   - Format via `stylua`.
   - Lint via `luacheck`.
@@ -123,10 +133,12 @@ Applies under `stow/nvim/.config/nvim`.
 - Match the file’s existing formatting and quoting style.
 - Prefer minimal, reversible changes (dotfiles should be easy to rollback).
 - If a setting is version-sensitive, add a short inline comment.
+- Keep key ordering and section grouping consistent with the file.
 
 ## Stow package conventions
 - A package’s internal paths should mirror the target paths in `$HOME`/`$XDG_CONFIG_HOME`.
 - Prefer adding/adjusting config inside `stow/<pkg>/...` rather than editing files in `$HOME`.
+- New files should match target filenames/locations (avoid ad-hoc suffixes).
 - If you add a new top-level package that should be deployed by scripts, also update:
   - `HOME_PKGS` / `CONFIG_PKGS` in `scripts/bootstrap.sh` and `scripts/rollback.sh`.
 - Avoid machine-specific absolute paths in configs; use env vars and XDG paths.
@@ -136,10 +148,28 @@ Applies under `stow/nvim/.config/nvim`.
 - Avoid `rm -rf` patterns unless explicitly requested; prefer reversible changes.
 - If asked to run bootstrap/rollback, suggest `--dry-run` first and call out what will change.
 
+Do:
+- Use `stow -n` first when unsure.
+- Call out any `$HOME`-modifying command before running it.
+
+Don’t:
+- Run `bootstrap.sh`/`rollback.sh` without an explicit request.
+- Restow or apply packages without a dry-run when behavior is unclear.
+
 ## Useful repo commands
 - Fast search: `rg <pattern>`
 - List files: `rg --files`
 - Show stow packages: `ls stow`
+
+## Common workflows (Stow)
+- Preview a package (safe): `stow -n -v -t "$HOME" <pkg>`
+- Apply a package: `stow -v -t "$HOME" <pkg>`
+- Restow after edits: `stow -R -v -t "$HOME" <pkg>`
+- Remove a package: `stow -D -v -t "$HOME" <pkg>`
+
+Notes:
+- Config packages under `stow/` still target `$HOME` (paths include `.config/...`).
+- Prefer `-n` dry-run before any stow operation.
 
 ## Vendored / third-party code
 Avoid editing these unless explicitly asked:

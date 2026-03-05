@@ -6,12 +6,14 @@ usage() {
 Usage: scripts/check.sh [options]
 
 Runs standardized repo validation for shell code:
-- `bash -n` on `scripts/*.sh` and `stow/bash/.bash_lib/*.sh`
+- `bash -n` on `scripts/*.sh`, `scripts/lib/*.sh`, and `stow/bash/.bash_lib/*.sh`
 - `shellcheck` on the same files (if installed)
+- `shfmt -d` on the same files (if installed)
 
 Options:
   -h, --help        Show this help
   --no-shellcheck   Skip ShellCheck even if installed
+  --no-shfmt        Skip shfmt even if installed
 
 Exit codes:
   0  All enabled checks passed
@@ -32,6 +34,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 NO_SHELLCHECK=false
+NO_SHFMT=false
 
 while (($# > 0)); do
   case "$1" in
@@ -41,6 +44,9 @@ while (($# > 0)); do
     ;;
   --no-shellcheck)
     NO_SHELLCHECK=true
+    ;;
+  --no-shfmt)
+    NO_SHFMT=true
     ;;
   *)
     printf '[ERROR] Unknown option: %s\n' "$1" >&2
@@ -56,6 +62,7 @@ main() {
 
   local -a files=()
   files+=("$REPO_ROOT"/scripts/*.sh)
+  files+=("$REPO_ROOT"/scripts/lib/*.sh)
   files+=("$REPO_ROOT"/stow/bash/.bash_lib/*.sh)
   files+=("$REPO_ROOT"/stow/dotfiles/.config/dotfiles/hosts/*.sh)
 
@@ -69,6 +76,15 @@ main() {
   for f in "${files[@]}"; do
     bash -n "$f"
   done
+
+  if [ "$NO_SHFMT" = "true" ]; then
+    info "Skipping shfmt (--no-shfmt)."
+  elif ! command -v shfmt >/dev/null 2>&1; then
+    warn "shfmt not installed; skipping."
+  else
+    action SHFMT "Format check (shfmt -d)"
+    shfmt -d -i 2 "${files[@]}"
+  fi
 
   if [ "$NO_SHELLCHECK" = "true" ]; then
     info "Skipping shellcheck (--no-shellcheck)."

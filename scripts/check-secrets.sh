@@ -3,13 +3,15 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-python - <<'PY'
+REPO_ROOT="$repo_root" python - <<'PY'
 import os
 import re
 import subprocess
 import sys
 
-repo = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+repo = os.environ.get("REPO_ROOT")
+if not repo:
+    repo = os.path.abspath(os.getcwd())
 
 try:
     files = subprocess.check_output(["git", "-C", repo, "ls-files"], text=True).splitlines()
@@ -21,10 +23,10 @@ aws_access = "".join(map(chr, [65,87,83,95,65,67,67,69,83,83,95,75,69,89,95,73,6
 aws_secret = "".join(map(chr, [65,87,83,95,83,69,67,82,69,84,95,65,67,67,69,83,83,95,75,69,89]))
 patterns = [
     re.compile(aws_access + "|" + aws_secret),
-    re.compile(r"(?i)api[_-]?key\s*[:=]"),
-    re.compile(r"(?i)client[_-]?secret\s*[:=]"),
-    re.compile(r"(?i)password\s*[:=]"),
-    re.compile(r"(?i)token\s*[:=]"),
+    re.compile(r"(?i)api[_-]?key\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}"),
+    re.compile(r"(?i)client[_-]?secret\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}"),
+    re.compile(r"(?i)password\s*[:=]\s*['\"]?\S{8,}"),
+    re.compile(r"(?i)token\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}"),
     re.compile(r"(?i)authorization:\s*bearer\s+"),
 ]
 

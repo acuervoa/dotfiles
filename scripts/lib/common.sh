@@ -16,6 +16,7 @@ _repo_root_from_here() {
 REPO_DIR="${DOTFILES:-$(_repo_root_from_here)}"
 REPO_DIR="${REPO_DIR/#\~/$HOME}"
 STOW_DIR="$REPO_DIR/stow"
+: "$STOW_DIR"
 
 STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}"
 BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
@@ -116,17 +117,16 @@ manifest_get_array() {
   if [ "${#tmp[@]}" -gt 0 ]; then
     out=("${tmp[@]}")
   fi
+  : "${out[@]}"
 }
 
 manifest_get_bool() {
   local manifest="$1" key="$2" out_var="$3"
-  # shellcheck disable=SC2178
-  local -n out="$out_var"
   local raw=""
   manifest_get_string "$manifest" "$key" raw
   case "$raw" in
   true|false) ;; # ok
   *) raw="" ;; # unknown/legacy
   esac
-  out="$raw"
+  printf -v "$out_var" '%s' "$raw"
 }

@@ -55,7 +55,19 @@ Tips:
 - Si algún paquete no existe en tu distro/release, el script lo reporta como
   “fallido” para que lo instales o ajustes el pkglist.
 
-## 3) Bootstrap (Stow + backup + manifest)
+## 3) Chequeos previos (doctor/status)
+
+Antes de tocar `$HOME`, puedes correr estos checks read-only:
+
+```bash
+bash ./scripts/doctor.sh
+bash ./scripts/status.sh
+```
+
+- `doctor.sh` valida dependencias, perfiles y posibles conflictos de stow.
+- `status.sh` resume host/perfil, paquetes y manifest/backup más reciente.
+
+## 4) Bootstrap (Stow + backup + manifest)
 
 Siempre empieza con simulación:
 
@@ -81,13 +93,13 @@ Opciones útiles:
 - `--yes` para no preguntar confirmación
 - `--init-submodules` para inicializar submódulos
 
-## 4) Después del bootstrap
+## 5) Después del bootstrap
 
 - **tmux**: abre `tmux` y luego `prefix + I` para instalar plugins vía TPM.
 - **Neovim**: abre `nvim` y ejecuta `:Lazy sync` / `:Mason`.
 - **mise** (si lo usas): `mise install`.
 
-## 5) Validaciones rápidas
+## 6) Validaciones rápidas
 
 ```bash
 # Symlinks críticos
@@ -101,7 +113,7 @@ done
 nvim --headless "+checkhealth" +qa
 ```
 
-## 6) Rollback
+## 7) Rollback
 
 Restaurar el último backup/manifest:
 
@@ -132,7 +144,7 @@ Rollback:
 - Restaura `.backups/<TS>/` con `rsync` (guardando conflictos en
   `~/.dotfiles_rollback_conflicts_<TS>`)
 
-## 7) Plan B (manual con stow)
+## 8) Plan B (manual con stow)
 
 Si prefieres no usar scripts:
 

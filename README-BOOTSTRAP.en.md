@@ -54,7 +54,19 @@ Notes:
 - On WSL2 the script forces core-only.
 - Missing packages are reported so you can tweak the pkglist.
 
-## 3) Bootstrap (Stow + backup + manifest)
+## 3) Preflight checks (doctor/status)
+
+Before touching `$HOME`, you can run these read-only checks:
+
+```bash
+bash ./scripts/doctor.sh
+bash ./scripts/status.sh
+```
+
+- `doctor.sh` validates dependencies, profiles, and stow conflicts.
+- `status.sh` summarizes host/profile, package list, and latest manifest/backup.
+
+## 4) Bootstrap (Stow + backup + manifest)
 
 Dry run:
 
@@ -80,12 +92,12 @@ Useful flags:
 - `--yes` (no prompt)
 - `--init-submodules`
 
-## 4) After bootstrap
+## 5) After bootstrap
 
 - tmux: run `tmux`, then `prefix + I` to install TPM plugins.
 - Neovim: open `nvim`, run `:Lazy sync` / `:Mason`.
 
-## 5) Rollback
+## 6) Rollback
 
 Latest:
 

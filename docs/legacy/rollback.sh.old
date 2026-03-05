@@ -50,7 +50,7 @@ while (($# > 0)); do
                 shift
                 break
                 ;;
-        -*)
+        -* )
                 echo "[ERROR] Opción no reconocida: $1" >&2
                 usage >&2
                 exit 1
