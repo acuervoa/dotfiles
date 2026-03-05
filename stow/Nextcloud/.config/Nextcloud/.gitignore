@@ -1,0 +1,4 @@
+nextcloud.cfg
+nextcloud.cfg.backup_*
+cookies0.db
+logs/

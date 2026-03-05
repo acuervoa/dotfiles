@@ -1,0 +1,8 @@
+[General]
+clientVersion=3.x
+launchOnSystemStartup=true
+
+[Accounts]
+0\authType=webflow
+0\displayName=you@example.com
+0\url=https://example.com

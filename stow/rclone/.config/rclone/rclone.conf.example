@@ -1,0 +1,11 @@
+[mydrive]
+type = drive
+scope = drive
+token = {"access_token":"REDACTED","refresh_token":"REDACTED","token_type":"Bearer","expiry":"1970-01-01T00:00:00Z"}
+
+[iCloud]
+type = webdav
+url = https://www.icloud.com
+vendor = rclone
+user = you@example.com
+pass = REDACTED
