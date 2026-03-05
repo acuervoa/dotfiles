@@ -3,6 +3,7 @@
 Quick navigation for the documentation in this folder.
 
 Start here:
+- Overview: `../README.md` / `../README.en.md`
 - Bootstrap: `../README-BOOTSTRAP.md` / `../README-BOOTSTRAP.en.md`
 - Troubleshooting: `troubleshooting.md`
 - Manifest notes: `manifest.md`

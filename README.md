@@ -11,21 +11,35 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 
 ## Tabla de contenidos
 
-1. [Pila y highlights](#pila-y-highlights)
-2. [Stack actual](#stack-actual)
-3. [UX baseline](#ux-baseline)
-4. [Estructura del repositorio](#estructura-del-repositorio)
-5. [Requisitos](#requisitos)
-6. [Bootstrap](#bootstrap)
-7. [Rollback](#rollback)
-8. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
-9. [Documentación dinámica](#documentación-dinámica)
-10. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
-11. [Componentes principales](#componentes-principales)
-12. [Validaciones rápidas](#validaciones-rápidas)
-13. [Licencia](#licencia)
+1. [Inicio rápido](#inicio-rápido)
+2. [Pila y highlights](#pila-y-highlights)
+3. [Stack actual](#stack-actual)
+4. [UX baseline](#ux-baseline)
+5. [Estructura del repositorio](#estructura-del-repositorio)
+6. [Requisitos](#requisitos)
+7. [Bootstrap](#bootstrap)
+8. [Rollback](#rollback)
+9. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
+10. [Documentación dinámica](#documentación-dinámica)
+11. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
+12. [Componentes principales](#componentes-principales)
+13. [Validaciones rápidas](#validaciones-rápidas)
+14. [Licencia](#licencia)
 
 ---
+
+## Inicio rápido
+
+Guía completa: `README-BOOTSTRAP.md`
+
+```bash
+git clone https://github.com/<tu-usuario>/dotfiles.git
+cd dotfiles
+bash ./scripts/install_deps.sh --core
+bash ./scripts/doctor.sh
+bash ./scripts/bootstrap.sh --dry-run
+bash ./scripts/bootstrap.sh
+```
 
 ## Pila y highlights
 
