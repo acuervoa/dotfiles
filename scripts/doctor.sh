@@ -222,15 +222,18 @@ main() {
 
   if [ "$NO_LINT" != "true" ]; then
     if [ -x "$REPO_DIR/scripts/check.sh" ]; then
+      local -a check_args=()
       if ! command -v shellcheck >/dev/null 2>&1; then
         warn "shellcheck no está instalado; lint será parcial."
+        check_args+=("--no-shellcheck")
       fi
       if ! command -v shfmt >/dev/null 2>&1; then
         warn "shfmt no está instalado; se omite verificación de formato."
+        check_args+=("--no-shfmt")
       fi
 
       action LINT "Corriendo scripts/check.sh"
-      "$REPO_DIR/scripts/check.sh"
+      "$REPO_DIR/scripts/check.sh" "${check_args[@]}"
     else
       warn "No existe scripts/check.sh (omito lint)"
     fi

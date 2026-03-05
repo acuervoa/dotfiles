@@ -28,3 +28,6 @@ credentials.json
 # runtime state
 .backups/
 .manifests/
+
+# Auto-generated i3 workspace mapping (local)
+stow/i3/.config/i3/workspaces.local.conf

@@ -97,6 +97,10 @@ Useful flags:
 - tmux: run `tmux`, then `prefix + I` to install TPM plugins.
 - Neovim: open `nvim`, run `:Lazy sync` / `:Mason`.
 
+Quick troubleshooting:
+- Missing theme/plugin in Neovim: run `:Lazy sync` and restart `nvim`.
+- Missing LSPs/linters/formatters: check `:Mason` and `:CheckHealth`.
+
 ## 6) Rollback
 
 Latest:

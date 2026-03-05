@@ -99,6 +99,10 @@ Opciones útiles:
 - **Neovim**: abre `nvim` y ejecuta `:Lazy sync` / `:Mason`.
 - **mise** (si lo usas): `mise install`.
 
+Solución rápida:
+- Si falta un theme o plugin en Neovim, ejecuta `:Lazy sync` y vuelve a abrir `nvim`.
+- Si faltan LSPs/linters/formatters, revisa `:Mason` y `:CheckHealth`.
+
 ## 6) Validaciones rápidas
 
 ```bash
