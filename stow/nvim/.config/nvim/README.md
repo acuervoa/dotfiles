@@ -11,7 +11,7 @@ Este directorio es parte del repo de dotfiles y normalmente se despliega con
 - Uso standalone (para probar sin tocar tu `~/.config/nvim`):
 
 ```sh
-git clone https://github.com/<tu-usuario>/dotfiles.git ~/dotfiles
+git clone https://github.com/<your-user>/dotfiles.git ~/dotfiles
 NVIM_APPNAME=dotfiles-test nvim --clean -u ~/dotfiles/stow/nvim/.config/nvim/init.lua
 ```
 

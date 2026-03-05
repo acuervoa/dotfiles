@@ -33,7 +33,7 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 Guía completa: `README-BOOTSTRAP.md`
 
 ```bash
-git clone https://github.com/<tu-usuario>/dotfiles.git
+git clone https://github.com/<your-user>/dotfiles.git
 cd dotfiles
 bash ./scripts/install_deps.sh --core
 bash ./scripts/doctor.sh

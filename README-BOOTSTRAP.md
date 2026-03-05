@@ -12,7 +12,7 @@ Guía práctica para desplegar estos **dotfiles** en una instalación limpia.
 
 ```bash
 cd ~
-git clone https://github.com/<tu-usuario>/dotfiles.git
+git clone https://github.com/<your-user>/dotfiles.git
 cd dotfiles
 ```
 
