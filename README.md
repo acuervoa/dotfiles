@@ -124,6 +124,15 @@ No hay submódulos que inicializar.
 
 El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups.
 
+Flujo recomendado:
+1. `doctor.sh` y `status.sh` (preflight)
+2. `bootstrap.sh --dry-run`
+3. `bootstrap.sh`
+
+Alternativas:
+- `apply.sh` ejecuta doctor + dry-run + confirmación en un solo paso
+- `update.sh` hace git pull (ff-only) y luego `apply.sh`
+
 Preflight (read-only, recomendado antes de tocar `$HOME`):
 
 ```bash

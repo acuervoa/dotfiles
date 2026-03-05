@@ -90,6 +90,10 @@ Bootstrap behavior:
 - Creates symlinks via `stow`
 - Writes `.manifests/<TS>.manifest`
 
+Alternatives:
+- `bash ./scripts/apply.sh` (doctor + dry-run + confirmation in one step)
+- `bash ./scripts/update.sh` (git pull ff-only + apply)
+
 Useful flags:
 - `--core-only` (skip GUI; WSL/servers)
 - `--gui` (force GUI on desktop)

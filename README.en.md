@@ -32,6 +32,15 @@ bash ./scripts/bootstrap.sh --dry-run
 bash ./scripts/bootstrap.sh
 ```
 
+Recommended flow:
+1. `doctor.sh` + `status.sh` (preflight)
+2. `bootstrap.sh --dry-run`
+3. `bootstrap.sh`
+
+Alternatives:
+- `apply.sh` runs doctor + dry-run + confirmation in one step
+- `update.sh` does a git pull (ff-only) then runs `apply.sh`
+
 Preflight (read-only, recommended before touching `$HOME`):
 ```bash
 bash ./scripts/doctor.sh

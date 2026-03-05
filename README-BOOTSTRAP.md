@@ -91,6 +91,10 @@ El bootstrap:
 - Crea symlinks con `stow`
 - Genera `.manifests/<TS>.manifest`
 
+Alternativas:
+- `bash ./scripts/apply.sh` (doctor + dry-run + confirmacion en un paso)
+- `bash ./scripts/update.sh` (git pull ff-only + apply)
+
 Opciones útiles:
 - `--core-only` para omitir GUI (WSL/servers)
 - `--gui` para forzar GUI (desktop)
