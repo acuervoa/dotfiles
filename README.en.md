@@ -75,7 +75,8 @@ bash ./scripts/rollback.sh latest
 - **Dynamic docs**: `scripts/generate_shortcuts_doc.sh` builds `SHORTCUTS.md`.
 - **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
 - **Stack status**: `docs/status.md` tracks current stack and duplicate decisions.
-- **Troubleshooting**: `docs/troubleshooting.md` quick fixes.
+- **Troubleshooting**: `docs/troubleshooting.en.md` quick fixes.
+- **Manifest guide**: `docs/manifest.en.md` manual rollback notes.
 - **Docs index**: `docs/README.md`.
 - **CI**: GitHub Actions runs `scripts/check.sh` and `scripts/check-secrets.sh` on push/PR.
 - **Bash library** (`stow/bash/.bash_lib`):
