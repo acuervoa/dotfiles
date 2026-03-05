@@ -10,6 +10,20 @@ GNU Stow–based dotfiles for a fast, consistent workflow (tmux + Neovim + CLI h
 
 ---
 
+## Table of contents
+
+1. [Quick start](#quick-start)
+2. [Stack & highlights](#stack--highlights)
+3. [UX baseline](#ux-baseline)
+4. [Current stack](#current-stack)
+5. [Repo layout](#repo-layout)
+6. [Manual Stow (alt)](#manual-stow-alt)
+7. [Quick checks](#quick-checks)
+8. [Secrets / local overrides](#secrets--local-overrides)
+9. [License](#license)
+
+---
+
 ## Quick start
 
 Clone:
@@ -71,6 +85,14 @@ bash ./scripts/rollback.sh latest
 - **NeoVim (≥0.11)**: lazy.nvim, Mason v2, Treesitter extended (JS/TS/Python/Go/Rust/PHP), LSP/DAP, conform + nvim-lint, overseer + harpoon, neotest, tmux-navigator.
 - **tmux**: prefix `Ctrl+s`, thumbs/copycat/fzf/open, session shortcuts/popups (lazygit/btop/tmux-fzf), nvim integration.
 - **Desktop**: i3/polybar/picom/dunst/rofi/kitty (Catppuccin Mocha).
+
+---
+
+## UX baseline
+
+- **Font**: MesloLGLDZ Nerd Font @ 10
+- **Theme**: Catppuccin (mocha)
+- **Prefixes**: tmux `C-s`, Neovim `Space`
 
 ---
 
