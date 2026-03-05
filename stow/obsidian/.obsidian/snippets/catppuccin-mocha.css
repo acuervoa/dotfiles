@@ -1,0 +1,15 @@
+:root {
+  --background-primary: #1e1e2e;
+  --background-secondary: #181825;
+  --background-tertiary: #11111b;
+  --text-normal: #cdd6f4;
+  --text-muted: #a6adc8;
+  --text-faint: #6c7086;
+  --interactive-accent: #89b4fa;
+  --interactive-accent-hover: #74c7ec;
+  --titlebar-text-color: #cdd6f4;
+}
+
+body, .app-container {
+  font-family: "MesloLGLDZ Nerd Font";
+}

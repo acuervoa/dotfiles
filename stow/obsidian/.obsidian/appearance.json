@@ -1,0 +1,11 @@
+{
+  "cssTheme": "WowTheme",
+  "theme": "moonstone",
+  "baseFontSize": 16,
+  "interfaceFontFamily": "MesloLGLDZ Nerd Font",
+  "textFontFamily": "MesloLGLDZ Nerd Font",
+  "enabledCssSnippets": [
+    "sbx-components",
+    "catppuccin-mocha"
+  ]
+}

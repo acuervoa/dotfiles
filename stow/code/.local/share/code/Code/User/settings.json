@@ -1,0 +1,429 @@
+{
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Núcleo del editor (rendimiento, UX, guardado, formato, limpieza)
+  // ─────────────────────────────────────────────────────────────────────────────
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.renderWhitespace": "selection",
+  "editor.rulers": [100, 120],
+  "editor.wordWrap": "off",
+  "editor.cursorBlinking": "expand",
+  "editor.smoothScrolling": true,
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlineSuggest.enabled": true, // apoya Copilot/Intellicode
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // No se auto-abra la terminal flotante de test adapters
+  "testing.automaticallyOpenPeekView": "never",
+
+  // Estándar EditorConfig primero
+  "editor.useEditorConfig": true,
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Prettier (formatter por defecto para web, yaml, markdown…)
+  // ─────────────────────────────────────────────────────────────────────────────
+  "prettier.requireConfig": true, // evita formato “sorpresa” si no hay config
+  "prettier.useEditorConfig": true,
+  "prettier.printWidth": 100,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "prettier.arrowParens": "always",
+  "prettier.endOfLine": "lf",
+
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // PHP — Intelephense + CS Fixer (formateo) + PHPCS (sniffs) + PHPStan (análisis)
+  // Evitamos solape con Devsense (lo dejamos instalado pero “pasivo”)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Intelephense: autocompletado/índices/diagnósticos, pero no formatea
+  "intelephense.environment.phpVersion": "8.3",
+  "intelephense.diagnostics.enable": true,
+  "intelephense.files.associations": ["**/*.php", "**/*.phtml"],
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/.svn/**",
+    "**/node_modules/**",
+    "**/vendor/**",
+    "**/storage/**",
+    "**/var/**",
+    "**/coverage/**"
+  ],
+  "intelephense.maxMemory": 4096,
+  "intelephense.telemetry.enabled": false,
+  "intelephense.format.enable": false, // formato lo hace php-cs-fixer
+
+  // PHP CS Fixer: formateo/estilo consistente
+  "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+  "php-cs-fixer.rules": {
+    "@Symfony": true,
+    "array_syntax": { "syntax": "short" },
+    "binary_operator_spaces": true,
+    "declare_strict_types": true,
+    "no_unused_imports": true,
+    "ordered_imports": {
+      "imports_order": ["class", "function", "const"],
+      "sort_algorithm": "alpha"
+    },
+    "phpdoc_align": { "align": "left" },
+    "phpdoc_order": true,
+    "yoda_style": false
+  },
+  "php-cs-fixer.allowRisky": false,
+  "php-cs-fixer.autoFixBySemicolon": true,
+  "php-cs-fixer.formatHtml": false,
+
+  // PHPCS: sniffs/estándares (usa el paquete del proyecto si existe)
+  "phpcs.standard": "PSR12",
+  "phpcs.executablePath": "${workspaceFolder}/vendor/bin/phpcs",
+  "phpcs.trace.server": "off",
+  "phpcs.ignorePatterns": [
+    "**/vendor/**",
+    "**/node_modules/**",
+    "**/storage/**",
+    "**/var/**"
+  ],
+
+  // PHPStan: análisis estático (rápido y útil)
+  "phpstan.enabled": true,
+  "phpstan.configFile": "${workspaceFolder}/phpstan.neon",
+  "phpstan.executablePath": "${workspaceFolder}/vendor/bin/phpstan",
+  "phpstan.configuration": "${workspaceFolder}/phpstan.neon",
+  "phpstan.level": 8,
+  "phpstan.memoryLimit": "1G",
+
+  // PHPUnit: integración del test explorer
+  "phpunit.php": "php",
+  "phpunit.configFile": "${workspaceFolder}/phpunit.xml",
+  "phpunit.usePHPUnitFromConfigDir": true,
+  "phpunit.args": [
+    "--colors=always"
+  ],
+  "php.debug.log": false,
+
+
+
+  // Resolver namespaces/uses
+  "php-namespace-resolver.autoSort": true,
+  "php-namespace-resolver.sortOnSave": true,
+
+  // Sabre/PHPSAB Docker (linting remoto opcional)
+  "vscode-phpsab-docker.enabled": false,
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Rust — rust-analyzer + rustfmt + clippy
+  // ─────────────────────────────────────────────────────────────────────────────
+  "rust-analyzer.cargo.autoreload": true,
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.imports.granularity.group": "crate",
+  "rust-analyzer.imports.prefix": "crate",
+  "rust-analyzer.rustfmt.rangeFormatting.enable": true,
+  "[rust]": {
+    "editor.formatOnSave": true
+  },
+
+  // Debug Rust (LLDB)
+  "lldb.launch.initCommands": [
+    "command script import ~/.vscode/lldb/rust-lldb.py"
+  ],
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // YAML (Red Hat) + esquemas útiles (K8s/GitHub Actions/OpenAPI)
+  // ─────────────────────────────────────────────────────────────────────────────
+  "yaml.validate": true,
+  "yaml.format.enable": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml",
+    "kubernetes": "k8s/**/*.y?(a)ml",
+    "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.json": [
+      "openapi/*.y?(a)ml",
+      "api/openapi*.y?(a)ml"
+    ]
+  },
+
+  // 42Crunch OpenAPI
+  "openapi.validation.severity": "warn",
+  "openapi.sarif.showIssuesPanel": true,
+
+  // REST Client (humao.rest-client)
+  "rest-client.decodeEscapedUnicodeCharacters": true,
+  "rest-client.followredirect": true,
+  "rest-client.timeoutinmilliseconds": 30000,
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "baseUrl": "http://localhost:8080"
+    }
+  },
+
+  // dotenv
+  "dotenv.enableAutocloaking": true,
+
+  // SQLTools (MySQL/MariaDB)
+  "sqltools.telemetry.enable": false,
+  "sqltools.connections": [
+    {
+      "name": "Local MariaDB",
+      "driver": "MySQL",
+      "server": "127.0.0.1",
+      "port": 3306,
+      "database": "app",
+      "username": "root",
+      "password": "",
+      "previewLimit": 50
+    }
+  ],
+
+  // Path Intellisense
+  "path-intellisense.extensionOnImport": true,
+  "path-intellisense.autoSlashAfterDirectory": true,
+
+  // Git/GitLens/Gráficos/Historial
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.fetchOnPull": true,
+  "git.enableSmartCommit": true,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.codeLens.enabled": true,
+  "gitlens.views.repositories.files.layout": "tree",
+  "gitlens.statusBar.enabled": true,
+
+  // GitLab Workflow
+  "gitlab.instanceUrl": "https://gitlab.afbaws.com",
+  "gitlab.showPipelineUpdateNotifications": true,
+
+  // VersionLens (muestra últimas versiones en package.json/composer.json)
+  "versionlens.showOnStartup": true,
+
+  // Coverage Gutters
+  "coverage-gutters.showGutterCoverage": true,
+  "coverage-gutters.highlightPartialBranches": true,
+
+  // Test Explorer
+  "testExplorer.mergeSuites": true,
+  "testExplorer.useNativeTesting": true,
+
+  // Code Spell Checker (ES + EN)
+  "cSpell.language": "en,es",
+  "cSpell.enabledFileTypes": {
+    "markdown": true,
+    "plaintext": true,
+    "git-commit": true,
+    "php": true,
+    "rust": true,
+    "yaml": true,
+    "json": true
+  },
+  "cSpell.userWords": [
+    "Allfunds",
+    "Memcached",
+    "OpenResty",
+    "Phalcon",
+    "AFB",
+    "SOLID",
+    "JWT",
+    "Kubernetes",
+    "Nextcloud"
+  ],
+
+  // Markdown All in One
+  "markdown.extension.toc.levels": "2..4",
+  "markdown.preview.breaks": false,
+
+  // Regex (chrmarti.regex) – sin config necesaria
+
+  // W3C Validation (HTML/CSS)
+  "w3cvalidation.showValidationMessages": "Problems",
+  "w3cvalidation.validateOnSave": true,
+
+  // Colorize / Indent Rainbow
+  "colorize.languages": ["css", "scss", "less", "html", "php", "yaml", "json"],
+  "indentRainbow.colors": [
+    "rgba(16,16,16,0.05)",
+    "rgba(16,16,16,0.10)",
+    "rgba(16,16,16,0.15)",
+    "rgba(16,16,16,0.20)"
+  ],
+
+  // Todo Tree
+  "todo-tree.highlights.defaultHighlight": {
+    "type": "text",
+    "icon": "check",
+    "foreground": "#d0d0d0",
+    "background": "#00000033",
+  },
+  "todo-tree.general.tags": ["TODO", "FIXME", "BUG", "HACK", "NOTE"],
+  "todo-tree.tree.showScanModeButton": false,
+
+  // Compare / Compare Folders / Compare View – sin autoacciones
+  "compare-folders.ignore": ["node_modules", "vendor", "dist", "build"],
+
+  // Live Server / Five Server / Live Sass — evitamos solapes (Five Server principal)
+  "liveServer.settings.donotShowInfoMsg": true,
+  "fiveServer.settings.command": "serve",
+  "fiveServer.config": {
+    "port": 5500,
+    "open": false
+  },
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "extensionName": ".css",
+      "savePath": "/css"
+    }
+  ],
+  "liveSassCompile.settings.generateMap": true,
+
+  // Docker & Dev Containers
+  "docker.dockerPath": "docker",
+  "docker.composeCommand": "docker compose",
+  "docker.images.buildKit": true,
+  "docker.explorerRefreshInterval": 1800000,
+  "dev.containers.defaultExtensions": [
+    "ms-azuretools.vscode-docker",
+    "eamodio.gitlens"
+  ],
+
+  // YAML/JSON/MD por lenguaje → Prettier
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // PHP por lenguaje → php-cs-fixer
+  "[php]": {
+    "editor.defaultFormatter": "junstyle.php-cs-fixer",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.php": "explicit"
+    }
+  },
+
+  // Vue → Volar + Prettier
+  "vue.autoInsert.dotValue": true,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Python (ligero, sin solapar con nada)
+  "python.analysis.typeCheckingMode": "basic",
+  "python.terminal.activateEnvironment": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+
+  // SQLite / SQLTools (no autoscan pesado)
+  "sqlite.logLevel": "ERROR",
+
+  // Volar (Vue)
+  "volar.takeOverMode.enabled": true,
+
+  // GitHub Copilot / Chat
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  // Intellicode
+  "remote.autoForwardPortsSource": "hybrid",
+  "files.associations": {
+    ".env*": "dotenv"
+  },
+  "editor.tokenColorCustomizations": {
+    "[*Light*]": {
+      "textMateRules": [
+        {
+          "scope": "ref.matchtext",
+          "settings": {
+            "foreground": "#000"
+          }
+        }
+      ]
+    },
+    "[*Dark*]": {
+      "textMateRules": [
+        {
+          "scope": "ref.matchtext",
+          "settings": {
+            "foreground": "#fff"
+          }
+        }
+      ]
+    },
+    "textMateRules": [
+      {
+        "scope": "keyword.other.dotenv",
+        "settings": {
+          "foreground": "#FF000000"
+        }
+      }
+    ]
+  },
+  "git.openRepositoryInParentFolders": "always",
+
+  "workbench.statusBar.visible": true,
+  "workbench.editor.tabSizing": "shrink",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.labelFormat": "short",
+  "workbench.startupEditor": "none",
+  "workbench.editor.enablePreview": true,
+
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.sideBar.location": "right",
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "editor.fontFamily": "MesloLGLDZ Nerd Font",
+  "terminal.integrated.fontFamily": "MesloLGLDZ Nerd Font",
+
+  // Navegación y contexto
+  "breadcrumbs.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "workbench.editor.pinnedTabsOnSeparateRow": false,        // Si pinneas tabs, no ocupan una fila extra
+  "workbench.editor.pinnedTabsTitleLength": "short",        // Pestañas fijadas cortas y compactas
+
+  // Gestión de pestañas/editores
+  "workbench.editor.limit.enabled": true,                   // Evita tener 50 editores abiertos sin querer
+  "workbench.editor.limit.perEditorGroup": true,
+  "workbench.editor.limit.value": 15,                       // Ajusta a tu gusto (10–20)
+  "workbench.editor.closeOnFileDelete": true,
+  "workbench.editor.restoreViewState": true,                // Recuerda scroll/cursor al volver al archivo
+  "workbench.editor.historyBasedLanguageDetection": true,   // Detección de lenguaje más lista
+
+  // Explorer y listas
+  "explorer.autoReveal": false,                             // No cambies de carpeta automáticamente al abrir archivos
+  "explorer.confirmDelete": true,
+  "explorer.confirmDragAndDrop": true,
+  "explorer.compactFolders": false,                         // Árbol de carpetas “explícito”
+  "workbench.list.smoothScrolling": true,
+
+  // Comandos / Layout / Chroming
+  "window.commandCenter": true,                             // Barra de comandos en la parte superior
+  "workbench.layoutControl.enabled": true,                  // Botón para cambiar layouts rápidamente
+  "workbench.editor.openSideBySideDirection": "right",      // Abrir al lado (coincide con tu sidebar derecha)
+
+  // Terminal y paneles
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.enableMultiLinePasteWarning": "auto",
+  "problems.autoReveal": false,                           // Que no salte solo el panel de problemas
+
+  // Scroll/animaciones
+  "editor.mouseWheelZoom": false,
+  "sonarlint.focusOnNewCode": false,
+  "redhat.telemetry.enabled": true,
+  "sonarlint.automaticAnalysis": true,
+  "security.allowedUNCHosts": [
+    "wsl.localhost"
+  ]
+}
