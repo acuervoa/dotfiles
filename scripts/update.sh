@@ -24,6 +24,10 @@ Opciones:
 Variables de entorno:
   DOTFILES             Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST        Override del hostname para perfiles
+
+Ejemplos:
+  scripts/update.sh --dry-run
+  scripts/update.sh --allow-dirty --yes
 USAGE
 }
 

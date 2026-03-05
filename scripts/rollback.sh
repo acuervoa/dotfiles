@@ -23,6 +23,10 @@ Opciones:
 
 Variables de entorno:
   DOTFILES               Ruta al repo (por defecto, carpeta raíz del script)
+
+Ejemplos:
+  scripts/rollback.sh --dry-run latest
+  scripts/rollback.sh --manifest .manifests/<timestamp>.manifest
 USAGE
 }
 

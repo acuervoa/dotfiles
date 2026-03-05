@@ -21,6 +21,10 @@ Opciones:
 
 Variables de entorno:
   DOTFILES               Ruta al repo (por defecto, carpeta raíz del script)
+
+Ejemplos:
+  scripts/bootstrap.sh --dry-run
+  scripts/bootstrap.sh --core-only
 USAGE
 }
 
