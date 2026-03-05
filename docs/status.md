@@ -48,3 +48,4 @@ Date: 2026-03-05
 - Neovim lazy state: `~/.local/state/nvim/lazy` (safe to clear if plugin state breaks)
 - Shortcuts doc: regenerate with `bash ./scripts/generate_shortcuts_doc.sh` after keybinding changes
 - Doctor JSON: `bash ./scripts/doctor.sh --json` (parseable status)
+- Status doc: update this file manually when stack changes

@@ -147,6 +147,11 @@ El manifest registra líneas `LINK <src> -> <dest>`. Si haces rollback manual,
 puedes usarlo para identificar qué enlaces eliminar/restaurar.
 Más detalles en `docs/manifest.md`.
 
+### Glosario
+- **stow**: gestor de symlinks para aplicar paquetes en `$HOME`.
+- **manifest**: lista de symlinks creados por bootstrap (`.manifests/<TS>.manifest`).
+- **backup**: copia de archivos en conflicto guardada en `.backups/<TS>/`.
+
 ---
 
 ## Rollback

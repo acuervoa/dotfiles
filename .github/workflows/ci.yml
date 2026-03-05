@@ -6,6 +6,12 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
+    inputs:
+      include_untracked:
+        description: "Run secrets scan on untracked files"
+        required: false
+        default: "false"
 
 jobs:
   checks:
@@ -24,3 +30,7 @@ jobs:
 
       - name: Secret scan (tracked files)
         run: bash ./scripts/check-secrets.sh
+
+      - name: Secret scan (include untracked)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.include_untracked == 'true' }}
+        run: bash ./scripts/check-secrets.sh --all

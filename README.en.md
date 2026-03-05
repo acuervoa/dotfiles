@@ -36,6 +36,11 @@ bash ./scripts/doctor.sh
 bash ./scripts/status.sh
 ```
 
+Doctor JSON (parseable output):
+```bash
+bash ./scripts/doctor.sh --json
+```
+
 Quick verify (all-in-one):
 ```bash
 bash ./scripts/verify.sh
