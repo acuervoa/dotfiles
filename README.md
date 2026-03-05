@@ -172,6 +172,9 @@ Para generar o actualizar `SHORTCUTS.md`, ejecuta:
 bash ./scripts/generate_shortcuts_doc.sh
 ```
 
+Otros artefactos útiles:
+- `docs/backup-excludes.txt`: Lista de exclusiones sugeridas para backups
+
 ---
 
 ## Componentes principales

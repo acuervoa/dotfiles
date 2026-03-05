@@ -1,0 +1,51 @@
+# Suggested excludes for backups/sync (data-heavy caches)
+BraveSoftware/
+Code/
+Code - OSS/
+chromium/
+discord/
+obsidian/
+Postman/
+heroic/
+whatsdesk/
+Electron/
+FreeTube/
+streamlink-twitch-gui/
+google-chrome-for-testing/
+coc/
+Nextcloud/
+yt-x/
+calibre/
+pacsea/
+GIMP/
+Code - OSS/logs/
+Code/logs/
+BraveSoftware/Brave-Browser/Default/Cache/
+BraveSoftware/Brave-Browser/Default/Code Cache/
+~/.local/share/brave/
+~/.cache/brave/
+~/.local/share/discord/
+~/.cache/discord/
+~/.local/share/Postman/
+~/.cache/Postman/
+~/.local/share/obsidian/
+~/.cache/obsidian/
+~/.local/share/code/
+~/.cache/code/
+~/.local/share/FreeTube/
+~/.cache/FreeTube/
+~/.local/share/whatsdesk/
+~/.cache/whatsdesk/
+~/.local/share/heroic/
+~/.cache/heroic/
+~/.local/share/composer/
+~/.local/share/streamlink-twitch-gui/
+~/.cache/streamlink-twitch-gui/
+~/.local/share/calibre/
+~/.cache/calibre/
+~/.local/share/chromium/
+~/.cache/chromium/
+~/.local/share/electron/
+~/.cache/pacsea/
+~/.local/share/rclone/
+~/.local/share/Nextcloud/

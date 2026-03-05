@@ -42,6 +42,7 @@ bash ./scripts/rollback.sh latest
 - **Bootstrap/rollback scripts**: interactive, with dry-run and conflict backups.
 - **Local overrides**: `_local` files (e.g. `~/.bashrc_local`, `~/.gitconfig_local`) are auto-loaded and git-ignored.
 - **Dynamic docs**: `scripts/generate_shortcuts_doc.sh` builds `SHORTCUTS.md`.
+- **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
 - **Bash library** (`stow/bash/.bash_lib`):
   - nav: `fo` (FO_EXCLUDES, FO_DEFAULT_ROOT, FO_AUTO_CD), `cb` with OSC52 fallback.
   - git: `gp` safe push (force/lease with confirm), `ggraph`, `glast`.
