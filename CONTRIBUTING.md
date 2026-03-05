@@ -50,6 +50,12 @@ bash ./scripts/check-secrets.sh --all
 bash ./scripts/verify.sh
 ```
 
+## Tooling (doctor JSON)
+Si necesitas estado parseable:
+```bash
+bash ./scripts/doctor.sh --json
+```
+
 ## Validación funcional
 - Recarga entorno y smoke tests:
   ```bash

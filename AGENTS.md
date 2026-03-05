@@ -165,6 +165,7 @@ Don’t:
 - Fast search: `rg <pattern>`
 - List files: `rg --files`
 - Show stow packages: `ls stow`
+- Verify (all-in-one): `bash ./scripts/verify.sh`
 
 ## Common workflows (Stow)
 - Preview a package (safe): `stow -n -v -t "$HOME" <pkg>`

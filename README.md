@@ -123,6 +123,12 @@ Verificación rápida (todo en uno):
 bash ./scripts/verify.sh
 ```
 
+Escaneo de secretos (incluye no-trackeados; puede ser lento):
+
+```bash
+bash ./scripts/check-secrets.sh --all
+```
+
 1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
 2. **Aplicar** (interactivo): `bash ./scripts/bootstrap.sh`
 
@@ -198,6 +204,7 @@ bash ./scripts/generate_shortcuts_doc.sh
 Otros artefactos útiles:
 - `docs/backup-excludes.txt`: Lista de exclusiones sugeridas para backups
 - `docs/status.md`: Estado actual del stack y decisiones de duplicados
+- CI: GitHub Actions ejecuta `scripts/check.sh` y `scripts/check-secrets.sh` en push/PRs
 
 ---
 

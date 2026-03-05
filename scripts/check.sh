@@ -15,6 +15,9 @@ Options:
   --no-shellcheck   Skip ShellCheck even if installed
   --no-shfmt        Skip shfmt even if installed
 
+Example (minimal environment):
+  scripts/check.sh --no-shellcheck --no-shfmt
+
 Exit codes:
   0  All enabled checks passed
   1  A check failed

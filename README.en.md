@@ -41,6 +41,11 @@ Quick verify (all-in-one):
 bash ./scripts/verify.sh
 ```
 
+Secrets scan (includes untracked; can be slow):
+```bash
+bash ./scripts/check-secrets.sh --all
+```
+
 Rollback:
 ```bash
 bash ./scripts/rollback.sh latest
@@ -55,6 +60,7 @@ bash ./scripts/rollback.sh latest
 - **Dynamic docs**: `scripts/generate_shortcuts_doc.sh` builds `SHORTCUTS.md`.
 - **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
 - **Stack status**: `docs/status.md` tracks current stack and duplicate decisions.
+- **CI**: GitHub Actions runs `scripts/check.sh` and `scripts/check-secrets.sh` on push/PR.
 - **Bash library** (`stow/bash/.bash_lib`):
   - nav: `fo` (FO_EXCLUDES, FO_DEFAULT_ROOT, FO_AUTO_CD), `cb` with OSC52 fallback.
   - git: `gp` safe push (force/lease with confirm), `ggraph`, `glast`.
