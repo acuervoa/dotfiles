@@ -63,6 +63,11 @@ Doctor JSON (salida parseable):
 bash ./scripts/doctor.sh --json
 ```
 
+Status JSON (salida parseable):
+```bash
+bash ./scripts/status.sh --json
+```
+
 - `doctor.sh` valida dependencias, perfiles y posibles conflictos de stow.
 - `status.sh` resume host/perfil, paquetes y manifest/backup más reciente.
 

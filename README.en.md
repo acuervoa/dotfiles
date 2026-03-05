@@ -43,6 +43,11 @@ Doctor JSON (parseable output):
 bash ./scripts/doctor.sh --json
 ```
 
+Status JSON (parseable output):
+```bash
+bash ./scripts/status.sh --json
+```
+
 Quick verify (all-in-one):
 ```bash
 bash ./scripts/verify.sh

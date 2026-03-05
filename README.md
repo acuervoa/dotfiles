@@ -136,6 +136,11 @@ Doctor JSON (salida parseable):
 bash ./scripts/doctor.sh --json
 ```
 
+Status JSON (salida parseable):
+```bash
+bash ./scripts/status.sh --json
+```
+
 Verificación rápida (todo en uno):
 
 ```bash
