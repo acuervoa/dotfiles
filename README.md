@@ -124,6 +124,8 @@ No hay submódulos que inicializar.
 
 El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups.
 
+Guía paso a paso: `README-BOOTSTRAP.md` (incluye preflight, flags y rollback).
+
 Flujo recomendado:
 1. `doctor.sh` y `status.sh` (preflight)
 2. `bootstrap.sh --dry-run`

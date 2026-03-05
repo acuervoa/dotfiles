@@ -32,6 +32,8 @@ bash ./scripts/bootstrap.sh --dry-run
 bash ./scripts/bootstrap.sh
 ```
 
+Step-by-step guide: `README-BOOTSTRAP.en.md` (preflight, flags, rollback).
+
 Recommended flow:
 1. `doctor.sh` + `status.sh` (preflight)
 2. `bootstrap.sh --dry-run`
