@@ -166,6 +166,7 @@ Don’t:
 - List files: `rg --files`
 - Show stow packages: `ls stow`
 - Verify (all-in-one): `bash ./scripts/verify.sh`
+- Doctor (JSON): `bash ./scripts/doctor.sh --json`
 
 ## Common workflows (Stow)
 - Preview a package (safe): `stow -n -v -t "$HOME" <pkg>`

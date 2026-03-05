@@ -140,6 +140,11 @@ Opcional:
 **Acciones principales:**
 - **Detecta conflictos** y mueve los ficheros existentes a `.backups/<TIMESTAMP>/`.
 - **Crea symlinks** con `stow` para cada paquete en el directorio `stow/`.
+- **Genera manifest** en `.manifests/<TIMESTAMP>.manifest` (lista de symlinks creados).
+
+### Manifest (rollback manual)
+El manifest registra líneas `LINK <src> -> <dest>`. Si haces rollback manual,
+puedes usarlo para identificar qué enlaces eliminar/restaurar.
 
 ---
 

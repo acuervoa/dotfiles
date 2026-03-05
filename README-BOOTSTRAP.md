@@ -109,6 +109,7 @@ Solución rápida:
 
 Verificación opcional post-bootstrap:
 - `bash ./scripts/verify.sh`
+- `bash ./scripts/check-secrets.sh --all`
 
 ## 6) Validaciones rápidas
 

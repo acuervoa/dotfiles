@@ -9,11 +9,13 @@ Runs lightweight repo verification (read-only):
 - scripts/check.sh
 - scripts/check-secrets.sh
 - nvim --headless "+checkhealth" +qa (if available)
+- nvim --headless "+lua require('config.options')" +qa (optional)
 
 Options:
   -h, --help       Show this help
   --no-nvim        Skip Neovim health check
   --no-scan        Skip check-secrets scan
+  --nvim-config    Also load config.options headless
 USAGE
 }
 
@@ -22,6 +24,7 @@ warn() { printf '%s\n' "[WARN] $*" >&2; }
 
 NO_NVIM=false
 NO_SCAN=false
+NVIM_CONFIG=false
 
 while (($# > 0)); do
   case "$1" in
@@ -34,6 +37,9 @@ while (($# > 0)); do
     ;;
   --no-scan)
     NO_SCAN=true
+    ;;
+  --nvim-config)
+    NVIM_CONFIG=true
     ;;
   *)
     printf '%s\n' "[ERROR] Unknown option: $1" >&2
@@ -69,6 +75,10 @@ main() {
   elif command -v nvim >/dev/null 2>&1; then
     info "Running Neovim checkhealth (headless)"
     nvim --headless "+checkhealth" +qa
+    if [ "$NVIM_CONFIG" = "true" ]; then
+      info "Running Neovim config load (headless)"
+      nvim --headless "+lua require('config.options')" +qa
+    fi
   else
     warn "nvim not installed; skipping checkhealth."
   fi

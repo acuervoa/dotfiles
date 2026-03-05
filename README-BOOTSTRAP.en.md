@@ -107,6 +107,7 @@ Quick troubleshooting:
 
 Optional post-bootstrap verification:
 - `bash ./scripts/verify.sh`
+- `bash ./scripts/check-secrets.sh --all`
 
 ## 6) Rollback
 
