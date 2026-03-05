@@ -13,6 +13,9 @@
 	- `:Mason` → instala LSPs, DAPs, linters y formatters que vayas a usar.
 	- `:CheckHealth` → comprueba dependencias externas (node, php, go, docker, etc.).
 
+   Si ves errores de theme/plugins faltantes (p. ej. `catppuccin`), ejecuta
+   `:Lazy sync` y vuelve a abrir Neovim.
+
 3. Revisa los atajos globales en `SHORTCUTS.md` para alinear tmux/i3/kitty y Neovim.
 
 ## Atajos esenciales (día a día)

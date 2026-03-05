@@ -48,15 +48,19 @@ for rel in files:
     except Exception:
         continue
 
+    lines = content.splitlines()
     for pat in patterns:
-        if pat.search(content):
-            hits.append((rel, pat.pattern))
+        for idx, line in enumerate(lines, start=1):
+            if pat.search(line):
+                hits.append((rel, idx, pat.pattern))
+                break
+        if hits and hits[-1][0] == rel:
             break
 
 if hits:
     print("Potential secrets detected:")
-    for rel, pat in hits:
-        print(f"- {rel} (matched: {pat})")
+    for rel, line_no, pat in hits:
+        print(f"- {rel}:{line_no} (matched: {pat})")
     sys.exit(1)
 
 print("No obvious secrets found in tracked files.")

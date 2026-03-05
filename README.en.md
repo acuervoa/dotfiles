@@ -30,6 +30,12 @@ bash ./scripts/bootstrap.sh --dry-run
 bash ./scripts/bootstrap.sh
 ```
 
+Preflight (read-only, recommended before touching `$HOME`):
+```bash
+bash ./scripts/doctor.sh
+bash ./scripts/status.sh
+```
+
 Rollback:
 ```bash
 bash ./scripts/rollback.sh latest
@@ -90,6 +96,8 @@ for p in ~/.config/{kitty,lazygit,polybar,picom,i3,dunst,rofi,nvim}; do
 done
 kitty --version; tmux -V; nvim --headless "+checkhealth" +qa
 ```
+
+Note: `stow/i3/.config/i3/workspaces.local.conf` is auto-generated; do not commit it.
 
 ---
 

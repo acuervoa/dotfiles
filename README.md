@@ -110,6 +110,13 @@ No hay submódulos que inicializar.
 
 El script `bootstrap.sh` es un wrapper sobre `stow` que además gestiona backups.
 
+Preflight (read-only, recomendado antes de tocar `$HOME`):
+
+```bash
+bash ./scripts/doctor.sh
+bash ./scripts/status.sh
+```
+
 1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
 2. **Aplicar** (interactivo): `bash ./scripts/bootstrap.sh`
 
@@ -208,6 +215,8 @@ done
 # Lanzar servicios clave
 kitty --version; tmux -V; nvim --headless "+checkhealth" +qa
 ```
+
+Nota: `stow/i3/.config/i3/workspaces.local.conf` es auto-generado; no se debe commitear.
 
 ---
 

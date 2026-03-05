@@ -44,3 +44,4 @@ Date: 2026-03-05
 - Monthly cleanup timer: `cleanup-configs.timer`
 - Secret scan: `scripts/check-secrets.sh`
 - Backup excludes template: `docs/backup-excludes.txt`
+- i3 workspaces mapping is auto-generated: `stow/i3/.config/i3/workspaces.local.conf` (do not commit)
