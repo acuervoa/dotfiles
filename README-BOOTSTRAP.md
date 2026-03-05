@@ -16,15 +16,9 @@ git clone https://github.com/<tu-usuario>/dotfiles.git
 cd dotfiles
 ```
 
-### Submódulos (plugins tmux/vim)
+### Submódulos
 
-Este repo incluye plugins de tmux/vim como **submódulos**. Tras clonar:
-
-```bash
-git submodule update --init --recursive
-```
-
-(Alternativa: `bash ./scripts/bootstrap.sh --init-submodules`.)
+Este repo no usa submódulos.
 
 ## 2) Instalar dependencias (multi-distro)
 
