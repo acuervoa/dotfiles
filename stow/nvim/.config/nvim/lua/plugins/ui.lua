@@ -72,7 +72,7 @@ return {
 			end
 
 			return {
-				options = { theme = "catppuccin", globalstatus = true, component_separators = "", section_separators = "" },
+				options = { theme = "auto", globalstatus = true, component_separators = "", section_separators = "" },
 				sections = {
 					lualine_a = { "mode" },
 					lualine_b = { "branch", "diff" },
