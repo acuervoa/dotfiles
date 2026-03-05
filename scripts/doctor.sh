@@ -19,6 +19,10 @@ Opciones:
 Variables de entorno:
   DOTFILES            Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST       Override del hostname para perfiles
+
+Ejemplos:
+  scripts/doctor.sh
+  scripts/doctor.sh --json
 USAGE
 }
 
