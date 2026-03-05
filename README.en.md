@@ -43,34 +43,7 @@ Alternatives:
 - `apply.sh` runs doctor + dry-run + confirmation in one step
 - `update.sh` does a git pull (ff-only) then runs `apply.sh`
 
-Preflight (read-only, recommended before touching `$HOME`):
-```bash
-bash ./scripts/doctor.sh
-bash ./scripts/status.sh
-```
-
-Doctor JSON (parseable output):
-```bash
-bash ./scripts/doctor.sh --json
-```
-
-Status JSON (parseable output):
-```bash
-bash ./scripts/status.sh --json
-```
-
-Quick verify (all-in-one):
-```bash
-bash ./scripts/verify.sh
-```
-
-Secrets scan (includes untracked; can be slow):
-```bash
-bash ./scripts/check-secrets.sh --all
-```
-
-Manual workflow dispatch (full secrets scan):
-- GitHub → Actions → `ci` → Run workflow → set `include_untracked` = true
+Preflight/verification details: `README-BOOTSTRAP.en.md`.
 
 Rollback:
 ```bash

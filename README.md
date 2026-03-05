@@ -135,37 +135,7 @@ Alternativas:
 - `apply.sh` ejecuta doctor + dry-run + confirmación en un solo paso
 - `update.sh` hace git pull (ff-only) y luego `apply.sh`
 
-Preflight (read-only, recomendado antes de tocar `$HOME`):
-
-```bash
-bash ./scripts/doctor.sh
-bash ./scripts/status.sh
-```
-
-Doctor JSON (salida parseable):
-```bash
-bash ./scripts/doctor.sh --json
-```
-
-Status JSON (salida parseable):
-```bash
-bash ./scripts/status.sh --json
-```
-
-Verificación rápida (todo en uno):
-
-```bash
-bash ./scripts/verify.sh
-```
-
-Escaneo de secretos (incluye no-trackeados; puede ser lento):
-
-```bash
-bash ./scripts/check-secrets.sh --all
-```
-
-Ejecución manual del workflow (scan completo):
-- GitHub → Actions → `ci` → Run workflow → `include_untracked` = true
+Detalles de preflight/verificación: `README-BOOTSTRAP.md`.
 
 1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
 2. **Aplicar** (interactivo): `bash ./scripts/bootstrap.sh`
