@@ -9,7 +9,7 @@ Scans tracked files for obvious secret patterns.
 
 Options:
   -h, --help   Show this help
-  --all        Include untracked files (excluding .gitignored)
+  --all        Include untracked files (excluding .gitignored); can be slow
 USAGE
 }
 

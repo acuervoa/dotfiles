@@ -35,6 +35,7 @@ Prefer focused checks on the files you touched.
 
 Quick verification:
 - `bash ./scripts/verify.sh` (check.sh + check-secrets + optional nvim health)
+- `bash ./scripts/check-secrets.sh --all` (includes untracked; can be slow)
 
 ### Shell
 - Syntax (all): `bash -n scripts/*.sh stow/bash/.bash_lib/*.sh`

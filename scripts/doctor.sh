@@ -211,6 +211,8 @@ main() {
   if [ "$include_gui" = "true" ]; then
     config_pkgs+=("${CONFIG_GUI_PKGS[@]}")
   fi
+  PKGS_COUNT=$((1 + ${#home_pkgs[@]} + ${#config_pkgs[@]}))
+  CONFLICTS_OK=true
 
   action PKGS "Verificando paquetes stow"
   # dotfiles siempre deberia existir porque contiene los perfiles.
@@ -226,7 +228,10 @@ main() {
       fi
     done
 
-    $ok || return 1
+    if [ "$ok" = "false" ]; then
+      CONFLICTS_OK=false
+      return 1
+    fi
   fi
 
   if [ "$NO_LINT" != "true" ]; then
@@ -270,13 +275,15 @@ main
 status=$?
 
 if [ "$JSON" = "true" ]; then
-  printf '{"ok":%s,"repo":"%s","stow":"%s","host":"%s","wsl":%s,"gui_mode":"%s"}\n' \
+  printf '{"ok":%s,"repo":"%s","stow":"%s","host":"%s","wsl":%s,"gui_mode":"%s","pkgs_count":%s,"conflicts_ok":%s}\n' \
     "$( [ "$status" -eq 0 ] && printf 'true' || printf 'false' )" \
     "${REPO_DIR//"/\\"}" \
     "${STOW_DIR//"/\\"}" \
     "${HOST_NAME//"/\\"}" \
     "$( is_wsl && printf 'true' || printf 'false' )" \
-    "$GUI_MODE"
+    "$GUI_MODE" \
+    "${PKGS_COUNT:-0}" \
+    "${CONFLICTS_OK:-true}"
 fi
 
 exit "$status"

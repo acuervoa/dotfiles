@@ -107,6 +107,9 @@ Solución rápida:
 - Si falta un theme o plugin en Neovim, ejecuta `:Lazy sync` y vuelve a abrir `nvim`.
 - Si faltan LSPs/linters/formatters, revisa `:Mason` y `:CheckHealth`.
 
+Verificación opcional post-bootstrap:
+- `bash ./scripts/verify.sh`
+
 ## 6) Validaciones rápidas
 
 ```bash

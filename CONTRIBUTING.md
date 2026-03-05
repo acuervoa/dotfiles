@@ -43,6 +43,13 @@ Preferimos [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/
   shfmt -w -i 2 ~/.bash_lib
   ```
 
+## Validación rápida (repo)
+```bash
+bash ./scripts/check.sh
+bash ./scripts/check-secrets.sh --all
+bash ./scripts/verify.sh
+```
+
 ## Validación funcional
 - Recarga entorno y smoke tests:
   ```bash

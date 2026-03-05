@@ -105,6 +105,9 @@ Quick troubleshooting:
 - Missing theme/plugin in Neovim: run `:Lazy sync` and restart `nvim`.
 - Missing LSPs/linters/formatters: check `:Mason` and `:CheckHealth`.
 
+Optional post-bootstrap verification:
+- `bash ./scripts/verify.sh`
+
 ## 6) Rollback
 
 Latest:
