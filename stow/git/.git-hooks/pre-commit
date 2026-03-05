@@ -34,4 +34,13 @@ if [ "$fail" -ne 0 ]; then
 fi
 
 echo "✔ pre-commit OK "
+
+# Additional secret scan (optional)
+if [ -z "${SKIP_SECRET_SCAN:-}" ]; then
+  repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  if [ -x "$repo_root/scripts/check-secrets.sh" ]; then
+    "$repo_root/scripts/check-secrets.sh" || exit 1
+  fi
+fi
+
 exit 0

@@ -43,6 +43,7 @@ bash ./scripts/rollback.sh latest
 - **Local overrides**: `_local` files (e.g. `~/.bashrc_local`, `~/.gitconfig_local`) are auto-loaded and git-ignored.
 - **Dynamic docs**: `scripts/generate_shortcuts_doc.sh` builds `SHORTCUTS.md`.
 - **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
+- **Stack status**: `docs/status.md` tracks current stack and duplicate decisions.
 - **Bash library** (`stow/bash/.bash_lib`):
   - nav: `fo` (FO_EXCLUDES, FO_DEFAULT_ROOT, FO_AUTO_CD), `cb` with OSC52 fallback.
   - git: `gp` safe push (force/lease with confirm), `ggraph`, `glast`.
@@ -51,6 +52,15 @@ bash ./scripts/rollback.sh latest
 - **NeoVim (≥0.11)**: lazy.nvim, Mason v2, Treesitter extended (JS/TS/Python/Go/Rust/PHP), LSP/DAP, conform + nvim-lint, overseer + harpoon, neotest, tmux-navigator.
 - **tmux**: prefix `Ctrl+s`, thumbs/copycat/fzf/open, session shortcuts/popups (lazygit/btop/tmux-fzf), nvim integration.
 - **Desktop**: i3/polybar/picom/dunst/rofi/kitty (Catppuccin Mocha).
+
+---
+
+## Current stack
+
+- **Core**: bash, kitty, tmux, Neovim, starship
+- **WM/UX**: i3 + picom + polybar + rofi + dunst
+- **Theme/Font**: Catppuccin Mocha, MesloLGLDZ Nerd Font 10
+- **Notes**: Obsidian (Joplin removed)
 
 ---
 

@@ -12,17 +12,18 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 ## Tabla de contenidos
 
 1. [Pila y highlights](#pila-y-highlights)
-2. [UX baseline](#ux-baseline)
-3. [Estructura del repositorio](#estructura-del-repositorio)
+2. [Stack actual](#stack-actual)
+3. [UX baseline](#ux-baseline)
+4. [Estructura del repositorio](#estructura-del-repositorio)
 4. [Requisitos](#requisitos)
 5. [Bootstrap](#bootstrap)
 6. [Rollback](#rollback)
 7. [Gestión de Secretos y Personalización](#gestión-de-secretos-y-personalización)
-8. [Documentación dinámica](#documentación-dinámica)
-9. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
-10. [Componentes principales](#componentes-principales)
-11. [Validaciones rápidas](#validaciones-rápidas)
-12. [Licencia](#licencia)
+9. [Documentación dinámica](#documentación-dinámica)
+10. [Uso manual de Stow (Alternativa)](#uso-manual-de-stow-alternativa)
+11. [Componentes principales](#componentes-principales)
+12. [Validaciones rápidas](#validaciones-rápidas)
+13. [Licencia](#licencia)
 
 ---
 
@@ -45,6 +46,15 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 - **Fuente**: MesloLGLDZ Nerd Font @ 10
 - **Tema**: Catppuccin (mocha)
 - **Prefijos**: tmux `C-s`, Neovim `Space`
+
+---
+
+## Stack actual
+
+- **Core**: bash, kitty, tmux, Neovim, starship
+- **WM/UX**: i3 + picom + polybar + rofi + dunst
+- **Tema/Fuente**: Catppuccin Mocha, MesloLGLDZ Nerd Font 10
+- **Notas**: Obsidian (Joplin removido)
 
 ---
 
@@ -174,6 +184,7 @@ bash ./scripts/generate_shortcuts_doc.sh
 
 Otros artefactos útiles:
 - `docs/backup-excludes.txt`: Lista de exclusiones sugeridas para backups
+- `docs/status.md`: Estado actual del stack y decisiones de duplicados
 
 ---
 
