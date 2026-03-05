@@ -25,8 +25,12 @@ MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
 ensure_state_dirs() { mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"; }
 
 ensure_compat_links() {
-  ln -sfn "$BACKUP_BASE" "$REPO_DIR/.backups" 2>/dev/null || true
-  ln -sfn "$MANIFEST_DIR" "$REPO_DIR/.manifests" 2>/dev/null || true
+  if ! ln -sfn "$BACKUP_BASE" "$REPO_DIR/.backups" 2>/dev/null; then
+    printf '[WARN] No pude actualizar enlace .backups (%s)\n' "$REPO_DIR/.backups" >&2
+  fi
+  if ! ln -sfn "$MANIFEST_DIR" "$REPO_DIR/.manifests" 2>/dev/null; then
+    printf '[WARN] No pude actualizar enlace .manifests (%s)\n' "$REPO_DIR/.manifests" >&2
+  fi
 }
 
 is_wsl() {
@@ -37,8 +41,11 @@ is_wsl() {
 
 resolve_host() {
   if [ -n "${DOTFILES_HOST:-}" ]; then
-    printf '%s' "$DOTFILES_HOST"
-    return 0
+    if [[ "$DOTFILES_HOST" =~ ^[A-Za-z0-9._-]+$ ]]; then
+      printf '%s' "$DOTFILES_HOST"
+      return 0
+    fi
+    printf '[WARN] DOTFILES_HOST inválido; se ignora\n' >&2
   fi
 
   if command -v hostname >/dev/null 2>&1; then
