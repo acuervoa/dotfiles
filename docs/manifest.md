@@ -27,3 +27,10 @@ LINK /home/user/dotfiles/stow/nvim/.config/nvim -> /home/user/.config/nvim
 Notas:
 - Si el symlink apunta a otro destino, no lo toques.
 - Usa `bash ./scripts/rollback.sh` cuando sea posible.
+
+## FAQ
+
+**El symlink no coincide con el manifest**
+
+- No lo elimines automaticamente.
+- Verifica manualmente el destino con `readlink` y decide caso por caso.

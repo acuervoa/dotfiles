@@ -1,5 +1,7 @@
 # Dotfiles · Linux (Arch/Debian/Fedora/WSL2)
 
+![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg)
+
 GNU Stow–based dotfiles for a fast, consistent workflow (tmux + Neovim + CLI helpers). Desktop includes i3 stack (kitty/rofi/polybar/picom/dunst) themed with Catppuccin Mocha.
 
 - Spanish docs: `README.md`
@@ -50,6 +52,9 @@ Secrets scan (includes untracked; can be slow):
 ```bash
 bash ./scripts/check-secrets.sh --all
 ```
+
+Manual workflow dispatch (full secrets scan):
+- GitHub → Actions → `ci` → Run workflow → set `include_untracked` = true
 
 Rollback:
 ```bash

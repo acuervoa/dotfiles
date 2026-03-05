@@ -170,6 +170,9 @@ Don’t:
 - Verify (all-in-one): `bash ./scripts/verify.sh`
 - Doctor (JSON): `bash ./scripts/doctor.sh --json`
 
+## CI
+- Workflow: `.github/workflows/ci.yml` (runs `scripts/check.sh` and `scripts/check-secrets.sh`)
+
 ## Common workflows (Stow)
 - Preview a package (safe): `stow -n -v -t "$HOME" <pkg>`
 - Apply a package: `stow -v -t "$HOME" <pkg>`

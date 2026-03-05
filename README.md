@@ -5,7 +5,7 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 - Español (este archivo)
 - English docs: `README.en.md`
 
-![stack](https://img.shields.io/badge/i3-4.23-blue?style=flat-square) ![tmux](https://img.shields.io/badge/tmux-3.4-green?style=flat-square) ![neovim](https://img.shields.io/badge/NeoVim-%3E%3D0.11-57A143?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
+![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![stack](https://img.shields.io/badge/i3-4.23-blue?style=flat-square) ![tmux](https://img.shields.io/badge/tmux-3.4-green?style=flat-square) ![neovim](https://img.shields.io/badge/NeoVim-%3E%3D0.11-57A143?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
 
 ---
 
