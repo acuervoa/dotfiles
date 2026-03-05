@@ -170,6 +170,7 @@ Don’t:
 - Show stow packages: `ls stow`
 - Verify (all-in-one): `bash ./scripts/verify.sh`
 - Doctor (JSON): `bash ./scripts/doctor.sh --json`
+- Troubleshooting: `docs/troubleshooting.md`
 
 ## CI
 - Workflow: `.github/workflows/ci.yml` (runs `scripts/check.sh` and `scripts/check-secrets.sh`)

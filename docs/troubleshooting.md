@@ -21,3 +21,7 @@ Errores comunes y soluciones rapidas.
 
 - Revisa el match con numero de linea.
 - Ajusta patrones si es necesario o usa archivos `_local` para secretos.
+
+## Verificacion mas estricta (Neovim config)
+
+- Ejecuta `bash ./scripts/verify.sh --nvim-config` para cargar `config.options`.

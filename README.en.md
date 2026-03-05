@@ -1,6 +1,6 @@
 # Dotfiles · Linux (Arch/Debian/Fedora/WSL2)
 
-![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![last-commit](https://img.shields.io/github/last-commit/acuervoa/dotfiles?style=flat-square)
+![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![last-commit](https://img.shields.io/github/last-commit/acuervoa/dotfiles?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
 
 GNU Stow–based dotfiles for a fast, consistent workflow (tmux + Neovim + CLI helpers). Desktop includes i3 stack (kitty/rofi/polybar/picom/dunst) themed with Catppuccin Mocha.
 
@@ -70,6 +70,7 @@ bash ./scripts/rollback.sh latest
 - **Dynamic docs**: `scripts/generate_shortcuts_doc.sh` builds `SHORTCUTS.md`.
 - **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
 - **Stack status**: `docs/status.md` tracks current stack and duplicate decisions.
+- **Troubleshooting**: `docs/troubleshooting.md` quick fixes.
 - **CI**: GitHub Actions runs `scripts/check.sh` and `scripts/check-secrets.sh` on push/PR.
 - **Bash library** (`stow/bash/.bash_lib`):
   - nav: `fo` (FO_EXCLUDES, FO_DEFAULT_ROOT, FO_AUTO_CD), `cb` with OSC52 fallback.
