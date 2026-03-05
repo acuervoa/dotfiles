@@ -145,6 +145,7 @@ Opcional:
 ### Manifest (rollback manual)
 El manifest registra líneas `LINK <src> -> <dest>`. Si haces rollback manual,
 puedes usarlo para identificar qué enlaces eliminar/restaurar.
+Más detalles en `docs/manifest.md`.
 
 ---
 

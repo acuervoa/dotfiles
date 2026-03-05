@@ -109,6 +109,10 @@ Optional post-bootstrap verification:
 - `bash ./scripts/verify.sh`
 - `bash ./scripts/check-secrets.sh --all`
 
+`verify.sh` summary:
+- `bash ./scripts/verify.sh` (check.sh + check-secrets + nvim checkhealth)
+- `bash ./scripts/verify.sh --nvim-config` (loads `config.options` headless)
+
 ## 6) Rollback
 
 Latest:
