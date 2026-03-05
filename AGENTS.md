@@ -11,6 +11,10 @@ anything destructive unless explicitly requested.
 - `scripts/` = entrypoints (`bootstrap.sh`, `rollback.sh`, `install_deps.sh`)
 - `.backups/<TIMESTAMP>/` = backups created by bootstrap
 
+Examples:
+- `stow/bash/.bashrc` → `$HOME/.bashrc`
+- `stow/nvim/.config/nvim/` → `$HOME/.config/nvim/`
+
 ## Cursor / Copilot rules
 - No Cursor rules found in `.cursor/rules/` or `.cursorrules`.
 - No Copilot rules found in `.github/copilot-instructions.md`.
