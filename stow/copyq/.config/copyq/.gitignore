@@ -1,0 +1,6 @@
+*.dat
+*.lock
+.copyq_s
+copyq_geometry.ini
+copyq_geometry.ini.lock*
+copyq-monitor.ini
