@@ -1,6 +1,21 @@
 /config/yazi/plugins/
 /config/yazi/flavors/
 
+# Secrets and local env files
+.env
+.env.*
+.secrets
+secrets.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*credentials*.json
+credentials.json
+*token*
+*secret*
+
 /.backups/
 /.manifests/
 *.swp
