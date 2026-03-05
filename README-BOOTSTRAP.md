@@ -93,6 +93,10 @@ Opciones útiles:
 - `--yes` para no preguntar confirmación
 - `--init-submodules` para inicializar submódulos
 
+Ejemplos rápidos:
+- WSL2 / CLI-only: `bash ./scripts/bootstrap.sh --core-only`
+- Desktop (forzar GUI): `bash ./scripts/bootstrap.sh --gui`
+
 ## 5) Después del bootstrap
 
 - **tmux**: abre `tmux` y luego `prefix + I` para instalar plugins vía TPM.

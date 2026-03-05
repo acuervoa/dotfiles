@@ -1,9 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+usage() {
+  cat <<'USAGE'
+Usage: scripts/check-secrets.sh [options]
+
+Scans tracked files for obvious secret patterns.
+
+Options:
+  -h, --help   Show this help
+  --all        Include untracked files (excluding .gitignored)
+USAGE
+}
+
+INCLUDE_UNTRACKED=false
+
+while (($# > 0)); do
+  case "$1" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --all)
+    INCLUDE_UNTRACKED=true
+    ;;
+  *)
+    printf '[ERROR] Unknown option: %s\n' "$1" >&2
+    usage >&2
+    exit 1
+    ;;
+  esac
+  shift
+done
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-REPO_ROOT="$repo_root" python - <<'PY'
+INCLUDE_UNTRACKED="$INCLUDE_UNTRACKED" REPO_ROOT="$repo_root" python - <<'PY'
 import os
 import re
 import subprocess
@@ -13,11 +45,24 @@ repo = os.environ.get("REPO_ROOT")
 if not repo:
     repo = os.path.abspath(os.getcwd())
 
+include_untracked = os.environ.get("INCLUDE_UNTRACKED") == "true"
+
 try:
     files = subprocess.check_output(["git", "-C", repo, "ls-files"], text=True).splitlines()
 except Exception as e:
     print(f"error: git ls-files failed: {e}")
     sys.exit(2)
+
+if include_untracked:
+    try:
+        untracked = subprocess.check_output(
+            ["git", "-C", repo, "ls-files", "-o", "--exclude-standard"],
+            text=True,
+        ).splitlines()
+        files = sorted(set(files + untracked))
+    except Exception as e:
+        print(f"error: git ls-files -o failed: {e}")
+        sys.exit(2)
 
 aws_access = "".join(map(chr, [65,87,83,95,65,67,67,69,83,83,95,75,69,89,95,73,68]))
 aws_secret = "".join(map(chr, [65,87,83,95,83,69,67,82,69,84,95,65,67,67,69,83,83,95,75,69,89]))

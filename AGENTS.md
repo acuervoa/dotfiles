@@ -33,6 +33,9 @@ Safety notes:
 ## Lint / format / smoke checks
 Prefer focused checks on the files you touched.
 
+Quick verification:
+- `bash ./scripts/verify.sh` (check.sh + check-secrets + optional nvim health)
+
 ### Shell
 - Syntax (all): `bash -n scripts/*.sh stow/bash/.bash_lib/*.sh`
 - Syntax (single): `bash -n scripts/bootstrap.sh`
@@ -59,6 +62,7 @@ Use these instead:
 - Single script: `bash -n <file>` + `shellcheck <file>`
 - Bootstrap safety: `bash ./scripts/bootstrap.sh --dry-run`
 - Neovim loads: `nvim --headless "+lua require('...')" +qa`
+- All-in-one: `bash ./scripts/verify.sh`
 
 Examples:
 - `bash -n scripts/bootstrap.sh` + `shellcheck scripts/bootstrap.sh`

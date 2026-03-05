@@ -117,6 +117,12 @@ bash ./scripts/doctor.sh
 bash ./scripts/status.sh
 ```
 
+Verificación rápida (todo en uno):
+
+```bash
+bash ./scripts/verify.sh
+```
+
 1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`
 2. **Aplicar** (interactivo): `bash ./scripts/bootstrap.sh`
 

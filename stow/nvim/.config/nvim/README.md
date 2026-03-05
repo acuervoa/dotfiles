@@ -19,6 +19,13 @@ NVIM_APPNAME=dotfiles-test nvim --clean -u ~/dotfiles/stow/nvim/.config/nvim/ini
 
 - Consulta [USAGE.md](USAGE.md) para un onboarding rápido (primer arranque, atajos, flujos LSP/DAP/Overseer/conform).
 
+## Plugin lock / restore
+
+Si quieres restaurar exactamente lo registrado en `lazy-lock.json`:
+
+- `:Lazy restore` para volver al set de plugins del lockfile.
+- `:Lazy sync` para instalar/actualizar según `lua/plugins`.
+
 ## Plugins
 
 ### bars-and-lines

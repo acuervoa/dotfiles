@@ -36,6 +36,11 @@ bash ./scripts/doctor.sh
 bash ./scripts/status.sh
 ```
 
+Quick verify (all-in-one):
+```bash
+bash ./scripts/verify.sh
+```
+
 Rollback:
 ```bash
 bash ./scripts/rollback.sh latest

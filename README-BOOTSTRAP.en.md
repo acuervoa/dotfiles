@@ -92,6 +92,10 @@ Useful flags:
 - `--yes` (no prompt)
 - `--init-submodules`
 
+Quick examples:
+- WSL2 / CLI-only: `bash ./scripts/bootstrap.sh --core-only`
+- Desktop (force GUI): `bash ./scripts/bootstrap.sh --gui`
+
 ## 5) After bootstrap
 
 - tmux: run `tmux`, then `prefix + I` to install TPM plugins.

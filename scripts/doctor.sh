@@ -13,6 +13,7 @@ Opciones:
   --no-conflicts      No chequear conflictos de stow
   --core-only         Modo core (omite GUI)
   --gui               Fuerza incluir GUI
+  --json              Output JSON (stdout) para tooling
   -h, --help          Muestra esta ayuda
 
 Variables de entorno:
@@ -24,6 +25,7 @@ USAGE
 NO_LINT=false
 NO_CONFLICTS=false
 GUI_MODE="auto" # auto|on|off
+JSON=false
 
 while (($# > 0)); do
   case "$1" in
@@ -38,6 +40,9 @@ while (($# > 0)); do
     ;;
   --gui)
     GUI_MODE="on"
+    ;;
+  --json)
+    JSON=true
     ;;
   -h | --help)
     usage
@@ -57,11 +62,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
+info() { [ "$JSON" = "true" ] && return 0; printf '[INFO] %s\n' "$*"; }
+warn() { [ "$JSON" = "true" ] && return 0; printf '[WARN] %s\n' "$*" >&2; }
 err() { printf '[ERROR] %s\n' "$*" >&2; }
 
 action() {
+  [ "$JSON" = "true" ] && return 0
   local kind="$1"
   shift
   printf '[%s] %s\n' "$kind" "$*"
@@ -165,6 +171,9 @@ check_tmux_tpm() {
 }
 
 main() {
+  local host
+  host="$(resolve_host || true)"
+  HOST_NAME="$host"
   info "Repo: $REPO_DIR"
   info "Stow: $STOW_DIR"
 
@@ -258,3 +267,16 @@ main() {
 }
 
 main
+status=$?
+
+if [ "$JSON" = "true" ]; then
+  printf '{"ok":%s,"repo":"%s","stow":"%s","host":"%s","wsl":%s,"gui_mode":"%s"}\n' \
+    "$( [ "$status" -eq 0 ] && printf 'true' || printf 'false' )" \
+    "${REPO_DIR//"/\\"}" \
+    "${STOW_DIR//"/\\"}" \
+    "${HOST_NAME//"/\\"}" \
+    "$( is_wsl && printf 'true' || printf 'false' )" \
+    "$GUI_MODE"
+fi
+
+exit "$status"
