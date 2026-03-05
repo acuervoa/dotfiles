@@ -13,7 +13,7 @@ Opciones:
   --no-conflicts      No chequear conflictos de stow
   --core-only         Modo core (omite GUI)
   --gui               Fuerza incluir GUI
-  --json              Output JSON (stdout) para tooling
+  --json              Salida JSON (stdout) para tooling
   -h, --help          Muestra esta ayuda
 
 Variables de entorno:

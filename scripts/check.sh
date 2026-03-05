@@ -74,7 +74,7 @@ main() {
     return 0
   fi
 
-  action BASH "Syntax check (bash -n)"
+  action BASH "Chequeo de sintaxis (bash -n)"
   local f
   for f in "${files[@]}"; do
     bash -n "$f"
@@ -85,7 +85,7 @@ main() {
   elif ! command -v shfmt >/dev/null 2>&1; then
     warn "shfmt no está instalado; omitiendo."
   else
-    action SHFMT "Format check (shfmt -d)"
+    action SHFMT "Chequeo de formato (shfmt -d)"
     shfmt -d -i 2 "${files[@]}"
   fi
 

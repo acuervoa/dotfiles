@@ -14,6 +14,7 @@ Muestra estado del setup de dotfiles sin modificar nada:
 Opciones:
   --core-only          Modo core (omite GUI)
   --gui                Fuerza incluir GUI
+  --json               Salida JSON (stdout) para tooling
   -h, --help           Muestra esta ayuda
 
 Variables de entorno:
@@ -23,6 +24,7 @@ USAGE
 }
 
 GUI_MODE="auto" # auto|on|off
+JSON=false
 
 while (($# > 0)); do
   case "$1" in
@@ -31,6 +33,9 @@ while (($# > 0)); do
     ;;
   --gui)
     GUI_MODE="on"
+    ;;
+  --json)
+    JSON=true
     ;;
   -h | --help)
     usage
@@ -50,8 +55,32 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
+info() { [ "$JSON" = "true" ] && return 0; printf '[INFO] %s\n' "$*"; }
+warn() { [ "$JSON" = "true" ] && return 0; printf '[WARN] %s\n' "$*" >&2; }
+
+json_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//"/\\"}"
+  s="${s//$'\n'/\\n}"
+  printf '%s' "$s"
+}
+
+json_array() {
+  local result="["
+  local item
+  local first=true
+  for item in "$@"; do
+    if [ "$first" = "true" ]; then
+      first=false
+    else
+      result+=","
+    fi
+    result+="\"$(json_escape "$item")\""
+  done
+  result+="]"
+  printf '%s' "$result"
+}
 
 load_host_profile() {
   local host profile_dir default_profile host_profile
@@ -123,7 +152,7 @@ main() {
     config_pkgs+=("${CONFIG_GUI_PKGS[@]}")
   fi
 
-  echo
+  [ "$JSON" = "true" ] || echo
   info "Paquetes -> $HOME: ${home_pkgs[*]}"
   info "Paquetes -> $HOME/.config: dotfiles ${config_pkgs[*]}"
 
@@ -146,7 +175,7 @@ main() {
     fi
   fi
 
-  echo
+  [ "$JSON" = "true" ] || echo
   local mf
   if mf="$(latest_manifest 2>/dev/null)"; then
     info "Manifest (latest): $mf"
@@ -176,7 +205,7 @@ main() {
     info "Backup: (ninguno)"
   fi
 
-  echo
+  [ "$JSON" = "true" ] || echo
   local blerc="$HOME/.blerc"
   local blerc_xdg="${XDG_CONFIG_HOME:-$HOME/.config}/blesh/blerc"
 
@@ -192,6 +221,73 @@ main() {
     info "blerc XDG: OK ($blerc_xdg)"
   else
     warn "blerc XDG: no legible ($blerc_xdg)"
+  fi
+
+  if [ "$JSON" = "true" ]; then
+    local wsl_bool="false"
+    is_wsl && wsl_bool="true"
+
+    local tpm_path=""
+    local tpm_ok="null"
+    if [ "$have_tmux" = "true" ]; then
+      local data_home_json="${XDG_DATA_HOME:-$HOME/.local/share}"
+      tpm_path="$data_home_json/tmux/plugins/tpm/tpm"
+      if [ -x "$tpm_path" ]; then
+        tpm_ok="true"
+      else
+        tpm_ok="false"
+      fi
+    fi
+
+    local mf_path="" mf_host="" mf_timestamp="" mf_backup=""
+    if mf="$(latest_manifest 2>/dev/null)"; then
+      mf_path="$mf"
+      manifest_get_string "$mf" host mf_host
+      manifest_get_string "$mf" timestamp mf_timestamp
+      local mf_backup_abs="" mf_backup_rel=""
+      manifest_get_string "$mf" backup_dir_abs mf_backup_abs
+      manifest_get_string "$mf" backup_dir_rel mf_backup_rel
+      if [ -n "$mf_backup_abs" ]; then
+        mf_backup="$mf_backup_abs"
+      elif [ -n "$mf_backup_rel" ]; then
+        mf_backup="$REPO_DIR/$mf_backup_rel"
+      fi
+    fi
+
+    local bk_path=""
+    if bk="$(latest_backup 2>/dev/null)"; then
+      bk_path="$bk"
+    fi
+
+    local blerc_state="missing" blerc_target=""
+    if [ -L "$blerc" ]; then
+      blerc_state="symlink"
+      blerc_target="$(readlink -- "$blerc" 2>/dev/null || true)"
+    elif [ -e "$blerc" ]; then
+      blerc_state="file"
+    fi
+
+    local blerc_xdg_ok="false"
+    [ -r "$blerc_xdg" ] && blerc_xdg_ok="true"
+
+    printf '{"repo":"%s","stow":"%s","host":"%s","wsl":%s,"gui_mode":"%s","home_pkgs":%s,"config_pkgs":%s,"tmux_tpm_path":"%s","tmux_tpm_ok":%s,"manifest_path":"%s","manifest_host":"%s","manifest_timestamp":"%s","manifest_backup":"%s","backup_latest":"%s","blerc_state":"%s","blerc_target":"%s","blerc_xdg_readable":%s}\n' \
+      "$(json_escape "$REPO_DIR")" \
+      "$(json_escape "$STOW_DIR")" \
+      "$(json_escape "${host:-}")" \
+      "$wsl_bool" \
+      "$(json_escape "$GUI_MODE")" \
+      "$(json_array "${home_pkgs[@]}")" \
+      "$(json_array "${config_pkgs[@]}")" \
+      "$(json_escape "$tpm_path")" \
+      "$tpm_ok" \
+      "$(json_escape "$mf_path")" \
+      "$(json_escape "$mf_host")" \
+      "$(json_escape "$mf_timestamp")" \
+      "$(json_escape "$mf_backup")" \
+      "$(json_escape "$bk_path")" \
+      "$(json_escape "$blerc_state")" \
+      "$(json_escape "$blerc_target")" \
+      "$blerc_xdg_ok"
   fi
 }
 
