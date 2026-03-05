@@ -254,7 +254,7 @@ Otros artefactos útiles:
 - `docs/backup-excludes.txt`: Lista de exclusiones sugeridas para backups
 - `docs/status.md`: Estado actual del stack y decisiones de duplicados
 - `docs/troubleshooting.md`: Errores comunes y soluciones rápidas
-- `docs/README.md`: Índice de documentación
+- `docs/README.md`: Índice de documentación (punto de entrada)
 - CI: GitHub Actions ejecuta `scripts/check.sh` y `scripts/check-secrets.sh` en push/PRs
 
 ---
