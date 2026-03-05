@@ -14,6 +14,7 @@ USAGE
 }
 
 INCLUDE_UNTRACKED=false
+PYTHON_BIN=""
 
 while (($# > 0)); do
   case "$1" in
@@ -35,7 +36,16 @@ done
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-INCLUDE_UNTRACKED="$INCLUDE_UNTRACKED" REPO_ROOT="$repo_root" python - <<'PY'
+if command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+elif command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+else
+  printf '[ERROR] python no está instalado (requiere python o python3)\n' >&2
+  exit 1
+fi
+
+INCLUDE_UNTRACKED="$INCLUDE_UNTRACKED" REPO_ROOT="$repo_root" "$PYTHON_BIN" - <<'PY'
 import os
 import re
 import subprocess

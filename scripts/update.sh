@@ -139,8 +139,16 @@ main() {
   if [ -n "$upstream" ]; then
     local counts behind ahead
     counts="$(git_cmd rev-list --left-right --count "HEAD...$upstream" 2>/dev/null || true)"
-    behind="${counts%% *}"
-    ahead="${counts##* }"
+    if [ -z "$counts" ]; then
+      warn "No pude calcular ahead/behind; continuo con pull."
+      behind="?"
+      ahead="?"
+    else
+      behind="${counts%% *}"
+      ahead="${counts##* }"
+      [ -n "$behind" ] || behind="0"
+      [ -n "$ahead" ] || ahead="0"
+    fi
     info "Upstream: $upstream (behind=$behind ahead=$ahead)"
 
     if [ "$DRY_RUN" = "true" ]; then
