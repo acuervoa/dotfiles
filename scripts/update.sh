@@ -12,8 +12,8 @@ Actualiza el repo y aplica dotfiles con guardrails:
 
 Opciones:
   --dry-run            No hace pull ni apply real; corre apply en modo --dry-run
-  --allow-dirty        Permite correr aun con working tree sucio (no recomendado)
-  -y, --yes            Pasa --yes a apply (sin confirmacion)
+  --allow-dirty        Permite correr aún con working tree sucio (no recomendado)
+  -y, --yes            Pasa --yes a apply (sin confirmación)
   --core-only          Pasa --core-only a apply
   --gui                Pasa --gui a apply
   --init-submodules    Pasa --init-submodules a apply
@@ -22,7 +22,7 @@ Opciones:
   -h, --help           Muestra esta ayuda
 
 Variables de entorno:
-  DOTFILES             Ruta al repo (por defecto, carpeta raiz del script)
+  DOTFILES             Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST        Override del hostname para perfiles
 USAGE
 }
@@ -68,7 +68,7 @@ while (($# > 0)); do
     exit 0
     ;;
   *)
-    printf '[ERROR] Opcion no reconocida: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;
@@ -102,7 +102,7 @@ main() {
   }
 
   if ! command -v git >/dev/null 2>&1; then
-    err "git no esta instalado"
+    err "git no está instalado"
     return 1
   fi
 

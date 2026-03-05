@@ -8,12 +8,12 @@ Uso: scripts/apply.sh [opciones]
 Workflow recomendado:
 - Corre scripts/doctor.sh (checks read-only)
 - Corre scripts/bootstrap.sh --dry-run (plan)
-- Pide una sola confirmacion
+- Pide una sola confirmación
 - Ejecuta scripts/bootstrap.sh -y (apply real)
 
 Opciones:
   --dry-run            Solo doctor + bootstrap --dry-run (no aplica cambios)
-  -y, --yes            No pedir confirmacion (igual corre doctor + dry-run)
+  -y, --yes            No pedir confirmación (igual corre doctor + dry-run)
   --core-only          Modo core (omite GUI)
   --gui                Fuerza incluir GUI
   --init-submodules    Pasa --init-submodules a bootstrap
@@ -22,7 +22,7 @@ Opciones:
   -h, --help           Muestra esta ayuda
 
 Variables de entorno:
-  DOTFILES             Ruta al repo (por defecto, carpeta raiz del script)
+  DOTFILES             Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST        Override del hostname para perfiles
 USAGE
 }
@@ -64,7 +64,7 @@ while (($# > 0)); do
     exit 0
     ;;
   *)
-    printf '[ERROR] Opcion no reconocida: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;
@@ -181,7 +181,7 @@ main() {
   fi
 
   confirm || {
-    info "Operacion cancelada."
+    info "Operación cancelada."
     return 0
   }
 

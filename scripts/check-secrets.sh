@@ -3,13 +3,13 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/check-secrets.sh [options]
+Uso: scripts/check-secrets.sh [opciones]
 
-Scans tracked files for obvious secret patterns.
+Escanea archivos trackeados para detectar patrones obvios de secretos.
 
-Options:
-  -h, --help   Show this help
-  --all        Include untracked files (excluding .gitignored); can be slow
+Opciones:
+  -h, --help   Muestra esta ayuda
+  --all        Incluye no trackeados (excluye .gitignored); puede ser lento
 USAGE
 }
 
@@ -26,7 +26,7 @@ while (($# > 0)); do
     INCLUDE_UNTRACKED=true
     ;;
   *)
-    printf '[ERROR] Unknown option: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;
@@ -60,7 +60,7 @@ include_untracked = os.environ.get("INCLUDE_UNTRACKED") == "true"
 try:
     files = subprocess.check_output(["git", "-C", repo, "ls-files"], text=True).splitlines()
 except Exception as e:
-    print(f"error: git ls-files failed: {e}")
+    print(f"[ERROR] git ls-files fallo: {e}")
     sys.exit(2)
 
 if include_untracked:
@@ -71,7 +71,7 @@ if include_untracked:
         ).splitlines()
         files = sorted(set(files + untracked))
     except Exception as e:
-        print(f"error: git ls-files -o failed: {e}")
+        print(f"[ERROR] git ls-files -o fallo: {e}")
         sys.exit(2)
 
 aws_access = "".join(map(chr, [65,87,83,95,65,67,67,69,83,83,95,75,69,89,95,73,68]))
@@ -113,10 +113,10 @@ for rel in files:
             break
 
 if hits:
-    print("Potential secrets detected:")
+    print("[ERROR] Posibles secretos detectados:")
     for rel, line_no, pat in hits:
-        print(f"- {rel}:{line_no} (matched: {pat})")
+        print(f"- {rel}:{line_no} (coincide: {pat})")
     sys.exit(1)
 
-print("No obvious secrets found in tracked files.")
+print("[INFO] No se detectaron secretos obvios en archivos trackeados.")
 PY

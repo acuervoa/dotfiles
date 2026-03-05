@@ -3,24 +3,24 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/check.sh [options]
+Uso: scripts/check.sh [opciones]
 
-Runs standardized repo validation for shell code:
+Ejecuta validaciones estándar para scripts shell:
 - `bash -n` on `scripts/*.sh`, `scripts/lib/*.sh`, and `stow/bash/.bash_lib/*.sh`
-- `shellcheck` on the same files (if installed)
-- `shfmt -d` on the same files (if installed)
+- `shellcheck` sobre los mismos archivos (si está instalado)
+- `shfmt -d` sobre los mismos archivos (si está instalado)
 
-Options:
-  -h, --help        Show this help
-  --no-shellcheck   Skip ShellCheck even if installed
-  --no-shfmt        Skip shfmt even if installed
+Opciones:
+  -h, --help        Muestra esta ayuda
+  --no-shellcheck   Omite ShellCheck aunque esté instalado
+  --no-shfmt        Omite shfmt aunque esté instalado
 
-Example (minimal environment):
+Ejemplo (entorno mínimo):
   scripts/check.sh --no-shellcheck --no-shfmt
 
-Exit codes:
-  0  All enabled checks passed
-  1  A check failed
+Códigos de salida:
+  0  Todos los checks habilitados pasaron
+  1  Algún check falló
 USAGE
 }
 
@@ -52,7 +52,7 @@ while (($# > 0)); do
     NO_SHFMT=true
     ;;
   *)
-    printf '[ERROR] Unknown option: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;
@@ -70,7 +70,7 @@ main() {
   files+=("$REPO_ROOT"/stow/dotfiles/.config/dotfiles/hosts/*.sh)
 
   if [ "${#files[@]}" -eq 0 ]; then
-    warn "No shell files found to check."
+    warn "No se encontraron archivos shell para revisar."
     return 0
   fi
 
@@ -81,21 +81,21 @@ main() {
   done
 
   if [ "$NO_SHFMT" = "true" ]; then
-    info "Skipping shfmt (--no-shfmt)."
+    info "Omitiendo shfmt (--no-shfmt)."
   elif ! command -v shfmt >/dev/null 2>&1; then
-    warn "shfmt not installed; skipping."
+    warn "shfmt no está instalado; omitiendo."
   else
     action SHFMT "Format check (shfmt -d)"
     shfmt -d -i 2 "${files[@]}"
   fi
 
   if [ "$NO_SHELLCHECK" = "true" ]; then
-    info "Skipping shellcheck (--no-shellcheck)."
+    info "Omitiendo shellcheck (--no-shellcheck)."
     return 0
   fi
 
   if ! command -v shellcheck >/dev/null 2>&1; then
-    warn "shellcheck not installed; skipping."
+    warn "shellcheck no está instalado; omitiendo."
     return 0
   fi
 

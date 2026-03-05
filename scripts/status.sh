@@ -7,9 +7,9 @@ Uso: scripts/status.sh [opciones]
 
 Muestra estado del setup de dotfiles sin modificar nada:
 - Host detectado + perfil cargado
-- Paquetes segun perfil (core/gui)
-- Ultimo manifest/backup (si existen)
-- Chequeos rapidos de blesh (.blerc)
+- Paquetes según perfil (core/gui)
+- Último manifest/backup (si existen)
+- Chequeos rápidos de blesh (.blerc)
 
 Opciones:
   --core-only          Modo core (omite GUI)
@@ -17,7 +17,7 @@ Opciones:
   -h, --help           Muestra esta ayuda
 
 Variables de entorno:
-  DOTFILES             Ruta al repo (por defecto, carpeta raiz del script)
+  DOTFILES             Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST        Override del hostname para perfiles
 USAGE
 }
@@ -37,7 +37,7 @@ while (($# > 0)); do
     exit 0
     ;;
   *)
-    printf '[ERROR] Opcion no reconocida: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;

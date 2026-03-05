@@ -3,19 +3,19 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/verify.sh [options]
+Uso: scripts/verify.sh [opciones]
 
-Runs lightweight repo verification (read-only):
+Corre verificaciones livianas del repo (read-only):
 - scripts/check.sh
 - scripts/check-secrets.sh
 - nvim --headless "+checkhealth" +qa (if available)
 - nvim --headless "+lua require('config.options')" +qa (optional)
 
-Options:
-  -h, --help       Show this help
-  --no-nvim        Skip Neovim health check
-  --no-scan        Skip check-secrets scan
-  --nvim-config    Also load config.options headless
+Opciones:
+  -h, --help       Muestra esta ayuda
+  --no-nvim        Omite checkhealth de Neovim
+  --no-scan        Omite check-secrets
+  --nvim-config    También carga config.options headless
 USAGE
 }
 
@@ -42,7 +42,7 @@ while (($# > 0)); do
     NVIM_CONFIG=true
     ;;
   *)
-    printf '%s\n' "[ERROR] Unknown option: $1" >&2
+    printf '%s\n' "[ERROR] Opción no reconocida: $1" >&2
     usage >&2
     exit 1
     ;;
@@ -55,32 +55,32 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 main() {
   if [ -x "$REPO_ROOT/scripts/check.sh" ]; then
-    info "Running scripts/check.sh"
+    info "Corriendo scripts/check.sh"
     "$REPO_ROOT/scripts/check.sh"
   else
-    warn "Missing scripts/check.sh (skipping)"
+    warn "No existe scripts/check.sh (omito)"
   fi
 
   if [ "$NO_SCAN" = "true" ]; then
-    info "Skipping check-secrets scan (--no-scan)."
+    info "Omitiendo check-secrets (--no-scan)."
   elif [ -x "$REPO_ROOT/scripts/check-secrets.sh" ]; then
-    info "Running scripts/check-secrets.sh"
+    info "Corriendo scripts/check-secrets.sh"
     "$REPO_ROOT/scripts/check-secrets.sh"
   else
-    warn "Missing scripts/check-secrets.sh (skipping)"
+    warn "No existe scripts/check-secrets.sh (omito)"
   fi
 
   if [ "$NO_NVIM" = "true" ]; then
-    info "Skipping Neovim health check (--no-nvim)."
+    info "Omitiendo checkhealth de Neovim (--no-nvim)."
   elif command -v nvim >/dev/null 2>&1; then
-    info "Running Neovim checkhealth (headless)"
+    info "Corriendo checkhealth de Neovim (headless)"
     nvim --headless "+checkhealth" +qa
     if [ "$NVIM_CONFIG" = "true" ]; then
-      info "Running Neovim config load (headless)"
+      info "Corriendo carga de config.options (headless)"
       nvim --headless "+lua require('config.options')" +qa
     fi
   else
-    warn "nvim not installed; skipping checkhealth."
+    warn "nvim no está instalado; omito checkhealth."
   fi
 }
 

@@ -5,7 +5,7 @@ usage() {
   cat <<'USAGE'
 Uso: scripts/doctor.sh [opciones]
 
-Chequeos rapidos (read-only) para validar que el repo y el host estan listos
+Chequeos rápidos (read-only) para validar que el repo y el host están listos
 para correr bootstrap/rollback.
 
 Opciones:
@@ -17,7 +17,7 @@ Opciones:
   -h, --help          Muestra esta ayuda
 
 Variables de entorno:
-  DOTFILES            Ruta al repo (por defecto, carpeta raiz del script)
+  DOTFILES            Ruta al repo (por defecto, carpeta raíz del script)
   DOTFILES_HOST       Override del hostname para perfiles
 USAGE
 }
@@ -49,7 +49,7 @@ while (($# > 0)); do
     exit 0
     ;;
   *)
-    printf '[ERROR] Opcion no reconocida: %s\n' "$1" >&2
+    printf '[ERROR] Opción no reconocida: %s\n' "$1" >&2
     usage >&2
     exit 1
     ;;
@@ -182,7 +182,7 @@ main() {
 
   action DEPS "Verificando dependencias"
   require_cmd stow || return 1
-  require_cmd rsync || warn "rsync no esta instalado (rollback lo requiere)"
+  require_cmd rsync || warn "rsync no está instalado (rollback lo requiere)"
 
   if is_wsl; then
     info "Entorno: WSL"
