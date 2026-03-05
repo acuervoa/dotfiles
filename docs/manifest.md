@@ -24,6 +24,16 @@ LINK /home/user/dotfiles/stow/nvim/.config/nvim -> /home/user/.config/nvim
 2. Elimina los symlinks que apunten al repo (si vas a restaurar backups).
 3. Restaura los backups desde `.backups/<TIMESTAMP>/` si corresponde.
 
+Ejemplo rapido:
+
+```bash
+# Ver enlaces creados
+rg '^LINK ' .manifests/<TIMESTAMP>.manifest
+
+# Ver a que apunta un symlink
+readlink -f ~/.bashrc
+```
+
 Notas:
 - Si el symlink apunta a otro destino, no lo toques.
 - Usa `bash ./scripts/rollback.sh` cuando sea posible.

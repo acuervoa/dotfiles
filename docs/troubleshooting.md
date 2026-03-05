@@ -11,6 +11,7 @@ Errores comunes y soluciones rápidas.
 
 - Corre `bash ./scripts/bootstrap.sh --dry-run` para ver conflictos.
 - Revisa `scripts/doctor.sh` (conflicts + lint) antes de aplicar.
+- Si necesitas ver el detalle en JSON: `bash ./scripts/status.sh --json`.
 
 ## Faltan dependencias
 
