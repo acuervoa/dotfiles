@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Errores comunes y soluciones rapidas.
+Errores comunes y soluciones rápidas.
 
 ## Neovim: theme/plugin faltante
 
@@ -19,9 +19,9 @@ Errores comunes y soluciones rapidas.
 
 ## Secrets scan marca falsos positivos
 
-- Revisa el match con numero de linea.
+- Revisa el match con número de línea.
 - Ajusta patrones si es necesario o usa archivos `_local` para secretos.
 
-## Verificacion mas estricta (Neovim config)
+## Verificación más estricta (Neovim config)
 
 - Ejecuta `bash ./scripts/verify.sh --nvim-config` para cargar `config.options`.

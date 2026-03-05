@@ -89,7 +89,6 @@ Useful flags:
 - `--core-only` (skip GUI; WSL/servers)
 - `--gui` (force GUI on desktop)
 - `--yes` (no prompt)
-- `--init-submodules`
 
 Quick examples:
 - WSL2 / CLI-only: `bash ./scripts/bootstrap.sh --core-only`

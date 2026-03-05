@@ -134,7 +134,7 @@ Escaneo de secretos (incluye no-trackeados; puede ser lento):
 bash ./scripts/check-secrets.sh --all
 ```
 
-Ejecucion manual del workflow (scan completo):
+Ejecución manual del workflow (scan completo):
 - GitHub → Actions → `ci` → Run workflow → `include_untracked` = true
 
 1. **Simulación**: `bash ./scripts/bootstrap.sh --dry-run`

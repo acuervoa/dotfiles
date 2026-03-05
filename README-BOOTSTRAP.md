@@ -90,7 +90,6 @@ Opciones útiles:
 - `--core-only` para omitir GUI (WSL/servers)
 - `--gui` para forzar GUI (desktop)
 - `--yes` para no preguntar confirmación
-- `--init-submodules` para inicializar submódulos
 
 Ejemplos rápidos:
 - WSL2 / CLI-only: `bash ./scripts/bootstrap.sh --core-only`
