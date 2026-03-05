@@ -64,6 +64,11 @@ bash ./scripts/doctor.sh
 bash ./scripts/status.sh
 ```
 
+Doctor JSON (salida parseable):
+```bash
+bash ./scripts/doctor.sh --json
+```
+
 - `doctor.sh` valida dependencias, perfiles y posibles conflictos de stow.
 - `status.sh` resume host/perfil, paquetes y manifest/backup más reciente.
 

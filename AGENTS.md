@@ -173,6 +173,7 @@ Don’t:
 - List files: `rg --files`
 - Show stow packages: `ls stow`
 - Verify (all-in-one): `bash ./scripts/verify.sh`
+- Verify (nvim config load): `bash ./scripts/verify.sh --nvim-config`
 - Doctor (JSON): `bash ./scripts/doctor.sh --json`
 - Troubleshooting: `docs/troubleshooting.md`
 

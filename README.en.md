@@ -71,6 +71,7 @@ bash ./scripts/rollback.sh latest
 - **Backup excludes**: `docs/backup-excludes.txt` contains suggested exclusions for backups.
 - **Stack status**: `docs/status.md` tracks current stack and duplicate decisions.
 - **Troubleshooting**: `docs/troubleshooting.md` quick fixes.
+- **Docs index**: `docs/README.md`.
 - **CI**: GitHub Actions runs `scripts/check.sh` and `scripts/check-secrets.sh` on push/PR.
 - **Bash library** (`stow/bash/.bash_lib`):
   - nav: `fo` (FO_EXCLUDES, FO_DEFAULT_ROOT, FO_AUTO_CD), `cb` with OSC52 fallback.
