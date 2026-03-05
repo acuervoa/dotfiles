@@ -34,3 +34,8 @@ Notas:
 
 - No lo elimines automaticamente.
 - Verifica manualmente el destino con `readlink` y decide caso por caso.
+
+**Como identificar symlinks fuera del repo**
+
+- Usa `readlink -f <dest>` y verifica que empiece con la ruta del repo.
+- Si no apunta al repo, no lo elimines automaticamente.

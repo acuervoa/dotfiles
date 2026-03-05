@@ -5,7 +5,7 @@ Repositorio de dotfiles orientado a productividad (i3 + tmux + NeoVim, kitty, ro
 - Español (este archivo)
 - English docs: `README.en.md`
 
-![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![stack](https://img.shields.io/badge/i3-4.23-blue?style=flat-square) ![tmux](https://img.shields.io/badge/tmux-3.4-green?style=flat-square) ![neovim](https://img.shields.io/badge/NeoVim-%3E%3D0.11-57A143?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
+![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![last-commit](https://img.shields.io/github/last-commit/acuervoa/dotfiles?style=flat-square) ![stack](https://img.shields.io/badge/i3-4.23-blue?style=flat-square) ![tmux](https://img.shields.io/badge/tmux-3.4-green?style=flat-square) ![neovim](https://img.shields.io/badge/NeoVim-%3E%3D0.11-57A143?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)
 
 ---
 
@@ -117,6 +117,11 @@ bash ./scripts/doctor.sh
 bash ./scripts/status.sh
 ```
 
+Doctor JSON (salida parseable):
+```bash
+bash ./scripts/doctor.sh --json
+```
+
 Verificación rápida (todo en uno):
 
 ```bash
@@ -215,6 +220,7 @@ bash ./scripts/generate_shortcuts_doc.sh
 Otros artefactos útiles:
 - `docs/backup-excludes.txt`: Lista de exclusiones sugeridas para backups
 - `docs/status.md`: Estado actual del stack y decisiones de duplicados
+- `docs/troubleshooting.md`: Errores comunes y soluciones rápidas
 - CI: GitHub Actions ejecuta `scripts/check.sh` y `scripts/check-secrets.sh` en push/PRs
 
 ---

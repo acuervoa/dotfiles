@@ -1,6 +1,6 @@
 # Dotfiles · Linux (Arch/Debian/Fedora/WSL2)
 
-![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/acuervoa/dotfiles/actions/workflows/ci.yml/badge.svg) ![last-commit](https://img.shields.io/github/last-commit/acuervoa/dotfiles?style=flat-square)
 
 GNU Stow–based dotfiles for a fast, consistent workflow (tmux + Neovim + CLI helpers). Desktop includes i3 stack (kitty/rofi/polybar/picom/dunst) themed with Catppuccin Mocha.
 
