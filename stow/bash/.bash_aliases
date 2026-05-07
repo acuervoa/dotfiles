@@ -11,8 +11,13 @@ alias gup='git pull --rebase --autostash'
 alias gfa='git fetch --all --prune'
 alias gpf='git push --force-with-lease'
 alias gl='git log --oneline --graph -n 30'
-alias gd='git diff --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff'
-alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always 2>/dev/null || git diff --cached'
+if command -v bat >/dev/null 2>&1; then
+  alias gd='git diff --color=always | bat --paging=always --plain --color=always'
+  alias gds='git diff --cached --color=always | bat --paging=always --plain --color=always'
+else
+  alias gd='git diff'
+  alias gds='git diff --cached'
+fi
 alias ga='git add -A'
 alias gco='git checkout'
 alias gcob="git checkout -b"
