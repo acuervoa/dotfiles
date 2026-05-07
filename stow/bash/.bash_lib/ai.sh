@@ -102,8 +102,7 @@ gpt-reset() {
     return 1
   fi
 
-  read -r -p "Borrar el perfil de chatgpt-webapp en $profile_dir? [y/N] " reply
-  if [[ ! "$reply" =~ ^[Yy]$ ]]; then
+  if ! _confirm "Borrar el perfil de chatgpt-webapp en $profile_dir? [y/N] "; then
     printf 'Cancelado.\n' >&2
     return 1
   fi
