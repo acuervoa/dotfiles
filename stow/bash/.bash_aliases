@@ -67,8 +67,3 @@ fi
 
 # Atajos útiles
 alias cls="clear"
-
-# tldr - simplified man pages (install: brew install tldr or sudo pacman -S tldr)
-if command -v tldr >/dev/null 2>&1; then
-  alias tldr="tldr"
-fi
