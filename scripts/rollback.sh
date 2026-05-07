@@ -77,17 +77,6 @@ SELECTED_INPUT="${1:-latest}"
 
 MANIFEST_USED=false
 
-find_latest_dir() {
-  local base="$1"
-  [ -d "$base" ] || return 1
-
-  local latest
-  latest="$(find "$base" -mindepth 1 -maxdepth 1 -printf '%f\n' 2>/dev/null | sort | tail -n 1)" || true
-  [ -n "$latest" ] || return 1
-
-  printf '%s/%s' "$base" "$latest"
-}
-
 pick_manifest() {
   if [ -n "$MANIFEST_PATH" ]; then
     [ -f "$MANIFEST_PATH" ] || {
@@ -98,24 +87,7 @@ pick_manifest() {
     return 0
   fi
 
-  if [ "$SELECTED_INPUT" = "latest" ]; then
-    local latest=""
-    local f
-
-    shopt -s nullglob
-    for f in "$MANIFEST_DIR"/*.manifest; do
-      latest="$f"
-    done
-    shopt -u nullglob
-
-    [ -n "$latest" ] || return 1
-    printf '%s' "$latest"
-    return 0
-  fi
-
-  local candidate="$MANIFEST_DIR/$SELECTED_INPUT.manifest"
-  [ -f "$candidate" ] || return 1
-  printf '%s' "$candidate"
+  manifest_path_for_input "$SELECTED_INPUT"
 }
 
 main() {
@@ -187,7 +159,7 @@ main() {
         legacy)
           warn "Manifest legacy sin backup_needed; por seguridad no hay fallback automático a backups antiguos."
           if [ "${DOTFILES_ROLLBACK_FALLBACK:-0}" = "1" ] && [ "$SELECTED_INPUT" = "latest" ]; then
-            selected_backup="$(find_latest_dir "$BACKUP_BASE" 2>/dev/null || true)"
+            selected_backup="$(backup_path_for_input "$SELECTED_INPUT" 2>/dev/null || true)"
           fi
           ;;
       esac
@@ -195,12 +167,8 @@ main() {
   else
     if [ -n "${backup_dir_rel:-}" ] && [ -d "$REPO_DIR/$backup_dir_rel" ]; then
       selected_backup="$REPO_DIR/$backup_dir_rel"
-    elif [ "$SELECTED_INPUT" = "latest" ]; then
-      selected_backup="$(find_latest_dir "$BACKUP_BASE" 2>/dev/null || true)"
     else
-      if [ -d "$BACKUP_BASE/$SELECTED_INPUT" ]; then
-        selected_backup="$BACKUP_BASE/$SELECTED_INPUT"
-      fi
+      selected_backup="$(backup_path_for_input "$SELECTED_INPUT" 2>/dev/null || true)"
     fi
   fi
 
@@ -226,30 +194,19 @@ main() {
 
   local pkg
   for pkg in "${home_pkgs[@]}"; do
-    if [ ! -d "$STOW_DIR/$pkg" ]; then
-      warn "Paquete stow inexistente (omito): $pkg"
-      continue
-    fi
-    action STOW "Desinstalando '$pkg' de $HOME"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -D "$pkg"
+    run_stow_package "$pkg" "$HOME" -D "Desinstalando '$pkg' de $HOME" || continue
   done
 
   # Paquete meta (perfiles de host)
   if [ -d "$STOW_DIR/dotfiles" ]; then
-    action STOW "Desinstalando 'dotfiles' (bajo $HOME/.config)"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -D dotfiles
+    run_stow_package "dotfiles" "$HOME" -D "Desinstalando 'dotfiles' (bajo $HOME/.config)"
   fi
 
   run_cmd mkdir -p "$HOME/.config"
   for pkg in "${config_pkgs[@]}"; do
-    if [ ! -d "$STOW_DIR/$pkg" ]; then
-      warn "Paquete stow inexistente (omito): $pkg"
-      continue
-    fi
-    action STOW "Desinstalando '$pkg' (bajo $HOME/.config)"
+    run_stow_package "$pkg" "$HOME" -D "Desinstalando '$pkg' (bajo $HOME/.config)" || continue
     # Los paquetes en stow/* suelen incluir el prefijo `.config/`, por lo que el
     # target correcto para stow es $HOME (igual que en bootstrap.sh).
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -D "$pkg"
   done
 
   if [ -n "$selected_backup" ]; then

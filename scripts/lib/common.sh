@@ -124,6 +124,32 @@ latest_backup() {
   printf '%s' "$latest"
 }
 
+manifest_path_for_input() {
+  local selected_input="${1:-latest}"
+
+  if [ "$selected_input" = "latest" ]; then
+    latest_manifest
+    return $?
+  fi
+
+  local candidate="$MANIFEST_DIR/$selected_input.manifest"
+  [ -f "$candidate" ] || return 1
+  printf '%s' "$candidate"
+}
+
+backup_path_for_input() {
+  local selected_input="${1:-latest}"
+
+  if [ "$selected_input" = "latest" ]; then
+    latest_backup
+    return $?
+  fi
+
+  local candidate="$BACKUP_BASE/$selected_input"
+  [ -d "$candidate" ] || return 1
+  printf '%s' "$candidate"
+}
+
 load_host_packages_profile() {
   local host profile_dir default_profile host_profile
 
@@ -186,6 +212,18 @@ build_config_packages() {
   if should_include_gui_packages "$gui_mode"; then
     out+=("${CONFIG_GUI_PKGS[@]}")
   fi
+}
+
+run_stow_package() {
+  local pkg="$1" target_dir="$2" operation="$3" message="$4"
+
+  if [ ! -d "$STOW_DIR/$pkg" ]; then
+    warn "Paquete stow inexistente (omito): $pkg"
+    return 1
+  fi
+
+  action STOW "$message"
+  run_cmd stow -d "$STOW_DIR" -t "$target_dir" "$operation" "$pkg"
 }
 
 manifest_get_string() {

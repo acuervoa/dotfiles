@@ -357,8 +357,7 @@ main() {
   local pkg
   for pkg in "${HOME_PKGS[@]}"; do
     handle_conflicts "$pkg" "$HOME"
-    action STOW "Instalando '$pkg' en $HOME"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
+    run_stow_package "$pkg" "$HOME" -S "Instalando '$pkg' en $HOME" || continue
     if [ "$pkg" = "tmux" ]; then
       installed_tmux=true
     fi
@@ -371,8 +370,7 @@ main() {
   # Paquete meta (perfiles de host). Se instala siempre.
   if [ -d "$STOW_DIR/dotfiles" ]; then
     handle_conflicts "dotfiles" "$HOME"
-    action STOW "Instalando 'dotfiles' (bajo $HOME/.config)"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -S dotfiles
+    run_stow_package "dotfiles" "$HOME" -S "Instalando 'dotfiles' (bajo $HOME/.config)"
   else
     warn "Paquete stow inexistente (omito): dotfiles"
   fi
@@ -384,8 +382,7 @@ main() {
   run_cmd mkdir -p "$HOME/.config"
   for pkg in "${CONFIG_PKGS[@]}"; do
     handle_conflicts "$pkg" "$HOME"
-    action STOW "Instalando '$pkg' (bajo $HOME/.config)"
-    run_cmd stow -d "$STOW_DIR" -t "$HOME" -S "$pkg"
+    run_stow_package "$pkg" "$HOME" -S "Instalando '$pkg' (bajo $HOME/.config)" || continue
   done
 
   echo
