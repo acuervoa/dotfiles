@@ -62,8 +62,6 @@ fi
 
 # Atajos útiles
 alias cls="clear"
-alias reload="source ~/.bashrc"
-alias path='echo "$PATH" | tr ":" "\n"'
 
 # tldr - simplified man pages (install: brew install tldr or sudo pacman -S tldr)
 if command -v tldr >/dev/null 2>&1; then

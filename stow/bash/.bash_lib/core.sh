@@ -71,6 +71,22 @@ _edit_at() {
   fi
 }
 
+# @cmd reload  Recargar ~/.bashrc en la shell actual
+reload() {
+  if [ ! -r "$HOME/.bashrc" ]; then
+    printf 'No puedo leer %s/.bashrc\n' "$HOME" >&2
+    return 1
+  fi
+
+  # shellcheck source=/dev/null
+  . "$HOME/.bashrc"
+}
+
+# @cmd path  Mostrar PATH una entrada por línea
+path() {
+  printf '%s\n' "$PATH" | tr ':' '\n'
+}
+
 # Papelera en vez de rm directo
 # @cmd trash  Enviar archivos al contenedor (trash-cli)
 trash() {
