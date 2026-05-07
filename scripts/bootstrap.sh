@@ -90,68 +90,6 @@ CONFIG_CORE_PKGS=()
 CONFIG_GUI_PKGS=()
 CONFIG_PKGS=()
 
-resolve_host() {
-  if [ -n "${DOTFILES_HOST:-}" ]; then
-    printf '%s' "$DOTFILES_HOST"
-    return 0
-  fi
-
-  if command -v hostname >/dev/null 2>&1; then
-    hostname -s 2>/dev/null || hostname 2>/dev/null || true
-  fi
-}
-
-load_host_profile() {
-  local host profile_dir default_profile host_profile
-
-  host="$(resolve_host)"
-  profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
-  default_profile="$profile_dir/default.sh"
-
-  if [ -f "$default_profile" ]; then
-    # shellcheck source=/dev/null
-    source "$default_profile"
-  else
-    warn "Perfil default no encontrado: $default_profile"
-  fi
-
-  if [ -n "$host" ]; then
-    host_profile="$profile_dir/$host.sh"
-    if [ -f "$host_profile" ]; then
-      info "Cargando perfil de host: $host"
-      # shellcheck source=/dev/null
-      source "$host_profile"
-    else
-      info "Sin perfil especifico para host '$host' (uso default)"
-    fi
-  else
-    warn "No pude determinar hostname; uso perfil default"
-  fi
-
-  CONFIG_PKGS=("${CONFIG_CORE_PKGS[@]}" "${CONFIG_GUI_PKGS[@]}")
-}
-
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-
-action() {
-  local kind="$1"
-  shift
-
-  if [ "$DRY_RUN" = "true" ]; then
-    printf '[DRY-RUN][%s] %s\n' "$kind" "$*"
-  else
-    printf '[%s] %s\n' "$kind" "$*"
-  fi
-}
-
-run_cmd() {
-  if [ "$DRY_RUN" = "true" ]; then
-    return 0
-  fi
-  "$@"
-}
-
 maybe_install_tmux_plugins() {
   [ "$SKIP_TMUX_PLUGINS" = "true" ] && return 0
 
@@ -245,44 +183,13 @@ cleanup_legacy_links() {
       action BACKUP "mkdir -p $BACKUP_DIR"
       run_cmd mkdir -p "$BACKUP_DIR"
 
-      rel="${p#$HOME/}"
+      rel="${p#"$HOME"/}"
       action MOVE "Moviendo symlink legacy $p -> $BACKUP_DIR/$rel"
       run_cmd mkdir -p "$BACKUP_DIR/$(dirname -- "$rel")"
       run_cmd mv -- "$p" "$BACKUP_DIR/$rel"
       ;;
     esac
   done
-}
-
-confirm() {
-  local msg="${1:-¿Continuar? [y/N] }" ans
-
-  if [ "$ASSUME_YES" = "true" ]; then
-    return 0
-  fi
-
-  printf '%s' "$msg" >&2
-  read -r ans
-  case "$ans" in
-  [yY][eE][sS] | [yY]) return 0 ;;
-  *) return 1 ;;
-  esac
-}
-
-require_cmd() {
-  local c
-  for c in "$@"; do
-    if ! command -v "$c" >/dev/null 2>&1; then
-      printf '[ERROR] Este script requiere %s instalado.\n' "$c" >&2
-      exit 1
-    fi
-  done
-}
-
-is_wsl() {
-  [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
-  [ -r /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version && return 0
-  return 1
 }
 
 write_manifest() {
@@ -408,30 +315,15 @@ main() {
     exit 1
   }
 
-  load_host_profile
+  load_host_packages_profile
 
-  local include_gui=true
-  if is_wsl; then
-    include_gui=false
-    if [ "$GUI_MODE" = "on" ]; then
-      warn "WSL2 detectado; omitiendo GUI aunque se haya pedido --gui."
-    fi
-  else
-    case "$GUI_MODE" in
-    off) include_gui=false ;;
-    on | auto) include_gui=true ;;
-    *)
-      warn "GUI_MODE inválido: $GUI_MODE (uso auto)"
-      include_gui=true
-      ;;
-    esac
+  if [[ ! "$GUI_MODE" =~ ^(auto|on|off)$ ]]; then
+    warn "GUI_MODE inválido: $GUI_MODE (uso auto)"
+    GUI_MODE="auto"
   fi
 
   # Flags siguen pudiendo ajustar el modo GUI.
-  CONFIG_PKGS=("${CONFIG_CORE_PKGS[@]}")
-  if [ "$include_gui" = "true" ]; then
-    CONFIG_PKGS+=("${CONFIG_GUI_PKGS[@]}")
-  fi
+  build_config_packages "$GUI_MODE" CONFIG_PKGS
 
   info "Repo: $REPO_DIR"
   info "Stow: $STOW_DIR"

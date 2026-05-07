@@ -77,52 +77,6 @@ SELECTED_INPUT="${1:-latest}"
 
 MANIFEST_USED=false
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-
-action() {
-  local kind="$1"
-  shift
-
-  if [ "$DRY_RUN" = "true" ]; then
-    printf '[DRY-RUN][%s] %s\n' "$kind" "$*"
-  else
-    printf '[%s] %s\n' "$kind" "$*"
-  fi
-}
-
-run_cmd() {
-  if [ "$DRY_RUN" = "true" ]; then
-    return 0
-  fi
-  "$@"
-}
-
-confirm() {
-  local msg="${1:-¿Continuar? [y/N] }" ans
-
-  if [ "$ASSUME_YES" = "true" ]; then
-    return 0
-  fi
-
-  printf '%s' "$msg" >&2
-  read -r ans
-  case "$ans" in
-  [yY][eE][sS] | [yY]) return 0 ;;
-  *) return 1 ;;
-  esac
-}
-
-require_cmd() {
-  local c
-  for c in "$@"; do
-    if ! command -v "$c" >/dev/null 2>&1; then
-      printf '[ERROR] Este script requiere %s instalado.\n' "$c" >&2
-      exit 1
-    fi
-  done
-}
-
 find_latest_dir() {
   local base="$1"
   [ -d "$base" ] || return 1
@@ -177,34 +131,6 @@ main() {
     exit 1
   }
 
-  load_host_profile() {
-    local host profile_dir default_profile host_profile
-
-    host="$(resolve_host)"
-    profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
-    default_profile="$profile_dir/default.sh"
-
-    if [ -f "$default_profile" ]; then
-      # shellcheck source=/dev/null
-      source "$default_profile"
-    else
-      warn "Perfil default no encontrado: $default_profile"
-    fi
-
-    if [ -n "$host" ]; then
-      host_profile="$profile_dir/$host.sh"
-      if [ -f "$host_profile" ]; then
-        info "Cargando perfil de host: $host"
-        # shellcheck source=/dev/null
-        source "$host_profile"
-      else
-        info "Sin perfil especifico para host '$host' (uso default)"
-      fi
-    else
-      warn "No pude determinar hostname; uso perfil default"
-    fi
-  }
-
   local -a home_pkgs=()
   local -a config_pkgs=()
   local backup_dir_abs="" backup_dir_rel="" backup_dir_state_rel="" backup_needed=""
@@ -232,28 +158,10 @@ main() {
     CONFIG_CORE_PKGS=()
     CONFIG_GUI_PKGS=()
 
-    load_host_profile
-
-    local include_gui=true
-    if is_wsl; then
-      include_gui=false
-      if [ "$GUI_MODE" = "on" ]; then
-        warn "WSL2 detectado; omitiendo GUI aunque se haya pedido --gui."
-      fi
-    else
-      case "$GUI_MODE" in
-      off) include_gui=false ;;
-      on | auto) include_gui=true ;;
-      *) include_gui=true ;;
-      esac
-    fi
+    load_host_packages_profile
 
     home_pkgs=("${HOME_PKGS[@]}")
-
-    config_pkgs=("${CONFIG_CORE_PKGS[@]}")
-    if [ "$include_gui" = "true" ]; then
-      config_pkgs+=("${CONFIG_GUI_PKGS[@]}")
-    fi
+    build_config_packages "$GUI_MODE" config_pkgs
 
     backup_dir_rel=""
   fi

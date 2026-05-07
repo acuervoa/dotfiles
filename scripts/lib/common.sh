@@ -22,6 +22,52 @@ STATE_DIR="${DOTFILES_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles}
 BACKUP_BASE="${DOTFILES_BACKUP_DIR:-$STATE_DIR/backups}"
 MANIFEST_DIR="${DOTFILES_MANIFEST_DIR:-$STATE_DIR/manifests}"
 
+info() { printf '[INFO] %s\n' "$*"; }
+warn() { printf '[WARN] %s\n' "$*" >&2; }
+
+action() {
+  local kind="$1"
+  shift
+
+  if [ "${DRY_RUN:-false}" = "true" ]; then
+    printf '[DRY-RUN][%s] %s\n' "$kind" "$*"
+  else
+    printf '[%s] %s\n' "$kind" "$*"
+  fi
+}
+
+run_cmd() {
+  if [ "${DRY_RUN:-false}" = "true" ]; then
+    return 0
+  fi
+  "$@"
+}
+
+confirm() {
+  local msg="${1:-¿Continuar? [y/N] }" ans
+
+  if [ "${ASSUME_YES:-false}" = "true" ]; then
+    return 0
+  fi
+
+  printf '%s' "$msg" >&2
+  read -r ans
+  case "$ans" in
+  [yY][eE][sS] | [yY]) return 0 ;;
+  *) return 1 ;;
+  esac
+}
+
+require_cmd() {
+  local c
+  for c in "$@"; do
+    if ! command -v "$c" >/dev/null 2>&1; then
+      printf '[ERROR] Este script requiere %s instalado.\n' "$c" >&2
+      exit 1
+    fi
+  done
+}
+
 ensure_state_dirs() { mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"; }
 
 ensure_compat_links() {
@@ -78,6 +124,70 @@ latest_backup() {
   printf '%s' "$latest"
 }
 
+load_host_packages_profile() {
+  local host profile_dir default_profile host_profile
+
+  host="$(resolve_host)"
+  profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
+  default_profile="$profile_dir/default.sh"
+
+  # Inicializar arrays para evitar valores heredados o variables vacías.
+  # shellcheck disable=SC2034 # array consumido por scripts que hacen source
+  HOME_PKGS=()
+  # shellcheck disable=SC2034 # array consumido por scripts que hacen source
+  CONFIG_CORE_PKGS=()
+  # shellcheck disable=SC2034 # array consumido por scripts que hacen source
+  CONFIG_GUI_PKGS=()
+
+  if [ -f "$default_profile" ]; then
+    # shellcheck source=/dev/null
+    source "$default_profile"
+  else
+    printf '[WARN] Perfil default no encontrado: %s\n' "$default_profile" >&2
+  fi
+
+  if [ -n "$host" ]; then
+    host_profile="$profile_dir/$host.sh"
+    if [ -f "$host_profile" ]; then
+      printf '[INFO] Cargando perfil de host: %s\n' "$host"
+      # shellcheck source=/dev/null
+      source "$host_profile"
+    else
+      printf '[INFO] Sin perfil especifico para host %q (uso default)\n' "$host"
+    fi
+  else
+    printf '[WARN] No pude determinar hostname; uso perfil default\n' >&2
+  fi
+}
+
+should_include_gui_packages() {
+  local gui_mode="${1:-auto}"
+
+  if is_wsl; then
+    if [ "$gui_mode" = "on" ]; then
+      warn "WSL2 detectado; omitiendo GUI aunque se haya pedido --gui."
+    fi
+    return 1
+  fi
+
+  case "$gui_mode" in
+  off) return 1 ;;
+  on | auto | "") return 0 ;;
+  *) return 0 ;;
+  esac
+}
+
+build_config_packages() {
+  local gui_mode="${1:-auto}" out_var="$2"
+  # shellcheck disable=SC2178
+  local -n out="$out_var"
+
+  out=("${CONFIG_CORE_PKGS[@]}")
+  if should_include_gui_packages "$gui_mode"; then
+    out+=("${CONFIG_GUI_PKGS[@]}")
+  fi
+}
+
 manifest_get_string() {
   local manifest="$1" key="$2" out_var="$3"
   # shellcheck disable=SC2178
@@ -95,6 +205,7 @@ manifest_get_string() {
     esac
   done <"$manifest"
 
+  # shellcheck disable=SC2178 # nameref puede apuntar a escalar o array según caller
   out="$val"
 }
 
