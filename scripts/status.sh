@@ -140,19 +140,14 @@ main() {
   [ "$JSON" = "true" ] || echo
   local mf
   if mf="$(latest_manifest 2>/dev/null)"; then
+    local mf_path="" mf_host="" mf_timestamp="" mf_backup=""
+    latest_manifest_summary "$mf" mf_path mf_host mf_timestamp mf_backup
     info "Manifest (latest): $mf"
-    local mf_host mf_timestamp mf_backup_abs mf_backup_rel
-    manifest_get_string "$mf" host mf_host
-    manifest_get_string "$mf" timestamp mf_timestamp
-    manifest_get_string "$mf" backup_dir_abs mf_backup_abs
-    manifest_get_string "$mf" backup_dir_rel mf_backup_rel
     info "Manifest host: ${mf_host:-}"
     info "Manifest timestamp: ${mf_timestamp:-}"
 
-    if [ -n "$mf_backup_abs" ]; then
-      info "Manifest backup: $mf_backup_abs"
-    elif [ -n "$mf_backup_rel" ]; then
-      info "Manifest backup: $REPO_DIR/${mf_backup_rel}"
+    if [ -n "$mf_backup" ]; then
+      info "Manifest backup: $mf_backup"
     else
       info "Manifest backup: (none)"
     fi
@@ -203,17 +198,7 @@ main() {
 
     local mf_path="" mf_host="" mf_timestamp="" mf_backup=""
     if mf="$(latest_manifest 2>/dev/null)"; then
-      mf_path="$mf"
-      manifest_get_string "$mf" host mf_host
-      manifest_get_string "$mf" timestamp mf_timestamp
-      local mf_backup_abs="" mf_backup_rel=""
-      manifest_get_string "$mf" backup_dir_abs mf_backup_abs
-      manifest_get_string "$mf" backup_dir_rel mf_backup_rel
-      if [ -n "$mf_backup_abs" ]; then
-        mf_backup="$mf_backup_abs"
-      elif [ -n "$mf_backup_rel" ]; then
-        mf_backup="$REPO_DIR/$mf_backup_rel"
-      fi
+      latest_manifest_summary "$mf" mf_path mf_host mf_timestamp mf_backup
     fi
 
     local bk_path=""

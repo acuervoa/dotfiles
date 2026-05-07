@@ -150,9 +150,9 @@ main() {
     return "$plan_status"
   fi
 
-  local plan_manifest plan_backup
-  plan_manifest="$(sed -n 's/^\[INFO\] Manifest: //p' "$plan_log" | tail -n 1)"
-  plan_backup="$(sed -n 's/^\[INFO\] Backup: //p' "$plan_log" | tail -n 1)"
+  local plan_manifest="" plan_backup=""
+  plan_manifest="$(log_info_value "$plan_log" Manifest 2>/dev/null || true)"
+  plan_backup="$(log_info_value "$plan_log" Backup 2>/dev/null || true)"
 
   if [ -n "$plan_backup" ]; then
     info "Plan: Backup: $plan_backup"
@@ -179,9 +179,9 @@ main() {
     return "$apply_status"
   fi
 
-  local apply_manifest apply_backup
-  apply_manifest="$(sed -n 's/^\[INFO\] Manifest: //p' "$apply_log" | tail -n 1)"
-  apply_backup="$(sed -n 's/^\[INFO\] Backup: //p' "$apply_log" | tail -n 1)"
+  local apply_manifest="" apply_backup=""
+  apply_manifest="$(log_info_value "$apply_log" Manifest 2>/dev/null || true)"
+  apply_backup="$(log_info_value "$apply_log" Backup 2>/dev/null || true)"
 
   if [ -n "$apply_manifest" ]; then
     info "Apply: Manifest: $apply_manifest"

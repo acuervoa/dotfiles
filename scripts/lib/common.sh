@@ -232,6 +232,60 @@ run_stow_package() {
   run_cmd stow -d "$STOW_DIR" -t "$target_dir" "$operation" "$pkg"
 }
 
+log_info_value() {
+  local log_file="$1" key="$2"
+  local prefix="[INFO] $key: "
+  local line="" value=""
+
+  [ -f "$log_file" ] || return 1
+
+  while IFS= read -r line; do
+    case "$line" in
+    "$prefix"*) value="${line#"$prefix"}" ;;
+    esac
+  done <"$log_file"
+
+  [ -n "$value" ] || return 1
+  printf '%s' "$value"
+}
+
+latest_manifest_summary() {
+  local mf="$1"
+  local out_path_var="$2" out_host_var="$3" out_timestamp_var="$4" out_backup_var="$5"
+  # shellcheck disable=SC2034,SC2178 # namerefs de salida usados por el caller
+  # shellcheck disable=SC2178
+  local -n out_path="$out_path_var"
+  # shellcheck disable=SC2178
+  local -n out_host="$out_host_var"
+  # shellcheck disable=SC2178
+  local -n out_timestamp="$out_timestamp_var"
+  # shellcheck disable=SC2178
+  local -n out_backup="$out_backup_var"
+  local backup_abs="" backup_rel=""
+
+  # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+  out_path="$mf"
+  # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+  out_host=""
+  # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+  out_timestamp=""
+  # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+  out_backup=""
+
+  manifest_get_string "$mf" host out_host
+  manifest_get_string "$mf" timestamp out_timestamp
+  manifest_get_string "$mf" backup_dir_abs backup_abs
+  manifest_get_string "$mf" backup_dir_rel backup_rel
+
+  if [ -n "$backup_abs" ]; then
+    # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+    out_backup="$backup_abs"
+  elif [ -n "$backup_rel" ]; then
+    # shellcheck disable=SC2034 # nameref de salida consumido por el caller
+    out_backup="$REPO_DIR/$backup_rel"
+  fi
+}
+
 manifest_get_string() {
   local manifest="$1" key="$2" out_var="$3"
   # shellcheck disable=SC2178
