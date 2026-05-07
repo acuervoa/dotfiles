@@ -49,7 +49,6 @@ map("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "VSplit (%)" })
 -- Cerrar otras ventanas (análogo a kill-pane -a)
 map("n", "<leader><BS>", "<cmd>only<cr>", { desc = "Close other windows (only)" })
 
-
 -- Resize tipo tmux (Alt+Shift+Flechas) — se mantiene Ctrl+Flechas también
 map("n", "<A-S-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease width (A-S-Left)" })
 map("n", "<A-S-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase width (A-S-Right)" })
@@ -119,3 +118,11 @@ map("n", "<leader>ts", function()
 		vim.cmd("setlocal spell! spelllang=en")
 	end
 end, { desc = "Toggle spell (es/en)" })
+
+-- Codex/AI
+map("n", "<leader>ce", ":CodexExplain<CR>", { desc = "Codex explain file" })
+map("n", "<leader>cz", ":CodexExplainRepo<CR>", { desc = "Codex explain repository" })
+map("n", "<leader>cf", ":CodexFix<CR>", { desc = "Codex fix" })
+map("n", "<leader>cr", ":CodexRefactor<CR>", { desc = "Codex refactor" })
+map("n", "<leader>cd", ":CodexDiff<CR>", { desc = "Codex diff" })
+map("v", "<leader>cv", ":CodexVisual<CR>", { desc = "Codex visual" })
