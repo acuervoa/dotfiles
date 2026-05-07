@@ -36,6 +36,10 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id nm-applet
 exec --no-startup-id dunst
 
+# Ferdium
+assign [class="^Ferdium$"] 8
+exec --no-startup-id ferdium
+
 # Distribución dinámica de workspaces por salidas
 exec_always --no-startup-id $ext_detect
 
@@ -47,6 +51,10 @@ bindsym $mod+d exec --no-startup-id rofi -modi run -show drun -show-icons -font 
 bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+Shift+d exec --no-startup-id rofi -show window -show-icons -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
+
+# Lanzadores AI
+bindsym $mod+g exec --no-startup-id gtk-launch chatgpt-webapp 
+
 
 # =======================
 # BRILLO 
@@ -244,4 +252,6 @@ for_window [window_role="task_dialog"] floating enable
 for_window [class="Pavucontrol|Nm-connection|Blueman-manager|flameshot|File-roller"] floating enable
 for_window [title="Picture-in-Picture"] floating enable, sticky enable
 for_window [class="Alacritty"] floating disable
-
+for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] floating enable
+for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] resize set 1400 900
+for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] move position center
