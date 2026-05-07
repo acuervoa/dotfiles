@@ -138,6 +138,76 @@ dsh() {
   _docker_compose exec "$svc" "$shell" 2>/dev/null || _docker_compose exec "$svc" sh
 }
 
+# @cmd _docker_compose_exec_php  Ejecutar comandos en el servicio php sin penalizar el arranque
+_docker_compose_exec_php() {
+  _have_compose || return 1
+  _cd_repo_root_if_compose || return 1
+
+  if ! _docker_compose ps --services 2>/dev/null | grep -qx 'php'; then
+    printf 'No se ha encontrado el servicio "php" en el proyecto actual.\n' >&2
+    return 1
+  fi
+
+  _docker_compose exec php "$@"
+}
+
+# @cmd p  Ejecutar php dentro del servicio php
+p() {
+  _docker_compose_exec_php php "$@"
+}
+
+# @cmd part  Ejecutar artisan dentro del servicio php
+part() {
+  _docker_compose_exec_php php artisan "$@"
+}
+
+# @cmd ptest  Ejecutar phpunit dentro del servicio php
+ptest() {
+  _docker_compose_exec_php php vendor/bin/phpunit "$@"
+}
+
+# @cmd pstan  Ejecutar phpstan dentro del servicio php
+pstan() {
+  _docker_compose_exec_php php vendor/bin/phpstan "$@"
+}
+
+# @cmd pint  Ejecutar pint dentro del servicio php
+pint() {
+  _docker_compose_exec_php ./vendor/bin/pint "$@"
+}
+
+# @cmd pcc  Limpiar cache de Laravel dentro del servicio php
+pcc() {
+  _docker_compose_exec_php php artisan cache:clear "$@"
+}
+
+# @cmd pmig  Ejecutar migraciones de Laravel dentro del servicio php
+pmig() {
+  _docker_compose_exec_php php artisan migrate "$@"
+}
+
+# @cmd pseed  Ejecutar seeders de Laravel dentro del servicio php
+pseed() {
+  _docker_compose_exec_php php artisan db:seed "$@"
+}
+
+# @cmd pcf  Regenerar config cache de Laravel dentro del servicio php
+pcf() {
+  _docker_compose_exec_php php artisan config:cache "$@"
+}
+
+# @cmd proute  Listar rutas de Laravel dentro del servicio php
+proute() {
+  _docker_compose_exec_php php artisan route:list "$@"
+}
+
+# @cmd pclear  Limpiar caches comunes de Laravel dentro del servicio php
+pclear() {
+  _docker_compose_exec_php php artisan view:clear &&
+    _docker_compose_exec_php php artisan cache:clear &&
+    _docker_compose_exec_php php artisan config:clear
+}
+
 # Limpiar recursos docker sin uso tras confirmación explícita
 # @cmd dclean  docker system prune con confirmación
 dclean() {
