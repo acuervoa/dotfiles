@@ -48,7 +48,7 @@ bash ./scripts/bootstrap.sh
 - **Rollback automático**: `scripts/rollback.sh [latest|<timestamp>]` elimina los symlinks con `stow -D` y restaura el backup elegido.
 - **Gestión de secretos**: Soporte para ficheros locales (ej. `~/.bashrc_local`) no versionados para información sensible.
 - **Documentación dinámica**: Script para generar `SHORTCUTS.md` a partir de los ficheros de configuración.
-- **Librería Bash modular** (`stow/bash/.bash_lib/*.sh`) con helpers para git, docker, navegación y productividad: push seguro (`gp`), clipboard con fallback OSC52 (`cb`), búsqueda de archivos (`fo`), tmux helper `ts`, docker compose helpers (`dorebuild`, `dsh`, `dlogs`).
+- **Librería Bash modular** (`stow/bash/.bash_lib/*.sh`) con helpers para git, docker, navegación, productividad y flujos AI: clipboard con fallback OSC52 (`cb`), búsqueda de archivos (`fo`), tmux helper `ts`, docker compose helpers (`dorebuild`, `dsh`, `dlogs`) y accesos rápidos de `ai-flow` (`af`, `afl`, `afx`).
 - **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, overseer+harpoon, conform+nvim-lint y plantillas por lenguaje (JS/TS, Python, Go, Rust, PHP), tests con neotest.
 - **tmux** con prefix `Ctrl+s`, thumbs/copycat/fzf, binds de sesiones rápidas y popups.
 - **Stack gráfico** tematizado (Catppuccin Mocha): i3, polybar, picom, dunst, rofi, kitty.
@@ -231,7 +231,7 @@ Otros artefactos útiles:
 
 ## Componentes principales
 
-- **Bash library** (`stow/bash/.bash_lib`): core (confirm, req, tmux `ts`), nav (`fo` con excludes/auto-cd, `cb` con OSC52), git (`gp` seguro, `ggraph`, `glast`), docker (`docps`, `dlogs`, `dsh`, `dorebuild`), misc (`fhist`, `envswap`, `dev`, `qa`, `rtest`, `rserve`, `rqa`).
+- **Bash library** (`stow/bash/.bash_lib`): core (confirm, req, tmux `ts`), nav (`fo` con excludes/auto-cd, `cb` con OSC52), git (`gp` seguro, `ggraph`, `glast`), docker (`docps`, `dlogs`, `dsh`, `dorebuild`), misc (`fhist`, `envswap`, `dev`, `qa`, `rtest`, `rserve`, `rqa`), ai (`af`, `afl`, `afx`, `afapplylast`).
 - **Git tooling**: `stow/git/.gitconfig`, `stow/git/.gitalias`, `stow/git/.git-hooks/*`.
 - **NeoVim**: `stow/nvim/.config/nvim/` (lazy.nvim, LSP via mason v2, overseer/harpoon, conform+nvim-lint, neotest, treesitter extendido JS/TS/Python/Go/Rust/PHP, tmux-navigator).
 - **tmux**: `stow/tmux/.tmux.conf` (prefix `C-s`, thumbs/copycat/fzf/open, sesiones rápidas, popups lazygit/btop/tmux-fzf, integración nvim navigator).
