@@ -125,11 +125,6 @@ main() {
   else
     warn "No se encontró manifest; usando perfil de host (o default)."
 
-    # Definidos por el perfil (default + host). Inicializamos para shellcheck.
-    HOME_PKGS=()
-    CONFIG_CORE_PKGS=()
-    CONFIG_GUI_PKGS=()
-
     load_host_packages_profile
 
     home_pkgs=("${HOME_PKGS[@]}")
