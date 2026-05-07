@@ -156,6 +156,10 @@ load_host_packages_profile() {
   host="$(resolve_host)"
   profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
   default_profile="$profile_dir/default.sh"
+  # shellcheck disable=SC2034 # variable de estado para scripts que hacen source
+  DOTFILES_PROFILE_DEFAULT="$default_profile"
+  # shellcheck disable=SC2034 # variable de estado para scripts que hacen source
+  DOTFILES_PROFILE_HOST=""
 
   # Inicializar arrays para evitar valores heredados o variables vacías.
   # shellcheck disable=SC2034 # array consumido por scripts que hacen source
@@ -174,6 +178,8 @@ load_host_packages_profile() {
 
   if [ -n "$host" ]; then
     host_profile="$profile_dir/$host.sh"
+    # shellcheck disable=SC2034 # variable de estado para scripts que hacen source
+    DOTFILES_PROFILE_HOST="$host_profile"
     if [ -f "$host_profile" ]; then
       printf '[INFO] Cargando perfil de host: %s\n' "$host"
       # shellcheck source=/dev/null

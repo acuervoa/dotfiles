@@ -81,28 +81,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-
 action() {
   local kind="$1"
   shift
   printf '[%s] %s\n' "$kind" "$*"
-}
-
-confirm() {
-  local msg="${1:-Aplicar cambios? [y/N] }" ans
-
-  if [ "$ASSUME_YES" = "true" ]; then
-    return 0
-  fi
-
-  printf '%s' "$msg" >&2
-  read -r ans
-  case "$ans" in
-  [yY][eE][sS] | [yY]) return 0 ;;
-  *) return 1 ;;
-  esac
 }
 
 main() {
@@ -184,7 +166,7 @@ main() {
     return 0
   fi
 
-  confirm || {
+  confirm 'Aplicar cambios? [y/N] ' || {
     info "Operación cancelada."
     return 0
   }

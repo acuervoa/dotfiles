@@ -86,40 +86,6 @@ json_array() {
   printf '%s' "$result"
 }
 
-load_host_profile() {
-  local host profile_dir default_profile host_profile
-
-  host="$(resolve_host)"
-  profile_dir="$STOW_DIR/dotfiles/.config/dotfiles/hosts"
-  default_profile="$profile_dir/default.sh"
-
-  HOME_PKGS=()
-  CONFIG_CORE_PKGS=()
-  CONFIG_GUI_PKGS=()
-
-  if [ -f "$default_profile" ]; then
-    # shellcheck source=/dev/null
-    source "$default_profile"
-  else
-    warn "Perfil default no encontrado: $default_profile"
-  fi
-
-  if [ -n "$host" ]; then
-    host_profile="$profile_dir/$host.sh"
-    if [ -f "$host_profile" ]; then
-      info "Perfil host: $host_profile"
-      # shellcheck source=/dev/null
-      source "$host_profile"
-    else
-      info "Perfil host: (no existe) $host_profile"
-    fi
-  else
-    warn "No pude determinar hostname"
-  fi
-
-  info "Perfil default: $default_profile"
-}
-
 main() {
   local host
   host="$(resolve_host || true)"
@@ -134,27 +100,19 @@ main() {
     info "Entorno: Linux"
   fi
 
-  load_host_profile
-
-  local include_gui=true
-  if is_wsl; then
-    include_gui=false
-    if [ "$GUI_MODE" = "on" ]; then
-      warn "WSL2 detectado; omitiendo GUI aunque se haya pedido --gui."
+  load_host_packages_profile
+  info "Perfil default: ${DOTFILES_PROFILE_DEFAULT:-}"
+  if [ -n "${DOTFILES_PROFILE_HOST:-}" ]; then
+    if [ -f "$DOTFILES_PROFILE_HOST" ]; then
+      info "Perfil host: $DOTFILES_PROFILE_HOST"
+    else
+      info "Perfil host: (no existe) $DOTFILES_PROFILE_HOST"
     fi
-  else
-    case "$GUI_MODE" in
-    off) include_gui=false ;;
-    on | auto) include_gui=true ;;
-    *) include_gui=true ;;
-    esac
   fi
 
   local -a home_pkgs=("${HOME_PKGS[@]}")
-  local -a config_pkgs=("${CONFIG_CORE_PKGS[@]}")
-  if [ "$include_gui" = "true" ]; then
-    config_pkgs+=("${CONFIG_GUI_PKGS[@]}")
-  fi
+  local -a config_pkgs=()
+  build_config_packages "$GUI_MODE" config_pkgs
 
   [ "$JSON" = "true" ] || echo
   info "Paquetes -> $HOME: ${home_pkgs[*]}"
