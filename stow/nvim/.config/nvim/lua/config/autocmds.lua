@@ -75,7 +75,7 @@ do
 	vim.api.nvim_create_autocmd("BufReadPre", {
 		group = bigfile_group,
 		callback = function(ev)
-			local ok, stat = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(ev.buf))
+			local ok, stat = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(ev.buf))
 			if not ok or not stat then
 				return
 			end

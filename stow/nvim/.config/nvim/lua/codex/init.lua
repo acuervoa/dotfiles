@@ -257,7 +257,7 @@ local function ensure_window(session)
 end
 
 local function render(session, force)
-	local now = vim.loop.now()
+	local now = vim.uv.now()
 	if not force and (now - session.last_render < CONFIG.render_interval_ms) then
 		return
 	end
@@ -282,7 +282,7 @@ local function start_spinner(session, message)
 	session.output = { "⏳ " .. message }
 	render(session, true)
 
-	session.spinner_timer = vim.loop.new_timer()
+	session.spinner_timer = vim.uv.new_timer()
 	session.spinner_timer:start(
 		0,
 		CONFIG.render_interval_ms,

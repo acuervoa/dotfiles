@@ -29,7 +29,7 @@ return {
 		{
 			"<leader>ta",
 			function()
-				require("neotest").run.run(vim.loop.cwd())
+				require("neotest").run.run(vim.uv.cwd())
 			end,
 			desc = "Test de todo el proyecto",
 		},

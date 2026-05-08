@@ -3,7 +3,7 @@
 
 local M = {}
 
-local uname = vim.loop.os_uname()
+local uname = vim.uv.os_uname()
 local sysname = uname.sysname or ""
 
 -- OS base

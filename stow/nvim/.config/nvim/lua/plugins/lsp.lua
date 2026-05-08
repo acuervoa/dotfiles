@@ -32,8 +32,8 @@ return {
 			-- 0.11+: usar vim.lsp.config()/enable() (deprecado require('lspconfig').setup)
 			-- Ver migra en README de lspconfig y :help news-0.11
 			-- https://github.com/neovim/nvim-lspconfig
-			local ok, cmp_caps = pcall(require, "cmp_nvim_lsp")
-			local caps = ok and cmp_caps.default_capabilities() or vim.lsp.protocol.make_client_capabilities()
+			local ok, blink = pcall(require, "blink.cmp")
+			local caps = ok and blink.get_lsp_capabilities() or vim.lsp.protocol.make_client_capabilities()
 
 			local php = require("lang.php")
 			local bash = require("lang.bash")
@@ -144,7 +144,8 @@ return {
 
 			-- Diagnósticos
 			vim.diagnostic.config({
-				virtual_text = { prefix = "●", spacing = 4 },
+				virtual_text = false,
+			virtual_lines = { current_line = true },
 				signs = {
 					text = {
 						[vim.diagnostic.severity.ERROR] = " ",

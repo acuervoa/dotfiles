@@ -25,7 +25,7 @@ return {
         table.insert(templates, t)
       end
       local function has_file(f)
-        return vim.loop.fs_stat(f) ~= nil
+        return vim.uv.fs_stat(f) ~= nil
       end
       local function cmd_exists(cmd)
         return vim.fn.executable(cmd) == 1
