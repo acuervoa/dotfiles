@@ -13,6 +13,10 @@ Opciones:
 USAGE
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+
 INCLUDE_UNTRACKED=false
 PYTHON_BIN=""
 
@@ -34,8 +38,6 @@ while (($# > 0)); do
   shift
 done
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
 if command -v python >/dev/null 2>&1; then
   PYTHON_BIN="python"
 elif command -v python3 >/dev/null 2>&1; then
@@ -45,7 +47,7 @@ else
   exit 1
 fi
 
-INCLUDE_UNTRACKED="$INCLUDE_UNTRACKED" REPO_ROOT="$repo_root" "$PYTHON_BIN" - <<'PY'
+INCLUDE_UNTRACKED="$INCLUDE_UNTRACKED" REPO_ROOT="$REPO_DIR" "$PYTHON_BIN" - <<'PY'
 import os
 import re
 import subprocess

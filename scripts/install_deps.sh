@@ -21,21 +21,14 @@ Notas:
 USAGE
 }
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
 error() {
   printf '[ERROR] %s\n' "$*" >&2
   exit 1
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-is_wsl() {
-  [ -n "${WSL_DISTRO_NAME:-}" ] && return 0
-  [ -r /proc/version ] && grep -qiE 'microsoft|wsl' /proc/version && return 0
-  return 1
-}
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 detect_distro() {
   if [ -f /etc/arch-release ]; then
@@ -59,9 +52,9 @@ detect_distro() {
 pkglist_for() {
   local distro="$1"
   case "$distro" in
-  arch) printf '%s' "$REPO_ROOT/pkglist-arch.txt" ;;
-  debian) printf '%s' "$REPO_ROOT/pkglist-debian.txt" ;;
-  fedora) printf '%s' "$REPO_ROOT/pkglist-fedora.txt" ;;
+  arch) printf '%s' "$REPO_DIR/pkglist-arch.txt" ;;
+  debian) printf '%s' "$REPO_DIR/pkglist-debian.txt" ;;
+  fedora) printf '%s' "$REPO_DIR/pkglist-fedora.txt" ;;
   *) return 1 ;;
   esac
 }
@@ -97,16 +90,6 @@ read_pkglist() {
   printf '%s\n' "${out[@]}"
 }
 
-confirm() {
-  local msg="$1" ans
-  printf '%s' "$msg" >&2
-  read -r ans
-  case "$ans" in
-  [yY][eE][sS] | [yY]) return 0 ;;
-  *) return 1 ;;
-  esac
-}
-
 install_one() {
   local distro="$1" pkg="$2"
 
@@ -119,7 +102,7 @@ install_one() {
 }
 
 main() {
-  local include_gui=false dry_run=false assume_yes=false
+  local include_gui=false dry_run=false
 
   # Default selection is core-only.
   while (($# > 0)); do
@@ -128,7 +111,7 @@ main() {
     --gui) include_gui=true ;;
     --all) include_gui=true ;;
     --dry-run) dry_run=true ;;
-    -y | --yes) assume_yes=true ;;
+    -y | --yes) ASSUME_YES=true ;;
     -h | --help)
       usage
       exit 0
@@ -180,11 +163,9 @@ main() {
     ;;
   esac
 
-  if [ "$assume_yes" != "true" ]; then
-    if ! confirm "¿Instalar ${#packages[@]} paquetes? [y/N] "; then
-      info "Instalación cancelada."
-      exit 0
-    fi
+  if ! confirm "¿Instalar ${#packages[@]} paquetes? [y/N] "; then
+    info "Instalación cancelada."
+    exit 0
   fi
 
   local -a failed=()

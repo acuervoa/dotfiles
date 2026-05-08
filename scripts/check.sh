@@ -24,17 +24,9 @@ Códigos de salida:
 USAGE
 }
 
-info() { printf '[INFO] %s\n' "$*"; }
-warn() { printf '[WARN] %s\n' "$*" >&2; }
-
-action() {
-  local kind="$1"
-  shift
-  printf '[%s] %s\n' "$kind" "$*"
-}
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 NO_SHELLCHECK=false
 NO_SHFMT=false
@@ -64,10 +56,10 @@ main() {
   shopt -s nullglob
 
   local -a files=()
-  files+=("$REPO_ROOT"/scripts/*.sh)
-  files+=("$REPO_ROOT"/scripts/lib/*.sh)
-  files+=("$REPO_ROOT"/stow/bash/.bash_lib/*.sh)
-  files+=("$REPO_ROOT"/stow/dotfiles/.config/dotfiles/hosts/*.sh)
+  files+=("$REPO_DIR"/scripts/*.sh)
+  files+=("$REPO_DIR"/scripts/lib/*.sh)
+  files+=("$REPO_DIR"/stow/bash/.bash_lib/*.sh)
+  files+=("$REPO_DIR"/stow/dotfiles/.config/dotfiles/hosts/*.sh)
 
   if [ "${#files[@]}" -eq 0 ]; then
     warn "No se encontraron archivos shell para revisar."

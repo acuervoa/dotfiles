@@ -19,8 +19,9 @@ Opciones:
 USAGE
 }
 
-info() { printf '%s\n' "[INFO] $*"; }
-warn() { printf '%s\n' "[WARN] $*" >&2; }
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
 
 NO_NVIM=false
 NO_SCAN=false
@@ -50,22 +51,20 @@ while (($# > 0)); do
   shift
 done
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 main() {
-  if [ -x "$REPO_ROOT/scripts/check.sh" ]; then
+  if [ -x "$REPO_DIR/scripts/check.sh" ]; then
     info "Corriendo scripts/check.sh"
-    "$REPO_ROOT/scripts/check.sh"
+    "$REPO_DIR/scripts/check.sh"
   else
     warn "No existe scripts/check.sh (omito)"
   fi
 
   if [ "$NO_SCAN" = "true" ]; then
     info "Omitiendo check-secrets (--no-scan)."
-  elif [ -x "$REPO_ROOT/scripts/check-secrets.sh" ]; then
+  elif [ -x "$REPO_DIR/scripts/check-secrets.sh" ]; then
     info "Corriendo scripts/check-secrets.sh"
-    "$REPO_ROOT/scripts/check-secrets.sh"
+    "$REPO_DIR/scripts/check-secrets.sh"
   else
     warn "No existe scripts/check-secrets.sh (omito)"
   fi
