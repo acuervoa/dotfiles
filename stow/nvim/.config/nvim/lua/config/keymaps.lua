@@ -64,7 +64,7 @@ map("n", "<C-Down>", "<cmd>resize -1<cr>", { desc = "Decrease height (C-Down)" }
 -- Guardado alternativo (dentro de tmux, <C-s> es prefijo)
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Write file" })
 
--- Búsqueda: evita choque con nvim-cmp (usa <C-f> en insert.)
+-- Búsqueda: <C-f> en normal mode; blink.cmp lo usa en insert para scroll docs
 map("n", "<C-f>", function()
 	vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("/", true, false, true), "n", false)
 end, { desc = "Search prompt (/)" })

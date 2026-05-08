@@ -34,7 +34,7 @@ return {
 			desc = "Test de todo el proyecto",
 		},
 		{
-			"<leader>ts",
+			"<leader>tS",
 			function()
 				require("neotest").summary.toggle()
 			end,

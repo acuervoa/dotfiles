@@ -22,6 +22,7 @@ return {
 			{ "<leader>w", group = "Write" },
 			{ "<leader>t", group = "Toggles" },
 			{ "<leader>x", group = "Diagnostics/Trouble" },
+			{ "<leader>q", group = "Session" },
 		},
 	},
 }
