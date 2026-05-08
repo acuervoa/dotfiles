@@ -1,20 +1,14 @@
 -- lua/plugins/tasks.lua
--- Overseer: tareas por lenguaje (PHP, Go, Python, Rust ...) orquestadas desde lang/*
+-- Overseer: keys y opts base (config y templates viven en task_runner.lua)
 return {
 	"stevearc/overseer.nvim",
-	cmd = { "OverseerRun", "OverseerToggle", "OverseerTaskAction" },
+	cmd = { "OverseerRun", "OverseerToggle", "OverseerBuild", "OverseerTaskAction" },
 	keys = {
 		{ "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Overseer: toggle task list" },
-		{
-			"<leader>or",
-			function()
-				require("overseer").run_task()
-			end,
-			desc = "Overseer: run template",
-		},
+		{ "<leader>or", "<cmd>OverseerRun<cr>",    desc = "Overseer: run task" },
+		{ "<leader>ob", "<cmd>OverseerBuild<cr>",  desc = "Overseer: build task" },
 	},
 	opts = {
-		-- Estrategia genérica: terminal flotante.
 		strategy = "terminal",
 		task_list = {
 			direction = "bottom",
@@ -22,29 +16,4 @@ return {
 			max_height = 20,
 		},
 	},
-	config = function(_, opts)
-		local overseer = require("overseer")
-		overseer.setup(opts)
-
-		-- Helper: registrar plantillas de un módulo lang.*
-		local function register_lang_tasks(lang)
-			local ok, mod = pcall(require, "lang." .. lang)
-			if not ok or not mod.taks or not mod.tasks.overseer then
-				return
-			end
-
-			for _, template in ipairs(mod.tasks.overseer) do
-				overseer.register_template(template)
-			end
-		end
-
-		-- Añadimos los lenguajes con tasks propios
-		for _, lang in ipairs({ "php" }) do
-			register_lang_tasks(lang)
-	end
-end,
 }
-
-
-
-

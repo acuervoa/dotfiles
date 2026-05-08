@@ -2,15 +2,6 @@
 return {
   {
     "stevearc/overseer.nvim",
-    cmd = { "OverseerRun", "OverseerToggle", "OverseerBuild" },
-    keys = {
-      { "<leader>oo", "<cmd>OverseerToggle<cr>", desc = "Overseer: toggle" },
-      { "<leader>or", "<cmd>OverseerRun<cr>", desc = "Overseer: run task" },
-      { "<leader>ob", "<cmd>OverseerBuild<cr>", desc = "Overseer: build task" },
-    },
-    opts = {
-      templates = { "builtin" },
-    },
     config = function(_, opts)
       local overseer = require("overseer")
       overseer.setup(opts)
@@ -307,9 +298,9 @@ return {
         { "<leader>h3", function() harpoon:list():select(3) end, desc = "Harpoon 3" },
         { "<leader>h4", function() harpoon:list():select(4) end, desc = "Harpoon 4" },
         { "<leader>hn", function() harpoon:list():next() end, desc = "Harpoon next" },
-        { "<leader>hp", function() harpoon:list():prev() end, desc = "Harpoon prev" },
+        { "<leader>hN", function() harpoon:list():prev() end, desc = "Harpoon prev" },
         { "<leader>hQ", function() harpoon:list():clear() end, desc = "Harpoon clear" },
-        { "<leader>hd", function() harpoon:list():remove() end, desc = "Harpoon delete current" },
+        { "<leader>hx", function() harpoon:list():remove() end, desc = "Harpoon delete current" },
       }
     end,
     config = function()

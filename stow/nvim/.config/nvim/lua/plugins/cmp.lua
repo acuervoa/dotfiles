@@ -1,7 +1,7 @@
 -- blink.cmp — reemplaza nvim-cmp
 return {
 	"saghen/blink.cmp",
-	version = "1.*",
+	version = "0.*",
 	dependencies = {
 		"L3MON4D3/LuaSnip",
 		"rafamadriz/friendly-snippets",

@@ -23,6 +23,7 @@ return {
 			{ "<leader>t", group = "Toggles" },
 			{ "<leader>x", group = "Diagnostics/Trouble" },
 			{ "<leader>q", group = "Session" },
+			{ "<leader>Q", desc = "Close window" },
 		},
 	},
 }
