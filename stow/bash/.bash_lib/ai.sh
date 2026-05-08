@@ -1,115 +1,100 @@
 #!/usr/bin/env bash
-# ai.sh - aliases y helpers para flujo AI
+# ai.sh - Aliases y helpers para el flujo de trabajo con IA (SimpleBrain)
+
+# --- 🚀 SESIONES RÁPIDAS (SimpleBrain) ---
+
+# sbs: Start Brain Session
+# Uso: sbs "Tarea a realizar"
+sbs() {
+  if [[ -z "$*" ]]; then
+    printf "Uso: sbs <descripción de la tarea>\n"
+    return 1
+  fi
+  ai-session start --task "$*" --copy
+}
+
+# sbl: Start Brain Session & Launch Agent
+# Uso: sbl "Tarea a realizar" (abre Claude/Codex automáticamente)
+sbl() {
+  if [[ -z "$*" ]]; then
+    printf "Uso: sbl <descripción de la tarea>\n"
+    return 1
+  fi
+  ai-session start --task "$*" --copy --launch
+}
+
+# sbe: End Brain Session (Documenta en Diario + Proyecto)
+# Uso: sbe "Lo que hice" "Siguiente paso"
+sbe() {
+  local task latest_brief
+  # Inferimos la tarea de la última sesión arrancada hoy
+  latest_brief=$(ls -1t ~/Vaults/SimpleBrain/99_META/ai-contexts/*__ai-start.md 2>/dev/null | head -n 1)
+  
+  if [[ -z "$latest_brief" ]]; then
+    printf "Error: No se encontró ninguna sesión reciente para cerrar.\n"
+    return 1
+  fi
+  
+  task=$(grep "Tarea:" "$latest_brief" | cut -d: -f2- | xargs)
+  
+  printf "Cerrando sesión: %s\n" "$task"
+  ai-session end --task "$task" --done "$1" --next "${2:-Revisar avances}" --daily --update-project-note --copy
+}
+
+# sb-lint: Ejecuta auditoría rápida del Vault
+alias sb-lint='python3 ~/Vaults/SimpleBrain/tools/audit_frontmatter.py --wiki-only'
+
+# --- 🧪 FLUJO AI-FLOW (Avanzado) ---
 
 alias afs='ai-flow start'
 alias afc='ai-flow cycle'
 alias afd='ai-flow distill-run'
 alias afa='ai-flow distill-apply'
 
-af() {
-  ai-flow start --task "$*"
-}
+# --- ⚗️ DISTILLATION (Conocimiento Durable) ---
 
-afl() {
-  ai-flow start --task "$*" --launch
-}
-
-afx() {
-  local task="$1"
-  local done_msg="${2:-Cierre rápido}"
-  local next_msg="${3:-Revisar draft}"
-  ai-flow cycle --task "$task" --done "$done_msg" --next "$next_msg"
-}
-
+# aflast: Localiza el último draft de destilación generado
 aflastdraft() {
-  ls -1t "$HOME/Vaults/SimpleBrain/99_META/distill-logs/"*__distill-draft.md 2>/dev/null | head -n 1
+  ls -1t "$HOME/Vaults/SimpleBrain/99_META/distill-logs/"*__ai-distill-draft.md 2>/dev/null | head -n 1
 }
 
+# afapply: Aplica el último draft al wiki
 afapplylast() {
   local draft
   draft="$(aflastdraft)"
-  if [ -z "$draft" ]; then
+  if [[ -z "$draft" ]]; then
     printf 'No encontré drafts de distill.\n' >&2
     return 1
   fi
   ai-flow distill-apply --draft "$draft" --apply-note --apply-wiki-log
 }
 
-gpt() {
-  if ! command -v gtk-launch >/dev/null 2>&1; then
-    printf 'gtk-launch no esta disponible.\n' >&2
-    return 1
-  fi
+# --- 🖥️ UTILIDADES Y AGENTES ---
 
-  gtk-launch chatgpt-webapp "$@"
-}
-
+# ia: Abre el entorno tmux para trabajo con IA
 ia() {
   local session_bin="$HOME/.local/bin/ia-session"
-
   if [[ ! -x "$session_bin" ]]; then
     printf 'No existe o no es ejecutable: %s\n' "$session_bin" >&2
     return 1
   fi
-
   "$session_bin" "$@"
 }
 
-ia-code() {
-  local codex_cmd="codex"
-
-  if ! command -v tmux >/dev/null 2>&1; then
-    printf 'tmux no esta disponible.\n' >&2
+# gpt: Abre la webapp de ChatGPT
+gpt() {
+  if ! command -v gtk-launch >/dev/null 2>&1; then
+    printf 'gtk-launch no está disponible.\n' >&2
     return 1
   fi
-
-  if ! command -v codex >/dev/null 2>&1; then
-    printf 'codex no esta disponible.\n' >&2
-    return 1
-  fi
-
-  if (($# > 0)); then
-    printf -v codex_cmd 'codex %q' "$1"
-    shift
-    if (($# > 0)); then
-      local arg
-      for arg in "$@"; do
-        printf -v codex_cmd '%s %q' "$codex_cmd" "$arg"
-      done
-    fi
-  fi
-
-  tmux new-session -A -s ia "$codex_cmd"
+  gtk-launch chatgpt-webapp "$@"
 }
 
+# gpt-safe: Abre ChatGPT sin aceleración GPU (para evitar cuelgues)
 gpt-safe() {
-  local webapp_bin="$HOME/.local/bin/chatgpt-webapp"
-
-  if [[ ! -x "$webapp_bin" ]]; then
-    printf 'No existe o no es ejecutable: %s\n' "$webapp_bin" >&2
-    return 1
-  fi
-
-  CHATGPT_WEBAPP_DISABLE_GPU=1 "$webapp_bin" "$@"
+  CHATGPT_WEBAPP_DISABLE_GPU=1 gpt "$@"
 }
 
-gpt-reset() {
-  local profile_dir="$HOME/.config/chatgpt-webapp/profile"
-  local expected_root="$HOME/.config/chatgpt-webapp/"
-
-  if [[ -z "$profile_dir" || "$profile_dir" == "/" || "$profile_dir" != "$expected_root"* ]]; then
-    printf 'Ruta de perfil no valida: %s\n' "$profile_dir" >&2
-    return 1
-  fi
-
-  if ! _confirm "Borrar el perfil de chatgpt-webapp en $profile_dir? [y/N] "; then
-    printf 'Cancelado.\n' >&2
-    return 1
-  fi
-
-  rm -rf -- "$profile_dir" && mkdir -p -- "$profile_dir"
-}
-
-codex-here() {
-  codex "$@"
-}
+# Codex/Agent alias rápido
+alias codex-here='codex'
+alias ai='ai-session'
