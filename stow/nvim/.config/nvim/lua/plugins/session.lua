@@ -5,21 +5,21 @@ return {
 	opts = {},
 	keys = {
 		{
-			"<leader>qs",
+			"<leader>Qs",
 			function()
 				require("persistence").load()
 			end,
 			desc = "Restaurar sesión",
 		},
 		{
-			"<leader>ql",
+			"<leader>Ql",
 			function()
 				require("persistence").load({ last = true })
 			end,
 			desc = "Última sesión",
 		},
 		{
-			"<leader>qd",
+			"<leader>Qd",
 			function()
 				require("persistence").stop()
 			end,

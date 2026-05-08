@@ -42,7 +42,7 @@ map("v", "<S-A-j>", "y'>pgv", { desc = "Duplicate selection down" })
 map("v", "<S-A-k>", "y'<Pgv", { desc = "Duplicate selection up" })
 
 -- Splits coherentes con i3/tmux
-map("n", "<leader>Q", "<cmd>q<cr>", { desc = "Close window" })
+map("n", "<leader>q", "<cmd>q<cr>", { desc = "Close window" })
 map("n", '<leader>"', "<cmd>split<cr>", { desc = 'Split (")' })
 map("n", "<leader>%", "<cmd>vsplit<cr>", { desc = "VSplit (%)" })
 
