@@ -72,7 +72,8 @@ _edit_at() {
 }
 
 # @cmd reload  Recargar ~/.bashrc en la shell actual
-reload() {
+# 'function' keyword avoids alias expansion during interactive sourcing
+function reload {
   if [ ! -r "$HOME/.bashrc" ]; then
     printf 'No puedo leer %s/.bashrc\n' "$HOME" >&2
     return 1
