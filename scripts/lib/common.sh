@@ -173,7 +173,7 @@ load_host_packages_profile() {
     # shellcheck source=/dev/null
     source "$default_profile"
   else
-    printf '[WARN] Perfil default no encontrado: %s\n' "$default_profile" >&2
+    warn "Perfil default no encontrado: $default_profile"
   fi
 
   if [ -n "$host" ]; then
@@ -181,14 +181,14 @@ load_host_packages_profile() {
     # shellcheck disable=SC2034 # variable de estado para scripts que hacen source
     DOTFILES_PROFILE_HOST="$host_profile"
     if [ -f "$host_profile" ]; then
-      printf '[INFO] Cargando perfil de host: %s\n' "$host"
+      info "Cargando perfil de host: $host"
       # shellcheck source=/dev/null
       source "$host_profile"
     else
-      printf '[INFO] Sin perfil especifico para host %q (uso default)\n' "$host"
+      info "Sin perfil especifico para host '$host' (uso default)"
     fi
   else
-    printf '[WARN] No pude determinar hostname; uso perfil default\n' >&2
+    warn "No pude determinar hostname; uso perfil default"
   fi
 }
 
