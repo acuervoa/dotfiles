@@ -1,0 +1,1 @@
+stow/bash/.profile
