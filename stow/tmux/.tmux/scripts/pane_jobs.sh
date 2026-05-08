@@ -1,24 +1,32 @@
 #!/usr/bin/env bash
 # Uso: pane_jobs.sh <pane_pid>
-PPID="$1"
-[[ -z "$PPID" ]] && { echo "0"; exit 0; }
+ROOT="$1"
+[[ -z "$ROOT" ]] && { echo "0"; exit 0; }
 
-# Cuenta descendientes vivos excluyendo la shell/pipes triviales
-count_desc() {
-  local p="$1"
-  local kids
-  kids=$(pgrep -P "$p") || return 0
-  local c=0
-  for k in $kids; do
-    # ignora el shell interactivo y tmux helper
-    comm=$(ps -o comm= -p "$k" 2>/dev/null)
-    case "$comm" in
-      bash|zsh|fish|tmux|sh) ;;
-      *) c=$((c+1));;
-    esac
-    c=$((c + $(count_desc "$k")))
-  done
-  echo "$c"
+# Single ps call — no recursive subprocess spawning
+ps -eo pid=,ppid=,comm= 2>/dev/null | awk -v root="$ROOT" '
+{
+  pid[NR]=$1; ppid[NR]=$2; comm[NR]=$3
 }
-count_desc "$PPID"
-
+END {
+  n=NR
+  # BFS from root
+  split("", queue); split("", visited)
+  qhead=1; qtail=1
+  queue[qtail++]=root
+  count=0
+  while (qhead < qtail) {
+    p=queue[qhead++]
+    for (i=1; i<=n; i++) {
+      if (ppid[i]==p && !visited[pid[i]]) {
+        visited[pid[i]]=1
+        c=comm[i]
+        if (c!="bash" && c!="zsh" && c!="fish" && c!="tmux" && c!="sh")
+          count++
+        queue[qtail++]=pid[i]
+      }
+    }
+  }
+  print count
+}
+'
