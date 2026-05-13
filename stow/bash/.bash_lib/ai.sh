@@ -3,6 +3,9 @@
 
 # --- 🚀 SESIONES RÁPIDAS (SimpleBrain) ---
 
+_sb_session_state_dir="$HOME/.cache/simplebrain-ai"
+_sb_session_state_file="$_sb_session_state_dir/last-session"
+
 # sbs: Start Brain Session
 # Uso: sbs "Tarea a realizar"
 sbs() {
@@ -10,7 +13,17 @@ sbs() {
     printf "Uso: sbs <descripción de la tarea>\n"
     return 1
   fi
-  ai-session start --task "$*" --copy
+  mkdir -p "$_sb_session_state_dir"
+  local brief
+  local started_at
+  started_at=$(date +%Y-%m-%dT%H:%M:%S)
+  brief=$(ai-session start --task "$*" --copy)
+  printf '%s\n' "$brief"
+  {
+    printf 'task=%s\n' "$*"
+    printf 'started_at=%s\n' "$started_at"
+    printf 'brief=%s\n' "$brief"
+  } > "$_sb_session_state_file"
 }
 
 # sbl: Start Brain Session & Launch Agent
@@ -20,25 +33,43 @@ sbl() {
     printf "Uso: sbl <descripción de la tarea>\n"
     return 1
   fi
-  ai-session start --task "$*" --copy --launch
+  mkdir -p "$_sb_session_state_dir"
+  local brief
+  local started_at
+  started_at=$(date +%Y-%m-%dT%H:%M:%S)
+  brief=$(ai-session start --task "$*" --copy --launch)
+  printf '%s\n' "$brief"
+  {
+    printf 'task=%s\n' "$*"
+    printf 'started_at=%s\n' "$started_at"
+    printf 'brief=%s\n' "$brief"
+  } > "$_sb_session_state_file"
 }
 
 # sbe: End Brain Session (Documenta en Diario + Proyecto)
-# Uso: sbe "Lo que hice" "Siguiente paso"
+# Uso: sbe "Lo que hice" ["Siguiente paso"]
 sbe() {
   local task latest_brief
-  # Inferimos la tarea de la última sesión arrancada hoy
-  latest_brief=$(ls -1t ~/Vaults/SimpleBrain/99_META/ai-contexts/*__ai-start.md 2>/dev/null | head -n 1)
-  
-  if [[ -z "$latest_brief" ]]; then
-    printf "Error: No se encontró ninguna sesión reciente para cerrar.\n"
-    return 1
+  if [[ -f "$_sb_session_state_file" ]]; then
+    task=$(grep '^task=' "$_sb_session_state_file" | cut -d= -f2-)
   fi
-  
-  task=$(grep "Tarea:" "$latest_brief" | cut -d: -f2- | xargs)
-  
+  if [[ -z "${task:-}" ]]; then
+    latest_brief=$(ls -1t ~/Vaults/SimpleBrain/99_META/ai-contexts/*__ai-start.md 2>/dev/null | head -n 1)
+    if [[ -z "$latest_brief" ]]; then
+      printf "Error: No se encontró ninguna sesión reciente para cerrar.\n"
+      return 1
+    fi
+    task=$(grep "Tarea:" "$latest_brief" | cut -d: -f2- | xargs)
+  fi
+
   printf "Cerrando sesión: %s\n" "$task"
-  ai-session end --task "$task" --done "$1" --next "${2:-Revisar avances}" --daily --update-project-note --copy
+  if [[ -n "${2:-}" ]]; then
+    ai-session end --task "$task" --done "$1" --next "$2" --daily --update-project-note --copy
+  else
+    ai-session end --task "$task" --done "$1" --daily --update-project-note --copy
+  fi
+
+  rm -f "$_sb_session_state_file"
 }
 
 # sb-lint: Ejecuta auditoría rápida del Vault
