@@ -117,11 +117,13 @@ _sb_write_session_state() {
   local task="$1"
   local started_at="$2"
   local brief="$3"
+  local note="${4:-}"
 
   if ! {
     printf 'task=%s\n' "$task"
     printf 'started_at=%s\n' "$started_at"
     printf 'brief=%s\n' "$brief"
+    [[ -n "$note" ]] && printf 'note=%s\n' "$note"
   } | tee "$_sb_session_state_file" >/dev/null 2>&1; then
     printf 'Error: no pude guardar el estado de la sesión en %s\n' "$_sb_session_state_file" >&2
     return 1
@@ -166,9 +168,31 @@ _sb_require_active_session() {
 # sbs: Start Brain Session
 # Uso: sbs "Tarea a realizar"
 sbs() {
+  local note=""
+  if [[ "${1:-}" == "--note" ]]; then
+    note="$2"
+    shift 2
+  fi
   if [[ -z "$*" ]]; then
-    printf "Uso: sbs <descripción de la tarea>\n"
+    printf "Uso: sbs [--note <ruta-nota>] <descripción de la tarea>\n"
     return 1
+  fi
+  # Resolve note: vault-relative → absolute
+  if [[ -n "$note" && "$note" != /* ]]; then
+    note="$HOME/Vaults/SimpleBrain/$note"
+  fi
+  if [[ -f "$_sb_session_state_file" ]]; then
+    local _active_task _active_note
+    _active_task="$(_sb_read_state_value task)"
+    if [[ -n "$_active_task" ]]; then
+      _active_note="$(_sb_read_state_value note)"
+      [[ -z "$_active_note" ]] && _active_note="$(_sb_project_note_path "$_active_task")"
+      printf 'Error: ya hay una sesión activa.\n' >&2
+      printf '  Tarea: %s\n' "$_active_task" >&2
+      printf '  Nota:  %s\n' "$_active_note" >&2
+      printf 'Ciérrala con: sbe "<hecho>"\n' >&2
+      return 1
+    fi
   fi
   mkdir -p "$_sb_session_state_dir"
   local brief
@@ -178,12 +202,14 @@ sbs() {
   start_ms=$(date +%s%3N)
   started_at=$(date +%Y-%m-%dT%H:%M:%S)
   printf 'Iniciando sesión y generando brief: %s\n' "$*"
-  if ! brief=$(AI_SESSION_BENCH=${AI_SESSION_BENCH:-0} ai-session start --task "$*" --copy); then
+  local ai_args=(--task "$*" --copy)
+  [[ -n "$note" ]] && ai_args+=(--project-note "$note")
+  if ! brief=$(AI_SESSION_BENCH=${AI_SESSION_BENCH:-0} ai-session start "${ai_args[@]}"); then
     printf 'Error: ai-session start falló para la tarea: %s\n' "$*" >&2
     return 1
   fi
   printf '%s\n' "$brief"
-  if ! _sb_write_session_state "$*" "$started_at" "$brief"; then
+  if ! _sb_write_session_state "$*" "$started_at" "$brief" "$note"; then
     printf 'Error: el brief se generó, pero la sesión no quedó registrada. Revisa permisos en %s\n' "$_sb_session_state_dir" >&2
     return 1
   fi
@@ -206,9 +232,30 @@ sbsb() {
 # sbl: Start Brain Session & Launch Agent
 # Uso: sbl "Tarea a realizar" (abre Claude/Codex automáticamente)
 sbl() {
+  local note=""
+  if [[ "${1:-}" == "--note" ]]; then
+    note="$2"
+    shift 2
+  fi
   if [[ -z "$*" ]]; then
-    printf "Uso: sbl <descripción de la tarea>\n"
+    printf "Uso: sbl [--note <ruta-nota>] <descripción de la tarea>\n"
     return 1
+  fi
+  if [[ -n "$note" && "$note" != /* ]]; then
+    note="$HOME/Vaults/SimpleBrain/$note"
+  fi
+  if [[ -f "$_sb_session_state_file" ]]; then
+    local _active_task _active_note
+    _active_task="$(_sb_read_state_value task)"
+    if [[ -n "$_active_task" ]]; then
+      _active_note="$(_sb_read_state_value note)"
+      [[ -z "$_active_note" ]] && _active_note="$(_sb_project_note_path "$_active_task")"
+      printf 'Error: ya hay una sesión activa.\n' >&2
+      printf '  Tarea: %s\n' "$_active_task" >&2
+      printf '  Nota:  %s\n' "$_active_note" >&2
+      printf 'Ciérrala con: sbe "<hecho>"\n' >&2
+      return 1
+    fi
   fi
   mkdir -p "$_sb_session_state_dir"
   local brief
@@ -218,12 +265,14 @@ sbl() {
   start_ms=$(date +%s%3N)
   started_at=$(date +%Y-%m-%dT%H:%M:%S)
   printf 'Iniciando sesión, generando brief y lanzando agente: %s\n' "$*"
-  if ! brief=$(AI_SESSION_BENCH=${AI_SESSION_BENCH:-0} ai-session start --task "$*" --copy --launch); then
+  local ai_args=(--task "$*" --copy --launch)
+  [[ -n "$note" ]] && ai_args+=(--project-note "$note")
+  if ! brief=$(AI_SESSION_BENCH=${AI_SESSION_BENCH:-0} ai-session start "${ai_args[@]}"); then
     printf 'Error: ai-session start --launch falló para la tarea: %s\n' "$*" >&2
     return 1
   fi
   printf '%s\n' "$brief"
-  if ! _sb_write_session_state "$*" "$started_at" "$brief"; then
+  if ! _sb_write_session_state "$*" "$started_at" "$brief" "$note"; then
     printf 'Error: el brief se generó, pero la sesión no quedó registrada. Revisa permisos en %s\n' "$_sb_session_state_dir" >&2
     return 1
   fi
@@ -253,10 +302,17 @@ sbe() {
 
   printf 'Buscando sesión activa para cerrar...\n'
   task="$(_sb_require_active_session)" || return 1
-  project_note="$(_sb_project_note_path "$task")"
+  local stored_note
+  stored_note="$(_sb_read_state_value note)"
+  if [[ -n "$stored_note" ]]; then
+    project_note="$stored_note"
+  else
+    project_note="$(_sb_project_note_path "$task")"
+  fi
   daily_note="$(_sb_today_daily_path)"
 
   printf 'Sesión activa encontrada: %s\n' "$task"
+  printf 'Nota de proyecto: %s\n' "$project_note"
   printf 'Resumen de cierre:\n'
   printf '  - Hecho: %s\n' "$done_summary"
   if [[ -n "$next_step" ]]; then
@@ -266,13 +322,16 @@ sbe() {
   fi
   printf 'Generando handoff y actualizando proyecto/daily...\n'
 
+  local note_args=()
+  [[ -n "$stored_note" ]] && note_args+=(--project-note "$stored_note")
+
   if [[ -n "$next_step" ]]; then
-    if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --next "$next_step" --daily --update-project-note --copy); then
+    if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --next "$next_step" --daily --update-project-note "${note_args[@]}" --copy); then
       printf 'Error: no pude cerrar la sesión activa: %s\n' "$task" >&2
       return 1
     fi
   else
-    if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --daily --update-project-note --copy); then
+    if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --daily --update-project-note "${note_args[@]}" --copy); then
       printf 'Error: no pude cerrar la sesión activa: %s\n' "$task" >&2
       return 1
     fi
