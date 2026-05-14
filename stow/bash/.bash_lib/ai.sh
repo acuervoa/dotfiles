@@ -398,6 +398,21 @@ sbclose() {
 
   task="$1"
   reason="${2:-Proyecto cerrado explícitamente.}"
+
+  if [[ -f "$_sb_session_state_file" ]]; then
+    local active_task
+    active_task="$(_sb_read_state_value task)"
+    if [[ -n "$active_task" ]]; then
+      if [[ "$active_task" == "$task" ]]; then
+        printf 'Sesión activa detectada para "%s". Cerrando con sbe antes de sbclose...\n' "$task"
+        sbe "$reason" || return 1
+      else
+        printf 'Error: sesión activa para otra tarea: "%s". Cierra con sbe antes de sbclose.\n' "$active_task" >&2
+        return 1
+      fi
+    fi
+  fi
+
   project_note="$(_sb_project_note_path "$task")"
 
   if [[ ! -f "$project_note" ]]; then
