@@ -226,7 +226,7 @@ sbsb() {
     printf "Uso: sbsb <descripción de la tarea>\n"
     return 1
   fi
-  AI_SESSION_BENCH=1 sbs "$*"
+  AI_SESSION_BENCH=1 sbs "$@"
 }
 
 # sbl: Start Brain Session & Launch Agent
