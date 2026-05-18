@@ -716,4 +716,40 @@ gpt-safe() {
 
 # Codex/Agent alias rápido
 alias codex-here='codex'
-alias ai='ai-session'
+
+# sbprofile: copia about-me.compact.md al portapapeles para pegar en cualquier LLM
+sbprofile() {
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  local _profile="$_sb_vault/04_RESOURCES/about-me.compact.md"
+  if [[ ! -f "$_profile" ]]; then
+    printf 'Error: no encontrado %s\n' "$_profile" >&2
+    return 1
+  fi
+  if command -v wl-copy &>/dev/null && wl-copy < "$_profile" 2>/dev/null; then
+    :
+  elif command -v xclip &>/dev/null && xclip -selection clipboard < "$_profile" 2>/dev/null; then
+    :
+  elif command -v xsel &>/dev/null && xsel --clipboard --input < "$_profile" 2>/dev/null; then
+    :
+  else
+    printf 'Error: no hay wl-copy, xclip ni xsel disponibles\n' >&2
+    return 1
+  fi
+  printf 'Perfil copiado al portapapeles. Pega al inicio del chat.\n'
+}
+# ai: bootstrap AI session from current repo (v0.1)
+# ai [start] "task"  → detects git root, generates brief, opens project note
+# ai end/distill ... → delegates to ai-session
+ai() {
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  local _ai_wrapper="$_sb_vault/tools/ai"
+  local subcmd="${1:-}"
+  if [[ "$subcmd" == "end" || "$subcmd" == "distill" ]]; then
+    ai-session "$@"
+  elif [[ -x "$_ai_wrapper" ]]; then
+    "$_ai_wrapper" "$@"
+  else
+    printf 'Error: no se encontró %s\n' "$_ai_wrapper" >&2
+    return 1
+  fi
+}
