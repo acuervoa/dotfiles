@@ -725,17 +725,7 @@ sbprofile() {
     printf 'Error: no encontrado %s\n' "$_profile" >&2
     return 1
   fi
-  if command -v wl-copy &>/dev/null && wl-copy < "$_profile" 2>/dev/null; then
-    :
-  elif command -v xclip &>/dev/null && xclip -selection clipboard < "$_profile" 2>/dev/null; then
-    :
-  elif command -v xsel &>/dev/null && xsel --clipboard --input < "$_profile" 2>/dev/null; then
-    :
-  else
-    printf 'Error: no hay wl-copy, xclip ni xsel disponibles\n' >&2
-    return 1
-  fi
-  printf 'Perfil copiado al portapapeles. Pega al inicio del chat.\n'
+  cb "$_profile" && printf 'Perfil copiado al portapapeles. Pega al inicio del chat.\n'
 }
 # ai: bootstrap AI session from current repo (v0.1)
 # ai [start] "task"  → detects git root, generates brief, opens project note
