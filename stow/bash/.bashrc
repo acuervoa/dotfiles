@@ -212,3 +212,77 @@ if [ -f "$HOME/.openclaw/completions/openclaw.bash" ]; then
   # shellcheck source=/dev/null
   source "$HOME/.openclaw/completions/openclaw.bash"
 fi
+
+# --- AI Flow shortcuts ---
+alias afs='ai-flow start'
+alias afc='ai-flow cycle'
+alias afd='ai-flow distill-run'
+alias afa='ai-flow distill-apply'
+
+af() {
+  ai-flow start --task "$*"
+}
+
+afl() {
+  ai-flow start --task "$*" --launch
+}
+
+afx() {
+  local task="$1"
+  local done_msg="${2:-Cierre rápido}"
+  local next_msg="${3:-Revisar draft}"
+  ai-flow cycle --task "$task" --done "$done_msg" --next "$next_msg"
+}
+
+aflastdraft() {
+  ls -1t "$HOME/Vaults/SimpleBrain/99_META/distill-logs/"*__distill-draft.md 2>/dev/null | head -n 1
+}
+
+afapplylast() {
+  local draft
+  draft="$(aflastdraft)"
+  if [ -z "$draft" ]; then
+    printf 'No encontré drafts de distill.
+' >&2
+    return 1
+  fi
+  ai-flow distill-apply --draft "$draft" --apply-note --apply-wiki-log
+}
+
+afdp() {
+  # DISTILL pipeline completo: extract → classify → apply
+  # Uso: afdp [--extractor claude|opencode|gemini|codex|all] [--dry-run] [--session <id>] [--min-confidence 0.6]
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  bash "$_sb_vault/tools/ai-distill-pipeline.sh" "$@"
+}
+
+afdb() {
+  # DISTILL bulk: procesa todas las sesiones históricas pendientes
+  # Uso: afdb [--extractor all|claude|...] [--list] [--dry-run] [--since YYYY-MM-DD] [--limit N]
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  python3 "$_sb_vault/tools/distill_bulk.py" "$@"
+}
+
+sbclose() {
+  # Cierre formal de proyecto: distill → sección Cierre → archive → wiki-log → commit
+  # Uso: sbclose "<patrón nombre proyecto>" [--dry-run] [--skip-distill]
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  bash "$_sb_vault/tools/sbclose.sh" "$@"
+}
+
+ai() {
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  local _ai_wrapper="$_sb_vault/tools/ai"
+  local subcmd="${1:-}"
+  if [[ "$subcmd" == "end" || "$subcmd" == "distill" ]]; then
+    ai-session "$@"
+  elif [[ -x "$_ai_wrapper" ]]; then
+    "$_ai_wrapper" "$@"
+  else
+    printf 'Error: no se encontró %s
+' "$_ai_wrapper" >&2
+    return 1
+  fi
+}
+# --- /AI Flow shortcuts ---
+
