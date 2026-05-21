@@ -346,6 +346,17 @@ sbe() {
   fi
   printf 'Estado de sesión limpiado: %s\n' "$_sb_session_state_file"
   printf 'Sesión cerrada correctamente.\n'
+
+  # DISTILL v2: run ai_stop.py in background after session close
+  local _sb_vault="$HOME/Vaults/SimpleBrain"
+  local _ai_stop="$_sb_vault/tools/ai_stop.py"
+  local _ai_stop_log="/tmp/ai_stop_last.log"
+  if [[ -f "$_ai_stop" ]] && [[ -f "$_sb_vault/.venv/bin/python" ]]; then
+    printf 'Distilación DISTILL v2 iniciada en segundo plano...\n'
+    printf '  Log: %s\n' "$_ai_stop_log"
+    (python3 "$_ai_stop" --skip-processed > "$_ai_stop_log" 2>&1) &
+    disown
+  fi
 }
 _sb_stale_sessions_archive_dir() {
   printf '%s\n' "$HOME/Vaults/SimpleBrain/99_META/ai-contexts/_stale-open-starts"
