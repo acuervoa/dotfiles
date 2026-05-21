@@ -283,7 +283,8 @@ sbl() {
 }
 
 # sbe: End Brain Session (Documenta en Diario + Proyecto)
-# Uso: sbe "Lo que hice" ["Siguiente paso"]
+# Uso: sbe <hecho> [siguiente paso]
+#      sbe --from <archivo-start> <hecho> [siguiente paso]
 sbe() {
   local task
   local done_summary
@@ -291,19 +292,53 @@ sbe() {
   local handoff
   local project_note
   local daily_note
+  local from_file=""
+
+  if [[ "${1:-}" == "--from" ]]; then
+    from_file="${2:-}"
+    if [[ -z "$from_file" ]]; then
+      printf 'Error: --from requiere ruta al archivo ai-start.md\n' >&2
+      return 1
+    fi
+    # Resolve: absolute → as-is; bare filename → ai-contexts/
+    if [[ "$from_file" != /* ]]; then
+      from_file="$HOME/Vaults/SimpleBrain/99_META/ai-contexts/$from_file"
+    fi
+    if [[ ! -f "$from_file" ]]; then
+      printf 'Error: archivo no encontrado: %s\n' "$from_file" >&2
+      return 1
+    fi
+    shift 2
+  fi
 
   if [[ -z "${1:-}" ]]; then
-    printf "Uso: sbe <hecho> [siguiente paso]\n" >&2
+    if [[ -n "$from_file" ]]; then
+      printf "Uso: sbe --from <archivo> <hecho> [siguiente paso]\n" >&2
+    else
+      printf "Uso: sbe <hecho> [siguiente paso]\n" >&2
+    fi
     return 1
   fi
 
   done_summary="$1"
   next_step="${2:-}"
 
-  printf 'Buscando sesión activa para cerrar...\n'
-  task="$(_sb_require_active_session)" || return 1
-  local stored_note
-  stored_note="$(_sb_read_state_value note)"
+  local stored_note=""
+  if [[ -n "$from_file" ]]; then
+    task="$(_sb_brief_task "$from_file")"
+    if [[ -z "$task" ]]; then
+      printf 'Error: no se pudo extraer tarea de: %s\n' "$from_file" >&2
+      return 1
+    fi
+    printf 'Cerrando sesión huérfana: %s\n' "$task"
+    printf 'Archivo origen: %s\n' "$from_file"
+  else
+    printf 'Buscando sesión activa para cerrar...\n'
+    task="$(_sb_require_active_session)" || return 1
+    stored_note="$(_sb_read_state_value note)"
+    printf 'Sesión activa encontrada: %s\n' "$task"
+  fi
+
   if [[ -n "$stored_note" ]]; then
     project_note="$stored_note"
   else
@@ -311,7 +346,6 @@ sbe() {
   fi
   daily_note="$(_sb_today_daily_path)"
 
-  printf 'Sesión activa encontrada: %s\n' "$task"
   printf 'Nota de proyecto: %s\n' "$project_note"
   printf 'Resumen de cierre:\n'
   printf '  - Hecho: %s\n' "$done_summary"
@@ -327,12 +361,12 @@ sbe() {
 
   if [[ -n "$next_step" ]]; then
     if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --next "$next_step" --daily --update-project-note "${note_args[@]}" --copy); then
-      printf 'Error: no pude cerrar la sesión activa: %s\n' "$task" >&2
+      printf 'Error: no pude cerrar la sesión: %s\n' "$task" >&2
       return 1
     fi
   else
     if ! handoff=$(ai-session end --task "$task" --done "$done_summary" --daily --update-project-note "${note_args[@]}" --copy); then
-      printf 'Error: no pude cerrar la sesión activa: %s\n' "$task" >&2
+      printf 'Error: no pude cerrar la sesión: %s\n' "$task" >&2
       return 1
     fi
   fi
@@ -340,11 +374,26 @@ sbe() {
   printf 'Handoff generado: %s\n' "$handoff"
   printf 'Proyecto actualizado: %s\n' "$project_note"
   printf 'Daily actualizada: %s\n' "$daily_note"
-  if ! rm -f "$_sb_session_state_file"; then
-    printf 'Warning: no pude borrar el estado de sesión en %s\n' "$_sb_session_state_file" >&2
-    return 1
+
+  if [[ -n "$from_file" ]]; then
+    # --from: limpiar estado solo si coincide con esta tarea
+    local active_task
+    active_task="$(_sb_read_state_value task 2>/dev/null || true)"
+    if [[ "$active_task" == "$task" ]]; then
+      if ! rm -f "$_sb_session_state_file"; then
+        printf 'Warning: no pude borrar el estado de sesión en %s\n' "$_sb_session_state_file" >&2
+      else
+        printf 'Estado de sesión limpiado: %s\n' "$_sb_session_state_file"
+      fi
+    fi
+  else
+    if ! rm -f "$_sb_session_state_file"; then
+      printf 'Warning: no pude borrar el estado de sesión en %s\n' "$_sb_session_state_file" >&2
+      return 1
+    fi
+    printf 'Estado de sesión limpiado: %s\n' "$_sb_session_state_file"
   fi
-  printf 'Estado de sesión limpiado: %s\n' "$_sb_session_state_file"
+
   printf 'Sesión cerrada correctamente.\n'
 
   # DISTILL v2: run ai_stop.py in background after session close
