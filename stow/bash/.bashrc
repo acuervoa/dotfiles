@@ -219,6 +219,14 @@ alias afc='ai-flow cycle'
 alias afd='ai-flow distill-run'
 alias afa='ai-flow distill-apply'
 
+# --- AgentMemory auto-start ---
+# Start the local daemon on first interactive shell if it is not already up.
+if [[ $- == *i* ]]; then
+  if ! curl -fsS http://127.0.0.1:3111/agentmemory/health >/dev/null 2>&1; then
+    nohup agentmemory >/tmp/agentmemory.log 2>&1 &
+  fi
+fi
+
 af() {
   ai-flow start --task "$*"
 }
@@ -286,3 +294,19 @@ ai() {
 }
 # --- /AI Flow shortcuts ---
 
+# >>> juliaup initialize >>>
+
+# !! Contents within this block are managed by juliaup !!
+
+case ":$PATH:" in
+    *:/home/acuervo/.juliaup/bin:*)
+        ;;
+
+    *)
+        export PATH=/home/acuervo/.juliaup/bin${PATH:+:${PATH}}
+        ;;
+esac
+# Tab completion for juliaup and julia channel selection
+[ -f "/home/acuervo/.julia/juliaup/completions/bash.sh" ] && source "/home/acuervo/.julia/juliaup/completions/bash.sh"
+
+# <<< juliaup initialize <<<
