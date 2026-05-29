@@ -337,8 +337,8 @@ gp() {
 
   local mode="normal"
   case "${1:-}" in
-    --force) mode="force" ;;
-    --force-with-lease|--lease) mode="lease" ;;
+  --force) mode="force" ;;
+  --force-with-lease | --lease) mode="lease" ;;
   esac
 
   printf 'Rama actual: %s\n' "$branch" >&2

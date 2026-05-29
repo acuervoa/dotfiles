@@ -51,7 +51,6 @@ while (($# > 0)); do
   shift
 done
 
-
 main() {
   if [ -x "$REPO_DIR/scripts/check.sh" ]; then
     info "Corriendo scripts/check.sh"

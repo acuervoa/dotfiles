@@ -19,7 +19,7 @@ _sb_brief_task() {
 }
 
 _sb_sanitize_task_for_note() {
-  python3 - <<'PY' "$1"
+  python3 - "$1" <<'PY'
 import re, sys
 text = sys.argv[1]
 clean = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '', text)
@@ -46,7 +46,7 @@ _sb_open_sessions_archive_dir() {
 sbo() {
   local vault_root
   vault_root="$HOME/Vaults/SimpleBrain"
-  python3 - <<'PY' "$vault_root" "$_sb_session_state_file"
+  python3 - "$vault_root" "$_sb_session_state_file" <<'PY'
 import re, sys
 from collections import defaultdict, deque
 from pathlib import Path
@@ -214,7 +214,7 @@ sbs() {
     return 1
   fi
   if [[ "${AI_SESSION_BENCH:-0}" == "1" ]]; then
-    total_ms=$(( $(date +%s%3N) - start_ms ))
+    total_ms=$(($(date +%s%3N) - start_ms))
     printf '[sbs][bench] phase=total elapsed_ms=%s\n' "$total_ms" >&2
   fi
 }
@@ -277,7 +277,7 @@ sbl() {
     return 1
   fi
   if [[ "${AI_SESSION_BENCH:-0}" == "1" ]]; then
-    total_ms=$(( $(date +%s%3N) - start_ms ))
+    total_ms=$(($(date +%s%3N) - start_ms))
     printf '[sbl][bench] phase=total elapsed_ms=%s\n' "$total_ms" >&2
   fi
 }
@@ -403,7 +403,7 @@ sbe() {
   if [[ -f "$_ai_stop" ]] && [[ -f "$_sb_vault/.venv/bin/python" ]]; then
     printf 'Distilación DISTILL v2 iniciada en segundo plano...\n'
     printf '  Log: %s\n' "$_ai_stop_log"
-    (python3 "$_ai_stop" --skip-processed > "$_ai_stop_log" 2>&1) &
+    (python3 "$_ai_stop" --skip-processed >"$_ai_stop_log" 2>&1) &
     disown
   fi
 }
@@ -424,7 +424,7 @@ sbo-clean() {
   fi
   vault_root="$HOME/Vaults/SimpleBrain"
   archive_dir="$(_sb_open_sessions_archive_dir)"
-  python3 - <<'PY' "$vault_root" "$archive_dir" "$mode"
+  python3 - "$vault_root" "$archive_dir" "$mode" <<'PY'
 import re, sys, shutil
 from collections import defaultdict, deque
 from pathlib import Path
@@ -539,7 +539,7 @@ sbclose() {
     return 1
   fi
 
-  python3 - <<'PY' "$project_note" "$reason" "$HOME/Vaults/SimpleBrain"
+  python3 - "$project_note" "$reason" "$HOME/Vaults/SimpleBrain" <<'PY'
 import re, sys
 from datetime import datetime
 from pathlib import Path

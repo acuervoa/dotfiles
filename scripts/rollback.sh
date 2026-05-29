@@ -52,7 +52,10 @@ while (($# > 0)); do
   --manifest)
     shift
     MANIFEST_PATH="${1:-}"
-    [ -n "$MANIFEST_PATH" ] || { printf '[ERROR] --manifest requiere ruta\n' >&2; exit 1; }
+    [ -n "$MANIFEST_PATH" ] || {
+      printf '[ERROR] --manifest requiere ruta\n' >&2
+      exit 1
+    }
     ;;
   -h | --help)
     usage
@@ -144,19 +147,19 @@ main() {
       selected_backup="$REPO_DIR/$backup_dir_rel"
     else
       case "${backup_needed:-legacy}" in
-        false)
-          selected_backup=""
-          ;;
-        true)
-          warn "Manifest indica backup_needed=true pero no existe el backup: ${backup_dir_abs:-${backup_dir_rel:-<vacío>}}"
-          selected_backup=""
-          ;;
-        legacy)
-          warn "Manifest legacy sin backup_needed; por seguridad no hay fallback automático a backups antiguos."
-          if [ "${DOTFILES_ROLLBACK_FALLBACK:-0}" = "1" ] && [ "$SELECTED_INPUT" = "latest" ]; then
-            selected_backup="$(backup_path_for_input "$SELECTED_INPUT" 2>/dev/null || true)"
-          fi
-          ;;
+      false)
+        selected_backup=""
+        ;;
+      true)
+        warn "Manifest indica backup_needed=true pero no existe el backup: ${backup_dir_abs:-${backup_dir_rel:-<vacío>}}"
+        selected_backup=""
+        ;;
+      legacy)
+        warn "Manifest legacy sin backup_needed; por seguridad no hay fallback automático a backups antiguos."
+        if [ "${DOTFILES_ROLLBACK_FALLBACK:-0}" = "1" ] && [ "$SELECTED_INPUT" = "latest" ]; then
+          selected_backup="$(backup_path_for_input "$SELECTED_INPUT" 2>/dev/null || true)"
+        fi
+        ;;
       esac
     fi
   else

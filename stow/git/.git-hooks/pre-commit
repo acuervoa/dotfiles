@@ -2,7 +2,7 @@
 # pre-commit - escaneo de secretos/trazas y bloqueo de ficheros sensibles
 
 set -u
-blocklist='(var_dump|print_r|\bdd\(|die\(|console\.log|API_KEY|PASSWORD|SECRET)'
+blocklist='(var_dump|print_r|\bdd\(|\bdie\(|console\.log|API_KEY|PASSWORD|SECRET)'
 
 echo "-> pre-commit: escaneando contenido staged..."
 files="$(git diff --cached --name-only --diff-filter=ACM |

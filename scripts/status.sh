@@ -59,13 +59,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-info() { [ "$JSON" = "true" ] && return 0; printf '[INFO] %s\n' "$*"; }
-warn() { [ "$JSON" = "true" ] && return 0; printf '[WARN] %s\n' "$*" >&2; }
+info() {
+  [ "$JSON" = "true" ] && return 0
+  printf '[INFO] %s\n' "$*"
+}
+warn() {
+  [ "$JSON" = "true" ] && return 0
+  printf '[WARN] %s\n' "$*" >&2
+}
 
 json_escape() {
   local s="$1"
   s="${s//\\/\\\\}"
-  s="${s//"/\\"}"
+  s="${s//"/\\"/}"
   s="${s//$'\n'/\\n}"
   printf '%s' "$s"
 }

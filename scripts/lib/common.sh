@@ -329,7 +329,7 @@ manifest_get_array() {
     read -r -a tmp <<<"$val"
   fi
 
-  out=()  # reset
+  out=() # reset
   if [ "${#tmp[@]}" -gt 0 ]; then
     out=("${tmp[@]}")
   fi
@@ -341,8 +341,8 @@ manifest_get_bool() {
   local raw=""
   manifest_get_string "$manifest" "$key" raw
   case "$raw" in
-  true|false) ;; # ok
-  *) raw="" ;; # unknown/legacy
+  true | false) ;; # ok
+  *) raw="" ;;     # unknown/legacy
   esac
   printf -v "$out_var" '%s' "$raw"
 }

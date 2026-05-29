@@ -66,8 +66,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-info() { [ "$JSON" = "true" ] && return 0; printf '[INFO] %s\n' "$*"; }
-warn() { [ "$JSON" = "true" ] && return 0; printf '[WARN] %s\n' "$*" >&2; }
+info() {
+  [ "$JSON" = "true" ] && return 0
+  printf '[INFO] %s\n' "$*"
+}
+warn() {
+  [ "$JSON" = "true" ] && return 0
+  printf '[WARN] %s\n' "$*" >&2
+}
 err() { printf '[ERROR] %s\n' "$*" >&2; }
 
 action() {
@@ -148,8 +154,14 @@ main() {
   info "Repo: $REPO_DIR"
   info "Stow: $STOW_DIR"
 
-  [ -d "$REPO_DIR" ] || { err "Repo no encontrado: $REPO_DIR"; return 1; }
-  [ -d "$STOW_DIR" ] || { err "Directorio stow no encontrado: $STOW_DIR"; return 1; }
+  [ -d "$REPO_DIR" ] || {
+    err "Repo no encontrado: $REPO_DIR"
+    return 1
+  }
+  [ -d "$STOW_DIR" ] || {
+    err "Directorio stow no encontrado: $STOW_DIR"
+    return 1
+  }
 
   action DEPS "Verificando dependencias"
   require_cmd stow || return 1
@@ -231,11 +243,11 @@ status=$?
 
 if [ "$JSON" = "true" ]; then
   printf '{"ok":%s,"repo":"%s","stow":"%s","host":"%s","wsl":%s,"gui_mode":"%s","pkgs_count":%s,"conflicts_ok":%s}\n' \
-    "$( [ "$status" -eq 0 ] && printf 'true' || printf 'false' )" \
-    "${REPO_DIR//"/\\"}" \
-    "${STOW_DIR//"/\\"}" \
-    "${HOST_NAME//"/\\"}" \
-    "$( is_wsl && printf 'true' || printf 'false' )" \
+    "$([ "$status" -eq 0 ] && printf 'true' || printf 'false')" \
+    "${REPO_DIR//"/\\"/}" \
+    "${STOW_DIR//"/\\"/}" \
+    "${HOST_NAME//"/\\"/}" \
+    "$(is_wsl && printf 'true' || printf 'false')" \
     "$GUI_MODE" \
     "${PKGS_COUNT:-0}" \
     "${CONFLICTS_OK:-true}"
