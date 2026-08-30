@@ -40,7 +40,7 @@ frecuente debe ser `C-s` seguido de una sola tecla.
 | Tecla | Acción |
 |---|---|
 | `c` | Crear ventana en el directorio actual |
-| `n/p` | Ventana siguiente/anterior |
+| `n/N` | Ventana siguiente/anterior |
 | `a` | Volver a la última ventana |
 | `,` | Renombrar ventana |
 | `</>` | Mover ventana |
