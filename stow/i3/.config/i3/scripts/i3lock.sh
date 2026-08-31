@@ -10,13 +10,13 @@ need_cmd() {
 	command -v "$1" >/dev/null 2>&1
 }
 
-die() {
+abort_lock() {
 	printf '[i3lock] %s\n' "$*" >&2
 	exit 1
 }
 
 # Requisitos mínimos
-need_cmd i3lock || die "Falta i3lock"
+need_cmd i3lock || abort_lock "Falta i3lock"
 
 # Dependencias opcionales (se usan en orden de preferencia)
 # Captura: ffmpeg (x11grab) -> import -> scrot
@@ -29,13 +29,13 @@ img="$tmpdir/lock.png"
 
 # Detectar geometría
 geom=""
-if need_cmd xrandr; then
-	# primera línea con modo actual
-	geom="$(xrandr --current 2>/dev/null | awk '/\*/{print $1; exit}' || true)"
-fi
-# fallback: xdpyinfo
-if [[ -z "${geom:-}" ]] && need_cmd xdpyinfo; then
+# Preferir la geometría completa del escritorio X11, no la del primer monitor.
+if need_cmd xdpyinfo; then
 	geom="$(xdpyinfo 2>/dev/null | awk -F'[ x]+' '/dimensions:/{print $3 "x" $4; exit}' || true)"
+fi
+# Fallback: primer modo activo reportado por xrandr.
+if [[ -z "${geom:-}" ]] && need_cmd xrandr; then
+	geom="$(xrandr --current 2>/dev/null | awk '/\*/{print $1; exit}' || true)"
 fi
 
 # 1) Captura
@@ -62,7 +62,7 @@ if [[ ! -s "$img" ]] && need_cmd scrot; then
 	scrot -o "$img" || true
 fi
 
-[[ -s "$img" ]] || die "No se pudo capturar pantalla (instala ffmpeg o imagemagick o scrot)"
+[[ -s "$img" ]] || abort_lock "No se pudo capturar pantalla (instala ffmpeg o imagemagick o scrot)"
 
 # 2) Procesado (pixelado rápido; evita blur caro en CPU)
 # usa "magick" si existe; si no, "convert"
