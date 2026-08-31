@@ -39,8 +39,8 @@ for o in "${connected[@]}"; do
   fi
 done
 
-MONITOR="$internal" polybar -q main >/tmp/polybar-main.log 2>&1 &
+MONITOR="$internal" nohup polybar -q main >/tmp/polybar-main.log 2>&1 </dev/null &
 
 if [[ -n "${external:-}" ]]; then
-  MONITOR="$external" polybar -q secondary >/tmp/polybar-secondary.log 2>&1 &
+  MONITOR="$external" nohup polybar -q secondary >/tmp/polybar-secondary.log 2>&1 </dev/null &
 fi
