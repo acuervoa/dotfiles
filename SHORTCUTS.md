@@ -95,6 +95,29 @@
 
 | Atajo / Shortcut | Descripción / Action |
 | ---------------- | -------------------- |
+| `C-s h/j/k/l` | Mover foco entre panes |
+| `C-s H/J/K/L` | Redimensionar pane |
+| `C-s d/r` | Split abajo / derecha |
+| `C-s z` | Alternar zoom del pane |
+| `C-s p` | Mostrar números de panes |
+| `C-s q` | Cerrar pane con confirmación |
+| `C-s c` | Nueva ventana |
+| `C-s n/N` | Ventana siguiente / anterior |
+| `C-s a` | Última ventana |
+| `C-s ,` | Renombrar ventana |
+| `C-s </>` | Mover ventana |
+| `C-s s/S` | Selector de sesiones / proyectos |
+| `C-s $` | Renombrar sesión |
+| `C-s g/b` | Popups de lazygit / btop |
+| `C-s x` | Extrakto |
+| `C-s C-p/C-w/C-b` | fzf: panes / ventanas / buffers |
+| `C-s m` | Menú tmux-menus |
+| `C-s u/U` | Resurrect: guardar / restaurar |
+| `C-s R` | Recargar configuración |
+| `C-s ?` | Abrir cheatsheet |
+
+Atajos secundarios o de compatibilidad:
+
 | -n C-f | copycat-file |
 | -n C-u | copycat-url |
 | -n C-d | copycat-dir |

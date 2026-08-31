@@ -76,12 +76,13 @@ the real agent workflow has been observed and specified.
 
 - [ ] **Step 4: Configure restore as uppercase `U`.**
 
-Set the resurrect restore key to `U` while retaining `M-r` as a compatibility alias until the new grammar is proven:
+Set the Resurrect save/restore keys to `u`/`U` and remove competing manual aliases:
 
 ```tmux
 set -g @resurrect-restore 'U'
 bind U run-shell -b "#{env:TMUX_PLUGIN_MANAGER_PATH}tmux-resurrect/scripts/restore.sh"
-bind M-r run-shell -b "#{env:TMUX_PLUGIN_MANAGER_PATH}tmux-resurrect/scripts/restore.sh"
+unbind M-s
+unbind M-r
 ```
 
 - [ ] **Step 5: Keep destructive actions protected.**

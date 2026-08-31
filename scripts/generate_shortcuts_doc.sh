@@ -50,6 +50,29 @@ parse_tmux_config() {
   echo ""
   printf '%s\n' "| Atajo / Shortcut | Descripción / Action |" "| ---------------- | -------------------- |"
 
+  cat <<'EOF'
+| `C-s h/j/k/l` | Mover foco entre panes |
+| `C-s H/J/K/L` | Redimensionar pane |
+| `C-s d/r` | Split abajo / derecha |
+| `C-s z` | Alternar zoom del pane |
+| `C-s p` | Mostrar números de panes |
+| `C-s q` | Cerrar pane con confirmación |
+| `C-s c` | Nueva ventana |
+| `C-s n/N` | Ventana siguiente / anterior |
+| `C-s a` | Última ventana |
+| `C-s ,` | Renombrar ventana |
+| `C-s </>` | Mover ventana |
+| `C-s s/S` | Selector de sesiones / proyectos |
+| `C-s $` | Renombrar sesión |
+| `C-s g/b` | Popups de lazygit / btop |
+| `C-s x` | Extrakto |
+| `C-s C-p/C-w/C-b` | fzf: panes / ventanas / buffers |
+| `C-s m` | Menú tmux-menus |
+| `C-s u/U` | Resurrect: guardar / restaurar |
+| `C-s R` | Recargar configuración |
+| `C-s ?` | Abrir cheatsheet |
+EOF
+
   grep -E 'bind-key|bind -n' "$config_file" | grep -vE '^\s*#' | while read -r line; do
     # Simplified extraction
     local shortcut

@@ -83,7 +83,7 @@ bash ./scripts/rollback.sh latest
   - docker: `docps`, `dlogs`, `dsh` (DSH_SHELL), `dorebuild`.
   - misc: `fhist`, `envswap` (600 perms), `dev/qa/rtest/rserve/rqa`, tmux helper `ts`.
 - **NeoVim (≥0.11)**: lazy.nvim, Mason v2, Treesitter extended (JS/TS/Python/Go/Rust/PHP), LSP/DAP, conform + nvim-lint, overseer + harpoon, neotest, tmux-navigator.
-- **tmux**: prefix `Ctrl+s`, thumbs/copycat/fzf/open, session shortcuts/popups (lazygit/btop/tmux-fzf), nvim integration.
+- **tmux**: prefix `Ctrl+s` with a one-key grammar (`h/j/k/l`, `d/r`, `H/J/K/L`), session shortcuts, popups, fzf, extrakto, Resurrect/Continuum, and nvim integration.
 - **Desktop**: i3/polybar/picom/dunst/rofi/kitty (Catppuccin Mocha).
 
 ---

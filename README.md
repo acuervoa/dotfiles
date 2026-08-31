@@ -50,7 +50,7 @@ bash ./scripts/bootstrap.sh
 - **Documentación dinámica**: Script para generar `SHORTCUTS.md` a partir de los ficheros de configuración.
 - **Librería Bash modular** (`stow/bash/.bash_lib/*.sh`) con helpers para git, docker, navegación, productividad y flujos AI: clipboard con fallback OSC52 (`cb`), búsqueda de archivos (`fo`), tmux helper `ts`, docker compose helpers (`dorebuild`, `dsh`, `dlogs`, `p`, `part`, `ptest`), accesos rápidos de `ai-flow` (`af`, `afl`, `afx`), lanzadores AI (`gpt`, `ia`, `ia-code`) y aliases git con diff legible vía `bat` cuando está disponible (`gd`, `gds`). La idea es mantener `.bash_aliases` ligero y mover la lógica real a módulos reutilizables.
 - **NeoVim** (≥0.11) con lazy.nvim, Mason v2, Treesitter, LSP/DAP, overseer+harpoon, conform+nvim-lint, plantillas por lenguaje (JS/TS, Python, Go, Rust, PHP) y comandos locales de Codex para explicar, revisar diffs y refactorizar, tests con neotest.
-- **tmux** con prefix `Ctrl+s`, thumbs/copycat/fzf, binds de sesiones rápidas y popups.
+- **tmux** con prefix `Ctrl+s` y gramática de una tecla: navegación `h/j/k/l`, splits `d/r`, resize `H/J/K/L`, sesiones, popups, fzf, extrakto y Resurrect/Continuum.
 - **i3** con lanzador rápido de ChatGPT WebApp (`$mod+g`) y reglas flotantes para la ventana AI.
 - **Stack gráfico** tematizado (Catppuccin Mocha): i3, polybar, picom, dunst, rofi, kitty.
 
@@ -236,7 +236,7 @@ Otros artefactos útiles:
 - **Git tooling**: `stow/git/.gitconfig`, `stow/git/.gitalias`, `stow/git/.git-hooks/*`.
 - **NeoVim**: `stow/nvim/.config/nvim/` (lazy.nvim, LSP via mason v2, overseer/harpoon, conform+nvim-lint, neotest, treesitter extendido JS/TS/Python/Go/Rust/PHP, tmux-navigator).
 - **Codex local para NeoVim**: módulo en `stow/nvim/.config/nvim/lua/codex/` con comandos `:CodexExplain`, `:CodexExplainRepo`, `:CodexFix`, `:CodexRefactor`, `:CodexDiff` y `:CodexVisual`.
-- **tmux**: `stow/tmux/.tmux.conf` (prefix `C-s`, thumbs/copycat/fzf/open, sesiones rápidas, popups lazygit/btop/tmux-fzf, integración nvim navigator).
+- **tmux**: `stow/tmux/.tmux.conf` (prefix `C-s`, gramática `h/j/k/l`, `d/r`, `H/J/K/L`, sesiones, popups lazygit/btop, fzf, extrakto, Resurrect/Continuum e integración nvim navigator).
 - ... y el resto de configuraciones siguen la misma estructura en `stow/`.
 
 ---

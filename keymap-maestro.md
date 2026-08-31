@@ -86,22 +86,25 @@ Screenshots:
 
 `Prefix` = `Ctrl-s`.
 
+La ruta principal de entrenamiento es `Prefix` + una tecla = una acción
+completa. `h/j/k/l` mueve el foco; `H/J/K/L` redimensiona.
+
 | Tecla             | Acción                                       |
 |-------------------|----------------------------------------------|
 | `Prefix+h/j/k/l`  | Mover foco al pane Izq/Abajo/Arriba/Dcha     |
 | `Prefix+Tab`      | Siguiente pane (`select-pane -t :.+`)        |
-| `Prefix+Space`    | Mostrar overlay de panes (`display-panes`)   |
+| `Prefix+p`        | Mostrar overlay de panes (`display-panes`)   |
 
 ### 2.2 Gestión de panes (split / join / zoom / kill)
 
 | Tecla               | Acción                                                                               |
 |---------------------|--------------------------------------------------------------------------------------|
-| `Prefix+"`          | Split horizontal (pane abajo) en el mismo cwd                                       |
-| `Prefix+%`          | Split vertical (pane derecha) en el mismo cwd                                       |
+| `Prefix+d`          | Split abajo en el mismo cwd                                                         |
+| `Prefix+r`          | Split derecha en el mismo cwd                                                       |
 | `Prefix+!`          | Romper pane → nueva ventana (`break-pane`, nombre `cmd — directorio`)               |
-| `Prefix+Z` / `Prefix+z` | Zoom de pane (`resize-pane -Z` + mensaje de estado)                         |
-| `Prefix+q`          | Cerrar pane actual (`kill-pane`)                                                    |
-| `Prefix+Backspace`  | Cerrar todos los panes salvo el actual (`kill-pane -a`)                             |
+| `Prefix+z`          | Zoom de pane (`resize-pane -Z` + mensaje de estado)                                 |
+| `Prefix+q`          | Cerrar pane actual con confirmación (`kill-pane`)                                   |
+| `Prefix+Backspace`  | Cerrar todos los panes salvo el actual, con confirmación (`kill-pane -a`)           |
 
 ### 2.3 Ventanas y sesiones
 
@@ -109,22 +112,22 @@ Screenshots:
 |-------------------|-----------------------------------------------------------------|
 | `Prefix+c`        | Nueva ventana en cwd del pane actual                            |
 | `Prefix+0..9`     | Cambiar a ventana 0..9                                          |
-| `Prefix+w`        | `choose-tree -Zw` (selector de ventanas/panes)                  |
 | `Prefix+s`        | `choose-tree -sw` (selector de sesiones/ventanas)               |
-| `Prefix+&`        | Cerrar ventana actual (con confirmación)                        |
+| `Prefix+S`        | SessionX (o selector de tmux como fallback)                    |
+| `Prefix+n/N`      | Ventana siguiente/anterior                                      |
+| `Prefix+a`        | Volver a la última ventana                                     |
+| `Prefix+<`/`>`    | Mover ventana izquierda/derecha                                |
+| `Prefix+E`/`V`    | Layout even-horizontal/even-vertical                           |
 | `Prefix+,`        | Renombrar ventana                                               |
 | `Prefix+$`        | Renombrar sesión                                                |
-| `Prefix+d`        | `detach-client` (soltar la sesión)                              |
-| `Prefix+D`        | `choose-client -Z` (selector de clientes)                       |
-| `Prefix+(`/`)`    | Cambiar cliente anterior / siguiente                            |
+| `Prefix+A`        | Adjuntar/cambiar a una sesión de proyecto                       |
 
 Reload / ayuda:
 
 | Tecla        | Acción                                             |
 |--------------|----------------------------------------------------|
-| `Prefix+r`   | `source-file ~/.tmux.conf` + mensaje “Config reloaded!” |
-| `Prefix+R`   | Reload robusto (script más elaborado)              |
-| `Prefix+?`   | Listar todos los keybindings de tmux (`list-keys`) |
+| `Prefix+R`   | `source-file ~/.tmux.conf` + mensaje “Config reloaded!” |
+| `Prefix+?`   | Abrir esta cheatsheet en un popup                    |
 
 ### 2.4 Copy-mode y buffers
 
@@ -137,12 +140,20 @@ Reload / ayuda:
 
 En copy-mode-vi sigues la semántica estándar de tmux/vi (navegar con `hjkl`, buscar con `/` y `?`, seleccionar con `v`, copiar con `Enter`, etc. salvo cambios que tú añadas).
 
+Los atajos sin prefijo `C-h/j/k/l`, `F10`, `M-S-flechas`, `M-flechas` y
+`C-PageUp/Down` se mantienen como integración o compatibilidad, pero no son la
+ruta principal. `Prefix+"`, `Prefix+%` y `Prefix+H` pertenecen al mapa anterior.
+
 ### 2.5 Popups y utilidades integradas
 
 | Tecla        | Acción                                                                        |
 |--------------|-------------------------------------------------------------------------------|
 | `Prefix+g`   | Abrir `lazygit` en popup (90% pantalla, centrado)                            |
-| `Prefix+H`   | Abrir `btop` en popup                                                        |
+| `Prefix+b`   | Abrir `btop` en popup                                                        |
+| `Prefix+x`   | Abrir extrakto                                                               |
+| `Prefix+m`   | Abrir tmux-menus                                                             |
+| `Prefix+C-p/C-w/C-b` | fzf para panes / ventanas / buffers                                  |
+| `Prefix+u/U` | Resurrect: guardar / restaurar sesión                                        |
 | `Prefix+Y`   | Copiar `#{pane_current_path}` a tu clipboard (`copy_cmd`), mensaje “Ruta copiada” |
 | `Prefix+f`   | Buscar ventana por nombre (`find-window`)                                    |
 
@@ -280,5 +291,3 @@ En la práctica, en tu entorno real lo tienes redirigido vía `ble.sh` a FZF/Atu
    - `s` = “switch/selector” (`Super+s` layout stack; `Prefix+s` tree de sesiones; `<Space>s` switch de buffer).  
    - `g` = “git/graph” (`Prefix+g` lazygit; `<Space>gg` lazygit en Neovim).  
    Mantener estas familias te baja mucho la carga cognitiva.
-
-

@@ -1,6 +1,20 @@
-# tmux cheatsheet
+---
+type: resource
+summary: '| Key | Acción |'
+created: 2026-06-01
+updated: 2026-06-01
+status: draft
+tags:
+- resource
+- reference
+---
+
+---
+# [[TMUX|tmux]] cheatsheet
 
 > Prefix: `C-s`
+
+> Núcleo: `C-s` + una tecla = una acción. `h/j/k/l` mueve; `H/J/K/L` redimensiona.
 
 ---
 
@@ -8,17 +22,17 @@
 
 | Key | Acción |
 |---|---|
-| `"` | Split vertical (mismo dir) |
-| `%` | Split horizontal (mismo dir) |
 | `h/j/k/l` | Navegar pane |
+| `H/J/K/L` | Redimensionar pane |
+| `d` / `r` | Split abajo / derecha |
 | `Tab` / `BTab` | Pane siguiente / anterior |
 | `o` | Pane siguiente |
 | `;` | Alterna últimos 2 panes |
 | `p` | Overlay numerado de panes |
 | `{` / `}` | Swap pane arriba/abajo |
-| `q` | Kill pane |
-| `BSpace` | Kill todos los demás panes |
-| `z` / `Z` | Zoom pane |
+| `q` | Kill pane (confirmación) |
+| `BSpace` | Kill todos los demás panes (confirmación) |
+| `z` | Zoom pane |
 | `!` | Break pane → ventana nueva |
 | `+` | Join pane (prompt) |
 | `\|` | Join pane horizontal (prompt) |
@@ -40,12 +54,10 @@
 |---|---|
 | `c` | Nueva ventana (mismo dir) |
 | `a` | Última ventana |
-| `n` / `p` | Siguiente / anterior |
+| `n` / `N` | Siguiente / anterior |
 | `<` / `>` | Mover ventana izq/dcha |
 | `,` | Rename ventana |
-| `L` / `Space` | Siguiente layout |
-| `E` | Layout horizontal parejo |
-| `V` | Layout vertical parejo |
+| `E` / `V` | Layout horizontal / vertical |
 
 **Sin prefix:**
 
@@ -75,12 +87,12 @@
 | Key | Acción |
 |---|---|
 | `g` | lazygit |
-| `H` | btop |
+| `b` | btop |
 | `C-p` | fzf → panes |
 | `C-w` | fzf → ventanas |
 | `C-b` | fzf → buffers clipboard |
 | `m` | tmux-menus |
-| `K` | Esta cheatsheet |
+| `?` | Esta cheatsheet |
 
 ---
 
@@ -101,12 +113,17 @@
 
 ## Misc
 
+`C-s` es el prefijo. Las combinaciones con `Tab`, `o`, `BSpace`, `+`, `|`, `_`,
+`M-S-flechas` y `M-flechas` son atajos secundarios o de compatibilidad; el mapa
+principal para entrenar la memoria muscular es el de una tecla después del
+prefijo.
+
 | Key | Acción |
 |---|---|
-| `M-s` | Resurrect save |
-| `M-r` | Resurrect restore |
+| `u` | Resurrect save |
+| `U` | Resurrect restore |
 | `Y` | Copia ruta actual → clipboard |
 | `T` | Toggle mouse |
 | `B` | Toggle statusbar |
-| `r` | Reload config |
+| `R` | Reload config |
 | `f` | Find window (prompt) |
