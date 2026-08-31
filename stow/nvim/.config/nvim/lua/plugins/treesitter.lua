@@ -1,74 +1,106 @@
--- nvim-treesitter
+-- Tree-sitter for Neovim >= 0.12
 return {
-	"nvim-treesitter/nvim-treesitter",
-	build = ":TSUpdate",
-	event = { "BufReadPost", "BufNewFile" },
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects",
-		"windwp/nvim-ts-autotag",
-		"JoosepAlviste/nvim-ts-context-commentstring",
+	{
+		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
+		lazy = false,
+		build = ":TSUpdate",
+
+		config = function()
+			local ts = require("nvim-treesitter")
+
+			ts.setup({})
+
+			ts.install({
+				"lua",
+				"vim",
+				"vimdoc",
+				"query",
+				"bash",
+				"php",
+				"phpdoc",
+				"javascript",
+				"typescript",
+				"tsx",
+				"json",
+				"yaml",
+				"html",
+				"css",
+				"scss",
+				"markdown",
+				"markdown_inline",
+				"python",
+				"go",
+				"gomod",
+				"gosum",
+				"rust",
+				"dockerfile",
+				"toml",
+			})
+
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function(args)
+					pcall(vim.treesitter.start, args.buf)
+
+					vim.bo[args.buf].indentexpr =
+						"v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
+			})
+		end,
 	},
-	config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = {
-					"lua",
-					"vim",
-					"vimdoc",
-					"query",
-					"bash",
-					"php",
-					"phpdoc",
-					"javascript",
-					"typescript",
-					"tsx",
-					"json",
-					"yaml",
-					"html",
-					"css",
-					"scss",
-					"markdown",
-					"markdown_inline",
-					"python",
-					"go",
-					"gomod",
-					"gosum",
-					"rust",
-					"dockerfile",
-					"toml",
-				},
 
-			auto_install = true,
-			highlight = { enable = true, additional_vim_regex_highlighting = false },
-			indent = { enable = true },
-			autotag = { enable = true },
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<leader><CR>",
-					node_incremental = "<leader><CR>",
-					scope_incremental = false,
-					node_decremental = "<bs>",
-				},
-			},
+	{
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		branch = "main",
+		lazy = false,
 
-			textobjects = {
+		config = function()
+			require("nvim-treesitter-textobjects").setup({
 				select = {
-					enable = true,
 					lookahead = true,
-					keymaps = {
-						["af"] = "@function.outer",
-						["if"] = "@function.inner",
-						["ac"] = "@class.outer",
-						["ic"] = "@class.inner",
-					},
 				},
 				move = {
-					enable = true,
 					set_jumps = true,
-					goto_next_start = { ["]f"] = "@function.outer" },
-					goto_previous_start = { ["[f"] = "@function.outer" },
 				},
-			},
-		})
-	end,
+			})
+
+			local select = require("nvim-treesitter-textobjects.select")
+			local move = require("nvim-treesitter-textobjects.move")
+
+			vim.keymap.set({ "x", "o" }, "af", function()
+				select.select_textobject("@function.outer", "textobjects")
+			end)
+
+			vim.keymap.set({ "x", "o" }, "if", function()
+				select.select_textobject("@function.inner", "textobjects")
+			end)
+
+			vim.keymap.set({ "x", "o" }, "ac", function()
+				select.select_textobject("@class.outer", "textobjects")
+			end)
+
+			vim.keymap.set({ "x", "o" }, "ic", function()
+				select.select_textobject("@class.inner", "textobjects")
+			end)
+
+			vim.keymap.set({ "n", "x", "o" }, "]f", function()
+				move.goto_next_start("@function.outer", "textobjects")
+			end)
+
+			vim.keymap.set({ "n", "x", "o" }, "[f", function()
+				move.goto_previous_start("@function.outer", "textobjects")
+			end)
+		end,
+	},
+
+	{
+		"windwp/nvim-ts-autotag",
+		lazy = false,
+		opts = {},
+	},
+
+	{
+		"JoosepAlviste/nvim-ts-context-commentstring",
+		lazy = false,
+	},
 }

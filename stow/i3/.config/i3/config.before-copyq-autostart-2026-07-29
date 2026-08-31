@@ -22,7 +22,7 @@ exec_always --no-startup-id numlockx on
 
 # ======= AUTOSTART PRODUCTIVIDAD ======
 # Portapapeles avanzado (historial y búsqueda)
-# exec --no-startup-id copyq  # desactivado: Clipmenu es la autoridad
+exec --no-startup-id copyq
 # Lanzador universal (apps, archivos, cálculos)
 exec --no-startup-id albert
 
@@ -93,9 +93,8 @@ bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/toggle_scrat
 # Notas rápidas (Obsidian scratch)
 bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh
 
-# Terminal por defecto: entrar siempre en la sesión principal de tmux.
-# El scratchpad anterior sigue siendo un Kitty independiente.
-bindsym $mod+Return exec --no-startup-id $term -e tmux new-session -A -s main
+# Terminal por defecto
+bindsym $mod+Return exec --no-startup-id $term
 
 
 

@@ -28,3 +28,7 @@ esac
 [ -f "/home/acuervo/.julia/juliaup/completions/bash.sh" ] && source "/home/acuervo/.julia/juliaup/completions/bash.sh"
 
 # <<< juliaup initialize <<<
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/acuervo/.local/bin:$PATH"

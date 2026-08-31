@@ -2,7 +2,12 @@
 # pre-commit - escaneo de secretos/trazas y bloqueo de ficheros sensibles
 
 set -u
-blocklist='(var_dump|print_r|\bdd\(|\bdie\(|console\.log|API_KEY|PASSWORD|SECRET)'
+# Debug/trace calls: any mention is suspicious regardless of context.
+debug_pattern='(var_dump|print_r|\bdd\(|\bdie\(|console\.log)'
+# Secret-looking assignments: only flag when the key is followed by an
+# actual non-empty value, not a bare/placeholder variable name (e.g.
+# `API_KEY=` in a .env.example must not trip this).
+secret_pattern='(API_KEY|PASSWORD|SECRET)[[:space:]]*[:=][[:space:]]*["'"'"']?[A-Za-z0-9_./+=-]{6,}'
 
 echo "-> pre-commit: escaneando contenido staged..."
 files="$(git diff --cached --name-only --diff-filter=ACM |
@@ -12,9 +17,14 @@ files="$(git diff --cached --name-only --diff-filter=ACM |
 
 fail=0
 while IFS= read -r f; do
-  if git show ":$f" | grep -nEI "$blocklist" -I >/dev/null; then
-    echo "❌ Bloqueado: '$f' contiene trazas/debug o posibles secretos." >&2
-    git show ":$f" | grep -nEI "$blocklist" -I >&2 || true
+  if git show ":$f" | grep -nEI "$debug_pattern" -I >/dev/null; then
+    echo "❌ Bloqueado: '$f' contiene trazas/debug." >&2
+    git show ":$f" | grep -nEI "$debug_pattern" -I >&2 || true
+    fail=1
+  fi
+  if git show ":$f" | grep -nEI "$secret_pattern" -I >/dev/null; then
+    echo "❌ Bloqueado: '$f' contiene un posible secreto con valor real." >&2
+    git show ":$f" | grep -nEI "$secret_pattern" -I >&2 || true
     fail=1
   fi
 done <<EOF

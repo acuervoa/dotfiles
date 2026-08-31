@@ -310,3 +310,7 @@ esac
 [ -f "/home/acuervo/.julia/juliaup/completions/bash.sh" ] && source "/home/acuervo/.julia/juliaup/completions/bash.sh"
 
 # <<< juliaup initialize <<<
+
+# >>> Codex installer >>>
+export PATH="/home/acuervo/.local/bin:$PATH"
+# <<< Codex installer <<<
