@@ -5,7 +5,6 @@
 # ------------ Variables base
 set $mod Mod4
 set $term kitty
-set $rofi rofi -font 'MesloLGLDZ Nerd Font 10'
 set $volscript ~/.config/dunst/scripts/volctl
 set $micscript ~/.config/dunst/scripts/micctl
 set $refresh_polybar ~/.config/polybar/scripts/hook_refresh.sh
@@ -21,8 +20,6 @@ exec_always --no-startup-id numlockx on
 
 
 # ======= AUTOSTART PRODUCTIVIDAD ======
-# Portapapeles avanzado (historial y búsqueda)
-# exec --no-startup-id copyq  # desactivado: Clipmenu es la autoridad
 # Lanzador universal (apps, archivos, cálculos)
 exec --no-startup-id albert
 
@@ -128,7 +125,7 @@ bindsym $mod+Shift+$right move right
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
-# Alternar pantalla completa (análogo a Tmux 'Z' = Zoom)
+# Alternar pantalla completa (scope i3; tmux usa C-s z para zoom de pane)
 bindsym $mod+z fullscreen toggle
 # Finder de ventanas (análogo a Tmux prefix+f)
 bindsym $mod+f exec --no-startup-id rofi -show window
@@ -216,17 +213,6 @@ bindsym $mod+y exec --no-startup-id /usr/bin/dunstctl history-pop
 # TRANSPARENCIA Y DISEÑO (PICOM)
 # =======================
 exec_always --no-startup-id sh -c 'pgrep -x picom >/dev/null 2>&1 || exec picom -b'
-
-# =======================
-# BARRA DE ESTADO (POLYBAR)
-# =======================
-#exec_always --no-startup-id ~/.config/polybar/launch.sh
-
-# =======================
-# SCREENSHOTS (FLAMESHOT) - DEPRECATED for X11 without xdg-desktop-portal
-# =======================
-#bindsym $mod+F2 exec --no-startup-id flameshot full -p ~/Pictures
-#bindsym $mod+Shift+F2 exec --no-startup-id flameshot gui -c
 
 # =======================
 # SCREENSHOTS (MAIM + XCLIP + SLOP)
