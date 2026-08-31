@@ -24,7 +24,7 @@ for _ in 1 2 3 4 5; do
   sleep 0.15
   i3-msg '[class="scratch-terminal" instance="scratch-terminal"] mark --replace scratch_term, move to scratchpad' >/dev/null
   # ¿ya está marcada?
-  if i3-msg -t get_marks | grep -qx scratch_term; then
+  if i3-msg -t get_marks | jq -e 'index("scratch_term") != null' >/dev/null; then
     i3-msg '[con_mark="scratch_term"] scratchpad show' >/dev/null
     exit 0
   fi
@@ -32,4 +32,3 @@ done
 
 # Fallback final por si la marca falló por timing
 i3-msg '[class="scratch-terminal" instance="scratch-terminal"] move to scratchpad, scratchpad show' >/dev/null
-
