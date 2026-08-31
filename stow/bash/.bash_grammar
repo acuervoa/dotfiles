@@ -1,0 +1,135 @@
+name	group	risk	micro	description	example
+..	navigation	safe	no	Subir un nivel	..
+...	navigation	safe	no	Subir dos niveles	...
+afs	ai	safe	no	Iniciar AI Flow	 afs
+afc	ai	safe	no	Ejecutar un ciclo AI Flow	afc
+afd	ai	mutating	no	Generar una destilación AI Flow	afd
+afa	ai	mutating	no	Aplicar una destilación AI Flow	afa
+af	ai	safe	no	Iniciar AI Flow con una tarea	af "revisar cambios"
+afl	ai	safe	no	Iniciar AI Flow y lanzar agente	afl "revisar cambios"
+afx	ai	mutating	no	Ejecutar ciclo con cierre y siguiente paso	afx "tarea"
+aflastdraft	ai	safe	no	Localizar el último draft de destilación	aflastdraft
+afapplylast	ai	mutating	no	Aplicar el último draft de destilación	afapplylast
+afdp	ai	mutating	no	Ejecutar pipeline de destilación	afdp --dry-run
+afdb	ai	mutating	no	Procesar sesiones históricas pendientes	afdb --list
+ai	ai	mutating	no	Iniciar o cerrar una sesión AI	ai
+codex-here	ai	safe	no	Lanzar Codex en el directorio actual	codex-here
+gpt	ai	safe	no	Abrir la webapp de ChatGPT	gpt
+ia	ai	safe	no	Abrir entorno tmux para IA	ia
+sb-lint	simplebrain	safe	no	Auditar frontmatter del vault	sb-lint
+sbclose	simplebrain	mutating	no	Cerrar formalmente un proyecto	sbclose "proyecto"
+sbo	simplebrain	mutating	no	Abrir o iniciar sesión SimpleBrain	sbo
+sbs	simplebrain	safe	no	Mostrar sesión SimpleBrain activa	sbs
+sbsb	simplebrain	safe	no	Mostrar resumen de sesión SimpleBrain	sbsb
+sbl	simplebrain	safe	no	Listar sesiones SimpleBrain	sbl
+sbe	simplebrain	mutating	no	Cerrar una sesión SimpleBrain	sbe
+sbprofile	simplebrain	safe	no	Copiar el perfil compacto al portapapeles	sbprofile
+cat	utility	safe	no	Mostrar archivos con paginación ligera	cat archivo
+gpt-safe	ai	safe	no	Abrir ChatGPT sin aceleración GPU	gpt-safe
+la	navigation	safe	no	Listar archivos ocultos	la
+lg	git	safe	no	Abrir Lazygit	lg
+ll	navigation	safe	no	Listar archivos con detalles	ll
+ls	navigation	safe	no	Listar archivos	ls
+sbo-archive-stale	simplebrain	mutating	no	Archivar sesiones stale	sbo-archive-stale
+sbo-clean	simplebrain	mutating	no	Limpiar sesiones huérfanas	sbo-clean
+vim	utility	safe	no	Abrir Neovim	vim archivo
+cls	utility	safe	no	Limpiar la pantalla	cls
+grep	utility	safe	no	Buscar texto con color	grep patrón
+rgrep	utility	safe	no	Buscar con ripgrep y color	rgrep patrón
+ga	git	mutating	no	Añadir todos los cambios al staging	ga
+gs	git	safe	no	Mostrar estado corto del repositorio	gs
+gst	git	safe	no	Mostrar estado del repositorio	gst
+gc	git	mutating	no	Crear un commit interactivo	gc
+gcm	git	mutating	no	Crear un commit con mensaje	gcm "mensaje"
+gup	git	mutating	no	Actualizar con pull rebase y autostash	gup
+gfa	git	safe	no	Actualizar referencias remotas y podar	gfa
+gpf	git	confirm	no	Force-push protegido con lease	gpf
+gl	git	safe	no	Mostrar historial gráfico reciente	gl
+gd	git	safe	no	Mostrar diff de trabajo	gd
+gds	git	safe	no	Mostrar diff staged	gds
+gco	git	mutating	no	Cambiar o restaurar checkout	gco rama
+gcob	git	mutating	no	Crear rama con checkout	gcob feature
+gsw	git	mutating	no	Cambiar de rama con switch	gsw rama
+grt	git	safe	no	Ir a la raíz del repositorio	grt
+gbr	git	mutating	no	Seleccionar y cambiar de rama	gbr
+gstaged	git	safe	no	Mostrar lo que se va a commitear	gstaged
+gundo	git	confirm	no	Deshacer último commit conservando cambios	gundo
+gcof	git	mutating	no	Seleccionar rama con histórico	gcof
+gclean	git	confirm	no	Borrar ramas locales ya mergeadas	gclean
+watchdiff	git	safe	no	Observar cambios locales en vivo	watchdiff
+checkpoint	git	mutating	no	Guardar un checkpoint en stash	checkpoint
+wip	git	mutating	no	Crear commit temporal de trabajo	wip
+fixup	git	mutating	no	Crear commit fixup contra otro commit	fixup
+recent	git	safe	no	Abrir archivos tocados recientemente	recent
+gp	git	confirm	no	Push protegido de la rama actual	gp
+branch	git	safe	no	Listar ramas ordenadas por actividad	branch
+gfeat	git	mutating	no	Crear rama de feature	gfeat nombre
+gfix	git	mutating	no	Crear rama de fix	gfix nombre
+glast	git	safe	no	Mostrar último commit	glast
+ggraph	git	safe	no	Mostrar historial gráfico	ggraph
+gmain	git	mutating	no	Cambiar a la rama principal	gmain
+dc	docker	safe	no	Atajo de Docker Compose	dc ps
+dcb	docker	mutating	no	Construir servicios Compose	dcb
+dcp	docker	mutating	no	Descargar imágenes Compose	dcp
+dcu	docker	mutating	no	Arrancar servicios Compose	dcu
+dcud	docker	mutating	no	Arrancar servicios Compose en segundo plano	dcud
+dcd	docker	mutating	no	Parar servicios Compose	dcd
+dcr	docker	mutating	no	Reiniciar servicios Compose	dcr
+dcrb	docker	confirm	no	Reconstruir sin caché y arrancar servicios	dcrb
+docps	docker	safe	no	Mostrar estado normalizado de Compose	docps
+dorebuild	docker	confirm	no	Reconstruir Compose sin caché	dorebuild
+dlogs	docker	safe	no	Seguir logs de un servicio	dlogs
+dsh	docker	mutating	no	Entrar en un servicio Compose	dsh
+dshp	docker	mutating	no	Entrar directamente en php	dshp
+dps	docker	safe	no	Listar contenedores Docker	dps
+dil	docker	safe	no	Listar imágenes Docker	dil
+dclean	docker	confirm	no	Limpiar recursos Docker no usados	dclean
+p	php	mutating	yes	Ejecutar PHP en el servicio php	p -v
+part	php	mutating	no	Ejecutar Artisan	part route:list
+ptest	php	safe	no	Ejecutar PHPUnit	ptest
+pstan	php	safe	no	Ejecutar PHPStan	pstan
+pint	php	mutating	no	Formatear con Pint	pint
+pcc	php	mutating	no	Limpiar caché de Laravel	pcc
+pmig	php	confirm	no	Ejecutar migraciones Laravel	pmig
+pseed	php	confirm	no	Ejecutar seeders Laravel	pseed
+pcf	php	mutating	no	Regenerar caché de configuración	pcf
+proute	php	safe	no	Listar rutas Laravel	proute
+pclear	php	confirm	no	Limpiar cachés comunes Laravel	pclear
+php_new	php	mutating	no	Crear microservicio PHP desde skeleton	php_new app
+path	system	safe	no	Mostrar PATH por entradas	path
+ports	system	safe	no	Mostrar puertos en escucha	ports
+reload	system	mutating	no	Recargar Bash	reload
+trash	system	mutating	no	Mover archivos a la papelera	trash archivo
+fkill	system	mutating	no	Finalizar un proceso seleccionado	fkill
+rgf	utility	safe	no	Buscar y abrir resultados con fzf	rgf patrón
+ts	system	safe	no	Gestionar una sesión tmux	ts
+fhist	utility	safe	no	Buscar en el historial	fhist
+todo	utility	mutating	no	Gestionar tareas pendientes	todo
+bench	utility	safe	no	Medir tiempo de un comando	bench comando
+envswap	utility	confirm	no	Activar un entorno .env con backup	envswap use staging
+r	runtime	mutating	yes	Editar y reejecutar el penúltimo comando	r
+redo	runtime	mutating	no	Reejecutar directamente el penúltimo comando	redo
+dev	runtime	mutating	no	Arrancar el entorno de desarrollo	dev
+tswitch	runtime	mutating	no	Cambiar entre modos del proyecto	tswitch
+qa	runtime	safe	no	Ejecutar calidad del proyecto	qa
+rtest	runtime	safe	no	Ejecutar tests del proyecto actual	rtest
+rserve	runtime	mutating	no	Arrancar servidor de desarrollo	rserve
+rqa	runtime	safe	no	Ejecutar pipeline de calidad	rqa
+topme	system	safe	no	Mostrar procesos del usuario	topme
+tt	system	safe	no	Abrir terminal auxiliar	tt
+tproj	navigation	safe	no	Abrir proyecto en tmux	tproj
+fo	navigation	safe	no	Buscar y abrir archivos	fo
+cdf	navigation	mutating	no	Cambiar a directorio seleccionado	cdf
+take	navigation	mutating	no	Crear directorio y entrar	take carpeta
+extract	navigation	mutating	no	Extraer un archivo comprimido	extract archivo.tar
+proj	navigation	mutating	no	Seleccionar un proyecto	proj
+cb	navigation	mutating	no	Copiar archivo o stdin al portapapeles	cb archivo
+pbcopy	navigation	mutating	no	Copiar stdin al portapapeles	pbcopy
+pbpaste	navigation	safe	no	Pegar contenido del portapapeles	pbpaste
+dothelp	utility	safe	no	Listar ayuda de comandos Bash	dothelp
+blib-help	utility	safe	no	Buscar ayuda Bash con fzf	blib-help
+dotfiles_excludes_nul	utility	safe	no	Obtener exclusiones de dotfiles	dotfiles_excludes_nul
+l	navigation	safe	yes	Listar con el ls del sistema	l
+n	utility	safe	yes	Abrir Neovim	n
+y	navigation	mutating	yes	Abrir Yazi	y
+z	navigation	mutating	yes	Cambiar directorio con zoxide	z proyecto

@@ -257,13 +257,32 @@ redo() {
   eval "$last"
 }
 
-# @cmd dothelp  Listar funciones del bash_lib con descripción
+# Resuelve el catálogo de gramática sin cargarlo durante el arranque.
+_bash_grammar_file() {
+  printf '%s\n' "${BASH_GRAMMAR_FILE:-$HOME/.bash_grammar}"
+}
+
+# @cmd dothelp  Listar comandos Bash agrupados por gramática y riesgo
 dothelp() {
   local dir="${1:-${BASH_LIB_DIR:-$HOME/.bash_lib}}"
+  local catalog
+  catalog="$(_bash_grammar_file)"
   local BOLD CYAN RESET
   BOLD="$(printf '\033[1m')"
   CYAN="$(printf '\033[36m')"
   RESET="$(printf '\033[0m')"
+
+  if [ -r "$catalog" ]; then
+    awk -F '\t' '
+      NR == 1 { next }
+      $1 ~ /^#/ || NF == 0 { next }
+      {
+        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠️" : "🔴"))
+        printf "%-12s %-12s %s %s\n", $1, $2, marker, $5
+      }
+    ' "$catalog" | sort -k2,2 -k1,1
+    return 0
+  fi
 
   if [ ! -d "$dir" ]; then
     printf 'Directorio no encontrado: %s\n' "$dir" >&2
@@ -288,6 +307,25 @@ blib-help() {
   _req fzf || return 1
 
   local dir="${BASH_LIB_DIR:-$HOME/.bash_lib}"
+  local catalog
+  catalog="$(_bash_grammar_file)"
+
+  if [ -r "$catalog" ]; then
+    local sel
+    sel="$(awk -F '\t' '
+      NR == 1 { next }
+      $1 ~ /^#/ || NF == 0 { next }
+      {
+        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠️" : "🔴"))
+        printf "%s\t%s %s %s\t%s\n", $1, $2, marker, $5, $6
+      }
+    ' "$catalog" | sort -t $'\t' -k2,2 -k1,1 |
+      fzf --prompt=' bash > ' --delimiter=$'\t' --with-nth=1,2 --no-sort)" || return 0
+    [ -z "$sel" ] && return 0
+    printf '%s\n' "${sel%%$'\t'*}"
+    return 0
+  fi
+
   if [ ! -d "$dir" ]; then
     printf 'Directorio bash_lib no encontrado: %s\n' "$dir" >&2
     return 1
