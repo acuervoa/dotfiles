@@ -64,7 +64,8 @@ tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
 {
-  printf '# Auto-generado por outputs_apply.sh (%s)\n' "$(date -Is 2>/dev/null || date)"
+  # La salida debe ser estable: un timestamp aquí provocaría reloads recursivos.
+  printf '# Auto-generado por outputs_apply.sh\n'
   printf '# internal=%s external=%s\n\n' "$internal" "${external:-}"
 
   for ws in 1 3 5 7 9; do
