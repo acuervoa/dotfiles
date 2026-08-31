@@ -17,6 +17,7 @@ stow/systemd/.config/systemd/user/agentmemory.service
 Su contrato será:
 
 - `ExecStart=/home/acuervo/.local/share/fnm/aliases/default/bin/agentmemory`.
+- `After=basic.target` para evitar un ciclo con `WantedBy=default.target`.
 - `Restart=on-failure`.
 - `RestartSec=5`.
 - `WantedBy=default.target`.
@@ -65,4 +66,3 @@ Bash.
 - Cambiar puertos de AgentMemory o configuración MCP de OpenCode.
 - Copiar secretos desde `~/.agentmemory/.env` o `.bashrc_local`.
 - Crear un servicio system-wide.
-

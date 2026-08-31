@@ -1,0 +1,14 @@
+[Unit]
+Description=AgentMemory persistent memory service
+After=basic.target
+
+[Service]
+Type=simple
+ExecStart=/home/acuervo/.local/share/fnm/aliases/default/bin/agentmemory
+Restart=on-failure
+RestartSec=5
+Environment=HOME=/home/acuervo
+Environment=PATH=/home/acuervo/.local/share/fnm/aliases/default/bin:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target
