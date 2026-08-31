@@ -73,6 +73,9 @@ parse_tmux_config() {
 | `C-s ?` | Abrir cheatsheet |
 EOF
 
+  echo "Atajos secundarios o de compatibilidad:"
+  echo ""
+
   grep -E 'bind-key|bind -n' "$config_file" | grep -vE '^\s*#' | while read -r line; do
     # Simplified extraction
     local shortcut

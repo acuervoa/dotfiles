@@ -118,9 +118,6 @@
 
 Atajos secundarios o de compatibilidad:
 
-| -n C-f | copycat-file |
-| -n C-u | copycat-url |
-| -n C-d | copycat-dir |
 | -n M-S-Left |  resize-pane -L 5 |
 | -n M-S-Right | resize-pane -R 5 |
 | -n M-S-Up |    resize-pane -U 2 |
