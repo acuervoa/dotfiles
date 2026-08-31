@@ -48,7 +48,7 @@ Convenciones:
 
 | Tecla                          | Acción                                       |
 |--------------------------------|----------------------------------------------|
-| `Super+1`…`Super+0`           | Cambiar a workspace 1…10                     |
+| `Super+1`…`Super+0`           | Cambiar a workspace 1…10 (DEV/OPS/WEB/DOC/AI/DATA/TERM/CHAT/MEDIA/MISC) |
 | `Super+Shift+1`…`Super+Shift+0` | Mover ventana actual a workspace 1…10      |
 | `Super+Ctrl+Left/Right`        | Mover contenedor a salida (monitor) izq/der |
 

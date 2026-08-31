@@ -68,12 +68,12 @@ trap 'rm -f "$tmp"' EXIT
   printf '# Auto-generado por outputs_apply.sh\n'
   printf '# internal=%s external=%s\n\n' "$internal" "${external:-}"
 
-  for ws in 1 3 5 7 9; do
+  for ws in "1:DEV" "3:WEB" "5:AI" "7:TERM" "9:MEDIA"; do
     printf 'workspace %s output %s\n' "$ws" "$internal"
   done
 
   out_even="${external:-$internal}"
-  for ws in 2 4 6 8 10; do
+  for ws in "2:OPS" "4:DOC" "6:DATA" "8:CHAT" "10:MISC"; do
     printf 'workspace %s output %s\n' "$ws" "$out_even"
   done
 } >"$tmp"

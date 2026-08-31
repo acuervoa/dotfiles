@@ -34,7 +34,7 @@ exec --no-startup-id nm-applet
 exec --no-startup-id dunst
 
 # Ferdium
-assign [class="^Ferdium$"] 8
+assign [class="^Ferdium$"] "8:CHAT"
 exec --no-startup-id ferdium
 
 # Distribución dinámica de workspaces por salidas
@@ -151,16 +151,16 @@ bindsym $mod+r mode "resize"
 # =======================
 # WORKSPACES Y MONITORES
 # =======================
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws1 "1:DEV"
+set $ws2 "2:OPS"
+set $ws3 "3:WEB"
+set $ws4 "4:DOC"
+set $ws5 "5:AI"
+set $ws6 "6:DATA"
+set $ws7 "7:TERM"
+set $ws8 "8:CHAT"
+set $ws9 "9:MEDIA"
+set $ws10 "10:MISC"
 
 # Distribución dinámica de workspaces por salidas (genera ~/.config/i3/workspaces.local.conf)
 include ~/.config/i3/workspaces.local.conf
