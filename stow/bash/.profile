@@ -1,7 +1,5 @@
 # ~/.profile  - entorno general para shells de login (POSIX)
 
-export PATH="$HOME/.local/bin:$PATH"
-
 export EDITOR="nvim"
 export VISUAL="nvim"
 
@@ -26,5 +24,27 @@ esac
 # <<< juliaup initialize <<<
 
 
-# Added by Antigravity CLI installer
-export PATH="/home/acuervo/.local/bin:$PATH"
+# Rutas estáticas del usuario: un único owner y orden determinista.
+_bash_path_prepend_once() {
+  local path="$1"
+  local required="${2:-optional}"
+
+  if [ "$required" != force ] && [ ! -d "$path" ]; then
+    return 0
+  fi
+
+  case ":${PATH:-}:" in
+  *:"$path":*) ;;
+  *) PATH="$path${PATH:+:$PATH}" ;;
+  esac
+}
+
+export BUN_INSTALL="$HOME/.bun"
+_bash_path_prepend_once "$HOME/.local/share/composer/vendor/bin"
+_bash_path_prepend_once "$HOME/.opencode/bin"
+_bash_path_prepend_once "$BUN_INSTALL/bin"
+_bash_path_prepend_once "$HOME/bin"
+_bash_path_prepend_once "$HOME/.local/bin" force
+export PATH
+
+unset -f _bash_path_prepend_once 2>/dev/null || :

@@ -153,24 +153,6 @@ pbpaste() {
   "${_CLIPBOARD_CMD[@]}"
 }
 
-#-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
-PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
-
-#- Mover Nix al final para evitar sombras
-move_to_end() {
-  local p="$1"
-  PATH="$(/usr/bin/tr ':' '\n' <<<"$PATH" | /usr/bin/awk -v p="$p" '$0!=p{a[++n]=$0; next} {b[++m]=$0} END{for(i=1;i<=n;i++)print a[i]; for(j=1;j<=m;j++)print b[j]}' | paste -sd: -)"
-}
-move_to_end "$HOME/.nix-profile/bin"
-move_to_end "/nix/var/nix/profiles/default/bin"
-
-export PATH
-
-# PATH y extras ligeros
-if [ -d "$HOME/.local/share/composer/vendor/bin" ]; then
-  PATH="$HOME/.local/share/composer/vendor/bin:$PATH"
-fi
-
 # -- Atuin (historial avanzado) + binding robusto de C-r ----
 HIST_BACKEND="fzf" # valor por defecto si no hay Atuin
 if command -v atuin >/dev/null 2>&1; then
@@ -197,11 +179,6 @@ fi
 # --- Adjuntar ble.sh una vez que todo lo demás está configurado --
 if [[ $- == *i* ]] && [[ ${BLE_VERSION-} ]]; then
   ble-attach
-fi
-
-# opencode (si existe)
-if [ -d "$HOME/.opencode/bin" ]; then
-  PATH="$HOME/.opencode/bin:$PATH"
 fi
 
 # Cargar configuraciones locales si existen
@@ -296,23 +273,29 @@ ai() {
 }
 # --- /AI Flow shortcuts ---
 
-# >>> juliaup initialize >>>
-
-# !! Contents within this block are managed by juliaup !!
-
-case ":$PATH:" in
-    *:/home/acuervo/.juliaup/bin:*)
-        ;;
-
-    *)
-        export PATH=/home/acuervo/.juliaup/bin${PATH:+:${PATH}}
-        ;;
-esac
 # Tab completion for juliaup and julia channel selection
 [ -f "/home/acuervo/.julia/juliaup/completions/bash.sh" ] && source "/home/acuervo/.julia/juliaup/completions/bash.sh"
 
-# <<< juliaup initialize <<<
+# Normalización final: captura overrides locales y activaciones dinámicas.
+PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"
 
-# >>> Codex installer >>>
-export PATH="/home/acuervo/.local/bin:$PATH"
-# <<< Codex installer <<<
+move_to_front() {
+  local p="$1"
+  PATH="$(/usr/bin/tr ':' '\n' <<<"$PATH" | /usr/bin/awk -v p="$p" '$0!=p' | paste -sd: -)"
+  PATH="$p${PATH:+:$PATH}"
+}
+move_to_front "$HOME/.local/share/composer/vendor/bin"
+move_to_front "$HOME/.opencode/bin"
+move_to_front "$HOME/.bun/bin"
+move_to_front "$HOME/bin"
+move_to_front "$HOME/.local/bin"
+
+move_to_end() {
+  local p="$1"
+  PATH="$(/usr/bin/tr ':' '\n' <<<"$PATH" | /usr/bin/awk -v p="$p" '$0!=p{a[++n]=$0; next} {b[++m]=$0} END{for(i=1;i<=n;i++)print a[i]; for(j=1;j<=m;j++)print b[j]}' | paste -sd: -)"
+}
+move_to_end "$HOME/.nix-profile/bin"
+move_to_end "/nix/var/nix/profiles/default/bin"
+unset -f move_to_end 2>/dev/null || true
+unset -f move_to_front 2>/dev/null || true
+export PATH
