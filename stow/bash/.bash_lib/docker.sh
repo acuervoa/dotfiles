@@ -77,9 +77,16 @@ docps() {
 # Rebuild rápido (build + up -d) sin cache
 # @cmd dorebuild  docker compose build --no-cache + up -d
 dorebuild() {
+  printf 'Se reconstruirán las imágenes sin caché y se arrancarán los servicios.\n' >&2
+  _confirm '¿Continuar? [y/N] ' || return 0
   _have_compose || return 1
   _cd_repo_root_if_compose || return 1
   _docker_compose build --no-cache "$@" && _docker_compose up -d
+}
+
+# @cmd dcrb  Rebuild protegido sin caché
+dcrb() {
+  dorebuild "$@"
 }
 
 # fzf para elegir servicio y ver logs en vivo
@@ -183,11 +190,15 @@ pcc() {
 
 # @cmd pmig  Ejecutar migraciones de Laravel dentro del servicio php
 pmig() {
+  printf 'Se ejecutarán las migraciones de Laravel.\n' >&2
+  _confirm '¿Continuar? [y/N] ' || return 0
   _docker_compose_exec_php php artisan migrate "$@"
 }
 
 # @cmd pseed  Ejecutar seeders de Laravel dentro del servicio php
 pseed() {
+  printf 'Se ejecutarán los seeders de Laravel.\n' >&2
+  _confirm '¿Continuar? [y/N] ' || return 0
   _docker_compose_exec_php php artisan db:seed "$@"
 }
 
@@ -203,6 +214,8 @@ proute() {
 
 # @cmd pclear  Limpiar caches comunes de Laravel dentro del servicio php
 pclear() {
+  printf 'Se limpiarán las cachés de vistas, aplicación y configuración.\n' >&2
+  _confirm '¿Continuar? [y/N] ' || return 0
   _docker_compose_exec_php php artisan view:clear &&
     _docker_compose_exec_php php artisan cache:clear &&
     _docker_compose_exec_php php artisan config:clear
