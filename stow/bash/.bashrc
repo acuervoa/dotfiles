@@ -51,16 +51,6 @@ if [[ ! ${BLE_VERSION-} ]] && [ -f /usr/share/blesh/ble.sh ]; then
   source /usr/share/blesh/ble.sh --noattach
 fi
 
-# Readline/completion más cómodo (case-insensitive, menú)
-# Sólo si NO esta ble.sh
-if [[ -z ${BLE_VERSION-} ]]; then
-  bind 'set completion-ignore-case on'
-  bind 'set show-all-if-ambiguous on'
-  bind 'set menu-complete-display-prefix on'
-  bind '"\t": menu-complete'
-  bind '"\e[Z]": reverse-menu-complete' # Shift + Tab
-fi
-
 # FZF + ripgrep / fd
 if command -v rg >/dev/null 2>&1; then
   export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!.git"'
@@ -160,20 +150,10 @@ if command -v atuin >/dev/null 2>&1; then
   HIST_BACKEND="atuin"
 fi
 
-# --- Integración Atuin/FZF con ble: un solo dueño de Ctrl-t ---
-if [[ ${BLE_VERSION-} ]]; then
-  case "$HIST_BACKEND" in
-  atuin)
-    ble-bind -x 'C-r' __atuin_history
-    ;;
-  *)
-    if declare -F fhist >/dev/null 2>&1; then
-      ble-bind -x 'C-r' fhist
-    else
-      ble-bind -f 'C-r' historyi
-    fi
-    ;;
-  esac
+
+# --- Keymap Bash: un solo owner después de Atuin ---
+if [ -r "$HOME/.bash_lib/keymap.sh" ]; then
+  . "$HOME/.bash_lib/keymap.sh"
 fi
 
 # --- Adjuntar ble.sh una vez que todo lo demás está configurado --
