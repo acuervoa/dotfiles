@@ -161,15 +161,30 @@ envswap() {
       return 1
     fi
 
+    printf 'Se activará %s sobre %s.\n' "$src" "$base" >&2
+    _confirm '¿Continuar? [y/N] ' || return 0
+
     if [ -f "$base" ]; then
-      local bak
-      bak="$base.bak.$(date +%s)"
-      cp -- "$base" "$bak"
+      local bak stamp suffix
+      stamp="$(date +%Y%m%d-%H%M%S)"
+      suffix=0
+      while :; do
+        bak="$base.bak.$stamp.$$.$suffix"
+        [ ! -e "$bak" ] && break
+        suffix=$((suffix + 1))
+      done
+      cp -- "$base" "$bak" || {
+        printf 'No se pudo crear el backup %s\n' "$bak" >&2
+        return 1
+      }
       chmod 600 "$bak" 2>/dev/null || true
       printf '(backup en %s)\n' "$bak" >&2
     fi
 
-    cp -- "$src" "$base"
+    cp -- "$src" "$base" || {
+      printf 'No se pudo activar %s\n' "$src" >&2
+      return 1
+    }
     chmod 600 "$base" 2>/dev/null || true
     printf '✔ %s activado -> %s\n' "$src" "$base" >&2
     return 0
