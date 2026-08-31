@@ -730,6 +730,36 @@ alias afc='ai-flow cycle'
 alias afd='ai-flow distill-run'
 alias afa='ai-flow distill-apply'
 
+# @cmd af       Iniciar AI Flow con una tarea
+af() {
+  ai-flow start --task "$*"
+}
+
+# @cmd afl      Iniciar AI Flow con lanzamiento del agente
+afl() {
+  ai-flow start --task "$*" --launch
+}
+
+# @cmd afx      Ejecutar ciclo AI Flow con cierre y siguiente paso
+afx() {
+  local task="$1"
+  local done_msg="${2:-Cierre rápido}"
+  local next_msg="${3:-Revisar draft}"
+  ai-flow cycle --task "$task" --done "$done_msg" --next "$next_msg"
+}
+
+# @cmd afdp     Ejecutar pipeline de destilación
+afdp() {
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  bash "$_sb_vault/tools/ai-distill-pipeline.sh" "$@"
+}
+
+# @cmd afdb     Procesar sesiones históricas pendientes
+afdb() {
+  local _sb_vault="${SIMPLEBRAIN_VAULT:-$HOME/Vaults/SimpleBrain}"
+  python3 "$_sb_vault/tools/distill_bulk.py" "$@"
+}
+
 # --- ⚗️ DISTILLATION (Conocimiento Durable) ---
 
 # aflast: Localiza el último draft de destilación generado
