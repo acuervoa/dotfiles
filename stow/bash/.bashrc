@@ -97,15 +97,6 @@ if [ -f /usr/share/bash-completion/bash_completion ]; then
   . /usr/share/bash-completion/bash_completion
 fi
 
-# pbcopy/pbpaste
-if command -v wl-copy >/dev/null 2>&1 && command -v wl-paste >/dev/null 2>&1; then
-  pbcopy() { wl-copy; }
-  pbpaste() { wl-paste; }
-elif command -v xclip >/dev/null 2>&1; then
-  pbcopy() { xclip -selection clipboard; }
-  pbpaste() { xclip -selection clipboard -o; }
-fi
-
 # Iniciar herramientas
 
 # - zoxide (cd inteligente)
@@ -150,6 +141,17 @@ fi
 # Carga de aliases y funciones
 [ -f "$HOME/.bash_aliases" ] && source "$HOME/.bash_aliases"
 [ -f "$HOME/.bash_lib/bash_lib.sh" ] && source "$HOME/.bash_lib/bash_lib.sh"
+
+# pbcopy/pbpaste: el backend se decide por el protocolo gráfico activo.
+pbcopy() {
+  _clipboard_command copy || return 1
+  _clipboard_copy
+}
+
+pbpaste() {
+  _clipboard_command paste || return 1
+  "${_CLIPBOARD_CMD[@]}"
+}
 
 #-  Desduplicar PATH manteniendo el primer encuentro (orden estable)
 PATH="$(/usr/bin/awk -v RS=: '!seen[$0]++{out=out (NR==1? "": ":") $0} END{print out}' <<<"$PATH")"

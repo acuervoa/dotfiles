@@ -228,29 +228,76 @@ extract() {
   esac
 }
 
-# copiar texto al portapapeles
-# @cmd cb   Copiar texto al portapapeles (stdin, texto o contenido de archivos)
-cb() {
+# Seleccionar backend de clipboard por protocolo gráfico activo.
+# @cmd _clipboard_command  Resolver comando de copy/paste para la sesión actual
+_clipboard_command() {
+  local operation="${1:-}"
   local runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
   local wayland_sock=""
 
+  _CLIPBOARD_CMD=()
+
+  case "$operation" in
+  copy | paste) ;;
+  *)
+    printf 'clipboard: operación no válida: %s (usa copy o paste)\n' "$operation" >&2
+    return 2
+    ;;
+  esac
+
   if [ -n "${WAYLAND_DISPLAY:-}" ]; then
     wayland_sock="$runtime_dir/$WAYLAND_DISPLAY"
-  else
-    [ -S "$runtime_dir/wayland-0" ] && wayland_sock="$runtime_dir/wayland-0"
   fi
 
-  local -a clip_cmd=()
-
-  if command -v wl-copy >/dev/null 2>&1 && [ -n "$wayland_sock" ] && [ -S "$wayland_sock" ]; then
-    clip_cmd=(wl-copy)
+  if [ -S "$wayland_sock" ] && command -v wl-copy >/dev/null 2>&1 &&
+    command -v wl-paste >/dev/null 2>&1; then
+    if [ "$operation" = copy ]; then
+      _CLIPBOARD_CMD=(wl-copy)
+    else
+      _CLIPBOARD_CMD=(wl-paste)
+    fi
   elif [ -n "${DISPLAY:-}" ] && command -v xclip >/dev/null 2>&1; then
-    clip_cmd=(xclip -selection clipboard)
+    if [ "$operation" = copy ]; then
+      _CLIPBOARD_CMD=(xclip -selection clipboard)
+    else
+      _CLIPBOARD_CMD=(xclip -selection clipboard -o)
+    fi
   elif [ -n "${DISPLAY:-}" ] && command -v xsel >/dev/null 2>&1; then
-    clip_cmd=(xsel --clipboard --input)
-  elif command -v pbcopy >/dev/null 2>&1; then
-    clip_cmd=(pbcopy)
+    if [ "$operation" = copy ]; then
+      _CLIPBOARD_CMD=(xsel --clipboard --input)
+    else
+      _CLIPBOARD_CMD=(xsel --clipboard --output)
+    fi
+  elif [ "${OSTYPE:-}" = darwin* ]; then
+    if [ "$operation" = copy ] && type -P pbcopy >/dev/null 2>&1; then
+      _CLIPBOARD_CMD=("$(type -P pbcopy)")
+    elif [ "$operation" = paste ] && type -P pbpaste >/dev/null 2>&1; then
+      _CLIPBOARD_CMD=("$(type -P pbpaste)")
+    else
+      printf 'clipboard: no hay backend disponible (Wayland, X11 o macOS).\n' >&2
+      return 1
+    fi
   else
+    printf 'clipboard: no hay backend disponible (Wayland, X11 o macOS).\n' >&2
+    return 1
+  fi
+}
+
+# Ejecutar una copia sin dejar que el proceso servidor de xclip herede stdout.
+# Esto evita bloqueos cuando pbcopy/cb se invocan desde pipes o agentes.
+# @cmd _clipboard_copy  Ejecutar el comando de copia con stdout desacoplado en X11
+_clipboard_copy() {
+  if [ "${_CLIPBOARD_CMD[0]:-}" = xclip ]; then
+    "${_CLIPBOARD_CMD[@]}" >/dev/null
+  else
+    "${_CLIPBOARD_CMD[@]}"
+  fi
+}
+
+# copiar texto al portapapeles
+# @cmd cb   Copiar texto al portapapeles (stdin, texto o contenido de archivos)
+cb() {
+  if ! _clipboard_command copy; then
     if [ -t 1 ]; then
       local data
       if [ "$#" -eq 0 ]; then
@@ -264,9 +311,8 @@ cb() {
     printf "cb: no hay portapapeles disponible (Wayland/X11/macOS). Instala wl-clipboard o xclip/xsel, o ejecuta bajo sesión gráfica.\n" >&2
     return 1
   fi
-
   if [ "$#" -eq 0 ]; then
-    "${clip_cmd[@]}"
+    _clipboard_copy
     return $?
   fi
 
@@ -279,12 +325,12 @@ cb() {
   done
 
   if [ "$all_files" -eq 1 ]; then
-    cat -- "$@" | "${clip_cmd[@]}"
+    cat -- "$@" | _clipboard_copy
   else
     if [ "$#" -eq 1 ]; then
-      printf '%s' "$1" | "${clip_cmd[@]}"
+      printf '%s' "$1" | _clipboard_copy
     else
-      printf '%s' "$*" | "${clip_cmd[@]}"
+      printf '%s' "$*" | _clipboard_copy
     fi
   fi
 }
