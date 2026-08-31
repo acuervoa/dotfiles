@@ -17,7 +17,7 @@ bindings de tmux. Las acciones frecuentes de i3 usarán `Super` y la familia
 | `Super+Shift+h/j/k/l` | Mover contenedor izquierda/abajo/arriba/derecha |
 | `Super+r` | Entrar en modo resize |
 | `h/j/k/l` en modo resize | Redimensionar 10 px en la dirección correspondiente |
-| `Escape` o `Return` en modo resize | Volver al modo normal |
+| `q`, `Escape` o `Return` en modo resize | Volver al modo normal |
 
 Los bindings con flechas para foco, movimiento y resize se retirarán del mapa
 principal para evitar rutas duplicadas. Los workspaces, layouts, scratchpads,
@@ -36,7 +36,7 @@ La separación de scopes permanece explícita:
 1. Validar sintaxis de i3 en modo comprobación.
 2. Comprobar que los bindings `Super+h/j/k/l`, `Super+Shift+h/j/k/l` y
    `Super+r` aparecen en la configuración efectiva.
-3. Comprobar que el modo `resize` contiene `h/j/k/l`, `Escape` y `Return`.
+3. Comprobar que el modo `resize` contiene `h/j/k/l`, `q`, `Escape` y `Return`.
 4. Recargar i3 y comprobar que tmux conserva `C-s`, navegación, splits y zoom.
 5. Mantener el backup i3 anterior como rollback.
 

@@ -17,7 +17,6 @@ Convenciones:
 |--------------------------|------------------------------------------------------------------------|
 | `Super+Enter`            | Abrir `kitty` dentro de tmux, adjuntando/creando `main`                |
 | `Super+d`                | Rofi modo “Aplicaciones” (`drun` con iconos)                          |
-| `Super+Shift+d`          | Rofi modo “Ventanas abiertas”                                         |
 | `Super+F11`              | Rofi `run` a pantalla completa                                        |
 | `Super+f`                | Rofi `window` (alternativa rápida de cambio de ventana)               |
 | `Super+v`                | `clipmenu` (historial de portapapeles con rofi)                       |
@@ -41,8 +40,8 @@ Convenciones:
 | `Super+Alt+v`                         | Split vertical (`split v`)                  |
 | `Super+r`                             | Entrar en modo resize                       |
 | `h/j/k/l` en modo resize              | Redimensionar izquierda/abajo/arriba/derecha |
-| `Escape` / `Return` en modo resize    | Salir del modo resize                       |
-| `Super+q`                             | Cerrar ventana (`kill`)                     |
+| `q` / `Escape` / `Return` en modo resize | Salir del modo resize                    |
+| `Super+q`                             | Cerrar ventana con confirmación             |
 
 ### 1.3 Workspaces y monitores
 

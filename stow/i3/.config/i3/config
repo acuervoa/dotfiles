@@ -21,21 +21,18 @@ exec_always --no-startup-id numlockx on
 
 # ======= AUTOSTART PRODUCTIVIDAD ======
 # Lanzador universal (apps, archivos, cálculos)
-exec --no-startup-id albert
-
-# Redshift (temperatura de color, menos fatiga visual)
-exec --no-startup-id redshift -l geoclue2 -t 6500:3600 -r
+exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x albert >/dev/null 2>&1 || exec albert'
 
 # Barra 
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # System tray
-exec --no-startup-id nm-applet
-exec --no-startup-id dunst
+exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x nm-applet >/dev/null 2>&1 || exec nm-applet'
+exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x dunst >/dev/null 2>&1 || exec dunst'
 
 # Ferdium
 assign [class="^Ferdium$"] "8:CHAT"
-exec --no-startup-id ferdium
+exec --no-startup-id sh -c 'flatpak ps --columns=application 2>/dev/null | grep -qFx org.ferdium.Ferdium || exec flatpak run org.ferdium.Ferdium'
 
 # Distribución dinámica de workspaces por salidas
 exec_always --no-startup-id $ext_detect
@@ -46,7 +43,6 @@ exec_always --no-startup-id $ext_detect
 # Lanzador de aplicaciones (Rofi)
 bindsym $mod+d exec --no-startup-id rofi -modi run -show drun -show-icons -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10"
-bindsym $mod+Shift+d exec --no-startup-id rofi -show window -show-icons -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
 
 # Lanzadores AI
@@ -110,10 +106,6 @@ bindsym $mod+$down focus down
 bindsym $mod+$up focus up
 bindsym $mod+$right focus right
 bindsym $mod+Tab workspace back_and_forth
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
-bindsym $mod+Right focus right
 
 # Mover contenedor
 bindsym $mod+Shift+$left move left
@@ -137,12 +129,13 @@ bindsym $mod+e layout toggle split
 bindsym $mod+Mod1+h split h
 bindsym $mod+Mod1+v split v
 
-# Resize modal: Super+r entra; h/j/k/l redimensionan; Escape/Return salen.
+# Resize modal: Super+r entra; h/j/k/l redimensionan; q/Escape/Return salen.
 mode "resize" {
     bindsym h resize shrink width 10 px or 10 ppt
     bindsym j resize grow height 10 px or 10 ppt
     bindsym k resize shrink height 10 px or 10 ppt
     bindsym l resize grow width 10 px or 10 ppt
+    bindsym q mode "default"
     bindsym Escape mode "default"
     bindsym Return mode "default"
 }
@@ -204,7 +197,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/i3lock.sh
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'"
 bindsym control+mod1+Delete exec --no-startup-id ~/.config/i3/scripts/mode_system.sh
-bindsym $mod+q kill
+bindsym $mod+q exec --no-startup-id i3-nagbar -t warning -m '¿Cerrar la ventana enfocada?' -B 'Cerrar' 'i3-msg kill'
 
 # =======================
 # NOTIFICACIONES

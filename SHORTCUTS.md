@@ -8,15 +8,14 @@
 
 ### Atajos por entorno / Shortcuts by environment
 
-[34m[INFO][0m Parsing i3 config: /home/acuervo/dotfiles/stow/i3/.config/i3/config
 #### i3 (stow/i3/.config/i3/config)
 
 | Atajo / Shortcut | Acción |
 | ---------------- | ------ |
-| $mod+d | exec --no-startup-id rofi -modi run -show drun -show-icons -font "Noto Sans 13" |
-| $mod+F11 | exec --no-startup-id rofi -show run -fullscreen -font "Noto Sans 13" |
-| $mod+Shift+d | exec --no-startup-id rofi -show window -show-icons -font "Noto Sans 13" |
+| $mod+d | exec --no-startup-id rofi -modi run -show drun -show-icons -font "MesloLGLDZ Nerd Font 10" |
+| $mod+F11 | exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10" |
 | $mod+v | exec --no-startup-id "CM_LAUNCHER=rofi clipmenu" |
+| $mod+g | exec --no-startup-id gtk-launch chatgpt-webapp |
 | XF86MonBrightnessUp | exec --no-startup-id brightnessctl set +5% |
 | XF86MonBrightnessDown | exec --no-startup-id brightnessctl set 5%- |
 | XF86AudioRaiseVolume | exec --no-startup-id $volscript up && $refresh_polybar |
@@ -31,16 +30,12 @@
 | XF86AudioPrev | exec playerctl previous |
 | $mod+Shift+Return | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh |
 | $mod+Shift+n | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh |
-| $mod+Return | exec --no-startup-id kitty |
+| $mod+Return | exec --no-startup-id $term -e tmux new-session -A -s main |
 | $mod+$left | focus left |
 | $mod+$down | focus down |
 | $mod+$up | focus up |
 | $mod+$right | focus right |
 | $mod+Tab | workspace back_and_forth |
-| $mod+Left | focus left |
-| $mod+Down | focus down |
-| $mod+Up | focus up |
-| $mod+Right | focus right |
 | $mod+Shift+$left | move left |
 | $mod+Shift+$down | move down |
 | $mod+Shift+$up | move up |
@@ -54,10 +49,14 @@
 | $mod+e | layout toggle split |
 | $mod+Mod1+h | split h |
 | $mod+Mod1+v | split v |
-| $mod+Shift+Left |  resize shrink width 10 px or 10 ppt |
-| $mod+Shift+Right | resize grow   width 10 px or 10 ppt |
-| $mod+Shift+Up |    resize grow   height 10 px or 10 ppt |
-| $mod+Shift+Down |  resize shrink height 10 px or 10 ppt |
+| h | resize shrink width 10 px or 10 ppt |
+| j | resize grow height 10 px or 10 ppt |
+| k | resize shrink height 10 px or 10 ppt |
+| l | resize grow width 10 px or 10 ppt |
+| q | mode "default" |
+| Escape | mode "default" |
+| Return | mode "default" |
+| $mod+r | mode "resize" |
 | $mod+1 | workspace $ws1 |
 | $mod+2 | workspace $ws2 |
 | $mod+3 | workspace $ws3 |
@@ -82,15 +81,17 @@
 | $mod+Ctrl+Right | move container to output right |
 | $mod+Shift+c | reload |
 | $mod+Shift+r | restart |
+| $mod+Shift+x | exec --no-startup-id ~/.config/i3/scripts/i3lock.sh |
 | $mod+Shift+e | exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'" |
 | control+mod1+Delete | exec --no-startup-id ~/.config/i3/scripts/mode_system.sh |
-| $mod+q | kill |
+| $mod+q | exec --no-startup-id i3-nagbar -t warning -m '¿Cerrar la ventana enfocada?' -B 'Cerrar' 'i3-msg kill' |
 | $mod+Shift+y | exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh |
 | $mod+y | exec --no-startup-id /usr/bin/dunstctl history-pop |
-| $mod+F2 | exec --no-startup-id flameshot full -p ~/Pictures |
-| $mod+Shift+F2 | exec --no-startup-id flameshot gui -c |
+| $mod+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh select |
+| $mod+Shift+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh full |
+| $mod+Shift+F3 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh save-select |
+| $mod+Shift+F4 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh delay 2 select |
 
-[34m[INFO][0m Parsing tmux config: /home/acuervo/dotfiles/stow/tmux/.tmux.conf
 #### tmux (stow/tmux/.tmux.conf)
 
 | Atajo / Shortcut | Descripción / Action |
@@ -115,7 +116,6 @@
 | `C-s u/U` | Resurrect: guardar / restaurar |
 | `C-s R` | Recargar configuración |
 | `C-s ?` | Abrir cheatsheet |
-
 Atajos secundarios o de compatibilidad:
 
 | -n M-S-Left |  resize-pane -L 5 |
@@ -132,7 +132,6 @@ Atajos secundarios o de compatibilidad:
 | -n C-l | if-shell "$is_vim" 'send-keys C-l' 'select-pane -R' |
 | -n F10 | setw synchronize-panes \; display "🔗 Sync: #{?pane_synchronized,on,off}" |
 
-[34m[INFO][0m Parsing kitty config: /home/acuervo/dotfiles/stow/kitty/.config/kitty/kitty.conf
 #### Kitty (stow/kitty/.config/kitty/kitty.conf)
 
 | Atajo / Shortcut | Acción |
@@ -151,7 +150,6 @@ Atajos secundarios o de compatibilidad:
 | alt+up send_text | all \x1b[1;3A |
 | alt+down send_text | all \x1b[1;3B |
 
-[34m[INFO][0m Parsing NeoVim keymaps: /home/acuervo/dotfiles/stow/nvim/.config/nvim/lua/config/keymaps.lua
 #### NeoVim (stow/nvim/.config/nvim/lua/config/keymaps.lua)
 
 | Atajo / Shortcut | Modo | Acción |

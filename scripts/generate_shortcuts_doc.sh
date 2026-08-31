@@ -9,8 +9,8 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 # --- Helper Functions ---
-info() { printf "\e[34m[INFO]\e[0m %s\n" "$*"; }
-warn() { printf "\e[33m[WARN]\e[0m %s\n" "$*"; }
+info() { printf "\e[34m[INFO]\e[0m %s\n" "$*" >&2; }
+warn() { printf "\e[33m[WARN]\e[0m %s\n" "$*" >&2; }
 error() {
   printf "\e[31m[ERROR]\e[0m %s\n" "$*" >&2
   exit 1
