@@ -137,11 +137,16 @@ bindsym $mod+e layout toggle split
 bindsym $mod+Mod1+h split h
 bindsym $mod+Mod1+v split v
 
-# Redimensionar contenedor (similar a Alt+Shift+Flechas en tmux)
-bindsym $mod+Shift+Left  resize shrink width 10 px or 10 ppt
-bindsym $mod+Shift+Right resize grow   width 10 px or 10 ppt
-bindsym $mod+Shift+Up    resize grow   height 10 px or 10 ppt
-bindsym $mod+Shift+Down  resize shrink height 10 px or 10 ppt
+# Resize modal: Super+r entra; h/j/k/l redimensionan; Escape/Return salen.
+mode "resize" {
+    bindsym h resize shrink width 10 px or 10 ppt
+    bindsym j resize grow height 10 px or 10 ppt
+    bindsym k resize shrink height 10 px or 10 ppt
+    bindsym l resize grow width 10 px or 10 ppt
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+bindsym $mod+r mode "resize"
 
 # =======================
 # WORKSPACES Y MONITORES
