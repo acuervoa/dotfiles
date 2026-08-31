@@ -9,7 +9,6 @@ alias gc='git commit'
 alias gcm='git commit -m'
 alias gup='git pull --rebase --autostash'
 alias gfa='git fetch --all --prune'
-alias gpf='git push --force-with-lease'
 alias gl='git log --oneline --graph -n 30'
 if command -v bat >/dev/null 2>&1; then
   alias gd='git diff --color=always | bat --paging=always --plain --color=always'

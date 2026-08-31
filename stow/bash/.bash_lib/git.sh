@@ -256,6 +256,12 @@ checkpoint() {
   git stash list | head -n 5
 }
 
+# Detecta nombres de archivos staged que suelen contener secretos.
+_git_has_sensitive_staged_paths() {
+  git diff --cached --name-only -z |
+    grep -zEq '(^|/)(\.env($|\.)|.*\.(pem|key|p12|pfx|kdbx)$|.*(secret|credential|token|password).*)'
+}
+
 # @cmd wip  Commit rapido "Work in progress"
 # - despues reescribir con rebase -i  o  git commit --amend
 wip() {
@@ -263,6 +269,11 @@ wip() {
   _git_root_or_die || return 1
 
   git add -A
+  if _git_has_sensitive_staged_paths; then
+    printf 'WIP abortado: hay rutas sensibles staged. Revisa `git diff --cached --name-only`.\n' >&2
+    return 1
+  fi
+
   git commit -m "WIP $(date +'%Y-%m-%d %H:%M')" || {
     printf 'Nada que commitear.\n' >&2
     return 0
@@ -365,6 +376,19 @@ gp() {
 
   printf 'Push directo falló. Intento crear upstream: origin/%s\n' "$branch" >&2
   git push -u origin "$branch"
+}
+
+# @cmd gpf  Push force-with-lease protegido
+gpf() {
+  _req git || return 1
+  _git_root_or_die || return 1
+
+  local branch
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+  printf 'Rama actual: %s\n' "$branch" >&2
+  printf 'Vas a pushear con --force-with-lease.\n' >&2
+  _confirm '¿Seguro? [y/N] ' || return 0
+  git push --force-with-lease "$@"
 }
 
 # @cmd branch   Lista ramas (locales y remotas) ordenadas por última actividad
