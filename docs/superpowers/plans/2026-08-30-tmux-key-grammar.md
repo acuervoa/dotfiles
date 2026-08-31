@@ -65,12 +65,14 @@ bind s choose-tree -sw
 bind S if-shell 'test -x "#{env:TMUX_PLUGIN_MANAGER_PATH}tmux-sessionx/scripts/sessionx.sh"' 'run-shell -b "#{env:TMUX_PLUGIN_MANAGER_PATH}tmux-sessionx/scripts/sessionx.sh"' 'choose-tree -sw'
 bind g display-popup -E -w 90% -h 90% -x C -y C "lazygit"
 bind b display-popup -E -w 90% -h 90% -x C -y C "btop"
-bind x run-shell -b "extrakto"
-bind A run-shell -b "$HOME/.tmux/scripts/agent_room.sh"
+bind x run-shell -b "#{env:TMUX_PLUGIN_MANAGER_PATH}extrakto/scripts/open.sh \"#{pane_id}\""
+bind A run-shell -b "$HOME/.tmux/scripts/proj_session.sh attach"
 bind m run-shell -b "#{env:TMUX_PLUGIN_MANAGER_PATH}tmux-menus/scripts/menu.sh"
 ```
 
-Before adding `A`, verify whether an agent-room script already exists. If it does not, bind `A` to the existing project/session picker temporarily and record that the dedicated agent launcher is a follow-up scope; do not invent an agent workflow in this task.
+Keep `A` bound to the existing project/session attach command. No agent-room
+script exists yet, so the dedicated agent launcher is explicitly deferred until
+the real agent workflow has been observed and specified.
 
 - [ ] **Step 4: Configure restore as uppercase `U`.**
 

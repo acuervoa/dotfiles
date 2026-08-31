@@ -6,6 +6,22 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-08-31 — tmux baseline y lifecycle saneado
+
+### Cambiado
+- Se consolida la gramática muscular de tmux con `C-s` y acciones de una tecla.
+- TPM usa el path XDG confirmado y Continuum queda inicializado de forma fiable.
+- Resurrect usa `u/U` como únicos bindings de save/restore.
+- La statusline reduce forks innecesarios y `q` confirma antes de matar panes.
+
+### Corregido
+- Selección de clipboard según protocolo gráfico activo: X11 usa `xclip` y Wayland usa `wl-copy`.
+- `terminal-features` y reloads son idempotentes.
+- Autosave de Continuum verificado con snapshot válido y enlace `last` actualizado.
+
+### Baseline
+- Runtime documentado en `docs/baselines/tmux-2026-08-31.md`.
+
 ## 2025-10-30 — Shell más portátil y barra tmux consciente de la red
 
 ### Añadido

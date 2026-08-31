@@ -61,7 +61,7 @@ frecuente debe ser `C-s` seguido de una sola tecla.
 | `g` | Abrir lazygit |
 | `b` | Abrir btop |
 | `x` | Abrir extrakto |
-| `A` | Abrir el centro de control de agentes AI |
+| `A` | Alias de compatibilidad para cambiar a otra sesión; centro AI reservado para una iteración posterior |
 | `m` | Abrir menú general |
 
 ### Sistema
@@ -84,8 +84,9 @@ la integración con Vim/Neovim, pero no se considerará parte del núcleo tmux.
 
 La gramática será independiente de la topología concreta. En una fase posterior,
 cada proyecto podrá abrir ventanas con roles estables, por ejemplo editor,
-servidor, tests, logs, Git y agentes. La tecla `A` será el punto de entrada común
-para lanzar, localizar, inspeccionar y detener agentes.
+servidor, tests, logs, Git y agentes. La tecla `A` queda reservada como punto de
+entrada futuro para lanzar, localizar, inspeccionar y detener agentes; durante
+esta iteración conserva su comportamiento actual de cambiar a otra sesión.
 
 ## Verificación antes de activar
 
