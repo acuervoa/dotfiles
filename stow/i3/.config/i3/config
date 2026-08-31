@@ -27,7 +27,7 @@ exec --no-startup-id albert
 exec --no-startup-id redshift -l geoclue2 -t 6500:3600 -r
 
 # Barra 
-exec --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # System tray
 exec --no-startup-id nm-applet
