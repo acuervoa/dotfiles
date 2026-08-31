@@ -142,7 +142,9 @@ En copy-mode-vi sigues la semántica estándar de tmux/vi (navegar con `hjkl`, b
 
 Los atajos sin prefijo `C-h/j/k/l`, `F10`, `M-S-flechas`, `M-flechas` y
 `C-PageUp/Down` se mantienen como integración o compatibilidad, pero no son la
-ruta principal. `Prefix+"`, `Prefix+%` y `Prefix+H` pertenecen al mapa anterior.
+ruta principal. `Prefix+"`, `Prefix+%`, `Prefix+Space` y `Prefix+Z` fueron
+retirados para evitar conflictos; `Prefix+H` tampoco forma parte del mapa
+principal porque `Prefix+b` abre `btop`.
 
 ### 2.5 Popups y utilidades integradas
 
