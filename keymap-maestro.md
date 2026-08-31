@@ -15,7 +15,7 @@ Convenciones:
 
 | Tecla                    | Acción                                                                 |
 |--------------------------|------------------------------------------------------------------------|
-| `Super+Enter`            | Abrir `kitty`                                                          |
+| `Super+Enter`            | Abrir `kitty` dentro de tmux, adjuntando/creando `main`                |
 | `Super+d`                | Rofi modo “Aplicaciones” (`drun` con iconos)                          |
 | `Super+Shift+d`          | Rofi modo “Ventanas abiertas”                                         |
 | `Super+F11`              | Rofi `run` a pantalla completa                                        |
@@ -30,8 +30,8 @@ Convenciones:
 
 | Tecla                                 | Acción                                      |
 |---------------------------------------|---------------------------------------------|
-| `Super+h/j/k/l` o `Super+←/↓/↑/→`     | Mover foco entre ventanas                   |
-| `Super+Shift+h/j/k/l` o `Super+Shift+←/↓/↑/→` | Mover la ventana actual                     |
+| `Super+h/j/k/l`           | Mover foco entre ventanas                   |
+| `Super+Shift+h/j/k/l`     | Mover la ventana actual                     |
 | `Super+Shift+space`                   | Alternar flotante ↔ mosaico                 |
 | `Super+z`                             | Pantalla completa (fullscreen toggle)       |
 | `Super+e`                             | Alternar layout “split”                     |
@@ -39,7 +39,9 @@ Convenciones:
 | `Super+s`                             | Layout `stacking`                           |
 | `Super+Alt+h`                         | Split horizontal (`split h`)                |
 | `Super+Alt+v`                         | Split vertical (`split v`)                  |
-| `Super+Shift+←/→/↑/↓`                | Redimensionar ventana (±10 px/ppt)         |
+| `Super+r`                             | Entrar en modo resize                       |
+| `h/j/k/l` en modo resize              | Redimensionar izquierda/abajo/arriba/derecha |
+| `Escape` / `Return` en modo resize    | Salir del modo resize                       |
 | `Super+q`                             | Cerrar ventana (`kill`)                     |
 
 ### 1.3 Workspaces y monitores
@@ -75,8 +77,8 @@ Screenshots:
 
 | Tecla            | Acción                                    |
 |------------------|-------------------------------------------|
-| `Super+F2`       | Captura de pantalla completa (flameshot)  |
-| `Super+Shift+F2` | Flameshot GUI (selección interactiva)     |
+| `Super+F2`       | Captura de selección (maim + slop)         |
+| `Super+Shift+F2` | Captura de pantalla completa (maim)       |
 
 ---
 
