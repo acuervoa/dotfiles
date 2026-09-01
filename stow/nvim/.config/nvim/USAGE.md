@@ -102,14 +102,13 @@
   - Inlay hints:
 	  - `<leader>ch` → toggle inlay hints (si el servidor los soporta).
 
-### Completado (`nvim-cmp`)
+### Completado (`blink.cmp`)
   - Completado salta en Insert:
-	  - `<C-n>` / `<C-p>` → siguiente/anterior item.
-	  - `<C-Space>` → forzar menú de completado.
-	  - `<C-e>` → cerrar menú.
-	  - `<CR>`:
-		  - si hay item seleccionado → confirma reemplazando texto.
-		  - si **no** hay selección → hace `Enter` normal (no fuerza sugerencias).
+	  - `<Tab>` / `<S-Tab>` → siguiente/anterior item y avance/retroceso de snippets.
+	  - `<CR>` → aceptar el item activo o hacer `Enter` normal si no hay selección.
+	  - `<C-e>` → cerrar el menú.
+	  - `<C-b>` / `<C-f>` → desplazar la documentación de la sugerencia.
+	  - `<C-Space>` → abrir el menú según el comportamiento por defecto.
 
 ### Formato (`conform.nvim`)
   - Formateo manual:
@@ -123,7 +122,7 @@
 
 ### Lint (`nvim-lint`)
   - Se ejecuta automáticamente en:
-	  - `BufReadPost`, `BufWritePost`, `InsertLeave`.
+	  - `BufWritePost` cuando el filetype tiene linters configurados.
   - Comando manual:
 	  - `:Lint` → disparar linter del filetype actual.
 

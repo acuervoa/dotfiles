@@ -1,4 +1,4 @@
-# Neovim config (VSCode-like)
+# Neovim config (editor general)
 
 Configuración de Neovim orientada a desarrollo diario (PHP, Bash, Lua, Go, Rust, Python) con foco en:
 
@@ -44,10 +44,10 @@ Requisitos mínimos:
 
 ## 2. Apariencia y UI
 
-- **Mofiqul/vscode.nvim**
-  Tema de colores principal de tipo VSCode.
+- **catppuccin/nvim**
+  Tema de colores principal, variante `mocha`.
   Se configura en `lua/plugins/ui.lua` y se aplica en el arranque:
-  - `:colorscheme vscode` para re-aplicarlo.
+  - `:colorscheme catppuccin` para re-aplicarlo.
 
 - **nvim-lualine/lualine.nvim**
   Statusline con información de modo, LSP, diagnósticos, etc.
@@ -144,7 +144,7 @@ Requisitos mínimos:
   - `<C-/>` en normal/visual -> toggle de comentario.
 
 - **windwp/nvim-autopairs**
-  Inserta y cierra paréntesis, comillas, etc. Integrado con `nvim-cmp`.
+  Inserta y cierra paréntesis, comillas, etc. Integrado con `blink.cmp`.
 
 - **kylechui/nvim-surround**
   Añadir/cambiar/eliminar envolturas ( `()`, `[]`, `""`, etc.).
@@ -189,13 +189,9 @@ Requisitos mínimos:
   - `lua/lang/*.lua` (PHP, Bash, Lua, Go, Rust, Python, etc.) para ajustes por lenguaje.
   - Keymaps LSP en `on_attach` (ver `USAGE.md` y `SHORTCUTS.md`).
 
-- **hrsh7th/nvim-cmp** + fuentes:
-  - `cmp-nvim-lsp` (LSP)
-  - `cmp-buffer` (buffer)
-  - `cmp-path` (rutas)
-  - `cmp_luasnip` (snippets)
-  - **L3MON4D3/LuaSnip** + **rafamadriz//friendly-snippets**
-  - **onsails/lspkind.nvim** (iconos en el menú de completado)
+- **saghen/blink.cmp** + fuentes:
+  - `lsp`, `buffer`, `path` y `snippets` mediante LuaSnip.
+  - **L3MON4D3/LuaSnip** + **rafamadriz/friendly-snippets**
 
   Enter se comporta de forma segura:
   - solo confirma si hay un item  **seleccionado**
@@ -218,7 +214,7 @@ Requisitos mínimos:
     - `:FormatToggleBuffer` -> idem pero solo para el buffer actual.
 
 - **mfussenegger/nvim-lint**
-  Linting asíncrono disparado en `BufReadPost`, `BufWritePost` e `InsertLeave`.
+  Linting asíncrono disparado en `BufWritePost` cuando el filetype tiene linters.
   - Usa `linters_by_ft` definido en `lua/lang/*.lua`.
   - Comando manual: `:Lint`.
 
