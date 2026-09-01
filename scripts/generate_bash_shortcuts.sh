@@ -34,7 +34,7 @@ render_row() {
 }
 
 render_group() {
-  local group="$1" title="$2" line name row_group risk micro description example
+  local group="$1" title="$2" name row_group risk micro description example
   printf '## %s\n\n' "$title"
   printf '| Comando | Descripción | Riesgo | Ejemplo |\n| --- | --- | --- | --- |\n'
   while IFS=$'\t' read -r name row_group risk micro description example; do
