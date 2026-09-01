@@ -133,12 +133,12 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `sbclose` | Cerrar formalmente un proyecto | 🔴 mutación | `sbclose "proyecto"` |
 | `sbe` | Cerrar una sesión SimpleBrain | 🔴 mutación | `sbe` |
 | `sbl` | Listar sesiones SimpleBrain | ✅ seguro | `sbl` |
-| `sbo` | Abrir o iniciar sesión SimpleBrain | 🔴 mutación | `sbo` |
+| `sbo` | Consultar sesión activa y sesiones candidatas | ✅ seguro | `sbo` |
 | `sbo-archive-stale` | Archivar sesiones stale | 🔴 mutación | `sbo-archive-stale` |
 | `sbo-clean` | Limpiar sesiones huérfanas | 🔴 mutación | `sbo-clean` |
 | `sbprofile` | Copiar el perfil compacto al portapapeles | ✅ seguro | `sbprofile` |
-| `sbs` | Mostrar sesión SimpleBrain activa | ✅ seguro | `sbs` |
-| `sbsb` | Mostrar resumen de sesión SimpleBrain | ✅ seguro | `sbsb` |
+| `sbs` | Iniciar sesión SimpleBrain y registrar estado/artefactos | 🔴 mutación | `sbs` |
+| `sbsb` | Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos | 🔴 mutación | `sbsb` |
 
 ## Navegación
 

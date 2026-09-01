@@ -18,9 +18,9 @@ gpt	ai	safe	no	Abrir la webapp de ChatGPT	gpt
 ia	ai	safe	no	Abrir entorno tmux para IA	ia
 sb-lint	simplebrain	safe	no	Auditar frontmatter del vault	sb-lint
 sbclose	simplebrain	mutating	no	Cerrar formalmente un proyecto	sbclose "proyecto"
-sbo	simplebrain	mutating	no	Abrir o iniciar sesión SimpleBrain	sbo
-sbs	simplebrain	safe	no	Mostrar sesión SimpleBrain activa	sbs
-sbsb	simplebrain	safe	no	Mostrar resumen de sesión SimpleBrain	sbsb
+sbo	simplebrain	safe	no	Consultar sesión activa y sesiones candidatas	sbo
+sbs	simplebrain	mutating	no	Iniciar sesión SimpleBrain y registrar estado/artefactos	sbs
+sbsb	simplebrain	mutating	no	Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos	sbsb
 sbl	simplebrain	safe	no	Listar sesiones SimpleBrain	sbl
 sbe	simplebrain	mutating	no	Cerrar una sesión SimpleBrain	sbe
 sbprofile	simplebrain	safe	no	Copiar el perfil compacto al portapapeles	sbprofile
