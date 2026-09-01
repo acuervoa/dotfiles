@@ -6,6 +6,24 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-09-01 — Configuración inicial Bash hiperproductiva
+
+### Añadido
+- Auditoría de ownership, gramática operativa, workflows y matriz de teclas
+  para Bash, Readline, tmux e i3.
+- Checklist de validación y baseline reproducible de rendimiento.
+
+### Cambiado
+- Catálogo Bash y cheatsheet generada alineados con el runtime.
+- Directivas ShellCheck añadidas sin alterar el comportamiento de la shell.
+
+### Corregido
+- Selección de clipboard macOS para valores `OSTYPE` con prefijo `darwin`.
+
+### Rendimiento
+- El baseline queda dentro del presupuesto provisional por mediana; no se
+  aplica lazy loading sin evidencia de mejora.
+
 ## 2026-08-31 — tmux baseline y lifecycle saneado
 
 ### Cambiado
