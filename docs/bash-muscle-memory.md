@@ -77,12 +77,10 @@ confirmación, responde `n` y comprueba que el estado queda intacto.
 1. **Inspección:** consulta el estado y las candidatas con `sbo` y localiza un
    borrador con `aflastdraft`. `sbs` inicia una sesión nueva y requiere una
    tarea; `afl` inicia AI Flow, lanza un agente y también requiere una tarea.
-   Hay una deriva conocida: `.bash_grammar` conserva etiquetas históricas para
-   `sbo`, `sbs` y `sbsb` que no coinciden con el runtime observado; por ejemplo,
-   etiqueta `sbo` como mutating y `sbs` como safe, aunque el runtime y
-   `docs/bash-workflows.md` los usan como consulta (`sbo`) e inicio (`sbs`).
-   Estos drills siguen el runtime observado, no modifican el catálogo en esta
-   fase, y dejan la reconciliación del catálogo para una fase posterior.
+   El catálogo de `.bash_grammar` ya fue reconciliado con el runtime vigente:
+   `sbo` hace una consulta segura de la sesión activa y sus candidatas; `sbs`
+   inicia una sesión y muta estado y artefactos; `sbsb` inicia una sesión
+   instrumentada/benchmark y también muta estado y artefactos.
 2. **Práctica:** no ejecutes `sbs` ni `afl` sin una tarea definida. No ejecutes
    `afapplylast`, `sbe` ni `afx` en la primera pasada; revisa el draft y el
    estado sólo con `aflastdraft` y `sbo`.

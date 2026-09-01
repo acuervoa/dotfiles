@@ -71,10 +71,10 @@ confirmación si no puedes identificar los servicios o recursos afectados.
 
 Secuencia de sesión y destilación: `sbs/af → afl (optional) → sbsb/sbo → sbe/afx → aflastdraft/afapplylast`.
 
-Nota de compatibilidad: `.bash_grammar` conserva etiquetas históricas para
-`sbo`/`sbs`/`sbsb` que no coinciden con el runtime observado. Esta guía
-describe el runtime y no modifica el catálogo; la reconciliación del catálogo
-queda pendiente de una fase posterior.
+El catálogo de `.bash_grammar` ya fue reconciliado con el runtime vigente:
+`sbo` hace una consulta segura de la sesión activa y sus candidatas; `sbs`
+inicia una sesión y muta estado y artefactos; `sbsb` inicia una sesión
+instrumentada/benchmark y también muta estado y artefactos.
 
 | Propósito | Alcance de mutación | Validación |
 | --- | --- | --- |
