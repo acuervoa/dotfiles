@@ -1,7 +1,3 @@
--- Comment.nvim
-return {
-    "numToStr/Comment.nvim",
-    opts = {},
-    lazy = true,
-    event = "VeryLazy",
-}
+-- Comment.nvim is owned by editing.lua, where its keymaps and
+-- ts-context-commentstring integration are configured together.
+return {}

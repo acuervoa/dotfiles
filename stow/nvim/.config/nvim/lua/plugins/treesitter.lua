@@ -98,9 +98,4 @@ return {
 		lazy = false,
 		opts = {},
 	},
-
-	{
-		"JoosepAlviste/nvim-ts-context-commentstring",
-		lazy = false,
-	},
 }
