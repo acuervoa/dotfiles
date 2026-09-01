@@ -73,14 +73,18 @@ dentro de él y usar `XDG_CONFIG_HOME` y `XDG_DATA_HOME` temporales. El rc
 temporal debe omitir la línea que sourcea `.bashrc_local` y ese `HOME` no debe
 contenerlo.
 
-Para hacer el aislamiento accionable, guardar los valores originales sólo en
-variables shell temporales, neutralizar en una shell hija cualquier variable
-`ATUIN_*` heredada antes de probar Atuin (revisar y limpiar toda variable cuyo
-valor pueda apuntar a datos reales), y conservar el `PATH` original sin
-escribirlo en archivos. El `trap EXIT` debe restaurar `HOME`, `HISTFILE`, XDG,
-`PATH` y las variables `ATUIN_*`, eliminar rc/HOME/XDG/directorios binarios
-temporales y, después, verificar que esas rutas ya no existen y que el entorno
-real sigue intacto.
+Para hacer el aislamiento accionable y uniforme en FZF y Atuin, guardar los
+valores originales sólo en variables shell temporales, ejecutar la prueba en
+una shell hija con `HOME` temporal, `HISTFILE` dentro de ese `HOME`,
+`XDG_CONFIG_HOME` temporal y `XDG_DATA_HOME` temporal, y conservar el `PATH`
+original sin escribirlo en archivos. Si se carga un rc, usar una copia temporal
+que omita la línea que sourcea `.bashrc_local`; ese `HOME` temporal no debe
+contenerlo. Antes de probar cualquiera de los dos, neutralizar toda variable
+heredada `ATUIN_*` cuyo valor pueda apuntar a datos reales. El `trap EXIT` debe
+restaurar `HOME`, `HISTFILE`, XDG, `PATH` y el estado (definida/no definida) de
+las variables `ATUIN_*`, eliminar rc/HOME/XDG/directorios binarios temporales
+y, después, verificar que esas rutas ya no existen y que el entorno real sigue
+intacto.
 
 | Prueba | Resultado esperado | Fecha | Resultado | Observaciones |
 | --- | --- | --- | --- | --- |
@@ -88,8 +92,8 @@ real sigue intacto.
 | Nueva sesión Kitty + no-login | La sesión interactiva carga Bash y sus funciones esperadas, sin errores | | | |
 | Recarga de Bash | Recargar el entorno una o más veces no duplica funciones, aliases, PATH ni hooks | | | |
 | Clipboard | Copiar y pegar una cadena de prueba funciona; no se captura ni se muestra ningún dato privado | | | |
-| Atuin | Antes de ejecutar, neutralizar toda variable heredada `ATUIN_*` que pueda apuntar a datos reales; ejecutar literalmente con `HOME=...` temporal, `HISTFILE=...` dentro de ese `HOME`, `XDG_CONFIG_HOME=...` temporal y `XDG_DATA_HOME=...` temporal; usar `trap EXIT` con restauración, verificación de que no quedan rutas y limpieza; inicializar una base nueva; insertar dos entradas sintéticas mediante el mecanismo de ingestión documentado por la versión instalada, registrando el comando exacto y su salida; consultar exclusivamente esa base y comprobar que devuelve esas dos entradas. Si no hay ingestión aislada, marcar `N/A` con motivo. Nunca usar `HOME` ni historial reales | | | |
-| FZF | Selectores previstos abren, cancelan con seguridad y no mutan al cancelar | | | |
+| Atuin | Aplicar el protocolo común de aislamiento; si se carga un rc, impedir además `.bashrc_local`; inicializar una base nueva; insertar dos entradas sintéticas mediante el mecanismo de ingestión documentado por la versión instalada, registrando el comando exacto y su salida; consultar exclusivamente esa base y comprobar que devuelve esas dos entradas. Si no hay ingestión aislada, marcar `N/A` con motivo. Nunca usar `HOME` ni historial reales | | | |
+| FZF | Aplicar el protocolo común de aislamiento; si se carga un rc, impedir además `.bashrc_local`; abrir cada selector previsto y cancelarlo con seguridad, comprobando que no muta nada. Para ausencia real, usar un `PATH` temporal que omita el directorio de FZF y ningún stub; para diagnosticar un fallo concreto, usar sólo un wrapper/stub separado y marcarlo como simulación | | | |
 | ble.sh | Edición interactiva y keymap efectivo funcionan; verificar ownership contra la [matriz](bash-context-key-matrix.md) | | | |
 | Completado | `Tab` completa comandos/rutas disponibles sin errores; comprobar también el comportamiento de completado relevante | | | |
 | Navegación tmux | Crear/seleccionar/cerrar panes o ventanas y salir de copy-mode según el keymap efectivo; no asumir bindings nuevos | | | |
