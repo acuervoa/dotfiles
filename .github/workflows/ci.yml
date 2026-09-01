@@ -28,6 +28,12 @@ jobs:
       - name: Repo checks
         run: bash ./scripts/check.sh
 
+      - name: Desktop config checks
+        run: bash ./scripts/check-desktop-configs.sh --static
+
+      - name: Desktop config tests
+        run: bash ./tests/config_checks_test.sh
+
       - name: Secret scan (tracked files)
         run: bash ./scripts/check-secrets.sh
 
