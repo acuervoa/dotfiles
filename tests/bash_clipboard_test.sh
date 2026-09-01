@@ -48,6 +48,15 @@ cat >"$tmp_dir/wl-paste" <<'EOF'
 printf 'wl-paste\n' >>"${CLIP_TEST_LOG:?}"
 EOF
 chmod +x "$tmp_dir/xclip" "$tmp_dir/wl-copy" "$tmp_dir/wl-paste"
+cat >"$tmp_dir/pbcopy" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+cat >"$tmp_dir/pbpaste" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$tmp_dir/pbcopy" "$tmp_dir/pbpaste"
 export CLIP_TEST_LOG="$tmp_dir/commands.log"
 
 _clipboard_command copy || fail "el resolver de clipboard no está implementado"
@@ -83,6 +92,22 @@ PATH="$old_path"
 DISPLAY="$old_display"
 WAYLAND_DISPLAY="$old_wayland_display"
 pass "ausencia de backend produce diagnóstico"
+
+old_ostype="$OSTYPE"
+mac_old_display="$DISPLAY"
+mac_old_wayland_display="$WAYLAND_DISPLAY"
+export OSTYPE='darwin23'
+unset DISPLAY WAYLAND_DISPLAY
+_clipboard_command copy || fail "macOS debe seleccionar pbcopy"
+[[ "${_CLIPBOARD_CMD[*]}" == "$tmp_dir/pbcopy" ]] ||
+  fail "macOS copy debe usar pbcopy, obtuvo: ${_CLIPBOARD_CMD[*]}"
+_clipboard_command paste || fail "macOS debe seleccionar pbpaste"
+[[ "${_CLIPBOARD_CMD[*]}" == "$tmp_dir/pbpaste" ]] ||
+  fail "macOS paste debe usar pbpaste, obtuvo: ${_CLIPBOARD_CMD[*]}"
+pass "macOS selecciona pbcopy/pbpaste"
+export OSTYPE="$old_ostype"
+export DISPLAY="$mac_old_display"
+export WAYLAND_DISPLAY="$mac_old_wayland_display"
 
 pbcopy() {
   _clipboard_command copy || return 1

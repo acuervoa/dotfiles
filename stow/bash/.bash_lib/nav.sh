@@ -268,7 +268,7 @@ _clipboard_command() {
     else
       _CLIPBOARD_CMD=(xsel --clipboard --output)
     fi
-  elif [ "${OSTYPE:-}" = darwin* ]; then
+  elif [[ "${OSTYPE:-}" == darwin* ]]; then
     if [ "$operation" = copy ] && type -P pbcopy >/dev/null 2>&1; then
       _CLIPBOARD_CMD=("$(type -P pbcopy)")
     elif [ "$operation" = paste ] && type -P pbpaste >/dev/null 2>&1; then
