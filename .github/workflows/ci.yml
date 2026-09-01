@@ -34,6 +34,9 @@ jobs:
       - name: Desktop config tests
         run: bash ./tests/config_checks_test.sh
 
+      - name: Neovim static config check
+        run: bash ./scripts/check-nvim.sh --static
+
       - name: Secret scan (tracked files)
         run: bash ./scripts/check-secrets.sh
 
