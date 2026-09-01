@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # ~/.profile  - entorno general para shells de login (POSIX)
 
 export EDITOR="nvim"
@@ -25,6 +26,7 @@ esac
 
 
 # Rutas estáticas del usuario: un único owner y orden determinista.
+# shellcheck disable=SC3043
 _bash_path_prepend_once() {
   local path="$1"
   local required="${2:-optional}"

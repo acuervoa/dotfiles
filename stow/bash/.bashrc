@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ===========================
 # ~/.bashrc - Arch
 # Autor: Andrés Cuervo (ajustado por ChatGPT)
@@ -147,6 +148,8 @@ pbpaste() {
 HIST_BACKEND="fzf" # valor por defecto si no hay Atuin
 if command -v atuin >/dev/null 2>&1; then
   eval "$(atuin init bash --disable-up-arrow)"
+  # HIST_BACKEND se conserva como estado de compatibilidad; no se exporta.
+  # shellcheck disable=SC2034
   HIST_BACKEND="atuin"
 fi
 

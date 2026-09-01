@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # ~/.bash_aliases - alias productivos y seguros
 
 # Atajos de calidad de vida
