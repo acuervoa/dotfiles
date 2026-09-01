@@ -51,12 +51,23 @@ observable. No convertir una observación en un cambio de binding: consultar la
 [matriz de ownership](bash-context-key-matrix.md), los
 [workflows](bash-workflows.md) y la [guía de memoria muscular](bash-muscle-memory.md).
 
-Para simular opcionales ausentes, crear un directorio binario temporal y
-anteponerlo a `PATH`. Dejar allí wrappers/stubs que devuelvan ausencia limpia o
-un código controlado para el componente bajo prueba; no renombrar, eliminar ni
-desinstalar ejecutables instalados. Ejecutar la sesión con ese `PATH`, sin
-cambiar configuración permanente, restaurar el `PATH` original al terminar y
-eliminar el directorio temporal.
+Para comprobar ausencia real, guardar el `PATH` original y usar un `PATH`
+temporal que omita el directorio del ejecutable bajo prueba, sin añadir ningún
+stub. Esto no renombra, elimina ni desinstala lo instalado. Sólo si se quiere
+probar un diagnóstico concreto, usar en un directorio binario separado un
+wrapper/stub que falle de forma controlada; un stub es un fallo simulado, no
+ausencia real. En ambos casos usar `trap` para restaurar el entorno y limpiar
+los temporales al terminar, sin cambiar configuración permanente. Después de
+cada prueba, verificar explícitamente que `HOME`/XDG temporales ya no existen
+y que `HOME`, `PATH`, configuración y archivos del entorno original siguen
+intactos.
+
+Cuando ble.sh o bash-completion se carguen desde una ruta absoluta, un `PATH`
+temporal no basta: derivar un `--rcfile` temporal a partir del rc real,
+sustituyendo u omitiendo únicamente las líneas de ese componente. Arrancar
+Bash con ese `--rcfile`, verificar que inicia correctamente, y usar `trap` para
+restaurar el entorno y borrar la copia temporal; no tocar los archivos
+instalados ni ninguna configuración permanente.
 
 | Prueba | Resultado esperado | Fecha | Resultado | Observaciones |
 | --- | --- | --- | --- | --- |
@@ -64,7 +75,7 @@ eliminar el directorio temporal.
 | Nueva sesión Kitty + no-login | La sesión interactiva carga Bash y sus funciones esperadas, sin errores | | | |
 | Recarga de Bash | Recargar el entorno una o más veces no duplica funciones, aliases, PATH ni hooks | | | |
 | Clipboard | Copiar y pegar una cadena de prueba funciona; no se captura ni se muestra ningún dato privado | | | |
-| Atuin | Crear un directorio temporal, ejecutar con `HOME`, `XDG_CONFIG_HOME` y `XDG_DATA_HOME` temporales, escribir dos entradas sintéticas, ingerirlas con el subcomando disponible (`atuin help`; por ejemplo `atuin import auto`), consultarlas y eliminar todo; nunca usar `HOME` ni historial reales | | | |
+| Atuin | Crear directorio temporal y `trap`; ejecutar con `HOME`, `XDG_CONFIG_HOME` y `XDG_DATA_HOME` temporales; inicializar una base nueva; insertar dos entradas sintéticas mediante el mecanismo de ingestión documentado por la versión instalada, registrando el comando exacto y su salida; consultar exclusivamente esa base y comprobar que devuelve esas dos entradas; verificar limpieza y eliminar todo. Si no hay ingestión aislada, marcar `N/A` con motivo. Nunca usar `HOME` ni historial reales | | | |
 | FZF | Selectores previstos abren, cancelan con seguridad y no mutan al cancelar | | | |
 | ble.sh | Edición interactiva y keymap efectivo funcionan; verificar ownership contra la [matriz](bash-context-key-matrix.md) | | | |
 | Completado | `Tab` completa comandos/rutas disponibles sin errores; comprobar también el comportamiento de completado relevante | | | |
@@ -76,10 +87,10 @@ eliminar el directorio temporal.
 | Workflow Git | Seguir el recorrido de [Git](bash-workflows.md#git); revisar estado/diffs antes de cualquier staging o commit y rechazar confirmaciones sensibles cuando proceda | | | |
 | Workflow Docker | Seguir el recorrido de [Docker](bash-workflows.md#docker); inspeccionar Compose/contenedores antes de operar y validar al final | | | |
 | Workflow AI | Seguir el recorrido de [AI y SimpleBrain](bash-workflows.md#ai-y-simplebrain); consultar estado/drafts antes de aplicar y cancelar si no son inequívocos | | | |
-| Opcional Atuin: sintético + ausente | Con Atuin disponible, seguir la prueba sintética anterior dentro del entorno temporal; después anteponer al `PATH` un stub de ausencia, iniciar otra sesión temporal, restaurar el `PATH` y limpiar ambos temporales. Nunca usar `HOME` ni historial reales | La búsqueda devuelve sólo las entradas sintéticas; sin Atuin, Bash carga y diagnostica el fallback sin errores, y el historial real permanece intacto | | |
-| Opcional ausente: FZF | Aplicar el `PATH` binario temporal con wrapper/stub de ausencia, abrir cada selector previsto, cancelarlo, restaurar el `PATH` original y eliminar el directorio temporal; no instalar ni alterar configuración permanente | Bash carga; cada selector falla o se omite con diagnóstico limpio y sin mutación | | |
-| Opcional ausente: ble.sh | Aplicar el `PATH` binario temporal con wrapper/stub controlado, iniciar una sesión sin cargar ble.sh, comprobar la edición Readline y el keymap efectivo, restaurar el `PATH` y limpiar el temporal; no cambiar configuración permanente | Bash conserva edición/completado soportados y diagnostica la ausencia sin errores | | |
-| Opcional ausente: completado | Aplicar el `PATH` binario temporal con wrapper/stub de ausencia, iniciar sin cargar bash-completion, probar `Tab` sobre un comando y una ruta de prueba, restaurar el `PATH` y limpiar el temporal; no instalar ni modificar configuración permanente | Bash carga y el completado ausente se degrada limpiamente, sin errores inesperados | | |
+| Opcional Atuin: sintético + ausencia real | Ejecutar la prueba Atuin sintética en entorno temporal; para ausencia real, repetir con un `PATH` que omita el directorio de Atuin y sin stub; usar `trap`, restaurar el `PATH` y verificar que `HOME`/XDG temporales ya no existen. Nunca usar `HOME` ni historial reales | La base temporal devuelve sólo las dos entradas sintéticas; sin Atuin, Bash carga y diagnostica el fallback sin errores; el historial real permanece intacto | | |
+| Opcional ausente: FZF | Usar un `PATH` temporal que omita el directorio de FZF, sin stub; abrir cada selector previsto, cancelarlo, restaurar el `PATH` con `trap` y limpiar el directorio temporal. No instalar ni alterar configuración permanente | Bash carga; cada selector falla o se omite con diagnóstico limpio y sin mutación | | |
+| Opcional ausente: ble.sh | Como ble.sh usa ruta absoluta, derivar un `--rcfile` temporal del rc real omitiendo sólo sus líneas; arrancar Bash y verificarlo, sin cargar ble.sh; usar `trap`, restaurar el entorno y borrar rc/temporales. No tocar archivos instalados ni configuración permanente | Bash arranca correctamente, conserva Readline/keymap soportados y diagnostica la ausencia sin errores | | |
+| Opcional ausente: completado | Como bash-completion usa ruta absoluta, derivar un `--rcfile` temporal del rc real omitiendo sólo sus líneas; arrancar Bash y probar `Tab` sobre comando/ruta de prueba; usar `trap`, restaurar el entorno y borrar rc/temporales. No instalar ni modificar configuración permanente | Bash arranca correctamente y el completado ausente se degrada limpiamente, sin errores inesperados | | |
 | Diagnóstico limpio | No aparecen errores inesperados al iniciar, recargar, abrir Kitty/tmux ni ejecutar los recorridos | | | |
 
 ## 4. Criterios de salida
