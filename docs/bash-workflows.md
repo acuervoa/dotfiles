@@ -71,6 +71,11 @@ confirmación si no puedes identificar los servicios o recursos afectados.
 
 Secuencia de sesión y destilación: `sbs/af → afl (optional) → sbsb/sbo → sbe/afx → aflastdraft/afapplylast`.
 
+Nota de compatibilidad: `.bash_grammar` conserva etiquetas históricas para
+`sbo`/`sbs`/`sbsb` que no coinciden con el runtime observado. Esta guía
+describe el runtime y no modifica el catálogo; la reconciliación del catálogo
+queda pendiente de una fase posterior.
+
 | Propósito | Alcance de mutación | Validación |
 | --- | --- | --- |
 | Iniciar una sesión, lanzar opcionalmente un agente, consultar estado, cerrar el ciclo y localizar o aplicar el último draft. | `af` y `afl` preparan contexto; `sbs` inicia una sesión y cambia el estado de sesión; `sbsb` inicia una sesión nueva instrumentada con `AI_SESSION_BENCH=1`; `sbo` solo lee la sesión activa y sus candidatas; `sbe`, `afx` y `afapplylast` cambian la sesión o aplican resultados. | Usa `sbo` para consultar estado o candidatas, `sbs` para iniciar y `aflastdraft` para revisar el draft; aplica `afapplylast` solo tras comprobar el contenido y validar el resultado en el proyecto. |
