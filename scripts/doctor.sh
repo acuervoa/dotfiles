@@ -147,6 +147,29 @@ check_tmux_tpm() {
   return 0
 }
 
+check_git_hooks() {
+  local hooks="$HOME/.git-hooks"
+  local expected="$REPO_DIR/stow/git/.git-hooks"
+
+  if [ ! -e "$expected" ]; then
+    warn "Git hooks versionados no encontrados: $expected"
+    return 0
+  fi
+  if [ ! -L "$hooks" ]; then
+    warn "Git hooks no están enlazados en $hooks; ejecuta bootstrap para instalarlos."
+    return 0
+  fi
+  if [ "$(readlink -f "$hooks" 2>/dev/null || true)" != "$(readlink -f "$expected")" ]; then
+    warn "Git hooks apuntan a un destino distinto de los hooks versionados."
+    return 0
+  fi
+  if [ ! -x "$hooks/pre-commit" ] || [ ! -x "$hooks/commit-msg" ]; then
+    warn "Hay hooks Git sin permiso de ejecución en $hooks"
+    return 0
+  fi
+  info "Git hooks: OK ($hooks)"
+}
+
 main() {
   local host
   host="$(resolve_host || true)"
@@ -166,6 +189,7 @@ main() {
   action DEPS "Verificando dependencias"
   require_cmd stow || return 1
   require_cmd rsync || warn "rsync no está instalado (rollback lo requiere)"
+  check_git_hooks
 
   if is_wsl; then
     info "Entorno: WSL"

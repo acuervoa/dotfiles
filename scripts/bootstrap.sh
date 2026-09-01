@@ -17,6 +17,7 @@ Opciones:
   --init-submodules      Inicializa submódulos (git) si aplica
   --skip-tmux-plugins     No instala plugins de tmux via TPM
   --strict-tmux-plugins   Falla si TPM no puede instalar plugins
+  --refresh-i3-workspaces  Regenera el include de workspaces si hay X11 activo
   -h, --help             Muestra esta ayuda
 
 Variables de entorno:
@@ -29,12 +30,14 @@ USAGE
 }
 
 DRY_RUN=false
+# shellcheck disable=SC2034 # consumed by confirm() from common.sh
 ASSUME_YES=false
 INIT_SUBMODULES=false
 GUI_MODE="auto" # auto|on|off
 BACKUP_NEEDED=false
 SKIP_TMUX_PLUGINS=false
 STRICT_TMUX_PLUGINS=false
+REFRESH_I3_WORKSPACES=false
 
 while (($# > 0)); do
   case "$1" in
@@ -42,6 +45,7 @@ while (($# > 0)); do
     DRY_RUN=true
     ;;
   -y | --yes)
+    # shellcheck disable=SC2034 # consumed by confirm() from common.sh
     ASSUME_YES=true
     ;;
   --core-only)
@@ -58,6 +62,9 @@ while (($# > 0)); do
     ;;
   --strict-tmux-plugins)
     STRICT_TMUX_PLUGINS=true
+    ;;
+  --refresh-i3-workspaces)
+    REFRESH_I3_WORKSPACES=true
     ;;
   -h | --help)
     usage
@@ -85,8 +92,11 @@ BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
 MANIFEST_FILE="$MANIFEST_DIR/$TIMESTAMP.manifest"
 
 # Paquetes por defecto (se pueden sobreescribir por perfil de host)
+# shellcheck disable=SC2034 # consumed by load_host_packages_profile/build_config_packages
 HOME_PKGS=()
+# shellcheck disable=SC2034 # consumed by load_host_packages_profile/build_config_packages
 CONFIG_CORE_PKGS=()
+# shellcheck disable=SC2034 # consumed by load_host_packages_profile/build_config_packages
 CONFIG_GUI_PKGS=()
 CONFIG_PKGS=()
 
@@ -263,6 +273,23 @@ maybe_init_submodules() {
   run_cmd git -C "$REPO_DIR" submodule update --init --recursive
 }
 
+refresh_i3_workspaces() {
+  [ "$REFRESH_I3_WORKSPACES" = "true" ] || return 0
+
+  local script="$REPO_DIR/stow/i3/.config/i3/scripts/outputs_apply.sh"
+  if [ ! -x "$script" ]; then
+    warn "No existe outputs_apply.sh; omitiendo include de workspaces."
+    return 0
+  fi
+  if [ -z "${DISPLAY:-}" ] || ! command -v xrandr >/dev/null 2>&1; then
+    warn "No hay X11/xrandr disponible; no se regenera workspaces.local.conf."
+    return 0
+  fi
+
+  action I3 "Regenerando workspaces.local.conf"
+  run_cmd env XDG_CONFIG_HOME="$HOME/.config" "$script"
+}
+
 handle_conflicts() {
   local pkg="$1"
   local target_dir="$2"
@@ -384,6 +411,8 @@ main() {
     handle_conflicts "$pkg" "$HOME"
     run_stow_package "$pkg" "$HOME" -S "Instalando '$pkg' (bajo $HOME/.config)" || continue
   done
+
+  refresh_i3_workspaces
 
   echo
   info "Bootstrap completado."

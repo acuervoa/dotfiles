@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Toggle/crear Obsidian como scratchpad, sin duplicados
 
 MARK="scratch_obs"
 CLASS="obsidian"
+poll_seconds="${I3_SCRATCH_POLL_SECONDS:-0.2}"
+[[ "$poll_seconds" =~ ^[0-9]+([.][0-9]+)?$ ]] || poll_seconds=0.2
 
 # ¿Hay ya una ventana de Obsidian marcada como scractchpad?
 NODE=$(
@@ -49,7 +52,7 @@ fi
 obsidian &
 
 for _ in 1 2 3 4 5 6 7 8 9 10; do
-  sleep 0.2
+  sleep "$poll_seconds"
   OBS_ID=$(
     i3-msg -t get_tree | jq -r '
         .. | objects
