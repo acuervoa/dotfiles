@@ -41,7 +41,7 @@ exec_always --no-startup-id $ext_detect
 # LANZADORES
 # =======================
 # Lanzador de aplicaciones (Rofi)
-bindsym $mod+d exec --no-startup-id sh -c 'log="$HOME/.local/state/rofi/mod-d.log"; mkdir -p "$(dirname "$log")"; { date --iso-8601=seconds; printf "DISPLAY=%s WAYLAND_DISPLAY=%s\\n" "$DISPLAY" "${WAYLAND_DISPLAY-}"; /usr/bin/rofi -show drun -show-icons -font "MesloLGLDZ Nerd Font 10"; printf "exit=%s\\n" "$?"; } >>"$log" 2>&1'
+bindsym $mod+d exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh
 bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
 
