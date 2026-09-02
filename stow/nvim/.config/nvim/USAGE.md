@@ -18,6 +18,13 @@
 
 3. Revisa los atajos globales en `SHORTCUTS.md` para alinear tmux/i3/kitty y Neovim.
 
+### Regla de contexto
+
+`p/r/y/n/z` conservan su semántica nativa en Vim. En Bash representan
+comandos/wrappers del proyecto (por ejemplo `p` para PHP, `r` para repetir y
+`y` para Yazi); el cambio de contexto lo marca la aplicación, no una
+redefinición global de teclas.
+
 ## Atajos esenciales (día a día)
 
 ### Ventanas y panes
@@ -79,7 +86,10 @@
   - Sesiones (`persistence.nvim`):
 	  - `<leader>qs` → restaurar sesión de directorio actual.
 	  - `<leader>ql` → última sesión.
-	  - `<leader>qd` → marcar que no se guarde sesión para esta carpeta.
+  - `<leader>qd` → marcar que no se guarde sesión para esta carpeta.
+
+Desde Bash, `tproj`/`dev` preparan o recuperan el contexto tmux. `lg`, `C-s g`
+en tmux y `<leader>gg` en Neovim son entradas equivalentes a LazyGit.
 
 ---
 

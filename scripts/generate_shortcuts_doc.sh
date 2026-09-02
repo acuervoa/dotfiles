@@ -29,7 +29,9 @@ parse_i3_config() {
   echo ""
   printf '%s\n' "| Atajo / Shortcut | Acción |" "| ---------------- | ------ |"
 
-  grep -E 'bindsym|bindcode' "$config_file" | grep -vE '^\s*#' | while read -r line; do
+  { grep -E 'bindsym|bindcode' "$config_file" || true; } |
+    { grep -vE '^\s*#' || true; } |
+    while read -r line; do
     # Simplified extraction for now
     local shortcut
     local action
@@ -76,7 +78,9 @@ EOF
   echo "Atajos secundarios o de compatibilidad:"
   echo ""
 
-  grep -E 'bind-key|bind -n' "$config_file" | grep -vE '^\s*#' | while read -r line; do
+  { grep -E 'bind-key|bind -n' "$config_file" || true; } |
+    { grep -vE '^\s*#' || true; } |
+    while read -r line; do
     # Simplified extraction
     local shortcut
     local action
@@ -95,7 +99,9 @@ parse_kitty_config() {
   echo ""
   printf '%s\n' "| Atajo / Shortcut | Acción |" "| ---------------- | ------ |"
 
-  grep -E 'map' "$config_file" | grep -vE '^\s*#' | while read -r line; do
+  { grep -E 'map' "$config_file" || true; } |
+    { grep -vE '^\s*#' || true; } |
+    while read -r line; do
     local shortcut
     local action
     shortcut="$(echo "$line" | awk '{print $2, $3}')"
@@ -115,17 +121,19 @@ parse_nvim_keymaps() {
 
   # This will be much harder to parse accurately without a Lua parser.
   # Placeholder: Look for vim.keymap.set calls
-  grep -E 'vim.keymap.set' "$config_file" | grep -vE '^\s*--' | while read -r line; do
+  { grep -E 'vim.keymap.set' "$config_file" || true; } |
+    { grep -vE '^\s*--' || true; } |
+    while read -r line; do
     # Simplified: extract mode, lhs, rhs, desc
     # Pattern: vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
     local mode
     local lhs
     local rhs
     local desc
-    mode="$(echo "$line" | grep -oP 'vim.keymap.set\(\s*("|\x27)(.*?)\x27' | sed -E 's/vim.keymap.set\(("|\x27)(.*?)\x27/\2/g')"
-    lhs="$(echo "$line" | grep -oP '\x27(.*?)\x27\s*,\s*\x27(.*?)\x27' | sed -E 's/\x27(.*?)\x27\s*,\s*\x27(.*?)\x27/\1/g')"
-    rhs="$(echo "$line" | grep -oP ',\s*\x27(.*?)\x27\s*,\s*{' | sed -E 's/,\s*\x27(.*?)\x27\s*,\s*{/\1/g')"
-    desc="$(echo "$line" | grep -oP 'desc\s*=\s*\x27(.*?)\x27' | sed -E 's/desc\s*=\s*\x27(.*?)\x27/\1/g')"
+    mode="$(echo "$line" | grep -oP 'vim.keymap.set\(\s*("|\x27)(.*?)\x27' | sed -E 's/vim.keymap.set\(("|\x27)(.*?)\x27/\2/g' || true)"
+    lhs="$(echo "$line" | grep -oP '\x27(.*?)\x27\s*,\s*\x27(.*?)\x27' | sed -E 's/\x27(.*?)\x27\s*,\s*\x27(.*?)\x27/\1/g' || true)"
+    rhs="$(echo "$line" | grep -oP ',\s*\x27(.*?)\x27\s*,\s*{' | sed -E 's/,\s*\x27(.*?)\x27\s*,\s*[{]/\1/g' || true)"
+    desc="$(echo "$line" | grep -oP 'desc\s*=\s*\x27(.*?)\x27' | sed -E 's/desc\s*=\s*\x27(.*?)\x27/\1/g' || true)"
 
     if [[ -n "$mode" && -n "$lhs" && -n "$rhs" ]]; then
       echo "| $lhs | $mode | $desc |"
@@ -157,6 +165,36 @@ EOF
     parse_tmux_config
     parse_kitty_config
     parse_nvim_keymaps
+
+    cat <<'EOF'
+## Gramática coordinada y owners
+
+| Contexto | Owner | Regla muscular |
+|----------|-------|----------------|
+| i3 | i3 | `$mod` cambia workspace o lanza una aplicación |
+| Kitty | Kitty | Transporte de terminal, clipboard y secuencias Alt |
+| tmux | tmux | `C-s` + acción gestiona panes, ventanas y sesiones |
+| Bash/ble.sh | Bash/ble.sh | Comandos y edición de línea; `C-r` consulta Atuin |
+| Neovim | Neovim | `<leader>` + grupo gestiona código, tareas y revisión |
+| Rofi | Rofi | Selector visual: elegir, `Enter` aceptar, `Escape` cancelar |
+| clipmenu | clipmenu | Historial de clipboard; Kitty/tmux sólo transportan |
+| Feedback | Polybar/Dunst | Estado persistente en Polybar, eventos en Dunst |
+| Proyecto | `tproj`/`dev` | Contexto tmux; LazyGit, Yazi y lnav son herramientas de trabajo |
+
+### Secuencias de memoria muscular
+
+1. Proyecto: `tproj` o `dev` → tmux conserva contexto → Neovim edita.
+2. Navegación: `C-h/j/k/l` mueve foco en tmux/Neovim; `$mod` cambia workspace.
+3. Validación: `<leader>pt/pT`, `<leader>pf/pl` ejecutan test, formato y lint.
+4. Revisión: `lg`, `C-s g` o `<leader>gg` abren LazyGit en su contexto.
+5. Observabilidad: `dlogs`/`lnav` inspeccionan logs y `C-s b` abre btop.
+6. Cierre: `Escape` cancela selectores; `C-s q` cierra un pane con confirmación.
+
+Las teclas `p/r/y/n/z` conservan su semántica nativa dentro de Vim; en Bash
+son comandos o wrappers (`p` para PHP, `r` para repetir, `y` para Yazi,
+`n/z` según el catálogo). El contexto decide la acción: no se redefinen las
+teclas de movimiento o edición del editor para imitar Bash.
+EOF
   } >>"$OUTPUT_FILE"
   # Add other sections later
 

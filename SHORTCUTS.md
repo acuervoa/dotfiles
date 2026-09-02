@@ -84,7 +84,7 @@
 | $mod+Shift+x | exec --no-startup-id ~/.config/i3/scripts/i3lock.sh |
 | $mod+Shift+e | exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'" |
 | control+mod1+Delete | exec --no-startup-id ~/.config/i3/scripts/mode_system.sh |
-| $mod+q | exec --no-startup-id i3-nagbar -t warning -m '¿Cerrar la ventana enfocada?' -B 'Cerrar' 'i3-msg kill' |
+| $mod+q | exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh |
 | $mod+Shift+y | exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh |
 | $mod+y | exec --no-startup-id /usr/bin/dunstctl history-pop |
 | $mod+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh select |
@@ -154,3 +154,31 @@ Atajos secundarios o de compatibilidad:
 
 | Atajo / Shortcut | Modo | Acción |
 | ---------------- | ---- | ------ |
+
+## Gramática coordinada y owners
+
+| Contexto | Owner | Regla muscular |
+|----------|-------|----------------|
+| i3 | i3 | `$mod` cambia workspace o lanza una aplicación |
+| Kitty | Kitty | Transporte de terminal, clipboard y secuencias Alt |
+| tmux | tmux | `C-s` + acción gestiona panes, ventanas y sesiones |
+| Bash/ble.sh | Bash/ble.sh | Comandos y edición de línea; `C-r` consulta Atuin |
+| Neovim | Neovim | `<leader>` + grupo gestiona código, tareas y revisión |
+| Rofi | Rofi | Selector visual: elegir, `Enter` aceptar, `Escape` cancelar |
+| clipmenu | clipmenu | Historial de clipboard; Kitty/tmux sólo transportan |
+| Feedback | Polybar/Dunst | Estado persistente en Polybar, eventos en Dunst |
+| Proyecto | `tproj`/`dev` | Contexto tmux; LazyGit, Yazi y lnav son herramientas de trabajo |
+
+### Secuencias de memoria muscular
+
+1. Proyecto: `tproj` o `dev` → tmux conserva contexto → Neovim edita.
+2. Navegación: `C-h/j/k/l` mueve foco en tmux/Neovim; `$mod` cambia workspace.
+3. Validación: `<leader>pt/pT`, `<leader>pf/pl` ejecutan test, formato y lint.
+4. Revisión: `lg`, `C-s g` o `<leader>gg` abren LazyGit en su contexto.
+5. Observabilidad: `dlogs`/`lnav` inspeccionan logs y `C-s b` abre btop.
+6. Cierre: `Escape` cancela selectores; `C-s q` cierra un pane con confirmación.
+
+Las teclas `p/r/y/n/z` conservan su semántica nativa dentro de Vim; en Bash
+son comandos o wrappers (`p` para PHP, `r` para repetir, `y` para Yazi,
+`n/z` según el catálogo). El contexto decide la acción: no se redefinen las
+teclas de movimiento o edición del editor para imitar Bash.

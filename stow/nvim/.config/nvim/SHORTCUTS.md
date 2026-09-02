@@ -8,6 +8,16 @@
 
 Este fichero resume los atajos “de alto nivel” que deben mantenerse coherentes entre Neovim, tmux, i3/WM, terminal, etc.
 
+La regla de ownership es contextual: i3 gestiona workspaces, tmux panes y
+sesiones, Kitty el transporte, Bash/ble.sh la línea de comandos y Neovim el
+código. Rofi decide selecciones visuales y clipmenu conserva el historial del
+clipboard.
+
+Las teclas `p/r/y/n/z` no se fuerzan a tener una única acción global: en Vim
+mantienen su semántica nativa; en Bash son comandos del catálogo (por ejemplo
+`p` para PHP, `r` para repetir y `y` para Yazi). La memoria muscular se entrena
+por secuencias y contexto, no por una lista plana de teclas.
+
 ## Neovim (config/nvim)
 
 ### Convenciones
@@ -187,6 +197,10 @@ Los atajos históricos `<leader>c[e/z/F/r/D/v]` siguen disponibles.
 | Blame línea                    | `<leader>hb`    |
 | Diff buffer / contra `~`       | `<leader>hd/hD` |
 | Abrir LazyGit                  | `<leader>gg`    |
+
+Entradas equivalentes al mismo owner Git visual: `lg` desde Bash y `C-s g`
+desde tmux. El prefijo `C-s` sigue perteneciendo a tmux; Kitty no intercepta
+esa familia.
 
 ---
 
