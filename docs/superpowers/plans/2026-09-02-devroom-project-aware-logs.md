@@ -42,3 +42,14 @@
 
 - [x] Run `git diff --check`.
 - [x] Commit the test and implementation as `fix(devroom): detect project log configuration`.
+
+### Task 5: Optional per-project configuration and expanded discovery
+
+**Files:**
+- Modify: `stow/tmux/.tmux/scripts/project_logs.sh`
+- Modify: `tests/application_workflow_contract_test.sh`
+
+- [x] Support `.devroom.yml` keys `logs.compose_file` and `logs.service` without adding a mandatory YAML dependency.
+- [x] Discover Compose files under `infra/`, `deploy/`, and `.docker/` as well as the project root and `docker/`.
+- [x] Recognize generic log services `api`, `app`, `backend`, and `web` after the existing PHP/OpenResty names.
+- [x] Validate explicit configuration and autodetection with temporary fixtures based on a valid project Compose file.
