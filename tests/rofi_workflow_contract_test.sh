@@ -12,7 +12,7 @@ test -f "$i3_config"
 test -x "$close_script"
 test -x "$rofi_diagnostic"
 
-grep -Fq 'kb-row-up: "Up,Control+p,Control+k"' "$rofi_config"
+grep -Fq 'kb-row-up: "Up,Control+p"' "$rofi_config"
 grep -Fq 'kb-row-down: "Down,Control+n,Control+j"' "$rofi_config"
 grep -Fq 'kb-accept-entry: "Return,KP_Enter,Control+m"' "$rofi_config"
 grep -Fq 'kb-cancel: "Escape,Control+g"' "$rofi_config"
