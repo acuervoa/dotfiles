@@ -55,6 +55,14 @@ _git_switch_new() {
   fi
 }
 
+# @cmd lg  Abrir LazyGit en el contexto actual
+# - Mantiene la misma entrada visual que tmux `C-s g` y Neovim `<leader>gg`.
+# - No añade operaciones Git: LazyGit conserva sus propias confirmaciones.
+lg() {
+  _req lazygit || return 1
+  command lazygit "$@"
+}
+
 # @cmd grt  Ir a la raiz del repo
 grt() {
   _req git || return 1

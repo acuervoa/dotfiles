@@ -39,8 +39,34 @@ se añaden mappings nuevos en esta fase.
 - Hunks: `]c`, `[c`, `<leader>hs`, `<leader>hr`, `<leader>hp`.
 - Diff e histórico del repositorio: `<leader>hd`, `<leader>hD` y
   `<leader>gg` para LazyGit.
+- Desde Bash, `lg` abre la misma herramienta; desde tmux, `C-s g` la abre en
+  un popup. Son tres entradas contextuales al mismo owner, no tres flujos Git.
 - El staging, commit y push siguen siendo responsabilidad del flujo Git de
-  Bash; Neovim muestra y revisa cambios sin duplicar esas políticas.
+  Bash/LazyGit; Neovim muestra y revisa cambios sin duplicar esas políticas.
+
+## Workflow canónico de backend
+
+1. `tproj <nombre>` recupera o crea la sesión tmux del proyecto; `dev` ofrece
+   el layout de editor, shell y logs cuando se parte de una ruta o repositorio.
+2. El pane de editor abre Neovim. `<leader>pt`/`<leader>pT` ejecuta el test
+   cercano o el fichero actual; `<leader>pf` formatea y `<leader>pl` lanza el
+   lint. `<leader>po` selecciona una tarea de proyecto en Overseer.
+3. El pane shell conserva los comandos Bash/Docker. `y` abre Yazi y devuelve
+   el directorio elegido; no compite con Telescope/Neo-tree, que se reservan
+   para navegar dentro de Neovim.
+4. `lg`, `C-s g` o `<leader>gg` abre LazyGit para revisar el estado, hunks y
+   commits en el mismo repositorio.
+5. `dlogs` selecciona logs de Docker Compose; el layout `dev` puede mantener
+   logs en un pane dedicado. `lnav` queda reservado para inspección interactiva
+   de ficheros o streams de logs cuando esté instalado, y `btop` para estado de
+   procesos/recursos desde `C-s b`.
+
+### Degradación del workflow
+
+Los wrappers comprueban sus dependencias al invocarse. Si falta LazyGit,
+Yazi, FZF, Docker Compose, `lnav` o `btop`, el resto del workflow sigue
+disponible y se muestra un error local; no se añaden bindings globales ni se
+ejecutan acciones mutantes durante los checks de configuración.
 
 ## AI/Codex
 
