@@ -395,6 +395,7 @@ dev() {
   else
     editor_cmd="nano"
   fi
+  editor_cmd="${editor_cmd} ."
 
   # El script detecta mise/Compose según el proyecto y mantiene el pane útil.
   logs_cmd="$HOME/.tmux/scripts/project_logs.sh"
@@ -407,6 +408,14 @@ dev() {
   #   - split vertical sobre pane derecho → arriba derecha (logs) / abajo derecha (shell)
   tmux split-window -h -t "$name:dev" -c "$dest" # ahora la derecha es activa
   tmux split-window -v -t "$name:dev" -c "$dest" # divide la derecha en dos; abajo derecha queda activa
+
+  # Roles visibles sólo en esta sala; no altera la apariencia global de tmux.
+  tmux set-window-option -t "$name:dev" pane-border-status top
+  tmux set-window-option -t "$name:dev" allow-rename off
+  tmux set-window-option -t "$name:dev" pane-border-format ' #[fg=#cba6f7,bold]#P #{pane_title}#[default] '
+  tmux select-pane -t "$name:dev.0" -T "EDITOR"
+  tmux select-pane -t "$name:dev.1" -T "LOGS"
+  tmux select-pane -t "$name:dev.2" -T "SHELL"
 
   # En este punto (ventana dev):
   #   pane activo: abajo derecha  → lo dejamos como shell “libre”

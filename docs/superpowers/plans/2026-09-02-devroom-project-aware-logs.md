@@ -53,3 +53,14 @@
 - [x] Discover Compose files under `infra/`, `deploy/`, and `.docker/` as well as the project root and `docker/`.
 - [x] Recognize generic log services `api`, `app`, `backend`, and `web` after the existing PHP/OpenResty names.
 - [x] Validate explicit configuration and autodetection with temporary fixtures based on a valid project Compose file.
+
+### Task 6: Label panes and open the project in the editor
+
+**Files:**
+- Modify: `stow/bash/.bash_lib/misc.sh`
+- Modify: `tests/application_workflow_contract_test.sh`
+
+- [x] Set `EDITOR`, `LOGS`, and `SHELL` titles on the three panes of the `dev` window.
+- [x] Show pane borders only in that window and preserve the titles with `allow-rename off`.
+- [x] Start the configured editor with `.` so the project directory replaces `[No Name]`.
+- [x] Apply the labels and directory view to the active `db-dms-middle` room and verify the effective tmux options.
