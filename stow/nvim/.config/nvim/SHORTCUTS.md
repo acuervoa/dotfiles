@@ -15,6 +15,7 @@ Este fichero resume los atajos “de alto nivel” que deben mantenerse coherent
 - `<leader>` = espacio (`" "`).
 - `<localleader>` = `,`.
 - Todos los prefijos de `<leader>` están documentados vía `which-key.nvim`:
+  - `<leader>a` → AI / Codex
   - `<leader>b` → Buffers
   - `<leader>c` → Código / LSP
   - `<leader>d` → Debug
@@ -23,6 +24,7 @@ Este fichero resume los atajos “de alto nivel” que deben mantenerse coherent
   - `<leader>h` → Hunks Git
   - `<leader>m` → Markdown
   - `<leader>o` → Overseer (tareas)
+  - `<leader>p` → Project / Backend
   - `<leader>s` → Search / Switch
   - `<leader>t` → Toggles
   - `<leader>u` → UI
@@ -117,6 +119,13 @@ Este fichero resume los atajos “de alto nivel” que deben mantenerse coherent
 | Ejecutar linter manualmente        | `:Lint`                 |
 | Ver info de conform por filetype   | `:ConformInfo`          |
 
+Aliases de proyecto (se mantienen los atajos anteriores):
+
+| Acción                             | Alias                   |
+|------------------------------------|-------------------------|
+| Formatear buffer/selección         | `<leader>pf`            |
+| Ejecutar linter                    | `<leader>pl`            |
+
 ---
 
 ### Tests (neotest)
@@ -129,6 +138,26 @@ Este fichero resume los atajos “de alto nivel” que deben mantenerse coherent
 | Resumen de tests               | `<leader>ts`   |
 | Ver output del último test     | `<leader>to`   |
 | Toggle panel de salida         | `<leader>tO`   |
+
+Aliases de proyecto para tests:
+
+| Acción                         | Alias            |
+|-------------------------------|------------------|
+| Test más cercano               | `<leader>pt`     |
+| Tests del fichero actual       | `<leader>pT`     |
+
+### AI / Codex
+
+| Acción                         | Tecla(s)        |
+|--------------------------------|-----------------|
+| Explicar archivo               | `<leader>ae`    |
+| Explicar repositorio           | `<leader>ar`    |
+| Corregir                       | `<leader>af`    |
+| Refactorizar                   | `<leader>ax`    |
+| Revisar diff                   | `<leader>ad`    |
+| Analizar selección             | `<leader>av`    |
+
+Los atajos históricos `<leader>c[e/z/F/r/D/v]` siguen disponibles.
 
 ---
 
@@ -177,4 +206,3 @@ Este fichero resume los atajos “de alto nivel” que deben mantenerse coherent
 ---
 
 > Para detalles finos (p.ej. qué hace cada tarea de Overseer o qué linters usa cada lenguaje), ver `lua/lang/*.lua` y `PLUGINS.md`.
-

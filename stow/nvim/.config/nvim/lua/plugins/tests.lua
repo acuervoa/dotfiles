@@ -20,11 +20,25 @@ return {
 			desc = "Test más cercano",
 		},
 		{
+			"<leader>pt",
+			function()
+				require("neotest").run.run()
+			end,
+			desc = "Project: test más cercano",
+		},
+		{
 			"<leader>tT",
 			function()
 				require("neotest").run.run(vim.fn.expand("%"))
 			end,
 			desc = "Test más fichero",
+		},
+		{
+			"<leader>pT",
+			function()
+				require("neotest").run.run(vim.fn.expand("%"))
+			end,
+			desc = "Project: test del fichero",
 		},
 		{
 			"<leader>ta",

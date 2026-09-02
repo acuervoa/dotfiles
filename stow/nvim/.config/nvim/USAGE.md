@@ -140,6 +140,15 @@ Atajos en lua/plugins/tests.lua:
 
 Los adaptadores por lenguaje se configuran en `lua/lang/php.lua`, `lua/lang/go.lua`, `lua/lang/python.lua`, `lua/lang/rust.lua`.
 
+Aliases de proyecto/backend:
+
+- `<leader>pt` / `<leader>pT` → test más cercano / fichero actual.
+- `<leader>pf` / `<leader>pl` → formatear / ejecutar lint.
+- `<leader>po` → seleccionar y ejecutar una tarea de Overseer.
+
+Los atajos anteriores (`<leader>tt`, `<leader>tT`, `<leader>cf`, `:Lint` y
+`<leader>or`) se mantienen para compatibilidad.
+
 ### Debug (DAP)
 Atajos definidos en `lua/plugins/dap.lua`:
 	- Flujo básico:
@@ -174,6 +183,13 @@ ___
 ### Tareas (Overseer)
   - `<leader>ot` → Abrir/cerrar lista de tareas (`:OverseerToggle`).
   - `<leader>or` → Ejecutar una plantilla (`:OverseerRun` con `run_template()`).
+  - `<leader>po` → Alias de proyecto para ejecutar una plantilla.
+
+### AI / Codex
+  - `<leader>ae` / `<leader>ar` → explicar archivo / repositorio.
+  - `<leader>af` / `<leader>ax` → corregir / refactorizar.
+  - `<leader>ad` / `<leader>av` → revisar diff / analizar selección visual.
+  - Los atajos históricos `<leader>c[e/z/F/r/D/v]` siguen disponibles.
 
 Las plantillas viven en `lua/lang/*.lua` (PHP, Go, Rust, etc.), y suelen cubrir:
   - Tests (p.ej. `phpunit`, `go test`, `pytest`).

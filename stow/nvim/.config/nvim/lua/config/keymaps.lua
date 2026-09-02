@@ -126,3 +126,12 @@ map("n", "<leader>cF", ":CodexFix<CR>", { desc = "Codex fix" })
 map("n", "<leader>cr", ":CodexRefactor<CR>", { desc = "Codex refactor" })
 map("n", "<leader>cD", ":CodexDiff<CR>", { desc = "Codex diff" })
 map("v", "<leader>cv", ":CodexVisual<CR>", { desc = "Codex visual" })
+
+-- AI: namespace canónico; se conservan los atajos c* anteriores.
+map("n", "<leader>ae", ":CodexExplain<CR>", { desc = "AI: explain file" })
+map("n", "<leader>ar", ":CodexExplainRepo<CR>", { desc = "AI: explain repository" })
+map("n", "<leader>af", ":CodexFix<CR>", { desc = "AI: fix" })
+map("n", "<leader>ax", ":CodexRefactor<CR>", { desc = "AI: refactor" })
+map("n", "<leader>ad", ":CodexDiff<CR>", { desc = "AI: review diff" })
+map("n", "<leader>av", ":CodexVisual<CR>", { desc = "AI: visual selection" })
+map("v", "<leader>av", ":CodexVisual<CR>", { desc = "AI: visual selection" })

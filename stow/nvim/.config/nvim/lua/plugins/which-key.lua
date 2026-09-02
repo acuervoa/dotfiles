@@ -9,6 +9,7 @@ return {
 			padding = { 1, 2 },
 		},
 		spec = {
+			{ "<leader>a", group = "AI" },
 			{ "<leader>b", group = "Buffer" },
 			{ "<leader>c", group = "Code" },
 			{ "<leader>d", group = "Debug" },
@@ -17,6 +18,7 @@ return {
 			{ "<leader>h", group = "Hunk/Harpoon" },
 			{ "<leader>m", group = "Markdown" },
 			{ "<leader>o", group = "Overseer" },
+			{ "<leader>p", group = "Project/Backend" },
 			{ "<leader>s", group = "Switch/Search" },
 			{ "<leader>u", group = "UI" },
 			{ "<leader>w", group = "Write" },

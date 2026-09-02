@@ -7,6 +7,7 @@ return {
 		{ "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Overseer: toggle task list" },
 		{ "<leader>or", "<cmd>OverseerRun<cr>",    desc = "Overseer: run task" },
 		{ "<leader>ob", "<cmd>OverseerBuild<cr>",  desc = "Overseer: build task" },
+		{ "<leader>po", "<cmd>OverseerRun<cr>",   desc = "Project: run task" },
 	},
 	opts = {
 		strategy = "terminal",

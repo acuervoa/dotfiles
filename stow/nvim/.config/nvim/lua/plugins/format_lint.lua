@@ -15,6 +15,14 @@ return {
 				mode = { "n", "v" },
 				desc = "Format Buffer",
 			},
+			{
+				"<leader>pf",
+				function()
+					require("conform").format({ async = true, lsp_fallback = true })
+				end,
+				mode = { "n", "v" },
+				desc = "Project: format buffer",
+			},
 		},
 		config = function()
 			local php = require("lang.php")
@@ -72,6 +80,15 @@ return {
 	{
 		"mfussenegger/nvim-lint",
 		event = { "BufReadPre", "BufNewFile" },
+		keys = {
+			{
+				"<leader>pl",
+				function()
+					require("lint").try_lint()
+				end,
+				desc = "Project: lint buffer",
+			},
+		},
 		config = function()
 			local php = require("lang.php")
 			local bash = require("lang.bash")
