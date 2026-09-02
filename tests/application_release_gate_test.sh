@@ -8,10 +8,11 @@ cd "$repo_root"
 test -z "$(git status --porcelain)"
 git diff --check
 
-# Los sistemas estabilizados no pueden cambiar silenciosamente dentro de esta
-# línea de trabajo. Se compara contra la rama de integración si existe.
-if git rev-parse --verify origin/main >/dev/null 2>&1; then
-  protected_changes="$(git diff --name-only origin/main...HEAD -- \
+# Los sistemas estabilizados no pueden cambiar silenciosamente desde el último
+# release. Se puede fijar otro baseline con APPLICATION_BASELINE_REF.
+baseline_ref="${APPLICATION_BASELINE_REF:-$(git describe --tags --abbrev=0 2>/dev/null || true)}"
+if [ -n "$baseline_ref" ] && git rev-parse --verify "$baseline_ref" >/dev/null 2>&1; then
+  protected_changes="$(git diff --name-only "$baseline_ref"...HEAD -- \
     stow/tmux/.tmux.conf stow/i3/.config/i3/config)"
   test -z "$protected_changes"
 fi
