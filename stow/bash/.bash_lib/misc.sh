@@ -396,8 +396,8 @@ dev() {
     editor_cmd="nano"
   fi
 
-  # Comando para pane de logs (preferimos mise, luego docker compose)
-  logs_cmd='(command -v mise >/dev/null 2>&1 && (mise run logs-openresty || mise run logs-php)) || (command -v docker >/dev/null 2>&1 && (docker compose logs -f openresty || docker compose logs -f php)) || echo "No hay tarea de logs disponible (mise/docker)"'
+  # El script detecta mise/Compose según el proyecto y mantiene el pane útil.
+  logs_cmd="$HOME/.tmux/scripts/project_logs.sh"
 
   # Creamos sesión: 1 window llamada "dev" con 1 pane (será el pane izquierdo)
   tmux new-session -ds "$name" -c "$dest" -n dev
