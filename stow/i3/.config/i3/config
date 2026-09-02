@@ -197,7 +197,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/i3lock.sh
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'"
 bindsym control+mod1+Delete exec --no-startup-id ~/.config/i3/scripts/mode_system.sh
-bindsym $mod+q exec --no-startup-id i3-nagbar -t warning -m '¿Cerrar la ventana enfocada?' -B 'Cerrar' 'i3-msg kill'
+bindsym $mod+q exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh
 
 # =======================
 # NOTIFICACIONES
