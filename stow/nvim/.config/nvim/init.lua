@@ -37,6 +37,7 @@ end
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
+require("config.lsp_log").rotate_if_needed()
 require("config.lazy")
 
 --- Codex commands
