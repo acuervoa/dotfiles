@@ -57,6 +57,10 @@ Owners de soporte:
    terminal y tmux conserva panes, ventanas y sesiones.
 6. ble.sh está cargado en Bash con `--noattach` y se adjunta después de
    Atuin/FZF/keymap; su personalización debe respetar ese orden.
+7. Rofi ya es el selector visual efectivo de i3 para aplicaciones, ventanas,
+   clipboard y confirmaciones. Sus teclas comunes son flechas, `C-j/C-k`,
+   `Enter` y `Escape`; Albert queda como launcher secundario pendiente de
+   decisión, no como owner alternativo en los flujos de i3.
 
 ## Dependencias opcionales
 

@@ -18,8 +18,8 @@ configuration {
   window-format: "{w}   {c}   {t}";
 
   /* Navegación cómoda + aceptar/cancelar */
-  kb-row-up: "Up,Control+p";
-  kb-row-down: "Down,Control+n";
+  kb-row-up: "Up,Control+p,Control+k";
+  kb-row-down: "Down,Control+n,Control+j";
   kb-accept-entry: "Return,KP_Enter,Control+m";
   kb-cancel: "Escape,Control+g";
 
