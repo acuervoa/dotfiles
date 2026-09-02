@@ -12,7 +12,7 @@
 
 | Atajo / Shortcut | Acción |
 | ---------------- | ------ |
-| $mod+d | exec --no-startup-id rofi -modi run -show drun -show-icons -font "MesloLGLDZ Nerd Font 10" |
+| $mod+d | exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh |
 | $mod+F11 | exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10" |
 | $mod+v | exec --no-startup-id "CM_LAUNCHER=rofi clipmenu" |
 | $mod+g | exec --no-startup-id gtk-launch chatgpt-webapp |

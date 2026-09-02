@@ -34,8 +34,8 @@ exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x nm-applet >/dev/null 2>&1 || 
 exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x dunst >/dev/null 2>&1 || exec dunst'
 
 # Ferdium
-assign [class="^Ferdium$"] "8:CHAT"
-exec --no-startup-id sh -c 'flatpak ps --columns=application 2>/dev/null | grep -qFx org.ferdium.Ferdium || exec flatpak run org.ferdium.Ferdium'
+assign [class="(?i)^ferdium$"] "8:CHAT"
+exec --no-startup-id ~/.config/i3/scripts/ferdium-start.sh
 
 # Distribución dinámica de workspaces por salidas
 exec_always --no-startup-id $ext_detect

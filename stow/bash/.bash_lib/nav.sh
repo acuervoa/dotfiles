@@ -434,7 +434,7 @@ tproj() {
 
   # Reutiliza sesiones antiguas sin crear duplicados durante la transición.
   if tmux has-session -t "$legacy_session" 2>/dev/null &&
-     ! tmux has-session -t "$session" 2>/dev/null; then
+    ! tmux has-session -t "$session" 2>/dev/null; then
     tmux rename-session -t "$legacy_session" "$session"
   fi
 
