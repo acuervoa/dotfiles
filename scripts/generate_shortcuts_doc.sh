@@ -32,15 +32,15 @@ parse_i3_config() {
   { grep -E 'bindsym|bindcode' "$config_file" || true; } |
     { grep -vE '^\s*#' || true; } |
     while read -r line; do
-    # Simplified extraction for now
-    local shortcut
-    local action
-    shortcut="$(echo "$line" | awk '{print $2}')"
-    action="$(echo "$line" | cut -d' ' -f3- | sed 's/^--\s*//')" # Remove leading comment if any
+      # Simplified extraction for now
+      local shortcut
+      local action
+      shortcut="$(echo "$line" | awk '{print $2}')"
+      action="$(echo "$line" | cut -d' ' -f3- | sed 's/^--\s*//')" # Remove leading comment if any
 
-    # Further processing needed to clean up action and handle variables like $mod
-    echo "| $shortcut | $action |"
-  done
+      # Further processing needed to clean up action and handle variables like $mod
+      echo "| $shortcut | $action |"
+    done
   echo ""
 
 }
@@ -81,13 +81,13 @@ EOF
   { grep -E 'bind-key|bind -n' "$config_file" || true; } |
     { grep -vE '^\s*#' || true; } |
     while read -r line; do
-    # Simplified extraction
-    local shortcut
-    local action
-    shortcut="$(echo "$line" | awk '{print $2, $3}')"
-    action="$(echo "$line" | cut -d' ' -f4- | sed 's/^--\s*//')"
-    echo "| $shortcut | $action |"
-  done
+      # Simplified extraction
+      local shortcut
+      local action
+      shortcut="$(echo "$line" | awk '{print $2, $3}')"
+      action="$(echo "$line" | cut -d' ' -f4- | sed 's/^--\s*//')"
+      echo "| $shortcut | $action |"
+    done
   echo ""
 
 }
@@ -102,12 +102,12 @@ parse_kitty_config() {
   { grep -E 'map' "$config_file" || true; } |
     { grep -vE '^\s*#' || true; } |
     while read -r line; do
-    local shortcut
-    local action
-    shortcut="$(echo "$line" | awk '{print $2, $3}')"
-    action="$(echo "$line" | cut -d' ' -f4- | sed 's/^--\s*//')"
-    echo "| $shortcut | $action |"
-  done
+      local shortcut
+      local action
+      shortcut="$(echo "$line" | awk '{print $2, $3}')"
+      action="$(echo "$line" | cut -d' ' -f4- | sed 's/^--\s*//')"
+      echo "| $shortcut | $action |"
+    done
   echo ""
 
 }
@@ -124,21 +124,21 @@ parse_nvim_keymaps() {
   { grep -E 'vim.keymap.set' "$config_file" || true; } |
     { grep -vE '^\s*--' || true; } |
     while read -r line; do
-    # Simplified: extract mode, lhs, rhs, desc
-    # Pattern: vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
-    local mode
-    local lhs
-    local rhs
-    local desc
-    mode="$(echo "$line" | grep -oP 'vim.keymap.set\(\s*("|\x27)(.*?)\x27' | sed -E 's/vim.keymap.set\(("|\x27)(.*?)\x27/\2/g' || true)"
-    lhs="$(echo "$line" | grep -oP '\x27(.*?)\x27\s*,\s*\x27(.*?)\x27' | sed -E 's/\x27(.*?)\x27\s*,\s*\x27(.*?)\x27/\1/g' || true)"
-    rhs="$(echo "$line" | grep -oP ',\s*\x27(.*?)\x27\s*,\s*{' | sed -E 's/,\s*\x27(.*?)\x27\s*,\s*[{]/\1/g' || true)"
-    desc="$(echo "$line" | grep -oP 'desc\s*=\s*\x27(.*?)\x27' | sed -E 's/desc\s*=\s*\x27(.*?)\x27/\1/g' || true)"
+      # Simplified: extract mode, lhs, rhs, desc
+      # Pattern: vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
+      local mode
+      local lhs
+      local rhs
+      local desc
+      mode="$(echo "$line" | grep -oP 'vim.keymap.set\(\s*("|\x27)(.*?)\x27' | sed -E 's/vim.keymap.set\(("|\x27)(.*?)\x27/\2/g' || true)"
+      lhs="$(echo "$line" | grep -oP '\x27(.*?)\x27\s*,\s*\x27(.*?)\x27' | sed -E 's/\x27(.*?)\x27\s*,\s*\x27(.*?)\x27/\1/g' || true)"
+      rhs="$(echo "$line" | grep -oP ',\s*\x27(.*?)\x27\s*,\s*{' | sed -E 's/,\s*\x27(.*?)\x27\s*,\s*[{]/\1/g' || true)"
+      desc="$(echo "$line" | grep -oP 'desc\s*=\s*\x27(.*?)\x27' | sed -E 's/desc\s*=\s*\x27(.*?)\x27/\1/g' || true)"
 
-    if [[ -n "$mode" && -n "$lhs" && -n "$rhs" ]]; then
-      echo "| $lhs | $mode | $desc |"
-    fi
-  done
+      if [[ -n "$mode" && -n "$lhs" && -n "$rhs" ]]; then
+        echo "| $lhs | $mode | $desc |"
+      fi
+    done
   echo ""
 }
 
