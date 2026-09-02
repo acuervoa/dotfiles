@@ -22,6 +22,9 @@ if grep -Fq 'bindsym $mod+d exec --no-startup-id rofi -modi run -show drun' "$i3
 fi
 grep -Fq 'bindsym $mod+d exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh' "$i3_config"
 grep -Fq 'mod-d.log' "$rofi_diagnostic"
+grep -Fq 'rofi.pid' "$rofi_diagnostic"
+grep -Fq 'kill -0' "$rofi_diagnostic"
+grep -Fq 'rm -f -- "$pidfile"' "$rofi_diagnostic"
 grep -Fq '2>&1' "$rofi_diagnostic"
 grep -Fq 'bindsym $mod+f exec --no-startup-id rofi -show window' "$i3_config"
 grep -Fq 'bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"' "$i3_config"
