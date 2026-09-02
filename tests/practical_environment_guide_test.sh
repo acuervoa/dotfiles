@@ -32,8 +32,8 @@ done
 for file in "$es" "$en"; do
   grep -Fq 'SHORTCUTS.md' "$file"
   grep -Fq 'stow/nvim/.config/nvim/USAGE.md' "$file"
-  grep -Fq 'docs/audits/2026-09-01-neovim-workflows.md' "$file"
-  grep -Fq 'docs/audits/2026-09-02-application-integration.md' "$file"
+  grep -Fq 'audits/2026-09-01-neovim-workflows.md' "$file"
+  grep -Fq 'audits/2026-09-02-application-integration.md' "$file"
 done
 
 printf '%s\n' 'PASS: guías práctica y English cubren la misma gramática'
