@@ -2,14 +2,17 @@
 
 ## Objetivo
 
-Crear una guía orientada al uso diario que permita aprender el entorno por
-secuencias de trabajo. La guía debe reducir la carga de recordar dónde vive
-cada función, sin sustituir ni alterar la configuración existente.
+Crear dos guías orientadas al uso diario, una en español y otra en inglés, que
+permitan aprender el entorno por secuencias de trabajo. Deben reducir la carga
+de recordar dónde vive cada función, sin sustituir ni alterar la configuración
+existente.
 
 ## Audiencia y alcance
 
 La audiencia es la persona usuaria del workspace, que conoce las herramientas
-por separado pero necesita integrar los cambios recientes. El alcance cubre
+por separado pero necesita integrar los cambios recientes. La guía española
+será la referencia principal y la inglesa mantendrá la misma estructura y
+significado. El alcance cubre
 Kitty, i3, tmux, Bash/ble.sh, Atuin, FZF, Rofi, clipmenu, Neovim, LazyGit,
 Yazi, Docker/logs y btop.
 
@@ -17,9 +20,10 @@ Quedan fuera la explicación interna de cada plugin, la optimización de
 arranque y cualquier cambio de bindings. Esas materias se referencian en la
 documentación técnica existente.
 
-## Estructura de la guía
+## Estructura de las guías
 
-El documento final seguirá un recorrido progresivo:
+Ambos documentos seguirán el mismo recorrido progresivo, traducido de forma
+natural al idioma correspondiente:
 
 1. modelo mental de ownership y contexto;
 2. arranque de una sesión y navegación i3/tmux;
@@ -60,8 +64,8 @@ existentes.
 
 - Todos los comandos y mappings citados deben existir en los archivos
   versionados actuales.
-- La guía debe enlazar `SHORTCUTS.md`, `USAGE.md`, los workflows de Neovim y
-  los audits de integración.
+- Ambas guías deben enlazar `SHORTCUTS.md`, `USAGE.md`, los workflows de
+  Neovim y los audits de integración.
 - Un test estático comprobará las secciones, los owners y las entradas críticas.
 - Se ejecutarán `bash scripts/check.sh`, el release gate y `git diff --check`.
 - No se modificarán `.bashrc_local`, tmux ni i3.

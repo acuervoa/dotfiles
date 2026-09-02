@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Create a progressive, self-contained daily-use guide for the coordinated Kitty, i3, tmux, Bash, Neovim and project workflow.
+**Goal:** Create matching progressive daily-use guides in Spanish and English for the coordinated Kitty, i3, tmux, Bash, Neovim and project workflow.
 
-**Architecture:** Add one user-facing Markdown guide under `docs/`, organized by complete workflows rather than by application. Add a static Bash contract test for required sections, commands and references. Do not alter configuration.
+**Architecture:** Add `docs/guia-practica-entorno.md` as the Spanish primary guide and `docs/practical-environment-guide.md` as its English counterpart, organized by complete workflows rather than applications. Add a static Bash contract test for required sections, commands and references in both files. Do not alter configuration.
 
 **Tech Stack:** Markdown, Bash contract test, existing shell validation scripts.
 
@@ -18,7 +18,7 @@
 - [ ] **Step 1: Write the failing test**
 
 Create a Bash test that resolves the repository root, requires
-`docs/practical-environment-guide.md`, checks headings `Modelo mental`,
+`docs/guia-practica-entorno.md` and `docs/practical-environment-guide.md`, checks headings `Modelo mental`,
 `Arranque`, `Workflow backend`, `Git`, `Logs`, `Cierre y recuperación` and
 `Ejercicios`, and verifies mentions of `C-s`, `$mod`, `tproj`, `<leader>pt`,
 `lg`, `dlogs`, `clipmenu`, `Atuin`, `Rofi` and `Yazi`. Also require links to
@@ -29,7 +29,7 @@ Create a Bash test that resolves the repository root, requires
 - [ ] **Step 2: Verify red**
 
 Run `bash tests/practical_environment_guide_test.sh`.
-Expected: FAIL because the guide does not exist.
+Expected: FAIL because the two guides do not exist.
 
 - [ ] **Step 3: Commit**
 
@@ -39,17 +39,21 @@ test as `test(docs): define practical environment guide coverage`.
 ### Task 2: Write the progressive guide
 
 **Files:**
+- Create: `docs/guia-practica-entorno.md`
 - Create: `docs/practical-environment-guide.md`
 
 - [ ] **Step 1: Orientation and startup**
 
-Document ownership in plain language and the sequence
+Write the Spanish guide first. Document ownership in plain language and the sequence
 `i3 $mod+Return → Kitty → tmux (prefix C-s)`. Cover `$mod+d` applications,
 `$mod+f` windows, `$mod+v` clipboard history, `$mod+y` notifications and
 `C-s ?` help. Explain Kitty as transport, tmux as pane/window/session owner,
 and `Escape` as selector cancellation.
 
 - [ ] **Step 2: Project and editor workflow**
+
+Translate the complete chapter into English in the second file, preserving
+commands, mappings and expected results rather than translating identifiers.
 
 Document `tproj <nombre>` and `dev`, including the expected editor, shell and
 logs layout. Give the sequence `<C-p>`/`<leader>ff`, `<leader>fg`,
@@ -81,10 +85,12 @@ destructive operations.
 
 - [ ] **Step 6: References and contract**
 
-Link root `SHORTCUTS.md`, Neovim `SHORTCUTS.md`/`USAGE.md`,
+Link the same references from both guides: root `SHORTCUTS.md`, Neovim `SHORTCUTS.md`/`USAGE.md`,
 `docs/audits/2026-09-01-neovim-workflows.md`,
 `docs/audits/2026-09-02-application-integration.md`,
-`docs/bash-workflows.md` and `docs/bash-muscle-memory.md`. Run
+`docs/bash-workflows.md` and `docs/bash-muscle-memory.md`. The test must verify
+the required section headings in both languages and the same critical command
+tokens in both files. Run
 `bash tests/practical_environment_guide_test.sh`; expected PASS without
 starting applications or reading private clipboard/history. Commit as
 `docs(productivity): add practical environment guide`.
@@ -92,6 +98,7 @@ starting applications or reading private clipboard/history. Commit as
 ### Task 3: Validate and hand off
 
 **Files:**
+- Inspect: `docs/guia-practica-entorno.md`
 - Inspect: `docs/practical-environment-guide.md`
 - Inspect: `tests/practical_environment_guide_test.sh`
 
