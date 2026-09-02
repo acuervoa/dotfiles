@@ -35,5 +35,5 @@ regresión, con commit y rollback independientes.
 
 `tests/application_release_gate_test.sh` comprueba checkout limpio, sintaxis,
 configuración estática de escritorio, contratos de integración, documentación
-presente y ausencia de cambios en tmux/i3 respecto al último tag de release
-(o `APPLICATION_BASELINE_REF` si se fija explícitamente).
+presente y ausencia de cambios en tmux/i3 respecto a la base de esta fase
+(`974a4ec`; se puede sustituir con `APPLICATION_BASELINE_REF`).
