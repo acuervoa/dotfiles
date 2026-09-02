@@ -17,6 +17,10 @@ test -x "$project_logs"
 
 # Entradas Bash del workflow: proyecto, edición, filesystem, Git y logs.
 grep -Fq 'tproj()' "$nav_lib"
+grep -Fq 'fzf --query="$name"' "$nav_lib"
+grep -Fq 'dev "$selection"' "$nav_lib"
+grep -Fq 'proj-$project_name' "$nav_lib"
+grep -Fq 'rename-session' "$nav_lib"
 grep -Fq 'dev()' "$misc_lib"
 grep -Fq 'y()' "$misc_lib"
 grep -Fq 'dlogs()' "$docker_lib"

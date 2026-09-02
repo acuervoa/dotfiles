@@ -399,41 +399,44 @@ proj() {
 }
 
 tproj() {
+  _req fzf tmux || return 1
+
   local name="${1:-}"
+  local root="${PROJECTS_ROOT:-$HOME/Workspace}"
+  local selection project_name session legacy_session
 
-  if [ -z "$name" ]; then
-    printf 'Uso: tproj <nombre-proyecto>\n' >&2
+  if [ ! -d "$root" ]; then
+    printf 'Directorio de proyectos no existe: %s\n' "$root" >&2
     return 1
   fi
 
-  local dir="$HOME/Workspace/$name"
+  selection="$(
+    find "$root" -mindepth 2 -maxdepth 4 -type d -name .git -print 2>/dev/null |
+      sed 's|/\.git$||' |
+      sort -u |
+      fzf --query="$name" \
+        --prompt=' tproj > ' \
+        --preview='
+          target="{}"
+          if command -v eza >/dev/null 2>&1; then
+            eza -lah --color=always -- "$target"
+          else
+            \ls -lah -- "$target"
+          fi
+        '
+  )" || return 0
 
-  if [ ! -d "$dir" ]; then
-    printf 'No existe el directorio %s\n' "$dir" >&2
-    return 1
+  [ -n "$selection" ] || return 0
+
+  project_name="$(basename "$selection")"
+  session="$project_name"
+  legacy_session="proj-$project_name"
+
+  # Reutiliza sesiones antiguas sin crear duplicados durante la transición.
+  if tmux has-session -t "$legacy_session" 2>/dev/null &&
+     ! tmux has-session -t "$session" 2>/dev/null; then
+    tmux rename-session -t "$legacy_session" "$session"
   fi
 
-  local session="proj-$name"
-
-  if tmux has-session -t "$session" 2>/dev/null; then
-    if [ -n "${TMUX-}" ]; then
-      tmux switch-client -t "$session"
-    else
-      tmux attach -t "$session"
-    fi
-    return 0
-  fi
-
-  tmux new-session -d -s "$session" -c "$dir" -n dev
-  tmux send-keys -t "$session:dev" 'nvim .' C-m
-
-  tmux new-window -t "$session" -n shell -c "$dir"
-  tmux new-window -t "$session" -n logs -c "$dir"
-  tmux send-keys -t "$session:logs" 'docker compose logs -f php' C-m
-
-  if [ -n "${TMUX-}" ]; then
-    tmux switch-client -t "$session"
-  else
-    tmux attach -t "$session"
-  fi
+  dev "$selection"
 }
