@@ -22,7 +22,7 @@ while IFS='|' read -r record capability owner; do
 done <<<"$ownership"
 
 output="$($audit)"
-for app in Kitty Rofi Albert Dunst Polybar CopyQ 'ble.sh' Atuin FZF Starship zoxide direnv mise fnm LazyGit Yazi lnav btop Neovim; do
+for app in Kitty Rofi Albert Dunst Polybar CopyQ clipmenu 'ble.sh' Atuin FZF Starship zoxide direnv mise fnm LazyGit Yazi lnav btop Neovim; do
   printf '%s\n' "$output" | grep -Fq "APP|$app|" || {
     printf 'aplicativo ausente del inventario: %s\n' "$app" >&2
     exit 1

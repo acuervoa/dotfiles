@@ -7,7 +7,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Estas líneas son la fuente machine-readable del contrato de ownership.
 # CAPABILITY|launcher|Rofi
 # CAPABILITY|history|Atuin
-# CAPABILITY|clipboard-history|CopyQ
+# CAPABILITY|clipboard-history|clipmenu
 # CAPABILITY|prompt|Starship
 # CAPABILITY|panes|tmux
 # CAPABILITY|windows|i3
@@ -25,6 +25,7 @@ declare -a apps=(
   'Dunst|dunst|stow/dunst/.config/dunst/dunstrc|notifications'
   'Polybar|polybar|stow/polybar/.config/polybar/config.ini|persistent status'
   'CopyQ|copyq|stow/copyq/.config/copyq/copyq.conf|clipboard history'
+  'clipmenu|clipmenu|stow/i3/.config/i3/config|clipboard history selector'
   'ble.sh|/usr/share/blesh/ble.sh|stow/blesh/.config/blesh/blerc|line editing'
   'Atuin|atuin|stow/atuin/.config/atuin/config.toml|history backend'
   'FZF|fzf|stow/bash/.bashrc|text selection'

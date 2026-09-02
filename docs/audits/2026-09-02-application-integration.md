@@ -19,7 +19,7 @@ bash scripts/audit-application-ownership.sh
 |---|---|---|---|
 | Launcher de aplicaciones | Rofi | selección visual | i3 `$mod+d` |
 | Historial | Atuin | comandos Bash | Bash `C-r` |
-| Historial de clipboard | CopyQ | escritorio | CopyQ/clipmenu |
+| Historial de clipboard | clipmenu | escritorio | i3 `$mod+v` |
 | Prompt | Starship | Bash | prompt actual |
 | Panes | tmux | terminal | `C-s` |
 | Ventanas | i3 | escritorio | `$mod` |
@@ -48,9 +48,10 @@ Owners de soporte:
 2. Albert y Rofi pueden solaparse como launchers. Albert queda documentado
    como launcher secundario pendiente de una auditoría de uso; no se desactiva
    automáticamente.
-3. CopyQ y clipmenu pueden solaparse como interfaces de historial visual,
-   mientras que `pbcopy`, tmux y Neovim son transportes. La distinción debe
-   conservarse hasta completar la auditoría de clipboard.
+3. `clipmenu` es la autoridad histórica elegida para el clipboard visual.
+   CopyQ está instalado y configurado, pero su autostart fue desactivado
+   explícitamente en un commit anterior; no debe reintroducirse sin una nueva
+   decisión. `pbcopy`, tmux y Neovim son transportes.
 4. Polybar, tmux y Starship pueden mostrar estado Git en ámbitos distintos.
    No se retira información sin medir coste y utilidad.
 5. Kitty y tmux tienen responsabilidades separadas: Kitty transporta la
