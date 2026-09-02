@@ -23,6 +23,9 @@ exec_always --no-startup-id numlockx on
 # Lanzador universal (apps, archivos, cálculos)
 exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x albert >/dev/null 2>&1 || exec albert'
 
+# Clipboard history: systemd puede arrancarlo antes de que i3 exporte DISPLAY.
+exec --no-startup-id ~/.config/i3/scripts/clipmenud-start.sh
+
 # Barra 
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 

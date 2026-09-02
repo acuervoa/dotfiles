@@ -6,11 +6,13 @@ rofi_config="$repo_root/stow/rofi/.config/rofi/config.rasi"
 i3_config="$repo_root/stow/i3/.config/i3/config"
 close_script="$repo_root/stow/i3/.config/i3/scripts/confirm_kill.sh"
 rofi_diagnostic="$repo_root/stow/i3/.config/i3/scripts/rofi-diagnostic.sh"
+clipmenud_start="$repo_root/stow/i3/.config/i3/scripts/clipmenud-start.sh"
 
 test -f "$rofi_config"
 test -f "$i3_config"
 test -x "$close_script"
 test -x "$rofi_diagnostic"
+test -x "$clipmenud_start"
 
 grep -Fq 'kb-row-up: "Up,Control+p"' "$rofi_config"
 grep -Fq 'kb-row-down: "Down,Control+n,Control+j"' "$rofi_config"
@@ -28,7 +30,12 @@ grep -Fq 'rm -f -- "$pidfile"' "$rofi_diagnostic"
 grep -Fq '2>&1' "$rofi_diagnostic"
 grep -Fq 'bindsym $mod+f exec --no-startup-id rofi -show window' "$i3_config"
 grep -Fq 'bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"' "$i3_config"
+grep -Fq 'exec --no-startup-id ~/.config/i3/scripts/clipmenud-start.sh' "$i3_config"
 grep -Fq 'bindsym $mod+q exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh' "$i3_config"
 grep -Fq -- '-no-custom' "$close_script"
+
+grep -Fq 'import-environment DISPLAY XAUTHORITY' "$clipmenud_start"
+grep -Fq 'reset-failed clipmenud.service' "$clipmenud_start"
+grep -Fq 'restart clipmenud.service' "$clipmenud_start"
 
 printf '%s\n' 'PASS: Rofi es el selector visual keyboard-first de i3'
