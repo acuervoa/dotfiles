@@ -17,19 +17,19 @@
 - Reference: `stow/bash/.bash_lib/git.sh`
 - Reference: `stow/bash/.bash_lib/core.sh`
 
-- [ ] **Step 1: Test `gpf` rejection and invocation**
+- [x] **Step 1: Test `gpf` rejection and invocation**
 
 Create a temporary executable `git` wrapper that logs arguments and delegates non-push operations to the real Git binary. Source `core.sh` and `git.sh` with the wrapper first in `PATH`, set `VISUAL=true`, and run `gpf` twice using piped input: `n` must produce no logged `push`, while `y` must log exactly `push --force-with-lease`.
 
-- [ ] **Step 2: Test `wip` blocks sensitive staged paths**
+- [x] **Step 2: Test `wip` blocks sensitive staged paths**
 
 In a temporary Git repository, create `.env`, stage it, run `wip`, and assert the commit count remains unchanged. Inspect only `git diff --cached --name-only`; never print file contents.
 
-- [ ] **Step 3: Test `wip` permits ordinary staged paths**
+- [x] **Step 3: Test `wip` permits ordinary staged paths**
 
 In a separate temporary repository, create `README.md`, stage it, run `wip`, and assert the commit count increases to one. Configure a local test identity only inside that temporary repository.
 
-- [ ] **Step 4: Run the test before implementation**
+- [x] **Step 4: Run the test before implementation**
 
 Run `bash tests/bash_git_safety_test.sh`. Expected: FAIL because `gpf` is currently an alias and `wip` has no sensitive-path guard.
 
@@ -39,11 +39,11 @@ Run `bash tests/bash_git_safety_test.sh`. Expected: FAIL because `gpf` is curren
 - Modify: `stow/bash/.bash_aliases`
 - Modify: `stow/bash/.bash_lib/git.sh`
 
-- [ ] **Step 1: Remove the direct alias**
+- [x] **Step 1: Remove the direct alias**
 
 Delete only `alias gpf='git push --force-with-lease'` from `.bash_aliases`; leave all other aliases unchanged.
 
-- [ ] **Step 2: Add the protected function**
+- [x] **Step 2: Add the protected function**
 
 Add this public function near `gp` in `git.sh`:
 
@@ -62,7 +62,7 @@ gpf() {
 }
 ```
 
-- [ ] **Step 3: Run focused tests**
+- [x] **Step 3: Run focused tests**
 
 Run `bash tests/bash_git_safety_test.sh`; expect `gpf` cases to PASS while the sensitive `wip` case remains red.
 
@@ -71,7 +71,7 @@ Run `bash tests/bash_git_safety_test.sh`; expect `gpf` cases to PASS while the s
 **Files:**
 - Modify: `stow/bash/.bash_lib/git.sh`
 
-- [ ] **Step 1: Add the pathname predicate**
+- [x] **Step 1: Add the pathname predicate**
 
 Add before `wip`:
 
@@ -84,7 +84,7 @@ _git_has_sensitive_staged_paths() {
 
 It must consume only NUL-delimited pathnames and return success when a pathname matches.
 
-- [ ] **Step 2: Guard after staging**
+- [x] **Step 2: Guard after staging**
 
 Immediately after `git add -A`, add:
 
@@ -97,7 +97,7 @@ fi
 
 Do not print contents and do not automatically unstage anything.
 
-- [ ] **Step 3: Run the focused test**
+- [x] **Step 3: Run the focused test**
 
 Run `bash tests/bash_git_safety_test.sh`; expect all cases to PASS.
 
@@ -108,11 +108,11 @@ Run `bash tests/bash_git_safety_test.sh`; expect all cases to PASS.
 - Modify: `stow/bash/.bash_aliases`
 - Modify: `stow/bash/.bash_lib/git.sh`
 
-- [ ] **Step 1: Verify runtime types**
+- [x] **Step 1: Verify runtime types**
 
 Source `.bashrc` in a clean shell and print only `type -t gpf`, `type -t gp`, `type -t gundo`, and `type -t gclean`. Expected: `function` for all four.
 
-- [ ] **Step 2: Run full tests and syntax checks**
+- [x] **Step 2: Run full tests and syntax checks**
 
 Run:
 
@@ -124,11 +124,11 @@ git diff --check
 
 Expected: every test exits 0, every Bash file parses, and the diff has no whitespace errors.
 
-- [ ] **Step 3: Inspect scope and secrets**
+- [x] **Step 3: Inspect scope and secrets**
 
 Run `git diff -- stow/bash/.bash_aliases stow/bash/.bash_lib/git.sh tests/bash_git_safety_test.sh`. Confirm no tmux/i3 files, local override files, secret values, or unrelated commands changed.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 Run:
 

@@ -17,23 +17,23 @@
 - Reference: `stow/bash/.bash_lib/docker.sh`
 - Reference: `stow/bash/.bash_lib/core.sh`
 
-- [ ] **Step 1: Build the fake Compose harness**
+- [x] **Step 1: Build the fake Compose harness**
 
 Create a temporary `docker` executable that logs every argument and returns successful output for `docker compose version` and `docker compose ps --services`; make other calls succeed after logging. Create a temporary project containing `compose.yml` and source `core.sh` plus `docker.sh` from inside that project.
 
-- [ ] **Step 2: Test rejection before Docker resolution**
+- [x] **Step 2: Test rejection before Docker resolution**
 
 For `pmig`, `pseed`, `pclear`, and `dorebuild`, pipe `n` into each command and assert the Docker log remains empty. This proves confirmation occurs before Compose discovery or execution.
 
-- [ ] **Step 3: Test confirmed argument contracts**
+- [x] **Step 3: Test confirmed argument contracts**
 
 Pipe `y` into each protected command and assert the logged calls preserve these exact operations: `compose exec php php artisan migrate`, `compose exec php php artisan db:seed`, the three `compose exec php php artisan ...:clear` calls for `pclear`, and `compose build --no-cache` followed by `compose up -d` for `dorebuild`.
 
-- [ ] **Step 4: Test `dcrb` delegation and fast commands**
+- [x] **Step 4: Test `dcrb` delegation and fast commands**
 
 Assert `dcrb` produces the same two rebuild calls through `dorebuild`, and assert `p`, `part`, `ptest`, `pstan`, `pint`, and `proute` do not read confirmation input before delegating.
 
-- [ ] **Step 5: Run the test before implementation**
+- [x] **Step 5: Run the test before implementation**
 
 Run `bash tests/bash_docker_safety_test.sh`. Expected: FAIL because the protected commands execute without confirmation and `dcrb` is still an alias.
 
@@ -42,19 +42,19 @@ Run `bash tests/bash_docker_safety_test.sh`. Expected: FAIL because the protecte
 **Files:**
 - Modify: `stow/bash/.bash_lib/docker.sh`
 
-- [ ] **Step 1: Add a single protected rebuild implementation**
+- [x] **Step 1: Add a single protected rebuild implementation**
 
 Update `dorebuild` so it prints the no-cache rebuild warning, calls `_confirm '¿Continuar? [y/N] '`, returns without calling `_have_compose` when rejected, and only then runs the existing `build --no-cache "$@" && up -d` sequence.
 
-- [ ] **Step 2: Add confirmation to `pmig` and `pseed`**
+- [x] **Step 2: Add confirmation to `pmig` and `pseed`**
 
 Before `_docker_compose_exec_php`, print the operation and call `_confirm`; return 0 without invoking Compose when rejected. Preserve all arguments after the Artisan command.
 
-- [ ] **Step 3: Add confirmation to `pclear`**
+- [x] **Step 3: Add confirmation to `pclear`**
 
 Before the first cache-clear operation, print that view, application, and config caches will be cleared, call `_confirm`, and return 0 on rejection. Preserve the existing three-command sequence.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run `bash tests/bash_docker_safety_test.sh`; expect protected command tests to pass while the alias/delegation case remains red until Task 3.
 
@@ -64,15 +64,15 @@ Run `bash tests/bash_docker_safety_test.sh`; expect protected command tests to p
 - Modify: `stow/bash/.bash_aliases`
 - Modify: `stow/bash/.bash_lib/docker.sh`
 
-- [ ] **Step 1: Remove the direct rebuild alias**
+- [x] **Step 1: Remove the direct rebuild alias**
 
 Delete only `alias dcrb='docker compose build --no-cache && docker compose up -d'` from `.bash_aliases`.
 
-- [ ] **Step 2: Add the delegation function**
+- [x] **Step 2: Add the delegation function**
 
 Add a public `dcrb()` function in `docker.sh` with `# @cmd dcrb` that calls `dorebuild "$@"`. It must not duplicate confirmation or Compose command logic.
 
-- [ ] **Step 3: Run focused tests**
+- [x] **Step 3: Run focused tests**
 
 Run `bash tests/bash_docker_safety_test.sh`; expected result is all PASS.
 
@@ -83,11 +83,11 @@ Run `bash tests/bash_docker_safety_test.sh`; expected result is all PASS.
 - Modify: `stow/bash/.bash_aliases`
 - Modify: `stow/bash/.bash_lib/docker.sh`
 
-- [ ] **Step 1: Verify runtime types**
+- [x] **Step 1: Verify runtime types**
 
 Source `.bashrc` in a clean shell and print only `type -t dcrb`, `type -t dorebuild`, `type -t pmig`, `type -t pseed`, and `type -t pclear`. Expected: `function` for all five.
 
-- [ ] **Step 2: Run the full Bash suite and syntax checks**
+- [x] **Step 2: Run the full Bash suite and syntax checks**
 
 Run:
 
@@ -99,11 +99,11 @@ git diff --check
 
 Expected: every test exits 0, every Bash file parses, and no whitespace errors are reported.
 
-- [ ] **Step 3: Inspect scope and secret safety**
+- [x] **Step 3: Inspect scope and secret safety**
 
 Run `git diff -- stow/bash/.bash_aliases stow/bash/.bash_lib/docker.sh tests/bash_docker_safety_test.sh`. Confirm no tmux/i3 files, `.env` contents, local override files, or unrelated commands changed.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 Run:
 

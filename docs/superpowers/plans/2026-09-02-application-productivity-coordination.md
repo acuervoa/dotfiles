@@ -48,11 +48,11 @@
 - Create: `docs/audits/2026-09-02-application-integration.md`
 - Test: `scripts/check-desktop-configs.sh`, `scripts/check.sh`
 
-- [ ] Inventariar sólo archivos versionados y binarios disponibles. El script debe listar Kitty, Rofi, Albert, Dunst, Polybar, CopyQ, ble.sh, Atuin, FZF, Starship, zoxide, direnv, mise, fnm, LazyGit, Yazi, lnav, btop y Neovim con ruta de configuración, owner propuesto y teclas/comandos detectados.
-- [ ] Hacer que `tests/application_ownership_test.sh` falle si una capacidad tiene más de un owner declarado: launcher de aplicaciones, historial, clipboard histórico, prompt, panes, ventanas, editor, Git visual o notificaciones.
-- [ ] Registrar en `docs/audits/2026-09-02-application-integration.md` la matriz inicial, duplicaciones conocidas (Albert/Rofi y CopyQ/clipmenu), dependencias opcionales y archivos protegidos.
-- [ ] Ejecutar `bash scripts/audit-application-ownership.sh`, `bash tests/application_ownership_test.sh`, `bash scripts/check.sh` y `bash scripts/check-desktop-configs.sh --static`; el baseline debe ser informativo y no cambiar comportamiento.
-- [ ] Commit: `audit(apps): establish application ownership baseline`.
+- [x] Inventariar sólo archivos versionados y binarios disponibles. El script debe listar Kitty, Rofi, Albert, Dunst, Polybar, CopyQ, ble.sh, Atuin, FZF, Starship, zoxide, direnv, mise, fnm, LazyGit, Yazi, lnav, btop y Neovim con ruta de configuración, owner propuesto y teclas/comandos detectados.
+- [x] Hacer que `tests/application_ownership_test.sh` falle si una capacidad tiene más de un owner declarado: launcher de aplicaciones, historial, clipboard histórico, prompt, panes, ventanas, editor, Git visual o notificaciones.
+- [x] Registrar en `docs/audits/2026-09-02-application-integration.md` la matriz inicial, duplicaciones conocidas (Albert/Rofi y CopyQ/clipmenu), dependencias opcionales y archivos protegidos.
+- [x] Ejecutar `bash scripts/audit-application-ownership.sh`, `bash tests/application_ownership_test.sh`, `bash scripts/check.sh` y `bash scripts/check-desktop-configs.sh --static`; el baseline debe ser informativo y no cambiar comportamiento.
+- [x] Commit: `audit(apps): establish application ownership baseline`.
 
 ## Task 2: Rofi como selector visual común
 
@@ -64,12 +64,12 @@
 - Create: `tests/rofi_workflow_contract_test.sh`
 - Modify: `docs/audits/2026-09-02-application-integration.md`
 
-- [ ] Escribir primero un contrato que compruebe que `$mod+d` lanza aplicaciones, `$mod+f` selecciona ventanas, `$mod+v` abre clipboard y `$mod+q` usa `confirm_kill.sh`; debe fallar si aparece otro launcher para la misma acción.
-- [ ] Mantener un único estilo Rofi y definir defaults de teclado: selección por flechas/`j/k`, `Enter` acepta y `Escape` cancela; no aceptar entradas libres en diálogos destructivos.
-- [ ] Mantener `confirm_kill.sh` como owner del cierre de ventana y reutilizar el patrón `Cancelar`/`Cerrar` para futuras acciones confirmables.
-- [ ] Auditar Albert antes de tocarlo. Si Rofi cubre todas sus acciones usadas, documentar Albert como launcher secundario pendiente de decisión; no desactivarlo automáticamente.
-- [ ] Validar con `bash tests/rofi_workflow_contract_test.sh`, `bash scripts/check-desktop-configs.sh --static` y `git diff --check`.
-- [ ] Commit: `feat(rofi): standardize keyboard-first selectors`.
+- [x] Escribir primero un contrato que compruebe que `$mod+d` lanza aplicaciones, `$mod+f` selecciona ventanas, `$mod+v` abre clipboard y `$mod+q` usa `confirm_kill.sh`; debe fallar si aparece otro launcher para la misma acción.
+- [x] Mantener un único estilo Rofi y definir defaults de teclado: selección por flechas/`j/k`, `Enter` acepta y `Escape` cancela; no aceptar entradas libres en diálogos destructivos.
+- [x] Mantener `confirm_kill.sh` como owner del cierre de ventana y reutilizar el patrón `Cancelar`/`Cerrar` para futuras acciones confirmables.
+- [x] Auditar Albert antes de tocarlo. Si Rofi cubre todas sus acciones usadas, documentar Albert como launcher secundario pendiente de decisión; no desactivarlo automáticamente.
+- [x] Validar con `bash tests/rofi_workflow_contract_test.sh`, `bash scripts/check-desktop-configs.sh --static` y `git diff --check`.
+- [x] Commit: `feat(rofi): standardize keyboard-first selectors`.
 
 ## Task 3: ble.sh, Atuin y FZF como una sola capa de línea
 
@@ -82,14 +82,14 @@
 - Create: `tests/blesh_integration_test.sh`
 - Create: `docs/audits/2026-09-02-blesh-integration.md`
 
-- [ ] Escribir un test que cargue un Bash interactivo aislado con ble.sh disponible y compruebe: `BLE_VERSION`, attach único, `C-r` owner Atuin/fallback, `C-t` owner selector de archivos, `M-c` owner selector de directorios y ausencia de sourcing de los bindings clásicos de FZF.
-- [ ] Ejecutar el test en rojo antes de añadir opciones; cualquier fallo debe identificar una colisión concreta, no una diferencia de prompt.
-- [ ] Configurar sólo syntax highlighting, autosuggestion y completion visual de ble.sh. No activar `set -o vi`, no cambiar `C-s` y no sustituir Starship.
-- [ ] Importar una única integración FZF de ble.sh si el inventario demuestra que no está activa; si ya está activa, no cargar otra.
-- [ ] Mantener los bindings efectivos de `stow/bash/.bash_lib/keymap.sh` como owner y hacer la configuración idempotente tras `reload` y nueva shell.
-- [ ] Medir cinco arranques login y no-login con TTY real mediante `scripts/measure-shell-startup.sh`; no aceptar una configuración que empeore el presupuesto medido sin beneficio documentado.
-- [ ] Validar `bash tests/blesh_integration_test.sh`, `bash scripts/check.sh`, `shellcheck`, `git diff --check` y un arranque interactivo aislado.
-- [ ] Commit: `feat(blesh): integrate line editing without keymap collisions`.
+- [x] Escribir un test que cargue un Bash interactivo aislado con ble.sh disponible y compruebe: `BLE_VERSION`, attach único, `C-r` owner Atuin/fallback, `C-t` owner selector de archivos, `M-c` owner selector de directorios y ausencia de sourcing de los bindings clásicos de FZF.
+- [x] Ejecutar el test en rojo antes de añadir opciones; cualquier fallo debe identificar una colisión concreta, no una diferencia de prompt.
+- [x] Configurar sólo syntax highlighting, autosuggestion y completion visual de ble.sh. No activar `set -o vi`, no cambiar `C-s` y no sustituir Starship.
+- [x] Importar una única integración FZF de ble.sh si el inventario demuestra que no está activa; si ya está activa, no cargar otra.
+- [x] Mantener los bindings efectivos de `stow/bash/.bash_lib/keymap.sh` como owner y hacer la configuración idempotente tras `reload` y nueva shell.
+- [x] Medir cinco arranques login y no-login con TTY real mediante `scripts/measure-shell-startup.sh`; no aceptar una configuración que empeore el presupuesto medido sin beneficio documentado.
+- [x] Validar `bash tests/blesh_integration_test.sh`, `bash scripts/check.sh`, `shellcheck`, `git diff --check` y un arranque interactivo aislado.
+- [x] Commit: `feat(blesh): integrate line editing without keymap collisions`.
 
 ## Task 4: Clipboard único entre desktop, tmux, Bash y Neovim
 
@@ -103,12 +103,12 @@
 - Create: `tests/clipboard_ownership_test.sh`
 - Create: `docs/audits/2026-09-02-clipboard-integration.md`
 
-- [ ] Escribir un test de ownership que distinga transporte (`xsel`, `xclip`, `wl-copy`, `pbcopy`) de historial (`CopyQ`/`clipmenu`), evitando declarar cada backend como un clipboard manager distinto.
-- [ ] Confirmar el flujo canónico: CopyQ conserva historial; Rofi/clipmenu selecciona historial; tmux copy-mode copia al sistema; Bash usa `pbcopy`/`pbpaste`; Neovim usa el clipboard del sistema.
-- [ ] Eliminar sólo duplicaciones demostradas de bindings o autostart; mantener fallback X11/Wayland y modo sin clipboard gráfico.
-- [ ] Validar cada backend con comandos simulados, sin sobrescribir el clipboard personal del usuario durante los tests.
-- [ ] Ejecutar `bash tests/clipboard_ownership_test.sh`, `bash scripts/check-desktop-configs.sh --static`, tests Bash/Neovim y `git diff --check`.
-- [ ] Commit: `fix(clipboard): define one history owner and transport fallbacks`.
+- [x] Escribir un test de ownership que distinga transporte (`xsel`, `xclip`, `wl-copy`, `pbcopy`) de historial (`CopyQ`/`clipmenu`), evitando declarar cada backend como un clipboard manager distinto.
+- [x] Confirmar el flujo canónico: CopyQ conserva historial; Rofi/clipmenu selecciona historial; tmux copy-mode copia al sistema; Bash usa `pbcopy`/`pbpaste`; Neovim usa el clipboard del sistema.
+- [x] Eliminar sólo duplicaciones demostradas de bindings o autostart; mantener fallback X11/Wayland y modo sin clipboard gráfico.
+- [x] Validar cada backend con comandos simulados, sin sobrescribir el clipboard personal del usuario durante los tests.
+- [x] Ejecutar `bash tests/clipboard_ownership_test.sh`, `bash scripts/check-desktop-configs.sh --static`, tests Bash/Neovim y `git diff --check`.
+- [x] Commit: `fix(clipboard): define one history owner and transport fallbacks`.
 
 ## Task 5: Kitty, tmux, Polybar y Dunst como transporte/feedback
 
@@ -121,12 +121,12 @@
 - Create: `tests/terminal_feedback_contract_test.sh`
 - Modify: `docs/audits/2026-09-02-application-integration.md`
 
-- [ ] Escribir contratos para conservar `C-s` como prefijo tmux, `C-h/j/k/l` como navegación tmux/Neovim, Alt+Shift+flechas como resize, `$mod` para i3 y ausencia de bindings Kitty que intercepten esas secuencias.
-- [ ] Mantener Kitty como terminal y transporte; no añadir un tercer sistema de tabs/sesiones.
-- [ ] Definir feedback por severidad: tmux/Polybar para estado persistente, Dunst para eventos, Rofi para decisiones y Neovim/Bash para contexto de trabajo.
-- [ ] Revisar que el status de Git no se calcule duplicadamente en prompt, tmux y Polybar cuando el coste sea medible; no retirar información sin baseline.
-- [ ] Validar `bash tests/terminal_feedback_contract_test.sh`, `bash scripts/check-desktop-configs.sh`, `bash scripts/check.sh`, y `git diff --check`.
-- [ ] Commit: `chore(desktop): align terminal transport and feedback owners`.
+- [x] Escribir contratos para conservar `C-s` como prefijo tmux, `C-h/j/k/l` como navegación tmux/Neovim, Alt+Shift+flechas como resize, `$mod` para i3 y ausencia de bindings Kitty que intercepten esas secuencias.
+- [x] Mantener Kitty como terminal y transporte; no añadir un tercer sistema de tabs/sesiones.
+- [x] Definir feedback por severidad: tmux/Polybar para estado persistente, Dunst para eventos, Rofi para decisiones y Neovim/Bash para contexto de trabajo.
+- [x] Revisar que el status de Git no se calcule duplicadamente en prompt, tmux y Polybar cuando el coste sea medible; no retirar información sin baseline.
+- [x] Validar `bash tests/terminal_feedback_contract_test.sh`, `bash scripts/check-desktop-configs.sh`, `bash scripts/check.sh`, y `git diff --check`.
+- [x] Commit: `chore(desktop): align terminal transport and feedback owners`.
 
 ## Task 6: Workflows de proyecto, Git, logs y filesystem
 
@@ -139,13 +139,13 @@
 - Modify: `docs/audits/2026-09-01-neovim-workflows.md`
 - Create: `tests/application_workflow_contract_test.sh`
 
-- [ ] Definir una secuencia canónica de backend: abrir proyecto con `tproj`, conservar contexto en tmux, editar con Neovim, ejecutar `<leader>p*`, revisar Git con LazyGit y consultar logs con lnav.
-- [ ] Mantener `lg`, `C-s g` y `<leader>gg` como entradas equivalentes a Git visual.
-- [ ] Mantener Yazi para filesystem desde Bash y Telescope/Neo-tree para navegación dentro del editor; no unificar artificialmente ambas interfaces.
-- [ ] Documentar lnav como herramienta de logs de Docker/servidores y btop como monitorización, sin nuevos bindings globales salvo necesidad demostrada.
-- [ ] Cubrir con un contrato que los comandos y mappings principales existen, que las dependencias opcionales producen fallback y que no se ejecutan operaciones mutantes durante el test.
-- [ ] Validar todos los tests Bash/Neovim, `bash scripts/check-desktop-configs.sh`, `shellcheck`, secretos y `git diff --check`.
-- [ ] Commit: `docs(workflows): define integrated project operations`.
+- [x] Definir una secuencia canónica de backend: abrir proyecto con `tproj`, conservar contexto en tmux, editar con Neovim, ejecutar `<leader>p*`, revisar Git con LazyGit y consultar logs con lnav.
+- [x] Mantener `lg`, `C-s g` y `<leader>gg` como entradas equivalentes a Git visual.
+- [x] Mantener Yazi para filesystem desde Bash y Telescope/Neo-tree para navegación dentro del editor; no unificar artificialmente ambas interfaces.
+- [x] Documentar lnav como herramienta de logs de Docker/servidores y btop como monitorización, sin nuevos bindings globales salvo necesidad demostrada.
+- [x] Cubrir con un contrato que los comandos y mappings principales existen, que las dependencias opcionales producen fallback y que no se ejecutan operaciones mutantes durante el test.
+- [x] Validar todos los tests Bash/Neovim, `bash scripts/check-desktop-configs.sh`, `shellcheck`, secretos y `git diff --check`.
+- [x] Commit: `docs(workflows): define integrated project operations`.
 
 ## Task 7: Revisión de coherencia y documentación única
 
@@ -157,12 +157,12 @@
 - Create: `docs/audits/2026-09-02-application-grammar.md`
 - Create: `tests/application_grammar_test.sh`
 
-- [ ] Generar una tabla única de owners y scopes: i3, Kitty, tmux, Bash/ble.sh, Neovim, Rofi, clipboard, feedback y proyecto.
-- [ ] Verificar que las docs no presenten un binding como canónico si sólo existe en una capa distinta.
-- [ ] Explicar explícitamente que `p/r/y/n/z` conservan semántica nativa en Vim y semántica de comando en Bash.
-- [ ] Añadir ejercicios de memoria muscular por secuencia, no por lista de teclas: abrir proyecto, navegar panes, buscar historial, editar, testear, revisar Git, consultar logs y cerrar.
-- [ ] Ejecutar `bash scripts/generate_shortcuts_doc.sh`, `bash tests/application_grammar_test.sh`, todos los checks estáticos y `git diff --check`.
-- [ ] Commit: `docs(productivity): publish coordinated application grammar`.
+- [x] Generar una tabla única de owners y scopes: i3, Kitty, tmux, Bash/ble.sh, Neovim, Rofi, clipboard, feedback y proyecto.
+- [x] Verificar que las docs no presenten un binding como canónico si sólo existe en una capa distinta.
+- [x] Explicar explícitamente que `p/r/y/n/z` conservan semántica nativa en Vim y semántica de comando en Bash.
+- [x] Añadir ejercicios de memoria muscular por secuencia, no por lista de teclas: abrir proyecto, navegar panes, buscar historial, editar, testear, revisar Git, consultar logs y cerrar.
+- [x] Ejecutar `bash scripts/generate_shortcuts_doc.sh`, `bash tests/application_grammar_test.sh`, todos los checks estáticos y `git diff --check`.
+- [x] Commit: `docs(productivity): publish coordinated application grammar`.
 
 ## Task 8: Periodo de uso y segunda auditoría
 

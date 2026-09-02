@@ -17,27 +17,27 @@
 - Reference: `stow/bash/.bash_lib/misc.sh`
 - Reference: `stow/bash/.bash_lib/core.sh`
 
-- [ ] **Step 1: Build a private temporary fixture**
+- [x] **Step 1: Build a private temporary fixture**
 
 Create a temporary directory containing `.env` and `.env.staging` with distinct sentinel text, source `core.sh` and `misc.sh` from inside that directory, and use `cmp` only for assertions. Never print either file.
 
-- [ ] **Step 2: Test rejection**
+- [x] **Step 2: Test rejection**
 
 Pipe `n` into `envswap use staging`, assert nonzero/abort-safe behavior, assert `.env` is unchanged, and assert no `.env.bak.*` file was created.
 
-- [ ] **Step 3: Test confirmed activation and permissions**
+- [x] **Step 3: Test confirmed activation and permissions**
 
 Pipe `y` into `envswap use staging`, assert `.env` equals `.env.staging`, assert exactly one backup exists containing the former `.env`, and assert `.env` and the backup have mode `600`.
 
-- [ ] **Step 4: Test backup uniqueness**
+- [x] **Step 4: Test backup uniqueness**
 
 Restore a different `.env` value and perform a second confirmed swap immediately. Assert at least two backups exist and their paths are distinct; compare the newest backup to the value that was active immediately before the second swap.
 
-- [ ] **Step 5: Test `list` remains non-mutating**
+- [x] **Step 5: Test `list` remains non-mutating**
 
 Run `envswap list`, assert it lists `staging`, and assert the active `.env` and backup count are unchanged.
 
-- [ ] **Step 6: Run the test before implementation**
+- [x] **Step 6: Run the test before implementation**
 
 Run `bash tests/bash_envswap_safety_test.sh`. Expected: FAIL because `use` currently copies without confirmation and backup naming can collide.
 
@@ -46,19 +46,19 @@ Run `bash tests/bash_envswap_safety_test.sh`. Expected: FAIL because `use` curre
 **Files:**
 - Modify: `stow/bash/.bash_lib/misc.sh`
 
-- [ ] **Step 1: Confirm before filesystem mutation**
+- [x] **Step 1: Confirm before filesystem mutation**
 
 After validating `.env.<name>` and before creating a backup or copying `.env`, print only the source and destination paths and call `_confirm '¿Continuar? [y/N] '`. Return 0 when rejected.
 
-- [ ] **Step 2: Allocate a unique backup path**
+- [x] **Step 2: Allocate a unique backup path**
 
 When `.env` exists, generate a base using `date +%Y%m%d-%H%M%S` and `$$`, then increment a numeric suffix while the candidate exists. Use the first unused candidate; do not overwrite an existing backup.
 
-- [ ] **Step 3: Preserve the existing copy contract**
+- [x] **Step 3: Preserve the existing copy contract**
 
 Copy the active `.env` to the allocated backup, apply `chmod 600` to it, copy `.env.<name>` to `.env`, apply `chmod 600` to `.env`, and retain the existing success/error messages without printing contents.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run `bash tests/bash_envswap_safety_test.sh`; expect all cases to PASS.
 
@@ -68,11 +68,11 @@ Run `bash tests/bash_envswap_safety_test.sh`; expect all cases to PASS.
 - Modify: `tests/bash_envswap_safety_test.sh`
 - Modify: `stow/bash/.bash_lib/misc.sh`
 
-- [ ] **Step 1: Verify syntax and runtime type**
+- [x] **Step 1: Verify syntax and runtime type**
 
 Run `bash -n stow/bash/.bash_lib/misc.sh` and source a clean shell to print only `type -t envswap`. Expected: syntax exit 0 and `function`.
 
-- [ ] **Step 2: Run the complete Bash suite**
+- [x] **Step 2: Run the complete Bash suite**
 
 Run:
 
@@ -84,11 +84,11 @@ git diff --check
 
 Expected: every test exits 0, every Bash file parses, and no whitespace errors are reported.
 
-- [ ] **Step 3: Inspect scope and secret safety**
+- [x] **Step 3: Inspect scope and secret safety**
 
 Run `git diff -- stow/bash/.bash_lib/misc.sh tests/bash_envswap_safety_test.sh`. Confirm no `.env` contents, `.bashrc_local`, tmux, i3, Docker, or Laravel files changed.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 Run:
 

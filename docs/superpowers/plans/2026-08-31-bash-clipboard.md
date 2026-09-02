@@ -15,7 +15,7 @@
 **Files:**
 - Create: `tests/bash_clipboard_test.sh`
 
-- [ ] **Step 1: Create a temporary fake command directory and assertions.**
+- [x] **Step 1: Create a temporary fake command directory and assertions.**
 
 The test must source only the Bash library modules needed by `cb`, prepend fake
 `wl-copy`, `wl-paste`, `xclip`, and `xsel` commands to `PATH`, and record which
@@ -24,7 +24,7 @@ fake command receives input. Use the real current X11 environment with
 Wayland display socket to assert that merely setting the variable without a
 socket does not select Wayland. Also assert `bash -n` for every Bash file.
 
-- [ ] **Step 2: Run the test before implementation.**
+- [x] **Step 2: Run the test before implementation.**
 
 Run:
 
@@ -40,7 +40,7 @@ Expected: FAIL because the shared resolver does not yet exist.
 - Modify: `stow/bash/.bash_lib/nav.sh` near `cb()`
 - Modify: `stow/bash/.bashrc` near the current `pbcopy`/`pbpaste` definitions
 
-- [ ] **Step 1: Add `_clipboard_command` in `nav.sh`.**
+- [x] **Step 1: Add `_clipboard_command` in `nav.sh`.**
 
 The function accepts `copy` or `paste`, sets a global array named
 `_CLIPBOARD_CMD`, and returns non-zero with a diagnostic when no backend is
@@ -76,20 +76,20 @@ process otherwise keeps inherited pipe descriptors open in non-TTY automation.
 The diagnostic must name
 the supported backends without exposing command-substitution errors.
 
-- [ ] **Step 2: Make `pbcopy` and `pbpaste` delegate.**
+- [x] **Step 2: Make `pbcopy` and `pbpaste` delegate.**
 
 Replace the current binary-presence check in `.bashrc` with wrappers that call
 `_clipboard_command copy` or `paste`, then execute `"${_CLIPBOARD_CMD[@]}"`.
 Do not select `wl-copy` solely because it is installed.
 
-- [ ] **Step 3: Refactor `cb` to reuse the resolver.**
+- [x] **Step 3: Refactor `cb` to reuse the resolver.**
 
 Use `_clipboard_command copy` for the normal clipboard path. Preserve the
 existing handling of zero arguments, one or more files, text arguments, and
 OSC52 fallback. Avoid recursion by ensuring the resolver's platform fallback
 does not resolve to the Bash `pbcopy` wrapper.
 
-- [ ] **Step 4: Run the isolated tests.**
+- [x] **Step 4: Run the isolated tests.**
 
 Run:
 
@@ -105,7 +105,7 @@ diagnostic, syntax, and `cb` delegation.
 **Files:**
 - No additional files.
 
-- [ ] **Step 1: Validate the active X11 backend.**
+- [x] **Step 1: Validate the active X11 backend.**
 
 Run:
 
@@ -116,7 +116,7 @@ bash -ic 'printf "DISPLAY=%s WAYLAND_DISPLAY=%s\\n" "$DISPLAY" "$WAYLAND_DISPLAY
 Expected: `xclip -selection clipboard` is selected for copy, and all three
 public commands exist as functions.
 
-- [ ] **Step 2: Exercise copy/paste with a unique token.**
+- [x] **Step 2: Exercise copy/paste with a unique token.**
 
 Run:
 
@@ -130,13 +130,13 @@ Expected: the second command returns the token. Keep copy and paste in
 separate shells because xclip's selection-owner process may retain inherited
 pipe descriptors when both operations run inside one command substitution.
 
-- [ ] **Step 3: Check reload idempotence and scope.**
+- [x] **Step 3: Check reload idempotence and scope.**
 
 Source `.bashrc` twice in one interactive shell and verify the resolver and
 wrappers remain functions, then run `git diff --check` and confirm no files
 under `stow/tmux` or `stow/i3` changed.
 
-- [ ] **Step 4: Commit the implementation.**
+- [x] **Step 4: Commit the implementation.**
 
 ```bash
 git add stow/bash/.bashrc stow/bash/.bash_lib/nav.sh tests/bash_clipboard_test.sh

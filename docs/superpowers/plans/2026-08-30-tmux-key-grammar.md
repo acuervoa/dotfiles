@@ -22,11 +22,11 @@
 **Files:**
 - Modify: `stow/tmux/.tmux.conf` in the navigation, split, window, session, popup, and reload binding sections.
 
-- [ ] **Step 1: Preserve existing Vim-aware navigation.**
+- [x] **Step 1: Preserve existing Vim-aware navigation.**
 
 Keep the no-prefix `C-h/j/k/l` bindings and the prefix `h/j/k/l` bindings. Keep `H/J/K/L` as prefix resize bindings, replacing the current no-prefix Alt-Shift arrows only if the verification confirms the new chords work on the Spanish keyboard.
 
-- [ ] **Step 2: Replace the reload conflict with directional splits.**
+- [x] **Step 2: Replace the reload conflict with directional splits.**
 
 Change the existing split/reload bindings to this canonical block:
 
@@ -39,7 +39,7 @@ bind R source-file ~/.tmux.conf \; display "🔄 Config reloaded!"
 
 `d` means down, `r` means right, and uppercase `R` means reload.
 
-- [ ] **Step 3: Make the remaining core actions explicit.**
+- [x] **Step 3: Make the remaining core actions explicit.**
 
 Ensure the canonical prefix bindings are present and point to the existing commands:
 
@@ -74,7 +74,7 @@ Keep `A` bound to the existing project/session attach command. No agent-room
 script exists yet, so the dedicated agent launcher is explicitly deferred until
 the real agent workflow has been observed and specified.
 
-- [ ] **Step 4: Configure restore as uppercase `U`.**
+- [x] **Step 4: Configure restore as uppercase `U`.**
 
 Set the Resurrect save/restore keys to `u`/`U` and remove competing manual aliases:
 
@@ -85,11 +85,11 @@ unbind M-s
 unbind M-r
 ```
 
-- [ ] **Step 5: Keep destructive actions protected.**
+- [x] **Step 5: Keep destructive actions protected.**
 
 If the current `q` binding has no confirmation, add a tmux confirmation prompt before `kill-pane`; retain `BSpace` as an explicit legacy bulk-close action during transition.
 
-- [ ] **Step 6: Commit only the tmux configuration.**
+- [x] **Step 6: Commit only the tmux configuration.**
 
 Run:
 
@@ -105,15 +105,15 @@ Expected: one commit containing only `stow/tmux/.tmux.conf`.
 **Files:**
 - Modify: `tmux-cheatsheet.md`.
 
-- [ ] **Step 1: Replace the old split/reload entries.**
+- [x] **Step 1: Replace the old split/reload entries.**
 
 Document `d`, `r`, `R`, and `U` as the canonical paths. Remove `"` and `%` from the primary table, or label them explicitly as tmux legacy aliases.
 
-- [ ] **Step 2: Remove competing primary paths.**
+- [x] **Step 2: Remove competing primary paths.**
 
 Mark `Tab`, `o`, `M-Left/Right`, and `C-PageUp/Down` as compatibility alternatives, not the recommended training path.
 
-- [ ] **Step 3: Add the grammar rules at the top.**
+- [x] **Step 3: Add the grammar rules at the top.**
 
 Include this compact rule:
 
@@ -122,7 +122,7 @@ Include this compact rule:
 > Las letras mayúsculas y los símbolos se usan solo cuando aportan una distinción clara.
 ```
 
-- [ ] **Step 4: Commit the documentation separately.**
+- [x] **Step 4: Commit the documentation separately.**
 
 Run:
 
@@ -138,7 +138,7 @@ Expected: one commit containing only `tmux-cheatsheet.md`.
 **Files:**
 - Read-only validation of `stow/tmux/.tmux.conf`.
 
-- [ ] **Step 1: Start a disposable server with a unique socket.**
+- [x] **Step 1: Start a disposable server with a unique socket.**
 
 Run:
 
@@ -148,7 +148,7 @@ tmux -L tmux-key-grammar-test -f /home/acuervo/dotfiles/stow/tmux/.tmux.conf new
 
 Expected: exit code 0 and a `verify` session.
 
-- [ ] **Step 2: Inspect the resolved bindings.**
+- [x] **Step 2: Inspect the resolved bindings.**
 
 Run:
 
@@ -158,7 +158,7 @@ tmux -L tmux-key-grammar-test list-keys -T prefix | rg 'bind-key|select-pane|spl
 
 Expected: `d`/`r` split, `R` reload, `U` restore, `h/j/k/l` navigation, `H/J/K/L` resize, `c` new window, and `s/S` session/project selection.
 
-- [ ] **Step 3: Exercise non-destructive commands.**
+- [x] **Step 3: Exercise non-destructive commands.**
 
 Run:
 
@@ -170,7 +170,7 @@ tmux -L tmux-key-grammar-test list-panes -t verify
 
 Expected: all commands return successfully and the server remains alive.
 
-- [ ] **Step 4: Stop only the disposable server.**
+- [x] **Step 4: Stop only the disposable server.**
 
 Run:
 
@@ -182,20 +182,20 @@ Expected: no impact on any normal tmux server.
 
 ### Task 4: Activate with rollback checkpoint
 
-- [ ] **Step 1: Check the working tree.**
+- [x] **Step 1: Check the working tree.**
 
 Run `git -C /home/acuervo/dotfiles status --short` and confirm unrelated pre-existing changes remain unstaged.
 
-- [ ] **Step 2: Reload the active tmux server.**
+- [x] **Step 2: Reload the active tmux server.**
 
 Run `tmux source-file /home/acuervo/.tmux.conf`.
 
 Expected: tmux reports the reload message and existing sessions remain attached.
 
-- [ ] **Step 3: Smoke-test the muscle path manually.**
+- [x] **Step 3: Smoke-test the muscle path manually.**
 
 In one disposable pane, verify `C-s d`, `C-s r`, `C-s h/j/k/l`, `C-s H/J/K/L`, `C-s z`, `C-s c`, `C-s s`, `C-s R`, and `C-s U`. Verify Vim navigation and copy-mode afterward.
 
-- [ ] **Step 4: Roll back only if activation fails.**
+- [x] **Step 4: Roll back only if activation fails.**
 
 Restore `/home/acuervo/dotfiles/stow/tmux/.tmux.conf` from `/home/acuervo/backups/tmux-audit-20260830-203649/dotfiles/stow/tmux/.tmux.conf`, then reload the active server. Do not alter unrelated files.

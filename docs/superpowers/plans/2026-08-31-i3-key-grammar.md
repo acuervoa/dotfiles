@@ -15,7 +15,7 @@
 **Files:**
 - Modify: `stow/i3/.config/i3/config` in the movement and resize sections.
 
-- [ ] **Step 1: Add a dedicated resize mode after the focus/move bindings.**
+- [x] **Step 1: Add a dedicated resize mode after the focus/move bindings.**
 
 Add:
 
@@ -32,7 +32,7 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 ```
 
-- [ ] **Step 2: Remove only arrow-based resize bindings.**
+- [x] **Step 2: Remove only arrow-based resize bindings.**
 
 Remove these four lines:
 
@@ -45,7 +45,7 @@ bindsym $mod+Shift+Down  resize shrink height 10 px or 10 ppt
 
 Keep focus and move bindings, workspace bindings, and all tmux-related behavior unchanged.
 
-- [ ] **Step 3: Validate i3 syntax before reload.**
+- [x] **Step 3: Validate i3 syntax before reload.**
 
 Run:
 
@@ -55,7 +55,7 @@ i3 -C -c /home/acuervo/dotfiles/stow/i3/.config/i3/config
 
 Expected: exit status 0.
 
-- [ ] **Step 4: Commit the configuration change.**
+- [x] **Step 4: Commit the configuration change.**
 
 ```bash
 git add stow/i3/.config/i3/config
@@ -68,7 +68,7 @@ git commit -m "feat(i3): add spatial resize mode"
 - Modify: `keymap-maestro.md`
 - Modify: `tmux-cheatsheet.md` only if an i3 cross-reference is stale.
 
-- [ ] **Step 1: Document the resize mode.**
+- [x] **Step 1: Document the resize mode.**
 
 Add the i3 mapping:
 
@@ -78,11 +78,11 @@ Add the i3 mapping:
 | `Escape` / `Return` | Salir del modo resize |
 ```
 
-- [ ] **Step 2: Mark arrow-based resize as retired.**
+- [x] **Step 2: Mark arrow-based resize as retired.**
 
 Do not document `Super+Shift+flechas` as an active resize route.
 
-- [ ] **Step 3: Commit documentation.**
+- [x] **Step 3: Commit documentation.**
 
 ```bash
 git add keymap-maestro.md tmux-cheatsheet.md
@@ -94,7 +94,7 @@ git commit -m "docs(i3): document spatial resize mode"
 **Files:**
 - Read-only runtime verification.
 
-- [ ] **Step 1: Reload i3.**
+- [x] **Step 1: Reload i3.**
 
 ```bash
 i3-msg reload
@@ -102,7 +102,7 @@ i3-msg reload
 
 Expected: `[{"success":true}]`.
 
-- [ ] **Step 2: Verify the effective i3 configuration.**
+- [x] **Step 2: Verify the effective i3 configuration.**
 
 ```bash
 i3-msg -t get_config | rg 'mode "resize"|mod\\+r|resize (shrink|grow)|mode "default"'
@@ -110,7 +110,7 @@ i3-msg -t get_config | rg 'mode "resize"|mod\\+r|resize (shrink|grow)|mode "defa
 
 Expected: the resize mode, `Super+r`, four home-row resize commands, and exit bindings are present.
 
-- [ ] **Step 3: Verify tmux did not regress.**
+- [x] **Step 3: Verify tmux did not regress.**
 
 ```bash
 tmux show-options -gqv prefix
@@ -119,7 +119,7 @@ tmux list-keys -T prefix | rg 'prefix (h|j|k|l|d|r|p|z) '
 
 Expected: prefix `C-s` and canonical tmux bindings remain unchanged.
 
-- [ ] **Step 4: Run repository checks.**
+- [x] **Step 4: Run repository checks.**
 
 ```bash
 bash scripts/check.sh

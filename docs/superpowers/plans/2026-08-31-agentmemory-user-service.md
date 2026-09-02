@@ -15,7 +15,7 @@
 **Files:**
 - Create: `tests/agentmemory_service_test.sh`
 
-- [ ] **Step 1: Assert the service entrypoint and unit contract.**
+- [x] **Step 1: Assert the service entrypoint and unit contract.**
 
 The test must assert that
 `/home/acuervo/.local/share/fnm/aliases/default/bin/agentmemory` exists and is
@@ -23,13 +23,13 @@ executable, that the unit contains `Restart=on-failure`, `RestartSec=5`, and
 `WantedBy=default.target`, and that it does not contain `EnvironmentFile`,
 known credential variable names, or literal secret-like values.
 
-- [ ] **Step 2: Assert Bash no longer owns AgentMemory startup.**
+- [x] **Step 2: Assert Bash no longer owns AgentMemory startup.**
 
 The test must fail while `.bashrc` contains both the health URL and the
 `nohup agentmemory` launch, and pass once neither appears. It must not source
 `.bashrc` or `.bashrc_local`.
 
-- [ ] **Step 3: Run the test before implementation.**
+- [x] **Step 3: Run the test before implementation.**
 
 Run:
 
@@ -46,7 +46,7 @@ the launch.
 - Create: `stow/systemd/.config/systemd/user/agentmemory.service`
 - Modify: `stow/bash/.bashrc`
 
-- [ ] **Step 1: Add the unit file.**
+- [x] **Step 1: Add the unit file.**
 
 Use this exact unit contract:
 
@@ -70,13 +70,13 @@ WantedBy=default.target
 Do not add API keys, tokens, `AGENTMEMORY_SECRET`, or an `EnvironmentFile`.
 The CLI reads its own user configuration from its normal home directory.
 
-- [ ] **Step 2: Remove only the Bash autostart block.**
+- [x] **Step 2: Remove only the Bash autostart block.**
 
 Delete the comment and nested conditional that calls `curl` on
 `127.0.0.1:3111/agentmemory/health` and launches `nohup agentmemory`. Keep
 the AI Flow aliases and all AI functions unchanged.
 
-- [ ] **Step 3: Run static tests.**
+- [x] **Step 3: Run static tests.**
 
 Run:
 
@@ -94,13 +94,13 @@ Expected: all commands pass and no tmux/i3 files are changed.
 **Files:**
 - No additional files.
 
-- [ ] **Step 1: Verify the Stow target and entrypoint.**
+- [x] **Step 1: Verify the Stow target and entrypoint.**
 
 Confirm that `$HOME/.config/systemd/user` exists or can receive the Stow link,
 and that the `fnm/default` AgentMemory entrypoint resolves to an executable.
 Do not overwrite unrelated units.
 
-- [ ] **Step 2: Stow only the systemd package.**
+- [x] **Step 2: Stow only the systemd package.**
 
 Run from the repository:
 
@@ -111,7 +111,7 @@ stow -d stow -t "$HOME" -S systemd
 If Stow reports a conflict, stop and inspect that exact target instead of
 overwriting it.
 
-- [ ] **Step 3: Reload and enable the user unit.**
+- [x] **Step 3: Reload and enable the user unit.**
 
 Run:
 
@@ -123,7 +123,7 @@ systemctl --user enable --now agentmemory.service
 If the user bus is unavailable, report the blocker and do not claim runtime
 activation.
 
-- [ ] **Step 4: Verify readiness and bounded process count.**
+- [x] **Step 4: Verify readiness and bounded process count.**
 
 Run:
 
@@ -142,19 +142,19 @@ AgentMemory worker plus its intended single `iii-engine` process.
 **Files:**
 - No additional files.
 
-- [ ] **Step 1: Run repeated interactive shells.**
+- [x] **Step 1: Run repeated interactive shells.**
 
 Run five shells and capture only their exit status and the count of matching
 processes before and after. Do not print environment variables or logs that
 could contain credentials.
 
-- [ ] **Step 2: Measure startup after decoupling.**
+- [x] **Step 2: Measure startup after decoupling.**
 
 Measure eight `bash -ic exit` runs and compare them with the earlier baseline.
 The result must show no AgentMemory launch from Bash; no exact latency target is
 required if other integrations remain unchanged.
 
-- [ ] **Step 3: Confirm scope and commit.**
+- [x] **Step 3: Confirm scope and commit.**
 
 Run:
 

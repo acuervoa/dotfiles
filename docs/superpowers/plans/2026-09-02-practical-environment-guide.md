@@ -15,7 +15,7 @@
 **Files:**
 - Create: `tests/practical_environment_guide_test.sh`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create a Bash test that resolves the repository root, requires
 `docs/guia-practica-entorno.md` and `docs/practical-environment-guide.md`, checks headings `Modelo mental`,
@@ -26,12 +26,12 @@ Create a Bash test that resolves the repository root, requires
 `docs/audits/2026-09-01-neovim-workflows.md` and
 `docs/audits/2026-09-02-application-integration.md`.
 
-- [ ] **Step 2: Verify red**
+- [x] **Step 2: Verify red**
 
 Run `bash tests/practical_environment_guide_test.sh`.
 Expected: FAIL because the two guides do not exist.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run `chmod +x tests/practical_environment_guide_test.sh`, then commit the
 test as `test(docs): define practical environment guide coverage`.
@@ -42,7 +42,7 @@ test as `test(docs): define practical environment guide coverage`.
 - Create: `docs/guia-practica-entorno.md`
 - Create: `docs/practical-environment-guide.md`
 
-- [ ] **Step 1: Orientation and startup**
+- [x] **Step 1: Orientation and startup**
 
 Write the Spanish guide first. Document ownership in plain language and the sequence
 `i3 $mod+Return → Kitty → tmux (prefix C-s)`. Cover `$mod+d` applications,
@@ -50,7 +50,7 @@ Write the Spanish guide first. Document ownership in plain language and the sequ
 `C-s ?` help. Explain Kitty as transport, tmux as pane/window/session owner,
 and `Escape` as selector cancellation.
 
-- [ ] **Step 2: Project and editor workflow**
+- [x] **Step 2: Project and editor workflow**
 
 Translate the complete chapter into English in the second file, preserving
 commands, mappings and expected results rather than translating identifiers.
@@ -61,21 +61,21 @@ logs layout. Give the sequence `<C-p>`/`<leader>ff`, `<leader>fg`,
 `<leader>po`, with expected results. State that `<leader>` is Space and
 `p/r/y/n/z` retain native Vim meaning while Bash provides contextual commands.
 
-- [ ] **Step 3: History, clipboard and selectors**
+- [x] **Step 3: History, clipboard and selectors**
 
 Explain `C-r` for Atuin, FZF as reusable selector, Rofi for visual selection,
 clipmenu as clipboard-history owner, Kitty `Ctrl+Shift+C/V` and Bash `cb` as
 transport. Include cancellation and state that these components do not replace
 one another.
 
-- [ ] **Step 4: Git, logs, monitoring and closure**
+- [x] **Step 4: Git, logs, monitoring and closure**
 
 Document `lg`, `C-s g` and `<leader>gg` as equivalent LazyGit entrypoints;
 `dlogs`/`lnav` for logs; `C-s b`/`btop` for monitoring; and the project shell
 for Docker. Include safe closure with `C-s q`, Neovim `<leader>q`, `Escape`
 and i3 `$mod+q` confirmation.
 
-- [ ] **Step 5: Exercises and fallbacks**
+- [x] **Step 5: Exercises and fallbacks**
 
 Provide three exercises: open/edit/test; inspect Git and return; inspect
 logs/resources and close temporary views. Each needs start state, numbered
@@ -83,7 +83,7 @@ sequence and expected end state. Add fallbacks for missing FZF, Docker,
 LazyGit, Yazi, lnav and btop. Do not suggest configuration changes or
 destructive operations.
 
-- [ ] **Step 6: References and contract**
+- [x] **Step 6: References and contract**
 
 Link the same references from both guides: root `SHORTCUTS.md`, Neovim `SHORTCUTS.md`/`USAGE.md`,
 `docs/audits/2026-09-01-neovim-workflows.md`,
@@ -102,19 +102,19 @@ starting applications or reading private clipboard/history. Commit as
 - Inspect: `docs/practical-environment-guide.md`
 - Inspect: `tests/practical_environment_guide_test.sh`
 
-- [ ] **Step 1: Run checks**
+- [x] **Step 1: Run checks**
 
 Run `bash tests/practical_environment_guide_test.sh`,
 `bash tests/application_release_gate_test.sh`, `bash scripts/check.sh` and
 `git diff --check`. Expected: all pass and generated shortcuts leave the tree
 clean.
 
-- [ ] **Step 2: Verify protected scope**
+- [x] **Step 2: Verify protected scope**
 
 Run `git diff --name-only 974a4ec...HEAD -- stow/tmux/.tmux.conf stow/i3/.config/i3/config`.
 Expected: no output. Do not read or modify `~/.bashrc_local`.
 
-- [ ] **Step 3: Correct only if required**
+- [x] **Step 3: Correct only if required**
 
 If validation finds an issue, make the smallest correction, rerun all checks
 and commit it as `fix(docs): align practical guide validation`; otherwise leave
