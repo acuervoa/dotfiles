@@ -62,6 +62,29 @@ Owners de soporte:
    clipboard y confirmaciones. Sus teclas comunes son flechas, `C-j/C-k`,
    `Enter` y `Escape`; Albert queda como launcher secundario pendiente de
    decisión, no como owner alternativo en los flujos de i3.
+8. El transporte queda separado del estado: Kitty lleva entrada y clipboard,
+   tmux conserva panes, ventanas y sesiones, i3 conserva workspaces, Polybar
+   muestra estado persistente y Dunst entrega feedback no modal con foco de
+   teclado e historial acotado. El contrato está cubierto por
+   `tests/terminal_feedback_contract_test.sh`.
+
+## Contrato de transporte y feedback
+
+La configuración actual ya satisface el objetivo de coordinación, por lo que
+este bloque no introduce nuevos atajos ni cambia i3, tmux o Kitty. Los límites
+que se preservan son:
+
+- `C-s` es el prefijo de tmux; `C-h/j/k/l` navega entre panes o se reenvía a
+  Neovim cuando corresponde.
+- Kitty sólo intercepta copiar, pegar, crear ventana/tab y secuencias Alt de
+  navegación; no captura la familia de navegación de tmux.
+- i3 mantiene el cambio de workspace y su modo resize bajo `$mod`.
+- Polybar es el resumen persistente del escritorio; Dunst es el feedback
+  efímero y consultable, con `$mod+y` para recuperar historial.
+
+La duplicación de estado Git entre prompt, tmux y Neovim queda aceptada por
+ahora: cada vista pertenece a un contexto distinto y no se ha medido un coste
+que justifique retirarla.
 
 ## Dependencias opcionales
 
