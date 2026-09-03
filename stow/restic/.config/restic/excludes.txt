@@ -1,0 +1,40 @@
+# Excludes para restic — derivado de docs/backup-excludes.txt (formato glob restic, ** = cualquier profundidad)
+# Actualizar ambos si cambia la lista de apps con cache pesado.
+
+# Caches de apps pesadas (de docs/backup-excludes.txt)
+**/BraveSoftware/
+**/Code/
+**/Code - OSS/
+**/chromium/
+**/discord/
+**/obsidian/
+**/Postman/
+**/heroic/
+**/whatsdesk/
+**/Electron/
+**/FreeTube/
+**/streamlink-twitch-gui/
+**/google-chrome-for-testing/
+**/coc/
+**/Nextcloud/
+**/yt-x/
+**/calibre/
+**/pacsea/
+**/GIMP/
+**/BraveSoftware/Brave-Browser/Default/Cache/
+**/BraveSoftware/Brave-Browser/Default/Code Cache/
+
+# Caches genéricos de desarrollo (no estaban en backup-excludes.txt)
+**/.cache/
+**/node_modules/
+**/.venv/
+**/venv/
+**/__pycache__/
+**/target/
+**/.rustup/toolchains/
+**/.cargo/registry/
+**/.cargo/git/
+**/.npm/
+**/.local/share/Steam/
+**/.local/share/Trash/
+**/.mozilla/firefox/*/Cache/

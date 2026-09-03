@@ -20,9 +20,6 @@ exec_always --no-startup-id numlockx on
 
 
 # ======= AUTOSTART PRODUCTIVIDAD ======
-# Lanzador universal (apps, archivos, cálculos)
-exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -x albert >/dev/null 2>&1 || exec albert'
-
 # Clipboard history: systemd puede arrancarlo antes de que i3 exporte DISPLAY.
 exec --no-startup-id ~/.config/i3/scripts/clipmenud-start.sh
 
@@ -47,6 +44,7 @@ exec_always --no-startup-id $ext_detect
 bindsym $mod+d exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh
 bindsym $mod+F11 exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10"
 bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"
+bindsym $mod+p exec --no-startup-id rofi-bw
 
 # Lanzadores AI
 bindsym $mod+g exec --no-startup-id gtk-launch chatgpt-webapp 

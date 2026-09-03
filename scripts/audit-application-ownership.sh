@@ -21,10 +21,8 @@ printf '%s\n' '# APP|binary/path|versioned config|owner/context'
 declare -a apps=(
   'Kitty|kitty|stow/kitty/.config/kitty/kitty.conf|terminal transport'
   'Rofi|rofi|stow/rofi/.config/rofi/config.rasi|visual selector'
-  'Albert|albert|stow/albert/.config/albert/config|secondary launcher under review'
   'Dunst|dunst|stow/dunst/.config/dunst/dunstrc|notifications'
   'Polybar|polybar|stow/polybar/.config/polybar/config.ini|persistent status'
-  'CopyQ|copyq|stow/copyq/.config/copyq/copyq.conf|clipboard history'
   'clipmenu|clipmenu|stow/i3/.config/i3/config|clipboard history selector'
   'ble.sh|/usr/share/blesh/ble.sh|stow/blesh/.config/blesh/blerc|line editing'
   'Atuin|atuin|stow/atuin/.config/atuin/config.toml|history backend'
@@ -33,7 +31,6 @@ declare -a apps=(
   'zoxide|zoxide|stow/bash/.bashrc|directory navigation'
   'direnv|direnv|stow/bash/.bashrc|project environment'
   'mise|mise|stow/mise/.config/mise/config.toml|runtime/tool versions'
-  'fnm|fnm|stow/bash/.bashrc|Node runtime'
   'LazyGit|lazygit|stow/lazygit/.config/lazygit/config.yml|Git visual'
   'Yazi|yazi|stow/yazi/.config/yazi/yazi.toml|filesystem navigation'
   'lnav|lnav|stow/lnav|log analysis'
@@ -44,7 +41,6 @@ declare -a apps=(
   'gh-dash|gh|stow/gh-dash/.config/gh-dash/config.yml|GitHub PR/issue TUI dashboard'
   'gitleaks|gitleaks|scripts/check-secrets.sh|secret scanning (entropy + rules)'
   'difftastic|difft|stow/bash/.bash_aliases|structural diff, alias gdt'
-  'ripgrep-all|rga|stow/bash/.bash_lib/nav.sh|content search in PDFs/docs, function rgaf'
 )
 
 for entry in "${apps[@]}"; do

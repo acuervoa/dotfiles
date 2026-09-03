@@ -4,11 +4,11 @@ After=basic.target
 
 [Service]
 Type=simple
-ExecStart=/home/acuervo/.local/share/fnm/aliases/default/bin/agentmemory
+ExecStart=%h/.local/bin/agentmemory
 Restart=on-failure
 RestartSec=5
-Environment=HOME=/home/acuervo
-Environment=PATH=/home/acuervo/.local/share/fnm/aliases/default/bin:/usr/local/bin:/usr/bin:/bin
+Environment=HOME=%h
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=default.target

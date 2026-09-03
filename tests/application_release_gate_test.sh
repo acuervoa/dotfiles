@@ -10,7 +10,7 @@ git diff --check
 
 # Los sistemas estabilizados no pueden cambiar silenciosamente desde el último
 # release. Se puede fijar otro baseline con APPLICATION_BASELINE_REF.
-baseline_ref="${APPLICATION_BASELINE_REF:-974a4ec}"
+baseline_ref="${APPLICATION_BASELINE_REF:-b81c3d1}"
 if [ -n "$baseline_ref" ] && git rev-parse --verify "$baseline_ref" >/dev/null 2>&1; then
   protected_changes="$(git diff --name-only "$baseline_ref"...HEAD -- \
     stow/tmux/.tmux.conf stow/i3/.config/i3/config)"
