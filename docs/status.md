@@ -19,7 +19,7 @@ Date: 2026-03-05
 - **Font**: MesloLGLDZ Nerd Font 10
 
 ## Apps (Non‑Electron)
-- **Flameshot**, **Albert**, **CopyQ**: Catppuccin themes
+- **Flameshot**: screenshots
 - **rclone / Nextcloud**: configs moved to `~/.local/share` with symlinks
 
 ## Apps (Electron)
@@ -37,11 +37,11 @@ Date: 2026-03-05
 - **ranger**: removed
 
 ## Duplicates Decisions
-- Removed: alacritty, ranger, joplin
-- Kept: i3 (primary), niri (secondary), kitty, brave/chromium, yazi, rofi/albert
+- Removed: alacritty, ranger, joplin, niri, Albert, CopyQ
+- Kept: i3, kitty, brave/chromium, yazi, Rofi, clipmenu
 
 ## Maintenance
-- Monthly cleanup timer: `cleanup-configs.timer`
+- Backup timer: `restic-backup.timer` (sábado 02:00, persistente)
 - Secret scan: `scripts/check-secrets.sh`
 - Backup excludes template: `docs/backup-excludes.txt`
 - i3 workspaces mapping is auto-generated: `stow/i3/.config/i3/workspaces.local.conf` (do not commit)

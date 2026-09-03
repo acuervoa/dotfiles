@@ -22,11 +22,18 @@ while IFS='|' read -r record capability owner; do
 done <<<"$ownership"
 
 output="$($audit)"
-for app in Kitty Rofi Albert Dunst Polybar CopyQ clipmenu 'ble.sh' Atuin FZF Starship zoxide direnv mise fnm LazyGit Yazi lnav btop Neovim; do
+for app in Kitty Rofi Dunst Polybar clipmenu 'ble.sh' Atuin FZF Starship zoxide direnv mise LazyGit Yazi lnav btop Neovim; do
   printf '%s\n' "$output" | grep -Fq "APP|$app|" || {
     printf 'aplicativo ausente del inventario: %s\n' "$app" >&2
     exit 1
   }
+done
+
+for retired in Albert CopyQ fnm ripgrep-all; do
+  if printf '%s\n' "$output" | grep -Fq "APP|$retired|"; then
+    printf 'herramienta retirada todavía activa en el inventario: %s\n' "$retired" >&2
+    exit 1
+  fi
 done
 
 printf '%s\n' 'PASS: ownership y baseline de aplicativos coherentes'

@@ -13,4 +13,4 @@ HOME_PKGS=(bash git tmux bin)
 # shellcheck disable=SC2034  # read by bootstrap.sh/rollback.sh via source
 CONFIG_CORE_PKGS=(atuin bat blesh btop cava gh-dash lazygit lnav mise nvim rclone starship systemd yazi)
 # shellcheck disable=SC2034  # read by bootstrap.sh/rollback.sh via source
-CONFIG_GUI_PKGS=(albert copyq dunst flameshot i3 kitty picom polybar rofi Nextcloud code obsidian)
+CONFIG_GUI_PKGS=(dunst flameshot i3 kitty picom polybar rofi Nextcloud code obsidian)
