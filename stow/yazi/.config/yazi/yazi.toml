@@ -67,14 +67,14 @@ prepend_rules = [
   { mime = "image/*",          use = [ "img", "open", "term" ] },
   { mime = "video/*",          use = "play" },
   { mime = "audio/*",          use = "play" },
-  { name = "*.md",             use = "edit" },
+  { url = "*.md",               use = "edit" },
   { mime = "application/zip",  use = [ "extract", "inspect" ] },
   { mime = "application/gzip", use = [ "extract", "inspect" ] },
   { mime = "application/x-tar",use = [ "extract", "inspect" ] },
   { mime = "application/xz",   use = [ "extract", "inspect" ] },
 ]
 append_rules = [
-  { name = "*", use = "open" }
+  { url = "*", use = "open" }
 ]
 
 [plugin]
