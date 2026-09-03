@@ -6,6 +6,64 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-09-03 — Auditoría profunda, popups de descubrimiento, tema Catppuccin completo
+
+### Añadido
+- Popups de descubrimiento en tmux: `prefix+P` (catálogo de comandos Bash,
+  `BASH_SHORTCUTS.md`), `prefix+W` (herramientas instaladas, `TOOLS.md`,
+  generado desde `scripts/audit-application-ownership.sh`). Scratchpad
+  equivalente en i3, `mod+i`, para `SHORTCUTS.md` (i3+tmux+kitty+nvim).
+- `gh-dash` (extensión de `gh`, config versionada) para PRs/issues sin salir
+  del terminal.
+- `grug-far.nvim` reemplaza a `nvim-spectre` (retirado por la comunidad).
+- `full-border.yazi`.
+- Catppuccin Mocha en el resto del stack TUI/CLI que no lo tenía: bat, delta,
+  fzf, lazygit, atuin, gh-dash — todo el terminal comparte tema ahora.
+- Job `bootstrap-smoke` en CI: bootstrap real en `$HOME` aislado dentro de un
+  contenedor limpio, seguido de `doctor.sh`; antes CI solo hacía lint estático.
+- `dpsa` (`docker ps -a`), separado de `dps` (ahora solo contenedores en
+  ejecución).
+- `gdt` (diff estructural con difftastic) y `rgaf` (búsqueda de contenido en
+  PDFs/docs con ripgrep-all) en `.bash_lib`.
+
+### Cambiado
+- `dothelp` agrupado por categoría con cabeceras, colores Catppuccin, ancho
+  de columna dinámico (antes: lista plana con variables de color declaradas
+  y nunca usadas).
+- `starship.toml` movido a `stow/starship/` (vivía fuera del repo, sin
+  versionar, pese a figurar como parte del stack en el README).
+- `systemd` (`agentmemory.service`) registrado en `CONFIG_CORE_PKGS` — estaba
+  symlinkeado a mano desde el 31 de agosto sin figurar en ningún host profile.
+
+### Corregido
+- **`doctor.sh` tenía la detección de conflictos de stow rota**: el regex
+  esperaba el formato de warning de una versión vieja de GNU Stow; la
+  instalada (2.4.1) redacta el mensaje distinto, el grep nunca hacía match.
+  Consecuencia real: 7 paquetes (`albert copyq btop cava lnav Nextcloud code`)
+  llevaban semanas como archivos reales sin symlinkear, sin que `doctor.sh`
+  lo detectara nunca. Ahora usa el exit code de `stow -n`, no texto parseado.
+  Resueltos los 7 con `stow --adopt` (btop y code habían evolucionado en vivo
+  más allá de lo trackeado; se preservó la versión más reciente).
+- `stow/obsidian` apuntaba a `$HOME` — ningún vault se abre ahí, el paquete
+  nunca pudo funcionar. Retargeteado a `~/Vaults/SimpleBrain/.obsidian`,
+  contenido refrescado (tema/snippets SBX actuales).
+- CI: faltaba `ripgrep` en el runner (causaba un falso positivo en
+  `check-desktop-configs.sh`); `actions/checkout` v4→v5 (Node 20 deprecado).
+- `tmux.conf`: línea de plugin corrupta por una edición mal hecha
+  (`tmux-thumbs` fusionado con su propio comentario).
+- Catálogo `.bash_grammar` desincronizado (`gdt`/`rgaf` sin registrar) —
+  cazado por `tests/bash_grammar_test.sh`.
+- El marcador `⚠️` no se renderizaba (variation selector sin glifo en la
+  fuente); corregido en `dothelp`, `blib-help` y el generador de
+  `BASH_SHORTCUTS.md`.
+- `gitleaks` (ya instalado, sin usar) conectado a `scripts/check-secrets.sh`.
+
+### Eliminado
+- Restos muertos de iteraciones pasadas: `treesitter.lua.before-nvim-012`
+  (nvim), `config.before-copyq-autostart-2026-07-29` (i3),
+  `dank-theme.conf`/`dank-tabs.conf` (kitty, nunca `include`ados), binario
+  vendorizado `polybar-lmsensors_linux_amd64` (1.9MB, huérfano).
+
 ## 2026-09-01 — Configuración inicial Bash hiperproductiva
 
 ### Añadido
