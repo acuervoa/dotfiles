@@ -425,5 +425,8 @@
   "sonarlint.automaticAnalysis": true,
   "security.allowedUNCHosts": [
     "wsl.localhost"
-  ]
+  ],
+  "containers.containerCommand": "docker",
+  "containers.composeCommand": "docker compose",
+  "vsicons.dontShowNewVersionMessage": true
 }

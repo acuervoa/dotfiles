@@ -109,14 +109,15 @@ check_pkg_dirs() {
 check_stow_conflicts() {
   local pkg="$1"
 
-  # Solo mostramos conflictos reales; el resto del output de stow suele ser ruido.
-  local out
-  out="$(
-    stow -d "$STOW_DIR" -t "$HOME" -nS "$pkg" 2>&1 |
-      grep -E 'existing target is not (a symlink|owned by stow|a directory|a link nor a directory):' || true
-  )"
+  # El exit code de `stow -n` es la señal fiable de conflicto (1 = conflicto,
+  # 0 = sin conflicto). No parsear el texto del warning: su redacción exacta
+  # cambia entre versiones de stow (visto entre 2.3.x y 2.4.1) y un grep
+  # desincronizado deja pasar conflictos reales en silencio.
+  local out status
+  out="$(stow -d "$STOW_DIR" -t "$HOME" -nS "$pkg" 2>&1)"
+  status=$?
 
-  if [ -n "$out" ]; then
+  if [ "$status" -ne 0 ]; then
     warn "Conflictos para '$pkg':"
     printf '%s\n' "$out" >&2
     return 1
