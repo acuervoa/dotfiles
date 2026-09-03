@@ -47,6 +47,7 @@ gpf	git	confirm	no	Force-push protegido con lease	gpf
 gl	git	safe	no	Mostrar historial gráfico reciente	gl
 gd	git	safe	no	Mostrar diff de trabajo	gd
 gds	git	safe	no	Mostrar diff staged	gds
+gdt	git	safe	no	Diff estructural (difftastic) puntual	gdt
 gco	git	mutating	no	Cambiar o restaurar checkout	gco rama
 gcob	git	mutating	no	Crear rama con checkout	gcob feature
 gsw	git	mutating	no	Cambiar de rama con switch	gsw rama
@@ -119,6 +120,7 @@ topme	system	safe	no	Mostrar procesos del usuario	topme
 tt	system	safe	no	Abrir terminal auxiliar	tt
 tproj	navigation	safe	no	Abrir proyecto en tmux	tproj
 fo	navigation	safe	no	Buscar y abrir archivos	fo
+rgaf	navigation	safe	no	Buscar contenido (PDF/docs) con ripgrep-all	rgaf test
 cdf	navigation	mutating	no	Cambiar a directorio seleccionado	cdf
 take	navigation	mutating	no	Crear directorio y entrar	take carpeta
 extract	navigation	mutating	no	Extraer un archivo comprimido	extract archivo.tar

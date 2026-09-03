@@ -32,6 +32,7 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `gcof` | Seleccionar rama con histórico | 🔴 mutación | `gcof` |
 | `gd` | Mostrar diff de trabajo | ✅ seguro | `gd` |
 | `gds` | Mostrar diff staged | ✅ seguro | `gds` |
+| `gdt` | Diff estructural (difftastic) puntual | ✅ seguro | `gdt` |
 | `gfa` | Actualizar referencias remotas y podar | ✅ seguro | `gfa` |
 | `gfeat` | Crear rama de feature | 🔴 mutación | `gfeat nombre` |
 | `gfix` | Crear rama de fix | 🔴 mutación | `gfix nombre` |
@@ -129,10 +130,10 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 
 | Comando | Descripción | Riesgo | Ejemplo |
 | --- | --- | --- | --- |
-| `sb-lint` | Auditar frontmatter del vault | ✅ seguro | `sb-lint` |
 | `sbclose` | Cerrar formalmente un proyecto | 🔴 mutación | `sbclose "proyecto"` |
 | `sbe` | Cerrar una sesión SimpleBrain | 🔴 mutación | `sbe` |
 | `sbl` | Listar sesiones SimpleBrain | ✅ seguro | `sbl` |
+| `sb-lint` | Auditar frontmatter del vault | ✅ seguro | `sb-lint` |
 | `sbo` | Consultar sesión activa y sesiones candidatas | ✅ seguro | `sbo` |
 | `sbo-archive-stale` | Archivar sesiones stale | 🔴 mutación | `sbo-archive-stale` |
 | `sbo-clean` | Limpiar sesiones huérfanas | 🔴 mutación | `sbo-clean` |
@@ -157,6 +158,7 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `pbcopy` | Copiar stdin al portapapeles | 🔴 mutación | `pbcopy` |
 | `pbpaste` | Pegar contenido del portapapeles | ✅ seguro | `pbpaste` |
 | `proj` | Seleccionar un proyecto | 🔴 mutación | `proj` |
+| `rgaf` | Buscar contenido (PDF/docs) con ripgrep-all | ✅ seguro | `rgaf test` |
 | `take` | Crear directorio y entrar | 🔴 mutación | `take carpeta` |
 | `tproj` | Abrir proyecto en tmux | ✅ seguro | `tproj` |
 | `y` | Abrir Yazi | 🔴 mutación | `y` |
