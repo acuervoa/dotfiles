@@ -18,6 +18,7 @@ fd-find
 # QoL
 bat
 difftastic
+ripgrep-all
 zoxide
 trash-cli
 

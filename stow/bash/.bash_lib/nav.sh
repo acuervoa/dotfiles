@@ -440,3 +440,30 @@ tproj() {
 
   dev "$selection"
 }
+
+# Búsqueda de contenido en texto, PDF, docx/pptx, zip, sqlite... vía rga.
+# No sustituye a rg/rgrep (texto plano) ni a fo (nombres de fichero);
+# cubre archivos que ripgrep no puede leer.
+# @cmd rgaf  Buscar contenido con ripgrep-all + fzf, abrir en editor en la línea
+rgaf() {
+  _req fzf || return 1
+  if ! command -v rga >/dev/null 2>&1; then
+    printf 'rga (ripgrep-all) no está instalado.\n' >&2
+    return 1
+  fi
+
+  local sel file line
+  sel="$(
+    rga --line-number --no-heading --color=always --smart-case "${1:-}" 2>/dev/null |
+      fzf --ansi --delimiter=: --nth=3.. \
+        --prompt=' rgaf > ' \
+        --preview='bat --color=always --highlight-line {2} {1} 2>/dev/null || cat {1}' \
+        --preview-window='+{2}-/2'
+  )" || return 0
+
+  [ -z "$sel" ] && return 0
+
+  file="${sel%%:*}"
+  line="$(printf '%s' "$sel" | cut -d: -f2)"
+  _edit_at "$file" "$line"
+}

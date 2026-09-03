@@ -17,6 +17,7 @@ fd-find
 # Quality-of-life (CLI)
 bat
 difftastic
+ripgrep-all
 zoxide
 trash-cli
 

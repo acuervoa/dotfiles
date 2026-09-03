@@ -13,6 +13,7 @@ fd
 bat
 difftastic
 eza
+ripgrep-all
 zoxide
 trash-cli
 bc
