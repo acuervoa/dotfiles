@@ -15,6 +15,7 @@
 | $mod+d | exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh |
 | $mod+F11 | exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10" |
 | $mod+v | exec --no-startup-id "CM_LAUNCHER=rofi clipmenu" |
+| $mod+p | exec --no-startup-id rofi-bw |
 | $mod+g | exec --no-startup-id gtk-launch chatgpt-webapp |
 | XF86MonBrightnessUp | exec --no-startup-id brightnessctl set +5% |
 | XF86MonBrightnessDown | exec --no-startup-id brightnessctl set 5%- |
@@ -30,6 +31,7 @@
 | XF86AudioPrev | exec playerctl previous |
 | $mod+Shift+Return | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh |
 | $mod+Shift+n | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh |
+| $mod+i | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_shortcuts.sh |
 | $mod+Return | exec --no-startup-id $term -e tmux new-session -A -s main |
 | $mod+$left | focus left |
 | $mod+$down | focus down |

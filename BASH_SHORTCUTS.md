@@ -131,10 +131,10 @@ Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 
 | Comando | Descripción | Riesgo | Ejemplo |
 | --- | --- | --- | --- |
+| `sb-lint` | Auditar frontmatter del vault | ✅ seguro | `sb-lint` |
 | `sbclose` | Cerrar formalmente un proyecto | 🔴 mutación | `sbclose "proyecto"` |
 | `sbe` | Cerrar una sesión SimpleBrain | 🔴 mutación | `sbe` |
 | `sbl` | Listar sesiones SimpleBrain | ✅ seguro | `sbl` |
-| `sb-lint` | Auditar frontmatter del vault | ✅ seguro | `sb-lint` |
 | `sbo` | Consultar sesión activa y sesiones candidatas | ✅ seguro | `sbo` |
 | `sbo-archive-stale` | Archivar sesiones stale | 🔴 mutación | `sbo-archive-stale` |
 | `sbo-clean` | Limpiar sesiones huérfanas | 🔴 mutación | `sbo-clean` |

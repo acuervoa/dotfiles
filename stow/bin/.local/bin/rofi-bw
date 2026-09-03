@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Picker de contraseñas Bitwarden via rofi, usando bw (rofi-rbw no soporta bw como backend).
+set -euo pipefail
+
+SESSION_FILE="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bw_session"
+
+unlock() {
+  local pass
+  pass="$(rofi -dmenu -password -p 'Bitwarden master password')" || exit 1
+  BW_SESSION="$(bw unlock "$pass" --raw)" || {
+    notify-send "Bitwarden" "Master password incorrecto" 2>/dev/null || true
+    exit 1
+  }
+  echo "$BW_SESSION" > "$SESSION_FILE"
+  chmod 600 "$SESSION_FILE"
+}
+
+if [[ -f "$SESSION_FILE" ]]; then
+  BW_SESSION="$(cat "$SESSION_FILE")"
+  status="$(bw status --session "$BW_SESSION" 2>/dev/null | jq -r '.status')"
+  if [[ "$status" != "unlocked" ]]; then
+    unlock
+  fi
+else
+  unlock
+fi
+export BW_SESSION
+BW_SESSION="$(cat "$SESSION_FILE")"
+
+bw sync >/dev/null 2>&1 || true
+
+selected="$(bw list items --session "$BW_SESSION" \
+  | jq -r '.[] | select(.login != null) | "\(.name) — \(.login.username // "")\t\(.id)"' \
+  | rofi -dmenu -i -p 'Bitwarden' -no-custom -format 'i' -display-columns 1)" || exit 0
+
+[[ -z "$selected" ]] && exit 0
+
+item_id="$(bw list items --session "$BW_SESSION" \
+  | jq -r '.[] | select(.login != null) | "\(.name) — \(.login.username // "")\t\(.id)"' \
+  | sed -n "$((selected + 1))p" | cut -f2)"
+
+bw get password "$item_id" --session "$BW_SESSION" | tr -d '\n' | xclip -selection clipboard
+
+notify-send "Bitwarden" "Contraseña copiada al portapapeles" 2>/dev/null || true

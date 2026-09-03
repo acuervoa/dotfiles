@@ -119,14 +119,6 @@ if [ -z "${MISE_INITIALIZED:-}" ]; then
   fi
 fi
 
-# - fnm (gestor de versiones de node)
-if [ -z "${FNM_INITIALIZED:-}" ]; then
-  if command -v fnm >/dev/null 2>&1; then
-    eval "$(fnm env --use-on-cd --shell=bash)"
-    export FNM_INITIALIZED=1
-  fi
-fi
-
 # Desactiva titulo dentro de tmux
 if [[ -n "$TMUX" ]]; then
   PROMPT_COMMAND=${PROMPT_COMMAND//\\e]0;*\a/}

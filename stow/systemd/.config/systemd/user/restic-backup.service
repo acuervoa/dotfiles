@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup de $HOME via restic a /mnt/Elements
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/restic-backup.sh
+Nice=10
+IOSchedulingClass=idle
