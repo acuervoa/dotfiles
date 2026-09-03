@@ -79,8 +79,8 @@ append_rules = [
 
 [plugin]
 prepend_previewers = [
-  { name = "*.md",       run = 'piper -- sh -lc "mdcat \"$1\""' },
-  { name = "*.markdown", run = 'piper -- sh -lc "mdcat \"$1\""' },
-  { name = "README*",    run = 'piper -- sh -lc "mdcat \"$1\""' }
+  { url = "*.md",       run = 'piper -- sh -lc "mdcat \"$1\""' },
+  { url = "*.markdown", run = 'piper -- sh -lc "mdcat \"$1\""' },
+  { url = "README*",    run = 'piper -- sh -lc "mdcat \"$1\""' }
 ]
 
