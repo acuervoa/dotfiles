@@ -71,7 +71,8 @@ Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 | `dlogs` | Seguir logs de un servicio | ✅ seguro | `dlogs` |
 | `docps` | Mostrar estado normalizado de Compose | ✅ seguro | `docps` |
 | `dorebuild` | Reconstruir Compose sin caché | ⚠ confirmación | `dorebuild` |
-| `dps` | Listar contenedores Docker | ✅ seguro | `dps` |
+| `dps` | Listar contenedores Docker en ejecución (tabla) | ✅ seguro | `dps` |
+| `dpsa` | Listar todos los contenedores Docker, incluye parados (tabla) | ✅ seguro | `dpsa` |
 | `dsh` | Entrar en un servicio Compose | 🔴 mutación | `dsh` |
 | `dshp` | Entrar directamente en php | 🔴 mutación | `dshp` |
 

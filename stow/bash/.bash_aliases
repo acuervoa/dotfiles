@@ -52,7 +52,8 @@ if command -v docker >/dev/null 2>&1; then
   alias dcud='docker compose up -d'
   alias dcd='docker compose down'
   alias dcr='docker compose restart'
-  alias dps='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
+  alias dps='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
+  alias dpsa='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
   alias dil='docker images'
   # dsh directo a php (tu servicio principal)
   alias dshp='dsh php'

@@ -82,7 +82,8 @@ dorebuild	docker	confirm	no	Reconstruir Compose sin caché	dorebuild
 dlogs	docker	safe	no	Seguir logs de un servicio	dlogs
 dsh	docker	mutating	no	Entrar en un servicio Compose	dsh
 dshp	docker	mutating	no	Entrar directamente en php	dshp
-dps	docker	safe	no	Listar contenedores Docker	dps
+dps	docker	safe	no	Listar contenedores Docker en ejecución (tabla)	dps
+dpsa	docker	safe	no	Listar todos los contenedores Docker, incluye parados (tabla)	dpsa
 dil	docker	safe	no	Listar imágenes Docker	dil
 dclean	docker	confirm	no	Limpiar recursos Docker no usados	dclean
 p	php	mutating	yes	Ejecutar PHP en el servicio php	p -v
