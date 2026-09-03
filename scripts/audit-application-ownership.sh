@@ -39,6 +39,12 @@ declare -a apps=(
   'lnav|lnav|stow/lnav|log analysis'
   'btop|btop|stow/btop/.config/btop/btop.conf|system monitoring'
   'Neovim|nvim|stow/nvim/.config/nvim/init.lua|editor and code workflows'
+  'cava|cava|stow/cava/.config/cava/config|audio visualizer'
+  'delta|delta|stow/git/.gitconfig|git diff pager'
+  'gh-dash|gh|stow/gh-dash/.config/gh-dash/config.yml|GitHub PR/issue TUI dashboard'
+  'gitleaks|gitleaks|scripts/check-secrets.sh|secret scanning (entropy + rules)'
+  'difftastic|difft|stow/bash/.bash_aliases|structural diff, alias gdt'
+  'ripgrep-all|rga|stow/bash/.bash_lib/nav.sh|content search in PDFs/docs, function rgaf'
 )
 
 for entry in "${apps[@]}"; do
