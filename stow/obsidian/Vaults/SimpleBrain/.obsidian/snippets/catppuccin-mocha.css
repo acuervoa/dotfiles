@@ -1,0 +1,46 @@
+/* ── SBX Sepia palette — light + dark ──────────────────────────────── */
+
+:root,
+.theme-light {
+  --background-primary:          #F5F0E8;
+  --background-secondary:        #EBE5D8;
+  --background-tertiary:         #DDD6C6;
+  --background-secondary-alt:    #E3DCCC;
+  --background-modifier-border:  rgba(90, 60, 30, 0.16);
+  --background-modifier-hover:   rgba(90, 60, 30, 0.06);
+  --background-modifier-form-field: #EDE7DA;
+
+  --text-normal:   #2E1F0F;
+  --text-muted:    #7A6248;
+  --text-faint:    #B09070;
+  --text-accent:   #B06830;
+  --text-on-accent: #F5F0E8;
+
+  --interactive-accent:       #B06830;
+  --interactive-accent-hover: #904E20;
+  --titlebar-text-color:      #2E1F0F;
+}
+
+.theme-dark {
+  --background-primary:          #1C1710;
+  --background-secondary:        #151109;
+  --background-tertiary:         #100D07;
+  --background-secondary-alt:    #19140D;
+  --background-modifier-border:  rgba(200, 160, 100, 0.14);
+  --background-modifier-hover:   rgba(200, 160, 100, 0.06);
+  --background-modifier-form-field: #221B12;
+
+  --text-normal:   #E8DFC8;
+  --text-muted:    #A08A68;
+  --text-faint:    #6A5840;
+  --text-accent:   #D09A50;
+  --text-on-accent: #1C1710;
+
+  --interactive-accent:       #D09A50;
+  --interactive-accent-hover: #E0AA60;
+  --titlebar-text-color:      #E8DFC8;
+}
+
+body, .app-container {
+  font-family: "MesloLGLDZ Nerd Font";
+}

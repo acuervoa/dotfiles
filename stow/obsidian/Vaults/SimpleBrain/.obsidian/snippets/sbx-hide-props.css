@@ -1,0 +1,65 @@
+/* sbx-hide-props.css — ocultar panel propiedades en tipos internos */
+
+.dashboard .metadata-container,
+.daily .metadata-container,
+.meta .metadata-container {
+  display: none !important;
+}
+
+/* ocultar botón ⊞ de Metadata Menu en editor */
+.fileclass-btn-container {
+  display: none !important;
+}
+
+/* tag pill colors — targeting pretty-properties data-tag-value attr */
+[data-tag-value="resource"]          { background-color: #94e2d5 !important; color: #1e1e2e !important; }
+[data-tag-value="project"]           { background-color: #89b4fa !important; color: #1e1e2e !important; }
+[data-tag-value="dashboard"]         { background-color: #b4befe !important; color: #1e1e2e !important; }
+[data-tag-value="meta"]              { background-color: #6c7086 !important; color: #cdd6f4 !important; }
+[data-tag-value="daily"]             { background-color: #89dceb !important; color: #1e1e2e !important; }
+[data-tag-value="reference"]         { background-color: #585b70 !important; color: #cdd6f4 !important; }
+[data-tag-value="permanent"]         { background-color: #cdd6f4 !important; color: #1e1e2e !important; }
+[data-tag-value="external"]          { background-color: #7f849c !important; color: #1e1e2e !important; }
+[data-tag-value="reusable"]          { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+[data-tag-value="pattern"]           { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+[data-tag-value="decision"]          { background-color: #fab387 !important; color: #1e1e2e !important; }
+[data-tag-value="documentation"]     { background-color: #b4befe !important; color: #1e1e2e !important; }
+[data-tag-value="coding"]            { background-color: #fab387 !important; color: #1e1e2e !important; }
+[data-tag-value="hacking"]           { background-color: #f38ba8 !important; color: #1e1e2e !important; }
+[data-tag-value="obsidian"]          { background-color: #cba6f7 !important; color: #1e1e2e !important; }
+[data-tag-value="linux"]             { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+[data-tag-value="docker"]            { background-color: #89dceb !important; color: #1e1e2e !important; }
+[data-tag-value="python"]            { background-color: #f9e2af !important; color: #1e1e2e !important; }
+[data-tag-value="javascript"]        { background-color: #f9e2af !important; color: #1e1e2e !important; }
+[data-tag-value="ia"]                { background-color: #f5c2e7 !important; color: #1e1e2e !important; }
+[data-tag-value="databases"]         { background-color: #74c7ec !important; color: #1e1e2e !important; }
+[data-tag-value="css"]               { background-color: #f2cdcd !important; color: #1e1e2e !important; }
+[data-tag-value="troubleshooting"]   { background-color: #eba0ac !important; color: #1e1e2e !important; }
+[data-tag-value="bug"]               { background-color: #f38ba8 !important; color: #1e1e2e !important; }
+[data-tag-value="root-cause"]        { background-color: #f38ba8 !important; color: #1e1e2e !important; }
+[data-tag-value="vault-maintenance"] { background-color: #cba6f7 !important; color: #1e1e2e !important; }
+[data-tag-value="wiki-maintenance"]  { background-color: #cba6f7 !important; color: #1e1e2e !important; }
+[data-tag-value="process"]           { background-color: #89b4fa !important; color: #1e1e2e !important; }
+[data-tag-value="journal"]           { background-color: #f5c2e7 !important; color: #1e1e2e !important; }
+[data-tag-value="learning"]          { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+[data-tag-value="devlog"]            { background-color: #89dceb !important; color: #1e1e2e !important; }
+[data-tag-value="ai-session"]        { background-color: #f5c2e7 !important; color: #1e1e2e !important; }
+[data-tag-value="personal"]          { background-color: #fab387 !important; color: #1e1e2e !important; }
+
+/* task tag colors — properties panel */
+[data-tag-value="next"]              { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+[data-tag-value="backlog"]           { background-color: #6c7086 !important; color: #cdd6f4 !important; }
+[data-tag-value="milestone"]         { background-color: #89b4fa !important; color: #1e1e2e !important; }
+[data-tag-value="done"]              { background-color: #585b70 !important; color: #cdd6f4 !important; }
+
+/* task tag colors — reading mode */
+a.tag[href="#next"],      a.tag[href$="/next"]      { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+a.tag[href="#backlog"],   a.tag[href$="/backlog"]   { background-color: #6c7086 !important; color: #cdd6f4 !important; }
+a.tag[href="#milestone"], a.tag[href$="/milestone"] { background-color: #89b4fa !important; color: #1e1e2e !important; }
+a.tag[href="#done"],      a.tag[href$="/done"]      { background-color: #585b70 !important; color: #cdd6f4 !important; }
+
+/* task tag colors — live preview (CodeMirror) */
+span.cm-tag-next      { background-color: #a6e3a1 !important; color: #1e1e2e !important; }
+span.cm-tag-backlog   { background-color: #6c7086 !important; color: #cdd6f4 !important; }
+span.cm-tag-milestone { background-color: #89b4fa !important; color: #1e1e2e !important; }
+span.cm-tag-done      { background-color: #585b70 !important; color: #cdd6f4 !important; }

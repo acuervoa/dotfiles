@@ -1,11 +1,14 @@
 {
   "cssTheme": "WowTheme",
-  "theme": "moonstone",
+  "theme": "obsidian",
   "baseFontSize": 16,
   "interfaceFontFamily": "MesloLGLDZ Nerd Font",
   "textFontFamily": "MesloLGLDZ Nerd Font",
   "enabledCssSnippets": [
-    "sbx-components",
-    "catppuccin-mocha"
+    "catppuccin-mocha",
+    "sbx-theme",
+    "sbx-ui",
+    "sbx-tooltips",
+    "sbx-hide-props"
   ]
 }
