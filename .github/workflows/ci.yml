@@ -43,3 +43,30 @@ jobs:
       - name: Secret scan (include untracked)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.include_untracked == 'true' }}
         run: bash ./scripts/check-secrets.sh --all
+
+  bootstrap-smoke:
+    runs-on: ubuntu-latest
+    # Runs a real (non-dry-run) bootstrap against a pristine, isolated HOME
+    # to catch structural stow issues -- malformed package layouts, a group
+    # renamed without updating a host profile, etc. -- that static lint alone
+    # won't. It won't catch drift on an already-lived-in machine (nothing
+    # here pre-exists to conflict with), only that a fresh bootstrap resolves
+    # cleanly end to end.
+    env:
+      HOME: /tmp/dotfiles-bootstrap-smoke
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install stow
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y stow
+
+      - name: Bootstrap into an isolated HOME
+        run: |
+          mkdir -p "$HOME"
+          bash ./scripts/bootstrap.sh -y --skip-tmux-plugins
+
+      - name: Doctor must report zero conflicts after bootstrap
+        run: bash ./scripts/doctor.sh --no-lint
