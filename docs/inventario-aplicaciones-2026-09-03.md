@@ -13,8 +13,10 @@ Leyenda workflow: 🔗 stow-managed (config versionada) · ⚙️ usado a diario
 | atuin | historial de shell sincronizado/buscable | 🔗 `stow/atuin` |
 | starship (no en Qe pero referenciado en TOOLS.md) | prompt | 🔗 `stow/starship` |
 | kitty | terminal GPU | 🔗 `stow/kitty` |
-| alacritty, xterm | terminales alternativas | 💤 |
-| tmux, tmuxp | multiplexor de sesiones + gestor de layouts | 🔗 `stow/tmux` |
+| xterm | fallback de emergencia si kitty falla, decisión consciente | ⚙️ |
+| ~~alacritty~~ | eliminado 2026-09-03: cero refs, kitty es el owner con toda la config | — |
+| tmux | multiplexor de sesiones | 🔗 `stow/tmux` |
+| ~~tmuxp~~ | eliminado 2026-09-03: los yaml en `~/.config/tmuxp/` eran material de entrenamiento personal (`tmux-training`), no proyectos reales, sin alias que lo invocara | — |
 | direnv | entorno por proyecto | 🔗 `stow/bash` |
 | mise | gestor de versiones de runtime — owner único (node, php; python/rust vía sistema/rustup) | 🔗 `stow/mise` |
 | rustup | toolchains rust (stable/beta/nightly) — capacidad que mise no cubre | ⚙️ `~/.cargo/env` en `.profile` |
@@ -27,7 +29,8 @@ Leyenda workflow: 🔗 stow-managed (config versionada) · ⚙️ usado a diario
 
 | App | Qué hace | Workflow |
 |---|---|---|
-| i3-wm, i3blocks, i3lock, i3status | window manager principal + barra/lock | 🔗 `stow/i3` — owner de "windows" |
+| i3-wm, i3lock | window manager principal + lock | 🔗 `stow/i3` — owner de "windows" |
+| ~~i3blocks, i3status~~ | eliminados 2026-09-03: sin config (`~/.config/i3blocks`, `~/.config/i3status` no existían), Polybar es la barra real | — |
 | ~~niri, xwayland-satellite~~ | eliminados 2026-09-03: decisión tomada, i3 gana | — |
 | rofi | launcher | 🔗 `stow/rofi` — owner de "launcher" |
 | ~~albert~~ | eliminado 2026-09-03: autoarrancaba sin keybind, launcher real es rofi (4 binds activos) | — |
@@ -37,7 +40,9 @@ Leyenda workflow: 🔗 stow-managed (config versionada) · ⚙️ usado a diario
 | lightdm, lightdm-gtk-greeter, lightdm-settings | display manager / login | ⚙️ |
 | clipmenu | historial de portapapeles — owner "clipboard-history" | 🔗 `$mod+v`, `clipmenud.service` |
 | ~~copyq, cliphist~~ | eliminados 2026-09-03: copyq corría monitoreando clipboard sin keybind ni ref; cliphist no corría ni tenía refs | — |
-| xbindkeys, numlockx, autorandr | atajos globales, multi-monitor | ⚙️ |
+| numlockx | multi-monitor / teclado | ⚙️ |
+| ~~xbindkeys~~ | eliminado 2026-09-03: config existía (`~/.xbindkeysrc`) pero nadie lo arrancaba, sin proceso ni exec en i3, solo 2 bindings triviales configurados | — |
+| autorandr | verificado 2026-09-03: `outputs_apply.sh` (referenciado en i3 config) es el real owner, autorandr sin servicio activo — candidato confirmado a eliminar, **sigue instalado**, pendiente de que corras el `pacman -R` | 💤 pendiente |
 | network-manager-applet, networkmanager | red gráfica | ⚙️ |
 | feh | visor de imágenes / wallpaper | ⚙️ |
 | flameshot (via stow, no listado en Qe directo) | capturas de pantalla | 🔗 `stow/flameshot` |
@@ -83,7 +88,8 @@ Leyenda workflow: 🔗 stow-managed (config versionada) · ⚙️ usado a diario
 | eza, tree, dust, duf | listar archivos/disco (reemplazos de ls/du/df) | ⚙️ |
 | bat, most, less, multitail, lnav | paginadores y análisis de logs (lnav owner "log analysis") | 🔗 `stow/lnav` |
 | jq, xh, difftastic | JSON, HTTP client, diffs estructurales | ⚙️ |
-| yazi, ranger | navegadores de archivos TUI (yazi owner "filesystem navigation") | 🔗 `stow/yazi` |
+| yazi | navegador de archivos TUI — owner "filesystem navigation" | 🔗 `stow/yazi` |
+| ~~ranger~~ | eliminado 2026-09-03: cero refs, yazi es el owner | — |
 | btop, htop, iotop, bandwhich, procs, gping | monitoreo de sistema/red — btop owner "system monitoring", bandwhich owner "network by process" | 🔗 `stow/btop` |
 | trash-cli | rm seguro con papelera | ⚙️ |
 | moreutils, parallel, patchutils | utilidades Unix extendidas | 🧰 |
@@ -110,7 +116,8 @@ Leyenda workflow: 🔗 stow-managed (config versionada) · ⚙️ usado a diario
 | lynis, arch-audit | auditoría de seguridad del sistema | 🧰 — ver `docs/security-hardening.md` |
 | sniffnet | monitor visual de tráfico de red | 🧰 |
 | gitleaks (referenciado en TOOLS.md) | escaneo de secretos en commits | 🔗 `scripts/check-secrets.sh` |
-| samba, filezilla, lftp, rclone, rclone-browser | transferencia de archivos / shares | ⚙️ `stow/rclone` |
+| samba, filezilla, lftp, rclone | transferencia de archivos / shares | ⚙️ `stow/rclone` |
+| ~~rclone-browser~~ | eliminado 2026-09-03: cero refs, usas rclone CLI directo (remotos `mydrive`, `iCloud` configurados) | — |
 | certbot | certificados TLS | 🧰 |
 
 ## 6. Sistema, mantenimiento, hardware
@@ -186,6 +193,9 @@ Retención: 8 semanales / 12 mensuales / 2 anuales (`restic forget --prune`). Pa
 - 296 → 290 paquetes explícitos pacman (verificado con `pacman -Qe | wc -l`).
 - **2026-09-03 update 12:** cerrado el último gap — `simplescreenrecorder-git` instalado (grabador de pantalla, X11). Arranque manual vía rofi drun, sin keybind dedicado.
 - 290 → 291 paquetes explícitos pacman.
+- **2026-09-03 update 13:** revisión con análisis externo (con correcciones — `feh` estaba mal marcado como sin uso, `devroom`/`proj_session` no existen en el sistema) + script propio `audit-dead-weight.sh`. Eliminados 8 confirmados con evidencia real: `i3blocks`, `i3status`, `xbindkeys`, `gmrun`, `tmuxp`, `ranger`, `rclone-browser`, `alacritty`. `xterm` se queda a propósito (fallback de kitty). `autorandr` confirmado candidato pero **sigue instalado**, pendiente.
+- **2026-09-03 update 14:** `autorandr` fuera + 2 huérfanos nuevos (`python-shtab`, `xorg-xdpyinfo`) limpiados con `pacman -Qtdq`.
+- 313 → 282 paquetes explícitos pacman (verificado con `pacman -Qe | wc -l`), cero huérfanos.
 - Sin gaps ni fricciones abiertas pendientes de decisión — todo lo identificado en esta sesión quedó resuelto (removido, consolidado, instalado, o confirmado como intencional).
 - Lección del proceso: `pacman -Qe` solo lista explícitos — una dependencia "oculta" como hyprland (pull de dms-shell-hyprland) no aparece ahí. Para detectar peso muerto real hace falta cruzar con `Motivo de la instalación` (`pacman -Qi <pkg> | grep Motivo`), no solo con la lista explícita.
 - Pentesting/red (ffuf, gobuster, nikto, nmap) instalados pero sin integración a scripts propios — uso manual puntual, no automatizado en dotfiles.
