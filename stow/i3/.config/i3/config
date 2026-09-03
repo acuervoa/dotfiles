@@ -88,6 +88,8 @@ for_window [class="scratch-terminal" instance="scratch-terminal"] \
 bindsym $mod+Shift+Return exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh
 # Notas rápidas (Obsidian scratch)
 bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh
+# Cheatsheet de atajos (i3/tmux/kitty/nvim) — SHORTCUTS.md vía glow, scratch
+bindsym $mod+i exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_shortcuts.sh
 
 # Terminal por defecto: entrar siempre en la sesión principal de tmux.
 # El scratchpad anterior sigue siendo un Kitty independiente.
