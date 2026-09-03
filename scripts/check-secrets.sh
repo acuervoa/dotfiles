@@ -122,3 +122,13 @@ if hits:
 
 print("[INFO] No se detectaron secretos obvios en archivos trackeados.")
 PY
+
+if command -v gitleaks >/dev/null 2>&1; then
+  printf '[INFO] Corriendo gitleaks (detección por entropía + reglas)...\n'
+  if ! gitleaks detect --no-git --no-banner --redact -s "$REPO_DIR"; then
+    printf '[ERROR] gitleaks detectó posibles secretos.\n' >&2
+    exit 1
+  fi
+else
+  printf '[INFO] gitleaks no instalado; se aplica solo el escaneo por patrones.\n'
+fi
