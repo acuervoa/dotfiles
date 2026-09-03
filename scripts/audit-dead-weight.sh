@@ -26,7 +26,7 @@ is_allowlisted() {
 atuin_cache="$(mktemp)"
 trap 'rm -f "$atuin_cache"' EXIT
 if command -v atuin >/dev/null 2>&1; then
-  atuin history list --cmd-only 2>/dev/null | awk '{print $1}' | sort -u > "$atuin_cache"
+  atuin history list --cmd-only 2>/dev/null | awk '{print $1}' | sort -u >"$atuin_cache"
 fi
 
 printf '%s\n' '# Candidatos a peso muerto — revisar a mano antes de eliminar'
@@ -56,7 +56,10 @@ pacman -Qeq | sort | while read -r pkg; do
   IFS=',' read -ra bin_arr <<<"$bins"
   for b in "${bin_arr[@]}"; do
     [[ -z "$b" ]] && continue
-    pgrep -x "$b" >/dev/null 2>&1 && { proceso="si($b)"; break; } || true
+    pgrep -x "$b" >/dev/null 2>&1 && {
+      proceso="si($b)"
+      break
+    } || true
   done
 
   # ¿Alguno de los binarios aparece en el historial real de comandos (atuin)?
@@ -81,12 +84,12 @@ pacman -Qeq | sort | while read -r pkg; do
   [[ "$proceso" == "no" ]] && no_count=$((no_count + 1))
   [[ "$en_historial" == "no" ]] && no_count=$((no_count + 1))
 
-  if (( no_count == 4 )); then
+  if ((no_count == 4)); then
     senal="ALTA"
-  elif (( no_count == 3 )); then
+  elif ((no_count == 3)); then
     senal="media"
   else
-    continue  # con 0-2 "no", no es candidato — se omite del reporte
+    continue # con 0-2 "no", no es candidato — se omite del reporte
   fi
 
   printf 'PKG|%s|%s|%s|%s|%s|%s|%s\n' "$pkg" "$bins" "$refs_stow" "$reverse_deps" "$proceso" "$en_historial" "$senal"
