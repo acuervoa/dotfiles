@@ -14,6 +14,10 @@ filter_mode = "directory"    # global | host | session | directory
 
 # --- Apariencia y UX tipo "plugin de zsh" ---
 
+# Catppuccin Mocha, accent blue (catppuccin/atuin) — mismo tema que
+# kitty/lazygit/gh-dash. Archivo del tema en stow/atuin/.config/atuin/themes/.
+theme.name = "catppuccin-mocha-blue"
+
 # UI compacta, no pantalla completa
 style = "compact"
 inline_height = 15       # máximo de líneas que ocupa la TUI (ajusta a gusto)

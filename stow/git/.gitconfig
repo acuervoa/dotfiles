@@ -10,10 +10,16 @@
 [include]
     path = ~/.gitalias
 
+[include]
+    path = ~/.delta-catppuccin.gitconfig
+
 [core]
     editor = nvim
     pager = delta
     hooksPath = ~/.git-hooks
+
+[delta]
+    features = catppuccin-mocha
 
 [color]
     ui = auto
