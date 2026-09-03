@@ -14,3 +14,17 @@ git:
 ui:
   # Mantiene consistente el estilo de confirmaciones (no interferir con hooks interactivos).
   confirmOnQuit: true
+
+# Reutiliza las funciones guardadas de stow/bash/.bash_lib/git.sh en vez de
+# reimplementar la lógica aquí (mismo owner: Git; dos superficies de acceso).
+customCommands:
+  - key: '<c-w>'
+    context: 'files'
+    description: 'WIP commit (guarded, via bash wip())'
+    command: "bash -ic 'wip'"
+    subprocess: true
+  - key: '<c-k>'
+    context: 'files'
+    description: 'Checkpoint: stash all (guarded, via bash checkpoint())'
+    command: "bash -ic 'checkpoint'"
+    subprocess: true

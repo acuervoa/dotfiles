@@ -21,12 +21,17 @@ hash = "8a7c58225816a163a6e8730c0adafbc8"
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
 rev = "2301ff8"
-hash = "27ca02f49fd236b5cc7bf03c243859fe"
+hash = "94081eed9bc9fe176715c33b0db55d35"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
 rev = "2301ff8"
 hash = "64713dcd74daf9ec644883a5895e5d1"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:full-border"
+rev = "4dc7f1b"
+hash = "f281261ff04ad7ec867c3f802a50835f"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
