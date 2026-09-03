@@ -27,7 +27,7 @@ render_row() {
   local marker
   case "$risk" in
   safe) marker='✅ seguro' ;;
-  confirm) marker='⚠️ confirmación' ;;
+  confirm) marker='⚠ confirmación' ;;
   mutating) marker='🔴 mutación' ;;
   esac
   printf '| `%s` | %s | %s | `%s` |\n' "$name" "$description" "$marker" "$example"
@@ -47,7 +47,7 @@ render_group() {
 {
   printf '# Bash shortcuts · gramática operativa\n\n'
   printf 'Catálogo generado desde `stow/bash/.bash_grammar`.\n\n'
-  printf 'Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.\n\n'
+  printf 'Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.\n\n'
 
   printf '## Micro-atajos\n\n'
   printf '| Tecla | Acción | Grupo |\n| --- | --- | --- |\n'

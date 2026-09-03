@@ -2,7 +2,7 @@
 
 Catálogo generado desde `stow/bash/.bash_grammar`.
 
-Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
+Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 
 ## Micro-atajos
 
@@ -25,7 +25,7 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `ga` | Añadir todos los cambios al staging | 🔴 mutación | `ga` |
 | `gbr` | Seleccionar y cambiar de rama | 🔴 mutación | `gbr` |
 | `gc` | Crear un commit interactivo | 🔴 mutación | `gc` |
-| `gclean` | Borrar ramas locales ya mergeadas | ⚠️ confirmación | `gclean` |
+| `gclean` | Borrar ramas locales ya mergeadas | ⚠ confirmación | `gclean` |
 | `gcm` | Crear un commit con mensaje | 🔴 mutación | `gcm "mensaje"` |
 | `gco` | Cambiar o restaurar checkout | 🔴 mutación | `gco rama` |
 | `gcob` | Crear rama con checkout | 🔴 mutación | `gcob feature` |
@@ -40,14 +40,14 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `gl` | Mostrar historial gráfico reciente | ✅ seguro | `gl` |
 | `glast` | Mostrar último commit | ✅ seguro | `glast` |
 | `gmain` | Cambiar a la rama principal | 🔴 mutación | `gmain` |
-| `gp` | Push protegido de la rama actual | ⚠️ confirmación | `gp` |
-| `gpf` | Force-push protegido con lease | ⚠️ confirmación | `gpf` |
+| `gp` | Push protegido de la rama actual | ⚠ confirmación | `gp` |
+| `gpf` | Force-push protegido con lease | ⚠ confirmación | `gpf` |
 | `grt` | Ir a la raíz del repositorio | ✅ seguro | `grt` |
 | `gs` | Mostrar estado corto del repositorio | ✅ seguro | `gs` |
 | `gst` | Mostrar estado del repositorio | ✅ seguro | `gst` |
 | `gstaged` | Mostrar lo que se va a commitear | ✅ seguro | `gstaged` |
 | `gsw` | Cambiar de rama con switch | 🔴 mutación | `gsw rama` |
-| `gundo` | Deshacer último commit conservando cambios | ⚠️ confirmación | `gundo` |
+| `gundo` | Deshacer último commit conservando cambios | ⚠ confirmación | `gundo` |
 | `gup` | Actualizar con pull rebase y autostash | 🔴 mutación | `gup` |
 | `lg` | Abrir Lazygit | ✅ seguro | `lg` |
 | `recent` | Abrir archivos tocados recientemente | ✅ seguro | `recent` |
@@ -61,16 +61,16 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `dc` | Atajo de Docker Compose | ✅ seguro | `dc ps` |
 | `dcb` | Construir servicios Compose | 🔴 mutación | `dcb` |
 | `dcd` | Parar servicios Compose | 🔴 mutación | `dcd` |
-| `dclean` | Limpiar recursos Docker no usados | ⚠️ confirmación | `dclean` |
+| `dclean` | Limpiar recursos Docker no usados | ⚠ confirmación | `dclean` |
 | `dcp` | Descargar imágenes Compose | 🔴 mutación | `dcp` |
 | `dcr` | Reiniciar servicios Compose | 🔴 mutación | `dcr` |
-| `dcrb` | Reconstruir sin caché y arrancar servicios | ⚠️ confirmación | `dcrb` |
+| `dcrb` | Reconstruir sin caché y arrancar servicios | ⚠ confirmación | `dcrb` |
 | `dcu` | Arrancar servicios Compose | 🔴 mutación | `dcu` |
 | `dcud` | Arrancar servicios Compose en segundo plano | 🔴 mutación | `dcud` |
 | `dil` | Listar imágenes Docker | ✅ seguro | `dil` |
 | `dlogs` | Seguir logs de un servicio | ✅ seguro | `dlogs` |
 | `docps` | Mostrar estado normalizado de Compose | ✅ seguro | `docps` |
-| `dorebuild` | Reconstruir Compose sin caché | ⚠️ confirmación | `dorebuild` |
+| `dorebuild` | Reconstruir Compose sin caché | ⚠ confirmación | `dorebuild` |
 | `dps` | Listar contenedores Docker | ✅ seguro | `dps` |
 | `dsh` | Entrar en un servicio Compose | 🔴 mutación | `dsh` |
 | `dshp` | Entrar directamente en php | 🔴 mutación | `dshp` |
@@ -83,12 +83,12 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `part` | Ejecutar Artisan | 🔴 mutación | `part route:list` |
 | `pcc` | Limpiar caché de Laravel | 🔴 mutación | `pcc` |
 | `pcf` | Regenerar caché de configuración | 🔴 mutación | `pcf` |
-| `pclear` | Limpiar cachés comunes Laravel | ⚠️ confirmación | `pclear` |
+| `pclear` | Limpiar cachés comunes Laravel | ⚠ confirmación | `pclear` |
 | `php_new` | Crear microservicio PHP desde skeleton | 🔴 mutación | `php_new app` |
 | `pint` | Formatear con Pint | 🔴 mutación | `pint` |
-| `pmig` | Ejecutar migraciones Laravel | ⚠️ confirmación | `pmig` |
+| `pmig` | Ejecutar migraciones Laravel | ⚠ confirmación | `pmig` |
 | `proute` | Listar rutas Laravel | ✅ seguro | `proute` |
-| `pseed` | Ejecutar seeders Laravel | ⚠️ confirmación | `pseed` |
+| `pseed` | Ejecutar seeders Laravel | ⚠ confirmación | `pseed` |
 | `pstan` | Ejecutar PHPStan | ✅ seguro | `pstan` |
 | `ptest` | Ejecutar PHPUnit | ✅ seguro | `ptest` |
 
@@ -187,7 +187,7 @@ Riesgo: ✅ seguro · ⚠️ confirmación · 🔴 mutación.
 | `cls` | Limpiar la pantalla | ✅ seguro | `cls` |
 | `dotfiles_excludes_nul` | Obtener exclusiones de dotfiles | ✅ seguro | `dotfiles_excludes_nul` |
 | `dothelp` | Listar ayuda de comandos Bash | ✅ seguro | `dothelp` |
-| `envswap` | Activar un entorno .env con backup | ⚠️ confirmación | `envswap use staging` |
+| `envswap` | Activar un entorno .env con backup | ⚠ confirmación | `envswap use staging` |
 | `fhist` | Buscar en el historial | ✅ seguro | `fhist` |
 | `grep` | Buscar texto con color | ✅ seguro | `grep patrón` |
 | `n` | Abrir Neovim | ✅ seguro | `n` |

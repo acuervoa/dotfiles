@@ -287,7 +287,7 @@ dothelp() {
     awk -F '\t' -v mauve="$mauve" -v blue="$blue" -v subtext="$subtext" -v reset="$reset" -v w="$name_width" '
       $1 ~ /^#/ || NF == 0 { next }
       {
-        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠️" : "🔴"))
+        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠" : "🔴"))
         if ($2 != prev_group) {
           if (prev_group != "") printf "\n"
           printf "%s%s%s\n", mauve, toupper(substr($2,1,1)) substr($2,2), reset
@@ -331,7 +331,7 @@ blib-help() {
       NR == 1 { next }
       $1 ~ /^#/ || NF == 0 { next }
       {
-        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠️" : "🔴"))
+        marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠" : "🔴"))
         printf "%s\t%s %s %s\t%s\n", $1, $2, marker, $5, $6
       }
     ' "$catalog" | sort -t $'\t' -k2,2 -k1,1 |
