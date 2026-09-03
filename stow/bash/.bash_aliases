@@ -18,6 +18,11 @@ else
   alias gd='git diff'
   alias gds='git diff --cached'
 fi
+# Diff estructural (AST) puntual para revisar refactors grandes; delta sigue
+# siendo el pager por defecto en .gitconfig, esto es solo una herramienta aparte.
+if command -v difft >/dev/null 2>&1; then
+  alias gdt='GIT_EXTERNAL_DIFF=difft git diff'
+fi
 alias ga='git add -A'
 alias gco='git checkout'
 alias gcob="git checkout -b"

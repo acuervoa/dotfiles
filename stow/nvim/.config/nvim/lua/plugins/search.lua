@@ -1,30 +1,37 @@
 -- lua/plugins/search.lua
 return {
-  "nvim-pack/nvim-spectre",
-  dependencies = { "nvim-lua/plenary.nvim" },
-  cmd = "Spectre",
+  "MagicDuck/grug-far.nvim",
+  cmd = "GrugFar",
   keys = {
     {
       "<leader>sr",
       function()
-        require("spectre").open()
+        require("grug-far").open()
       end,
-      desc = "[S]earch & [R]eplace (Spectre)",
+      desc = "[S]earch & [R]eplace (grug-far)",
     },
     {
       "<leader>sw",
       function()
-        require("spectre").open_visual({ select_word = true })
+        require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } })
       end,
-      mode = { "n", "x" },
-      desc = "[S]earch [W]ord (Spectre)"
+      mode = "n",
+      desc = "[S]earch [W]ord (grug-far)",
+    },
+    {
+      "<leader>sw",
+      function()
+        require("grug-far").with_visual_selection()
+      end,
+      mode = "x",
+      desc = "[S]earch [W]ord (grug-far)",
     },
     {
       "<leader>sp",
       function()
-        require("spectre").open_file_search({ select_word = true })
+        require("grug-far").open({ prefills = { paths = vim.fn.expand("%") } })
       end,
-      desc = "[S]earch in current file (Spectre)",
+      desc = "[S]earch in current file (grug-far)",
     },
   },
   opts = {},

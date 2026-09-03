@@ -16,6 +16,7 @@ fd-find
 
 # Quality-of-life (CLI)
 bat
+difftastic
 zoxide
 trash-cli
 

@@ -26,7 +26,7 @@ Requisitos mínimos:
   Gestor de plugins. Se carga en `init.lua` y resuelve todo el árbol de `lua/plugins/`.
 
 - **nvim-lua/plenary.nvim**
-  Librería de utiliddes para muchos plugins (Telescope, neotest, gitsigns, Spectre...).
+  Librería de utiliddes para muchos plugins (Telescope, neotest, gitsigns...).
 
 - **nvim-tree/nvim-web-devicons** + **echasnovski/mini.icos**
   Iconos de archivos unificados en barra de buffers, explorador, Telescope, etc.
@@ -102,11 +102,11 @@ Requisitos mínimos:
   - `<leader>fs` -> símbolos de documento
   - `<leader>fn` -> histórico de notificaciones. 
 
-- **nvim-pack/nvim-spectre**
-  Búsqueda u reemplazo global en múltiples archivos.
+- **MagicDuck/grug-far.nvim**
+  Búsqueda u reemplazo global en múltiples archivos (reemplaza a Spectre, retirado por la comunidad).
   Atajos:
-  - `<leader>sr` -> abrir Spectre global
-  - `<leader>sw` -> buscar palabra bajo el cursor. 
+  - `<leader>sr` -> abrir grug-far global
+  - `<leader>sw` -> buscar palabra bajo el cursor (normal) o selección (visual).
   - `<leader>sp` -> buscar en el archivo actual.
 
 - **hedyhli/outline.nvim**
