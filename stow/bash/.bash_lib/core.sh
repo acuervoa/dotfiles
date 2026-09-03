@@ -273,14 +273,29 @@ dothelp() {
   RESET="$(printf '\033[0m')"
 
   if [ -r "$catalog" ]; then
-    awk -F '\t' '
-      NR == 1 { next }
+    # Catppuccin Mocha, a juego con el resto del entorno (kitty/tmux/i3...).
+    # Color solo si hay TTY: no ensucia pipes ni el output capturado por tests.
+    local mauve blue subtext reset name_width
+    if [ -t 1 ]; then
+      mauve="$(printf '\033[1;38;2;203;166;247m')"
+      blue="$(printf '\033[1;38;2;137;180;250m')"
+      subtext="$(printf '\033[38;2;166;173;200m')"
+      reset="$(printf '\033[0m')"
+    fi
+    name_width="$(awk -F '\t' 'NR>1 && $1!~/^#/ && length($1)>w{w=length($1)} END{print w}' "$catalog")"
+
+    awk -F '\t' -v mauve="$mauve" -v blue="$blue" -v subtext="$subtext" -v reset="$reset" -v w="$name_width" '
       $1 ~ /^#/ || NF == 0 { next }
       {
         marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠️" : "🔴"))
-        printf "%-12s %-12s %s %s\n", $1, $2, marker, $5
+        if ($2 != prev_group) {
+          if (prev_group != "") printf "\n"
+          printf "%s%s%s\n", mauve, toupper(substr($2,1,1)) substr($2,2), reset
+          prev_group = $2
+        }
+        printf "  %s%-*s%s %s %s%s%s\n", blue, w, $1, reset, marker, subtext, $5, reset
       }
-    ' "$catalog" | sort -k2,2 -k1,1
+    ' <(tail -n +2 "$catalog" | sort -t $'\t' -k2,2 -k1,1)
     return 0
   fi
 
