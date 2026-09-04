@@ -61,6 +61,17 @@ main() {
     tests=("${filtered[@]}")
   fi
 
+  # El release gate requiere un checkout limpio y se ejecuta como paso
+  # independiente del workflow; no debe quedar invalidado por tests que
+  # regeneran documentación o crean artefactos temporales.
+  local -a ordinary_tests=()
+  local test_path
+  for test_path in "${tests[@]}"; do
+    [ "$(basename "$test_path")" = "application_release_gate_test.sh" ] && continue
+    ordinary_tests+=("$test_path")
+  done
+  tests=("${ordinary_tests[@]}")
+
   if [ "${#tests[@]}" -eq 0 ]; then
     warn "No se encontraron tests para ejecutar."
     return 0

@@ -3,7 +3,11 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [[ $- != *i* ]]; then
   script_path="$repo_root/tests/$(basename "$0")"
-  exec bash --noprofile --norc -ic 'source "$1"' bash "$script_path"
+  exec env -i \
+    HOME=/tmp/bash-keymap-test-home \
+    PATH=/usr/bin:/bin \
+    TERM=xterm-256color \
+    bash --noprofile --norc -ic 'source "$1"' bash "$script_path"
 fi
 
 fail() {

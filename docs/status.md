@@ -61,7 +61,8 @@ Date: 2026-09-04
 - Package profile: `stow/dotfiles/.config/dotfiles/hosts/{default,<hostname>}.sh`
   is the source of truth for what `bootstrap.sh`/`rollback.sh` deploy — check
   it, not this doc, when in doubt about a specific package.
-- Test suite: `bash ./scripts/run_tests.sh` (28 tests), now also wired into
+- Test suite: `bash ./scripts/run_tests.sh` (27 tests; el release gate corre
+  como paso separado sobre checkout limpio), now also wired into
   `scripts/verify.sh` and CI (`.github/workflows/ci.yml`).
 - Known gap: `stow/{gtk-3.0,gtk-4.0}` are stowed on this host but not yet
   wired into any host profile.
