@@ -33,9 +33,10 @@ key_bindings() {
 }
 
 snapshot_a="$(key_bindings)"
+normalized_snapshot="${snapshot_a//:/}"
 assert_binding() {
   local binding="$1" owner="$2" message="$3"
-  if ! printf '%s\n' "$snapshot_a" | grep -Fq "\"$binding\" \"$owner\""; then
+  if ! printf '%s\n' "$normalized_snapshot" | grep -Fq "\"$binding\" \"$owner\""; then
     printf 'FAIL: %s\n--- bind -X ---\n%s\n' "$message" "$(bind -X)" >&2
     exit 1
   fi
