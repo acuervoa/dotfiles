@@ -23,7 +23,7 @@ jobs:
       - name: Install shell tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck shfmt ripgrep neovim
+          sudo apt-get install -y shellcheck shfmt ripgrep neovim fzf gawk
 
       - name: Install ble.sh
         run: |
