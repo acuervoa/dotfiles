@@ -5,9 +5,17 @@ Agentic coding tools should be conservative: minimal diffs, no secrets, and avoi
 anything destructive unless explicitly requested.
 
 ## Repo layout
-- `stow/` = stow “packages” (symlink sources)
-  - to `$HOME`: `stow/{bash,git,tmux,vim}`
-  - to `$HOME/.config`: `stow/{atuin,blesh,dunst,i3,kitty,lazygit,mise,nvim,picom,polybar,rofi,yazi}`
+- `stow/` = stow “packages” (symlink sources). Which packages actually get
+  deployed by `bootstrap.sh`/`rollback.sh` is defined per-host in
+  `stow/dotfiles/.config/dotfiles/hosts/{default,<hostname>}.sh`, not hardcoded
+  in the scripts. Current `default.sh`:
+  - to `$HOME` (`HOME_PKGS`): `stow/{bash,git,tmux,bin}`
+  - to `$HOME/.config` core (`CONFIG_CORE_PKGS`): `stow/{atuin,bat,blesh,btop,cava,gh-dash,lazygit,lnav,mise,nvim,rclone,restic,starship,systemd,yazi}`
+  - to `$HOME/.config` GUI (`CONFIG_GUI_PKGS`): `stow/{albert,copyq,dunst,flameshot,i3,kitty,picom,polybar,rofi,Nextcloud,code,obsidian}`
+  - `stow/dotfiles/` is a meta-package: it carries the host-profile files above.
+  - `stow/{gtk-3.0,gtk-4.0}` exist and are stowed on this machine but are not
+    yet wired into any host profile — add them to a profile before relying on
+    bootstrap/rollback to (re)deploy them.
 - `scripts/` = entrypoints (`bootstrap.sh`, `rollback.sh`, `install_deps.sh`)
 - `.backups/<TIMESTAMP>/` = backups created by bootstrap
 
@@ -152,7 +160,7 @@ Applies under `stow/nvim/.config/nvim`.
 - Prefer adding/adjusting config inside `stow/<pkg>/...` rather than editing files in `$HOME`.
 - New files should match target filenames/locations (avoid ad-hoc suffixes).
 - If you add a new top-level package that should be deployed by scripts, also update:
-  - `HOME_PKGS` / `CONFIG_PKGS` in `scripts/bootstrap.sh` and `scripts/rollback.sh`.
+  - `HOME_PKGS` / `CONFIG_CORE_PKGS` / `CONFIG_GUI_PKGS` in `stow/dotfiles/.config/dotfiles/hosts/default.sh` (or a host-specific profile).
 - Avoid machine-specific absolute paths in configs; use env vars and XDG paths.
 
 ## Safety
