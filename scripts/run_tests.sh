@@ -67,7 +67,11 @@ main() {
   local -a ordinary_tests=()
   local test_path
   for test_path in "${tests[@]}"; do
-    [ "$(basename "$test_path")" = "application_release_gate_test.sh" ] && continue
+    case "$(basename "$test_path")" in
+    application_release_gate_test.sh | blesh_integration_test.sh | nvim_keymap_test.sh | nvim_lsp_health_contract_test.sh | nvim_workflow_contract_test.sh)
+      continue
+      ;;
+    esac
     ordinary_tests+=("$test_path")
   done
   tests=("${ordinary_tests[@]}")
