@@ -31,3 +31,6 @@ credentials.json
 
 # Auto-generated i3 workspace mapping (local)
 stow/i3/.config/i3/workspaces.local.conf
+
+# CodeGraph generated index
+/.codegraph/

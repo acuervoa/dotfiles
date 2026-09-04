@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash -n /home/acuervo/dotfiles/scripts/doctor.sh)",
+      "Bash(shellcheck /home/acuervo/dotfiles/scripts/doctor.sh)",
+      "Bash(shellcheck --severity=warning /home/acuervo/dotfiles/scripts/doctor.sh /home/acuervo/dotfiles/scripts/lib/common.sh)",
+      "Bash(tmux -V)",
+      "Bash(~/.tmux/scripts/status_pill.sh)",
+      "Bash(tmux source-file *)",
+      "Bash(~/.tmux/scripts/pane_jobs.sh)",
+      "Bash(~/.tmux/scripts/jobs_fmt.sh 1 *)",
+      "Bash(nvim --version)",
+      "Bash(python3 -m json.tool)",
+      "Read(//home/acuervo/.local/share/tmux/plugins/**)",
+      "Read(//home/acuervo/.local/share/tmux/plugins/tpm/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [[ \"$f\" == *.sh ]] && { shellcheck \"$f\"; shfmt -d -i 2 \"$f\"; }; } 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
+}
