@@ -40,7 +40,7 @@ render_group() {
   while IFS=$'\t' read -r name row_group risk micro description example; do
     [ "$row_group" = "$group" ] || continue
     render_row "$name" "$row_group" "$risk" "$micro" "$description" "$example"
-  done < <(tail -n +2 "$catalog" | sort -t $'\t' -k2,2 -k1,1)
+  done < <(tail -n +2 "$catalog" | LC_ALL=C sort -t $'\t' -k2,2 -k1,1)
   printf '\n'
 }
 
@@ -54,7 +54,7 @@ render_group() {
   while IFS=$'\t' read -r name group risk micro description example; do
     [ "$micro" = yes ] || continue
     printf '| `%s` | %s | `%s` |\n' "$name" "$description" "$group"
-  done < <(tail -n +2 "$catalog" | sort -t $'\t' -k1,1)
+  done < <(tail -n +2 "$catalog" | LC_ALL=C sort -t $'\t' -k1,1)
   printf '\n'
 
   render_group git 'Git (`g*`)'

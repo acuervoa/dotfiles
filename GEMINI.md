@@ -6,16 +6,17 @@ The project has been refactored to use **GNU Stow** for managing symlinks, which
 
 # Key Files and Directories
 
-*   `stow/`: The core directory containing all the configurations, organized into "packages" that `stow` can manage. Each subdirectory in `stow/` corresponds to a piece of software (e.g., `bash`, `nvim`, `i3`).
+*   `stow/`: The core directory containing all the configurations, organized into "packages" that `stow` can manage. 30+ packages currently exist here (e.g., `bash`, `nvim`, `i3`, `albert`, `copyq`, `restic`...).
     *   `stow/bash/`: Contains shell configurations like `.bashrc`. These are stowed directly to `$HOME`.
     *   `stow/nvim/`: Contains the NeoVim configuration. This package is stowed to `$HOME/.config`.
     *   The structure inside each package directory mirrors the target directory structure in your home directory.
+    *   `stow/dotfiles/.config/dotfiles/hosts/{default,<hostname>}.sh`: **source of truth** for which packages actually get deployed. `default.sh` defines `HOME_PKGS`, `CONFIG_CORE_PKGS`, `CONFIG_GUI_PKGS`; a per-hostname file (e.g. `localhost.sh`) can override/extend it. A package existing under `stow/` does not mean it's deployed — check these profile files.
 *   `scripts/bootstrap.sh`: The primary script for setting up the dotfiles. It uses `stow` to create the symbolic links and backs up any existing files that would be overwritten.
 *   `scripts/rollback.sh`: A script to reverse the actions of `bootstrap.sh`. It uses `stow` to remove the symlinks and can restore the original backed-up dotfiles.
-*   `scripts/install_deps.sh`: A script to install necessary system dependencies for Arch Linux.
+*   `scripts/install_deps.sh`: A script to install necessary system dependencies (multi-distro: arch/debian/fedora, via `pkglist-<distro>.txt`).
+*   `scripts/run_tests.sh`: Runs all `tests/*_test.sh` contract tests. Wired into `scripts/verify.sh` and CI.
 *   `README.md`: The main documentation for the repository.
 *   `.backups/`: Directory where timestamped backups of existing dotfiles are stored during the bootstrap process.
-*   The old `bash/`, `config/`, `git/`, `tmux/`, and `vim/` directories are now empty or have been removed, as their contents have been moved to the `stow/` directory.
 
 # Usage
 

@@ -295,7 +295,7 @@ dothelp() {
         }
         printf "  %s%-*s%s %s %s%s%s\n", blue, w, $1, reset, marker, subtext, $5, reset
       }
-    ' <(tail -n +2 "$catalog" | sort -t $'\t' -k2,2 -k1,1)
+    ' <(tail -n +2 "$catalog" | LC_ALL=C sort -t $'\t' -k2,2 -k1,1)
     return 0
   fi
 
@@ -334,7 +334,7 @@ blib-help() {
         marker = ($3 == "safe" ? "✅" : ($3 == "confirm" ? "⚠" : "🔴"))
         printf "%s\t%s %s %s\t%s\n", $1, $2, marker, $5, $6
       }
-    ' "$catalog" | sort -t $'\t' -k2,2 -k1,1 |
+    ' "$catalog" | LC_ALL=C sort -t $'\t' -k2,2 -k1,1 |
       fzf --prompt=' bash > ' --delimiter=$'\t' --with-nth=1,2 --no-sort)" || return 0
     [ -z "$sel" ] && return 0
     printf '%s\n' "${sel%%$'\t'*}"
