@@ -31,15 +31,28 @@ printf '%s\n' \
   'bleopt complete_auto_delay' \
   'exit' >"$tmp_home/input"
 
-timeout 20 script -qefc "env PATH='$tmp_bin:/usr/bin:/bin' HOME='$tmp_home' XDG_STATE_HOME='$tmp_home/state' XDG_CACHE_HOME='$tmp_home/cache' XDG_RUNTIME_DIR='$tmp_runtime' TERM=xterm-256color bash --noprofile --rcfile '$repo_root/stow/bash/.bashrc' -i" "$tmp_output" <"$tmp_home/input" >/dev/null 2>&1
+if ! timeout 20 script -qefc "env PATH='$tmp_bin:/usr/bin:/bin' HOME='$tmp_home' XDG_STATE_HOME='$tmp_home/state' XDG_CACHE_HOME='$tmp_home/cache' XDG_RUNTIME_DIR='$tmp_runtime' TERM=xterm-256color bash --noprofile --rcfile '$repo_root/stow/bash/.bashrc' -i" "$tmp_output" <"$tmp_home/input" >/dev/null 2>&1; then
+  printf '%s\n' 'FAIL: la sesión interactiva de ble.sh terminó con error' >&2
+  sed -n '1,240p' "$tmp_output" >&2
+  exit 1
+fi
 
-grep -Fq 'BLE_FUNCTION=yes' "$tmp_output"
-grep -Fq 'C-r' "$tmp_output"
-grep -Fq '__atuin_history' "$tmp_output"
-grep -Fq '_bash_keymap_files' "$tmp_output"
-grep -Fq '_bash_keymap_dirs' "$tmp_output"
-grep -Fq 'complete_auto_delay' "$tmp_output"
-grep -Fq '120' "$tmp_output"
+assert_output() {
+  local pattern="$1" message="$2"
+  if ! grep -Fq "$pattern" "$tmp_output"; then
+    printf 'FAIL: %s (buscando: %s)\n' "$message" "$pattern" >&2
+    sed -n '1,240p' "$tmp_output" >&2
+    exit 1
+  fi
+}
+
+assert_output 'BLE_FUNCTION=yes' 'ble.sh no se inicializó'
+assert_output 'C-r' 'binding C-r ausente'
+assert_output '__atuin_history' 'owner de Atuin ausente'
+assert_output '_bash_keymap_files' 'selector de archivos ausente'
+assert_output '_bash_keymap_dirs' 'selector de directorios ausente'
+assert_output 'complete_auto_delay' 'opción de autocompletado ausente'
+assert_output '120' 'retardo de autocompletado inesperado'
 test "$(grep -cE '^[[:space:]]*ble-attach[[:space:]]*$' "$repo_root/stow/bash/.bashrc")" -eq 1
 grep -Fq 'ble-import integration/fzf-completion' "$repo_root/stow/blesh/.config/blesh/blerc"
 grep -Fq 'ble-import integration/fzf-key-bindings' "$repo_root/stow/blesh/.config/blesh/blerc"
