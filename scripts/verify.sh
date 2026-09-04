@@ -8,6 +8,7 @@ Uso: scripts/verify.sh [opciones]
 Corre verificaciones livianas del repo (read-only):
 - scripts/check.sh
 - scripts/check-secrets.sh
+- scripts/run_tests.sh (tests/*_test.sh)
 - nvim --headless "+checkhealth" +qa (if available)
 - nvim --headless "+lua require('config.options')" +qa (optional)
 
@@ -15,6 +16,7 @@ Opciones:
   -h, --help       Muestra esta ayuda
   --no-nvim        Omite checkhealth de Neovim
   --no-scan        Omite check-secrets
+  --no-tests       Omite scripts/run_tests.sh
   --nvim-config    También carga config.options headless
 USAGE
 }
@@ -25,6 +27,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 NO_NVIM=false
 NO_SCAN=false
+NO_TESTS=false
 NVIM_CONFIG=false
 
 while (($# > 0)); do
@@ -38,6 +41,9 @@ while (($# > 0)); do
     ;;
   --no-scan)
     NO_SCAN=true
+    ;;
+  --no-tests)
+    NO_TESTS=true
     ;;
   --nvim-config)
     NVIM_CONFIG=true
@@ -66,6 +72,15 @@ main() {
     "$REPO_DIR/scripts/check-secrets.sh"
   else
     warn "No existe scripts/check-secrets.sh (omito)"
+  fi
+
+  if [ "$NO_TESTS" = "true" ]; then
+    info "Omitiendo scripts/run_tests.sh (--no-tests)."
+  elif [ -x "$REPO_DIR/scripts/run_tests.sh" ]; then
+    info "Corriendo scripts/run_tests.sh"
+    "$REPO_DIR/scripts/run_tests.sh"
+  else
+    warn "No existe scripts/run_tests.sh (omito)"
   fi
 
   if [ "$NO_NVIM" = "true" ]; then

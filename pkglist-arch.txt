@@ -20,10 +20,20 @@ bc
 tmux
 neovim
 lazygit
+atuin
+btop
+cava
+lnav
+mise
+rclone
+restic
+starship
+yazi
 
 # Clipboard
 wl-clipboard
 xclip
+copyq
 
 # Docker (optional)
 docker
@@ -36,3 +46,8 @@ rofi
 polybar
 dunst
 picom
+flameshot
+nextcloud-client
+
+# AUR (yay/paru) -- not in official repos, not installed by this script:
+# blesh, gh-dash, albert, obsidian, visual-studio-code-bin
