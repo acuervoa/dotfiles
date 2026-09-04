@@ -30,6 +30,10 @@ jobs:
           git clone --branch v0.4.0-devel3 --depth 1 https://github.com/akinomyoga/ble.sh.git /tmp/ble.sh
           sudo make -C /tmp/ble.sh install PREFIX=/usr
 
+      - name: Install Neovim plugins
+        run: |
+          nvim --headless --cmd "set rtp^=$PWD/stow/nvim/.config/nvim" -u "$PWD/stow/nvim/.config/nvim/init.lua" '+Lazy! sync' '+qa'
+
       - name: Repo checks
         run: bash ./scripts/check.sh
 

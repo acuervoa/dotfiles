@@ -33,9 +33,17 @@ key_bindings() {
 }
 
 snapshot_a="$(key_bindings)"
-printf '%s\n' "$snapshot_a" | grep -Fq '"\C-r" "__atuin_history"' || fail "Ctrl-r no pertenece a Atuin"
-printf '%s\n' "$snapshot_a" | grep -Fq '"\C-t" "_bash_keymap_files"' || fail "Ctrl-t no pertenece al selector de archivos"
-printf '%s\n' "$snapshot_a" | grep -Fq '"\e\C-c" "_bash_keymap_dirs"' || fail "Alt-c no pertenece al selector de directorios"
+assert_binding() {
+  local binding="$1" owner="$2" message="$3"
+  if ! printf '%s\n' "$snapshot_a" | grep -Fq "\"$binding\" \"$owner\""; then
+    printf 'FAIL: %s\n--- bind -X ---\n%s\n' "$message" "$(bind -X)" >&2
+    exit 1
+  fi
+}
+
+assert_binding '\C-r' '__atuin_history' 'Ctrl-r no pertenece a Atuin'
+assert_binding '\C-t' '_bash_keymap_files' 'Ctrl-t no pertenece al selector de archivos'
+assert_binding '\e\C-c' '_bash_keymap_dirs' 'Alt-c no pertenece al selector de directorios'
 if printf '%s\n' "$snapshot_a" | grep -Fq '"\C-s"'; then
   fail "el keymap Bash se apropió de Ctrl-s"
 fi
