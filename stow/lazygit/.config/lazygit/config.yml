@@ -10,11 +10,9 @@ git:
   hooksPath: ~/.git-hooks
   # Evita que lazygit cree ramas base usando remotos distintos.
   mainRemote: origin
-
 ui:
   # Mantiene consistente el estilo de confirmaciones (no interferir con hooks interactivos).
   confirmOnQuit: true
-
 # Catppuccin Mocha (catppuccin/lazygit, accent blue — misma variante que kitty/atuin/gh-dash).
 theme:
   activeBorderColor:
@@ -42,10 +40,8 @@ theme:
     - '#f38ba8'
   defaultFgColor:
     - '#cdd6f4'
-
 authorColors:
   '*': '#b4befe'
-
 # Reutiliza las funciones guardadas de stow/bash/.bash_lib/git.sh en vez de
 # reimplementar la lógica aquí (mismo owner: Git; dos superficies de acceso).
 customCommands:
@@ -53,9 +49,9 @@ customCommands:
     context: 'files'
     description: 'WIP commit (guarded, via bash wip())'
     command: "bash -ic 'wip'"
-    subprocess: true
+    output: terminal
   - key: '<c-k>'
     context: 'files'
     description: 'Checkpoint: stash all (guarded, via bash checkpoint())'
     command: "bash -ic 'checkpoint'"
-    subprocess: true
+    output: terminal
