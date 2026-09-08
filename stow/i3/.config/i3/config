@@ -21,7 +21,7 @@ exec_always --no-startup-id numlockx on
 
 # ======= AUTOSTART PRODUCTIVIDAD ======
 # PERS-GUI-10F — Nextcloud lifecycle owner: i3
-exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -f '"'"'(^|/)[n]extcloud([[:space:]]|$)'"'"' >/dev/null 2>&1 || exec /usr/bin/nextcloud --background'
+exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -f '"'"'^/usr/bin/[n]extcloud([[:space:]]|$)'"'"' >/dev/null 2>&1 || exec /usr/bin/nextcloud --background'
 # Clipboard history: systemd puede arrancarlo antes de que i3 exporte DISPLAY.
 exec --no-startup-id ~/.config/i3/scripts/session-start.sh
 
@@ -256,4 +256,4 @@ for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] resize set 1400 900
 for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] move position center
 
 # PERS-GUI-07E — Polkit graphical authentication agent
-exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -f '"'"'(^|/)[l]xqt-policykit-agent([[:space:]]|$)'"'"' >/dev/null 2>&1 || exec /usr/bin/lxqt-policykit-agent'
+exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -f '"'"'^/usr/bin/[l]xqt-policykit-agent([[:space:]]|$)'"'"' >/dev/null 2>&1 || exec /usr/bin/lxqt-policykit-agent'
