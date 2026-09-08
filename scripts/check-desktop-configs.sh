@@ -5,7 +5,7 @@ usage() {
   cat <<'USAGE'
 Uso: scripts/check-desktop-configs.sh [opciones]
 
-Valida de forma reproducible las configuraciones versionadas de i3 y tmux.
+Valida de forma reproducible las configuraciones versionadas de PERS-GUI.
 
 Opciones:
   --static       Solo comprueba archivos, includes y scripts referenciados
@@ -85,6 +85,102 @@ if [ -f "$i3_config" ]; then
   while IFS= read -r target; do
     check_script_target "$target"
   done < <(rg -o '(\$HOME|~/.config)/[^[:space:]]+\.sh' "$i3_config" | sort -u)
+fi
+
+check_repo_path() {
+  local file="$1" target="$2"
+  check_file "$file"
+  if [ -f "$file" ] && [ -L "$target" ] && [ "$(readlink -f "$target")" != "$(readlink -f "$file")" ]; then
+    printf '[ERROR] Symlink PERS-GUI no apunta al repo: %s\n' "$target" >&2
+    failures=$((failures + 1))
+  fi
+}
+
+check_mime_default() {
+  local mime="$1" expected="$2" actual
+  if ! command -v xdg-mime >/dev/null 2>&1; then
+    printf '[ERROR] xdg-mime no está instalado\n' >&2
+    failures=$((failures + 1))
+    return
+  fi
+  actual="$(xdg-mime query default "$mime" 2>/dev/null || true)"
+  if [ "$actual" != "$expected" ]; then
+    printf '[ERROR] MIME %s: esperado=%s actual=%s\n' "$mime" "$expected" "${actual:-<vacío>}" >&2
+    failures=$((failures + 1))
+  fi
+}
+
+gui_scripts=(
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/i3lock.sh"
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/i3exit.sh"
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/session-start.sh"
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/session-exit.sh"
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/screenshot_maim.sh"
+  "$REPO_ROOT/stow/i3/.config/i3/scripts/mode_system.sh"
+)
+for script in "${gui_scripts[@]}"; do
+  check_file "$script"
+  if [ -f "$script" ]; then
+    sh -n "$script" || failures=$((failures + 1))
+  fi
+done
+
+check_repo_path \
+  "$REPO_ROOT/stow/systemd/.config/systemd/user/i3-session.target" \
+  "$HOME/.config/systemd/user/i3-session.target"
+check_repo_path \
+  "$REPO_ROOT/stow/systemd/.config/systemd/user/clipmenud.service.d/override.conf" \
+  "$HOME/.config/systemd/user/clipmenud.service.d/override.conf"
+check_repo_path \
+  "$REPO_ROOT/stow/Nextcloud/.local/share/dbus-1/services/com.nextcloudgmbh.Nextcloud.service" \
+  "$HOME/.local/share/dbus-1/services/com.nextcloudgmbh.Nextcloud.service"
+check_repo_path \
+  "$REPO_ROOT/stow/dotfiles/.config/mimeapps.list" \
+  "$HOME/.config/mimeapps.list"
+
+nextcloud_service="$REPO_ROOT/stow/Nextcloud/.local/share/dbus-1/services/com.nextcloudgmbh.Nextcloud.service"
+if [ -f "$nextcloud_service" ]; then
+  rg -q '^Name=com\.nextcloudgmbh\.Nextcloud$' "$nextcloud_service" || failures=$((failures + 1))
+  rg -q '^Exec=/usr/bin/false$' "$nextcloud_service" || failures=$((failures + 1))
+fi
+if [ -e "$HOME/.config/autostart/Nextcloud.desktop" ] || [ -L "$HOME/.config/autostart/Nextcloud.desktop" ]; then
+  printf '[ERROR] Nextcloud.desktop debe estar ausente: %s\n' "$HOME/.config/autostart/Nextcloud.desktop" >&2
+  failures=$((failures + 1))
+fi
+
+for mime_pair in \
+  'inode/directory thunar.desktop' \
+  'text/plain nvim-kitty.desktop' \
+  'application/pdf org.pwmt.zathura.desktop' \
+  'image/png feh.desktop' \
+  'video/mp4 mpv.desktop' \
+  'audio/mpeg mpv.desktop' \
+  'application/zip xarchiver.desktop' \
+  'text/html firefox.desktop' \
+  'x-scheme-handler/http firefox.desktop' \
+  'x-scheme-handler/https firefox.desktop' \
+  'x-scheme-handler/mailto firefox.desktop'; do
+  read -r mime expected <<<"$mime_pair"
+  check_mime_default "$mime" "$expected"
+done
+
+if command -v systemd-analyze >/dev/null 2>&1; then
+  systemd-analyze --user verify "$HOME/.config/systemd/user/i3-session.target" >/dev/null 2>&1 || {
+    printf '[ERROR] systemd-analyze --user verify falló para i3-session.target\n' >&2
+    failures=$((failures + 1))
+  }
+fi
+
+i3exit="$REPO_ROOT/stow/i3/.config/i3/scripts/i3exit.sh"
+if [ -f "$i3exit" ]; then
+  rg -q 'exec ~/.config/i3/scripts/session-exit\.sh' "$i3exit" || failures=$((failures + 1))
+  rg -q 'i3lock\.sh.*&& systemctl suspend' "$i3exit" || failures=$((failures + 1))
+  rg -q 'systemctl reboot' "$i3exit" || failures=$((failures + 1))
+  rg -q 'systemctl poweroff' "$i3exit" || failures=$((failures + 1))
+  if rg -q 'hibernate|systemctl hibernate' "$i3exit"; then
+    printf '[ERROR] hibernate no debe reaparecer en i3exit.sh\n' >&2
+    failures=$((failures + 1))
+  fi
 fi
 
 if [ "$STATIC_ONLY" = true ]; then

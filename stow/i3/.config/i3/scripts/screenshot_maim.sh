@@ -29,13 +29,16 @@ restore_picom() {
 }
 
 run_capture() {
-  if pgrep -x picom >/dev/null 2>&1; then
-    picom_was_running=1
-    pkill -x picom >/dev/null 2>&1 || true
-    sleep 0.2
-  fi
-
-  trap restore_picom EXIT
+  case "$mode" in
+    select|save-select)
+      if pgrep -x picom >/dev/null 2>&1; then
+        picom_was_running=1
+        trap restore_picom EXIT
+        pkill -x picom >/dev/null 2>&1 || true
+        sleep 0.2
+      fi
+      ;;
+  esac
 
   case "$mode" in
     select)

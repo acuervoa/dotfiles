@@ -1,0 +1,30 @@
+[Default Applications]
+x-scheme-handler/tonsite=org.telegram.desktop.desktop
+application/pdf=org.pwmt.zathura.desktop
+x-scheme-handler/postman=Postman.desktop
+text/plain=nvim-kitty.desktop
+text/css=nvim-kitty.desktop
+text/x-css=nvim-kitty.desktop
+application/javascript=nvim-kitty.desktop
+text/javascript=nvim-kitty.desktop
+application/x-javascript=nvim-kitty.desktop
+text/x-javascript=nvim-kitty.desktop
+x-scheme-handler/freetube=FreeTube.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/mailto=firefox.desktop
+inode/directory=thunar.desktop
+application/zip=xarchiver.desktop
+application/x-7z-compressed=xarchiver.desktop
+application/x-tar=xarchiver.desktop
+image/png=feh.desktop
+image/jpeg=feh.desktop
+image/webp=feh.desktop
+image/gif=feh.desktop
+text/html=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+
+[Added Associations]
+x-scheme-handler/tonsite=org.telegram.desktop.desktop;
+application/rss+xml=nvim.desktop;
+application/x-pkcs12=org.gnome.seahorse.Application.desktop;

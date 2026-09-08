@@ -6,13 +6,10 @@ case "$1" in
         ~/.config/i3/scripts/i3lock.sh
         ;;
     logout)
-        i3-msg exit
+        exec ~/.config/i3/scripts/session-exit.sh
         ;;
     suspend)
-        systemctl suspend
-        ;;
-    hibernate)
-        systemctl hibernate
+        ~/.config/i3/scripts/i3lock.sh && systemctl suspend
         ;;
     reboot)
         systemctl reboot
@@ -21,7 +18,7 @@ case "$1" in
         systemctl poweroff
         ;;
     *)
-        echo "Usage: $0 {lock|logout|suspend|hibernate|reboot|shutdown}"
+        echo "Usage: $0 {lock|logout|suspend|reboot|shutdown}"
         exit 2
 esac
 

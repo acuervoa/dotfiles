@@ -70,6 +70,22 @@ require_cmd() {
 
 ensure_state_dirs() { mkdir -p "$BACKUP_BASE" "$MANIFEST_DIR"; }
 
+ensure_pers_gui_negative_state() {
+  local forbidden="$HOME/.config/autostart/Nextcloud.desktop"
+
+  if [ ! -e "$forbidden" ] && [ ! -L "$forbidden" ]; then
+    return 0
+  fi
+
+  if [ -d "$forbidden" ] && [ ! -L "$forbidden" ]; then
+    printf '[ERROR] La política PERS-GUI requiere un archivo ausente, pero existe un directorio: %s\n' "$forbidden" >&2
+    return 1
+  fi
+
+  action PERS-GUI "Asegurando ausencia de $forbidden"
+  run_cmd rm -f -- "$forbidden"
+}
+
 ensure_compat_links() {
   if ! ln -sfn "$BACKUP_BASE" "$REPO_DIR/.backups" 2>/dev/null; then
     printf '[WARN] No pude actualizar enlace .backups (%s)\n' "$REPO_DIR/.backups" >&2

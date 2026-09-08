@@ -412,6 +412,7 @@ main() {
     run_stow_package "$pkg" "$HOME" -S "Instalando '$pkg' (bajo $HOME/.config)" || continue
   done
 
+  ensure_pers_gui_negative_state
   refresh_i3_workspaces
 
   echo

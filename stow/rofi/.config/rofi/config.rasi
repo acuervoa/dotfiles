@@ -1,4 +1,5 @@
 configuration {
+    terminal: "kitty";
   modi: "combi,window,drun,run,ssh";
   combi-modes: "drun,window,run,ssh";
 
