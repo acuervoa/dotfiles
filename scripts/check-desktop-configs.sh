@@ -45,6 +45,46 @@ check_file() {
   fi
 }
 
+check_pers_gui_packages() {
+  local manifest="$REPO_ROOT/manifests/pers-gui-packages.txt"
+  local -a packages missing duplicates
+  local package
+
+  check_file "$manifest"
+  [ -f "$manifest" ] || return
+
+  mapfile -t packages < <(sed -E 's/[[:space:]]+#.*$//' "$manifest" | awk '!/^[[:space:]]*#/ && NF { print $1 }')
+  mapfile -t duplicates < <(printf '%s\n' "${packages[@]}" | sort | uniq -d)
+  if ((${#duplicates[@]})); then
+    printf '[ERROR] Paquetes PERS-GUI duplicados: %s\n' "${duplicates[*]}" >&2
+    failures=$((failures + 1))
+  fi
+
+  if ! command -v pacman >/dev/null 2>&1; then
+    printf '[ERROR] pacman no está disponible para comprobar PERS-GUI\n' >&2
+    failures=$((failures + 1))
+    printf 'PERS_GUI_PACKAGES_PRESENT=FAIL\n'
+    printf 'MISSING_PACKAGES=<pacman-unavailable>\n'
+    return
+  fi
+
+  missing=()
+  for package in "${packages[@]}"; do
+    pacman -Q "$package" >/dev/null 2>&1 || missing+=("$package")
+  done
+
+  if ((${#missing[@]})); then
+    printf '[ERROR] Faltan paquetes PERS-GUI: %s\n' "${missing[*]}" >&2
+    failures=$((failures + 1))
+    printf 'PERS_GUI_PACKAGES_PRESENT=FAIL\n'
+    printf 'MISSING_PACKAGES=%s\n' "${missing[*]}"
+  else
+    printf 'PERS_GUI_PACKAGES_PRESENT=PASS\n'
+  fi
+}
+
+check_pers_gui_packages
+
 check_script_target() {
   local target="$1" relative candidate
   case "$target" in

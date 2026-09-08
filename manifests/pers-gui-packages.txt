@@ -1,0 +1,28 @@
+# PERS-GUI required packages for the current Arch Linux X11 stack.
+# AUR provider currently installed: picom-ftlabs-git.
+clipmenu
+dbus
+dunst
+feh
+ffmpegthumbnailer
+gnome-keyring
+gvfs
+i3-wm
+kitty
+libsecret
+lxqt-policykit
+maim
+mpv
+nextcloud-client
+picom-ftlabs-git
+poppler-glib
+rofi
+systemd
+thunar
+tumbler
+xarchiver
+xclip
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+xdg-utils
+zathura
