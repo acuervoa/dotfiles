@@ -10,7 +10,7 @@ tags:
 ---
 
 ---
-# [[TMUX|tmux]] cheatsheet
+# tmux cheatsheet
 
 > Prefix: `C-s`
 
