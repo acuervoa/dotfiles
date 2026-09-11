@@ -6,6 +6,25 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-09-11 — Capa de escritorio PERS-GUI, CI reproducible y credenciales de gh
+
+### Añadido
+- PERS-GUI: capa de integración de escritorio consolidada, manifiesto de paquetes
+  reproducible y documentación de arquitectura y recuperación (`docs/PERS-GUI.md`).
+- Página de auditoría en vivo del entorno (`docs/estado-del-entorno.html`).
+- Configuración de Claude Code del proyecto (CLAUDE.md, skills, hooks).
+- Registro de fricciones para el periodo de uso (`docs/friction-log.md`).
+
+### Cambiado
+- Git: `gh` como credential helper para github.com y gist.
+- Perfil de host por defecto con albert, copyq y restic; lista de paquetes sincronizada.
+- lazygit: customCommands ordenados; lock de plugins de Neovim actualizado.
+
+### Corregido
+- CI reproducible: suites rápida y de integración separadas, versiones de Bash y
+  Neovim del runner, ble.sh fijado y contrato determinista, `LC_ALL=C` en catálogos.
+- Guards de ciclo de vida de Polkit y Nextcloud.
+
 ## 2026-09-03 — Auditoría profunda, popups de descubrimiento, tema Catppuccin completo
 
 ### Añadido
