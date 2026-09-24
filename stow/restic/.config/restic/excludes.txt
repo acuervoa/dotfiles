@@ -38,3 +38,24 @@
 **/.local/share/Steam/
 **/.local/share/Trash/
 **/.mozilla/firefox/*/Cache/
+
+# Rutas ilegibles para acuervo (root o uid de contenedor). Ver
+# bin/backup-lab/docs/superpowers/specs/2026-09-24-restic-docker-db-design.md §4.3.
+# Se excluyen por ruta concreta para no quitar ficheros legibles.
+**/dockerfiles/runtipi/data/postgres/
+**/dockerfiles/runtipi/app-data/migrated/
+**/dockerfiles/runtipi/state/seed
+**/dockerfiles/runtipi/traefik/shared/acme.json
+**/dockerfiles/runtipi/traefik/tls/key.pem
+**/php-api-observability-boilerplate/db-data/
+**/php-api-observability-boilerplate/grafana/
+**/Apps/imapGmail/oauth_tokens.json
+**/Apps/imapGmail/rules.yaml
+**/Apps/imapGmail/config.yaml.before-gmail-oauth-2026-07-28
+**/Apps/imapGmail/config.yaml.before-public-oauth-2026-07-28
+**/Apps/imapGmail/config.yaml.gmail-local-rejected-2026-07-28
+**/Apps/imapGmail/data/dashboard.db.before-password-reset-2026-07-28
+**/dockerfiles/bobarr/packages/jackett/config/Jackett/DataProtection/
+**/dockerfiles/bobarr/packages/transmission/config/bandwidth-groups.json
+**/dockerfiles/bobarr/packages/transmission/config/settings.json
+**/dockerfiles/Infrastructure/redis/logs/redis.log
