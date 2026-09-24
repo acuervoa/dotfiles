@@ -17,6 +17,9 @@ fi
   date --iso-8601=seconds
   backup_rc=0
   restic backup "$HOME" --exclude-file="$EXCLUDES" --exclude-caches --one-file-system || backup_rc=$?
+  # Registrar el resultado del backup ANTES de forget/prune: si estos fallan (set -e) o el backup
+  # falla, el último exit= del log debe ser el de esta ejecución y no el de una anterior.
+  echo "exit=$backup_rc"
   # exit 3 = snapshot creado pero algunos archivos no se pudieron leer (permisos, etc): no fatal, seguir con forget.
   if [[ "$backup_rc" -ne 0 && "$backup_rc" -ne 3 ]]; then
     echo "restic backup falló (exit=$backup_rc), aborto sin prune"
