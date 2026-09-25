@@ -4,7 +4,7 @@ After=basic.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/agentmemory
+ExecStart=%h/.local/bin/agentmemory --port 3111
 Restart=on-failure
 RestartSec=5
 Environment=HOME=%h
