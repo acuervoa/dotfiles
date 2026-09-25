@@ -30,7 +30,10 @@ grep -Fq 'rm -f -- "$pidfile"' "$rofi_diagnostic"
 grep -Fq '2>&1' "$rofi_diagnostic"
 grep -Fq 'bindsym $mod+f exec --no-startup-id rofi -show window' "$i3_config"
 grep -Fq 'bindsym $mod+v exec --no-startup-id "CM_LAUNCHER=rofi clipmenu"' "$i3_config"
-grep -Fq 'exec --no-startup-id ~/.config/i3/scripts/clipmenud-start.sh' "$i3_config"
+# clipmenud arranca dentro del lifecycle de sesión (PERS-GUI), no desde el config de i3.
+session_start="$repo_root/stow/i3/.config/i3/scripts/session-start.sh"
+grep -Fq 'exec --no-startup-id ~/.config/i3/scripts/session-start.sh' "$i3_config"
+grep -Fq 'clipmenud.service' "$session_start"
 grep -Fq 'bindsym $mod+q exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh' "$i3_config"
 grep -Fq -- '-no-custom' "$close_script"
 
