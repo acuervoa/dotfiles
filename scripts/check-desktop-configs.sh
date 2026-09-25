@@ -60,8 +60,8 @@ check_pers_gui_packages() {
     failures=$((failures + 1))
   fi
 
-  if [ "$STATIC_ONLY" = true ]; then
-    printf '[INFO] --static: se omite la comprobación de paquetes instalados (estado del host)\n'
+  if [ "$STATIC_ONLY" = true ] && ! command -v pacman >/dev/null 2>&1; then
+    printf '[INFO] --static: sin pacman (p. ej. runner de CI); se omite la comprobación de paquetes instalados\n'
     return
   fi
 
