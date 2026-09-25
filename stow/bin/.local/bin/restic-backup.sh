@@ -5,6 +5,10 @@ set -euo pipefail
 export RESTIC_REPOSITORY="/mnt/Elements/restic-backup"
 export RESTIC_PASSWORD_FILE="$HOME/.config/restic/password"
 EXCLUDES="$HOME/.config/restic/excludes.txt"
+# Exclusiones privadas (rutas sensibles): fichero local, fuera del repo público de dotfiles.
+EXCLUDES_LOCAL="$HOME/.config/restic/excludes.local.txt"
+exclude_args=(--exclude-file="$EXCLUDES")
+[[ ! -f "$EXCLUDES_LOCAL" ]] || exclude_args+=(--exclude-file="$EXCLUDES_LOCAL")
 LOG="${XDG_STATE_HOME:-$HOME/.local/state}/restic/backup.log"
 mkdir -p -- "$(dirname -- "$LOG")"
 
@@ -16,7 +20,7 @@ fi
 {
   date --iso-8601=seconds
   backup_rc=0
-  restic backup "$HOME" --exclude-file="$EXCLUDES" --exclude-caches --one-file-system || backup_rc=$?
+  restic backup "$HOME" "${exclude_args[@]}" --exclude-caches --one-file-system || backup_rc=$?
   # Registrar el resultado del backup ANTES de forget/prune: si estos fallan (set -e) o el backup
   # falla, el último exit= del log debe ser el de esta ejecución y no el de una anterior.
   echo "exit=$backup_rc"

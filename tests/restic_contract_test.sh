@@ -16,6 +16,11 @@ grep -q '^RandomizedDelaySec=15min$' "$timer" || fail "timer Restic no tiene del
 grep -q -- '--keep-weekly 8' "$script" || fail "falta retención semanal"
 grep -q -- '--keep-monthly 12' "$script" || fail "falta retención mensual"
 grep -q -- '--keep-yearly 2' "$script" || fail "falta retención anual"
+grep -q -- 'excludes.local.txt' "$script" || fail "el script no lee las exclusiones locales privadas"
+excludes="$repo_root/stow/restic/.config/restic/excludes.txt"
+if grep -Eqi 'imapGmail|acme\.json|key\.pem|oauth|runtipi|bobarr|jackett' "$excludes"; then
+  fail "excludes.txt (repo público) contiene rutas sensibles; van en excludes.local.txt"
+fi
 if grep -qi 'diario' "$timer"; then
   fail "timer Restic todavía se describe como diario"
 fi
