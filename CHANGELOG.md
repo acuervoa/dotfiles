@@ -6,6 +6,22 @@ Formato: entradas fechadas (YYYY-MM-DD), estilo “Keep a Changelog” simplific
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-09-25 — Sesiones AI vía SimpleBrain, dev() por ventanas y exclusiones restic privadas
+
+### Cambiado
+- `ai.sh` pasa a ser una capa fina sobre SimpleBrain/tools (sesiones con UUID4 + alias,
+  `ai-session-runbook`); `dev()` abre ventanas editor / agent / runtime.
+- Restic: las exclusiones sensibles viven en `~/.config/restic/excludes.local.txt`
+  (local, no versionado) y `restic-backup.sh` las lee además de `excludes.txt`.
+- AgentMemory: el servicio arranca en el puerto 3111.
+
+### Eliminado
+- Del catálogo: `codex-here`, `gpt`, `gpt-safe`, `ia`, `sb-lint`, `sbo-archive-stale`,
+  `sbo-clean`, `sbprofile`.
+
+### Corregido
+- Restic: el `exit=` del backup se registra antes de forget/prune.
+
 ## 2026-09-11 — Capa de escritorio PERS-GUI, CI reproducible y credenciales de gh
 
 ### Añadido
