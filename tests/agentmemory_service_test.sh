@@ -17,7 +17,7 @@ pass() {
 [ -f "$unit" ] || fail "no existe la unidad: $unit"
 [ -x "$entrypoint" ] || fail "no existe entrypoint versionado: $entrypoint"
 
-grep -Eq '^ExecStart=%h/.local/bin/agentmemory( --port [0-9]+)?$' "$unit" || fail "AgentMemory no usa el entrypoint estable del usuario"
+grep -Eq '^ExecStart=%h/.local/bin/agentmemory( --port [0-9]+)?( --data-dir [^ ]+)?$' "$unit" || fail "AgentMemory no usa el entrypoint estable del usuario"
 if grep -q 'fnm' "$unit"; then
   fail "AgentMemory todavía depende de fnm"
 fi
