@@ -84,7 +84,7 @@
 | $mod+Shift+c | reload |
 | $mod+Shift+r | restart |
 | $mod+Shift+x | exec --no-startup-id ~/.config/i3/scripts/i3lock.sh |
-| $mod+Shift+e | exec "i3-nagbar -t warning -m '¿Quieres salir de i3?' -B 'Sí, salir' 'i3-msg exit'" |
+| $mod+Shift+e | exec --no-startup-id ~/.config/i3/scripts/session-exit-confirm.sh |
 | control+mod1+Delete | exec --no-startup-id ~/.config/i3/scripts/mode_system.sh |
 | $mod+q | exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh |
 | $mod+Shift+y | exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh |
