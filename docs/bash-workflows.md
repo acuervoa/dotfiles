@@ -70,6 +70,11 @@ confirmación si no puedes identificar los servicios o recursos afectados.
 ## AI y SimpleBrain
 
 Secuencia de sesión y destilación: `sbs/af → afl (optional) → sbsb/sbo → sbe/afx → aflastdraft/afapplylast`.
+Cada sesión moderna recibe UUID4 + alias corto; referencia con `--session`.
+Para ver la secuencia completa desde la shell: `ai-session-runbook`.
+El cierre admite `--done-task` y `--next-task` repetibles. Para históricos,
+usa `sbe --from <legacy>` o inventaría con
+`python3 tools/ai-session-migrate.py --preview`; nunca se inventa identidad.
 
 El catálogo de `.bash_grammar` ya fue reconciliado con el runtime vigente:
 `sbo` hace una consulta segura de la sesión activa y sus candidatas; `sbs`

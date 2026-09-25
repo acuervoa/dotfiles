@@ -324,122 +324,208 @@ y() {
 
 # @cmd dev  Crear/adjuntar sesión tmux ligada al proyecto actual (layout estándar en paneles)
 dev() {
-  _req tmux || return 1
+    _req tmux || return 1
 
-  local dest name editor_cmd logs_cmd
+    local dest name editor_cmd logs_cmd
+    local editor_pane agent_pane logs_pane shell_pane
 
-  if [ -n "${1:-}" ]; then
-    # dev /ruta/al/proyecto
-    if [ -d "$1" ]; then
-      dest="$(cd -- "$1" && pwd)"
+    # ---------------------------------------------------------------
+    # Resolve project
+    # ---------------------------------------------------------------
+
+    if [ -n "${1:-}" ]; then
+        if [ -d "$1" ]; then
+            dest="$(cd -- "$1" && pwd)"
+        else
+            printf 'dev: directorio no existe: %s\n' "$1" >&2
+            return 1
+        fi
     else
-      printf 'dev: directorio no existe: %s\n' "$1" >&2
-      return 1
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            dest="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+        else
+            if ! command -v proj >/dev/null 2>&1; then
+                printf 'dev: proj no está definido y no estás en un repo git.\n' >&2
+                return 1
+            fi
+
+            local prev_pwd="$PWD"
+
+            dest="$(
+                cd -- "$prev_pwd" || exit 1
+                proj || exit 1
+                pwd
+            )" || {
+                printf 'dev: selección de proyecto cancelada.\n' >&2
+                return 1
+            }
+
+            if [ "$dest" = "$prev_pwd" ]; then
+                printf 'dev: no se ha seleccionado ningún proyecto.\n' >&2
+                return 1
+            fi
+        fi
     fi
-  else
-    # Si estamos en repo git, usamos su raíz
-    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-      dest="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+
+    if [ -z "$dest" ] || [ ! -d "$dest" ]; then
+        printf 'dev: destino inválido: %s\n' "${dest:-<vacío>}" >&2
+        return 1
+    fi
+
+    name="$(basename "$dest")"
+
+    # ---------------------------------------------------------------
+    # Existing workspace
+    # ---------------------------------------------------------------
+
+    if tmux has-session -t "=${name}" 2>/dev/null; then
+        if [ -n "${TMUX:-}" ]; then
+            tmux switch-client -t "$name"
+        else
+            tmux attach -t "$name"
+        fi
+
+        return 0
+    fi
+
+    # ---------------------------------------------------------------
+    # Resolve editor
+    # ---------------------------------------------------------------
+
+    if [ -n "${VISUAL:-}" ]; then
+        editor_cmd="$VISUAL"
+    elif [ -n "${EDITOR:-}" ]; then
+        editor_cmd="$EDITOR"
+    elif command -v nvim >/dev/null 2>&1; then
+        editor_cmd="nvim"
+    elif command -v vim >/dev/null 2>&1; then
+        editor_cmd="vim"
     else
-      # Si no, usamos proj pero SIN cambiar el cwd de esta shell
-      if ! command -v proj >/dev/null 2>&1; then
-        printf 'dev: proj no está definido y no estás en un repo git.\n' >&2
-        return 1
-      fi
-
-      local prev_pwd="$PWD"
-
-      # Ejecutamos proj en subshell y capturamos el cwd resultante
-      dest="$(
-        cd -- "$prev_pwd" || exit 1
-        proj || exit 1
-        pwd
-      )" || {
-        printf 'dev: selección de proyecto cancelada.\n' >&2
-        return 1
-      }
-
-      # Si seguimos en el mismo dir, lo tratamos como “no se ha elegido nada”
-      if [ "$dest" = "$prev_pwd" ]; then
-        printf 'dev: no se ha seleccionado ningún proyecto.\n' >&2
-        return 1
-      fi
+        editor_cmd="nano"
     fi
-  fi
 
-  if [ -z "$dest" ] || [ ! -d "$dest" ]; then
-    printf 'dev: destino inválido: %s\n' "${dest:-<vacío>}" >&2
-    return 1
-  fi
+    editor_cmd="${editor_cmd} ."
+    logs_cmd="$HOME/.tmux/scripts/project_logs.sh"
 
-  name="$(basename "$dest")"
+    # ---------------------------------------------------------------
+    # Window 1: dev / editor
+    # ---------------------------------------------------------------
 
-  if tmux has-session -t "$name" 2>/dev/null; then
+    tmux new-session \
+        -d \
+        -s "$name" \
+        -c "$dest" \
+        -n dev
+
+    editor_pane="$(
+        tmux display-message \
+            -p \
+            -t "$name:dev" \
+            '#{pane_id}'
+    )"
+
+    tmux select-pane \
+        -t "$editor_pane" \
+        -T "EDITOR"
+
+    # ---------------------------------------------------------------
+    # Window 2: agent
+    #
+    # Deliberately starts as a plain shell.
+    # Agent lifecycle remains manual for now.
+    # ---------------------------------------------------------------
+
+    agent_pane="$(
+        tmux new-window \
+            -d \
+            -P \
+            -F '#{pane_id}' \
+            -t "${name}:" \
+            -n agent \
+            -c "$dest"
+    )"
+
+    tmux select-pane \
+        -t "$agent_pane" \
+        -T "AGENT"
+
+    # ---------------------------------------------------------------
+    # Window 3: runtime
+    # ---------------------------------------------------------------
+
+    logs_pane="$(
+        tmux new-window \
+            -d \
+            -P \
+            -F '#{pane_id}' \
+            -t "${name}:" \
+            -n runtime \
+            -c "$dest"
+    )"
+
+    shell_pane="$(
+        tmux split-window \
+            -d \
+            -v \
+            -P \
+            -F '#{pane_id}' \
+            -t "$logs_pane" \
+            -c "$dest"
+    )"
+
+    tmux select-pane \
+        -t "$logs_pane" \
+        -T "LOGS"
+
+    tmux select-pane \
+        -t "$shell_pane" \
+        -T "SHELL"
+
+    tmux set-window-option \
+        -t "$name:runtime" \
+        pane-border-status top
+
+    tmux set-window-option \
+        -t "$name:runtime" \
+        allow-rename off
+
+    tmux set-window-option \
+        -t "$name:runtime" \
+        pane-border-format \
+        ' #[fg=#cba6f7,bold]#P #{pane_title}#[default] '
+
+    # ---------------------------------------------------------------
+    # Start controlled commands
+    # ---------------------------------------------------------------
+
+    if [ -x "$logs_cmd" ]; then
+        tmux send-keys \
+            -t "$logs_pane" \
+            "$logs_cmd" \
+            C-m
+    else
+        printf 'dev: aviso: logs script no ejecutable: %s\n' "$logs_cmd" >&2
+    fi
+
+    tmux send-keys \
+        -t "$editor_pane" \
+        "$editor_cmd" \
+        C-m
+
+    # Start focused on editor.
+    tmux select-window -t "$name:dev"
+
+    # ---------------------------------------------------------------
+    # Attach / switch
+    # ---------------------------------------------------------------
+
     if [ -n "${TMUX:-}" ]; then
-      tmux switch-client -t "$name"
+        tmux switch-client -t "$name"
     else
-      tmux attach -t "$name"
+        tmux attach -t "$name"
     fi
-    return 0
-  fi
-
-  # Editor por defecto: VISUAL > EDITOR > nvim > vim > nano
-  if [ -n "${VISUAL:-}" ]; then
-    editor_cmd="$VISUAL"
-  elif [ -n "${EDITOR:-}" ]; then
-    editor_cmd="$EDITOR"
-  elif command -v nvim >/dev/null 2>&1; then
-    editor_cmd="nvim"
-  elif command -v vim >/dev/null 2>&1; then
-    editor_cmd="vim"
-  else
-    editor_cmd="nano"
-  fi
-  editor_cmd="${editor_cmd} ."
-
-  # El script detecta mise/Compose según el proyecto y mantiene el pane útil.
-  logs_cmd="$HOME/.tmux/scripts/project_logs.sh"
-
-  # Creamos sesión: 1 window llamada "dev" con 1 pane (será el pane izquierdo)
-  tmux new-session -ds "$name" -c "$dest" -n dev
-
-  # Creamos layout 3 paneles en la misma window:
-  #   - split horizontal → izquierda (editor) / derecha (logs+shell)
-  #   - split vertical sobre pane derecho → arriba derecha (logs) / abajo derecha (shell)
-  tmux split-window -h -t "$name:dev" -c "$dest" # ahora la derecha es activa
-  tmux split-window -v -t "$name:dev" -c "$dest" # divide la derecha en dos; abajo derecha queda activa
-
-  # Roles visibles sólo en esta sala; no altera la apariencia global de tmux.
-  tmux set-window-option -t "$name:dev" pane-border-status top
-  tmux set-window-option -t "$name:dev" allow-rename off
-  tmux set-window-option -t "$name:dev" pane-border-format ' #[fg=#cba6f7,bold]#P #{pane_title}#[default] '
-  tmux select-pane -t "$name:dev.0" -T "EDITOR"
-  tmux select-pane -t "$name:dev.1" -T "LOGS"
-  tmux select-pane -t "$name:dev.2" -T "SHELL"
-
-  # En este punto (ventana dev):
-  #   pane activo: abajo derecha  → lo dejamos como shell “libre”
-  #   pane arriba derecha        → logs
-  #   pane izquierda             → editor
-
-  # 3.1. Logs en arriba derecha
-  tmux select-pane -t "$name:dev" -U # subimos: vamos a arriba derecha
-  tmux send-keys -t "$name:dev" "$logs_cmd" C-m
-
-  # 3.2. Editor en izquierda
-  tmux select-pane -t "$name:dev" -L # vamos a la izquierda
-  tmux send-keys -t "$name:dev" "$editor_cmd" C-m
-
-  # Dejamos el foco en el editor (izquierda). Abajo derecha queda como shell normal.
-
-  if [ -n "${TMUX:-}" ]; then
-    tmux switch-client -t "$name"
-  else
-    tmux attach -t "$name"
-  fi
 }
 
-# @cmd tswitch  Cambiar a otra sesión de tmux y cerrar la actual (fzf)
 tswitch() {
   _req tmux fzf || return 1
   [ -z "${TMUX:-}" ] && {

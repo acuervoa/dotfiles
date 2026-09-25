@@ -13,25 +13,18 @@ afapplylast	ai	mutating	no	Aplicar el último draft de destilación	afapplylast
 afdp	ai	mutating	no	Ejecutar pipeline de destilación	afdp --dry-run
 afdb	ai	mutating	no	Procesar sesiones históricas pendientes	afdb --list
 ai	ai	mutating	no	Iniciar o cerrar una sesión AI	ai
-codex-here	ai	safe	no	Lanzar Codex en el directorio actual	codex-here
-gpt	ai	safe	no	Abrir la webapp de ChatGPT	gpt
-ia	ai	safe	no	Abrir entorno tmux para IA	ia
-sb-lint	simplebrain	safe	no	Auditar frontmatter del vault	sb-lint
-sbclose	simplebrain	mutating	no	Cerrar formalmente un proyecto	sbclose "proyecto"
-sbo	simplebrain	safe	no	Consultar sesión activa y sesiones candidatas	sbo
-sbs	simplebrain	mutating	no	Iniciar sesión SimpleBrain y registrar estado/artefactos	sbs
+ai-session-runbook	simplebrain	safe	no	Abrir el runbook operativo completo de sesiones AI	ai-session-runbook
+sbclose	simplebrain	mutating	no	Cerrar proyecto con distill, dry-run y archivado no-clobber	sbclose "proyecto"
+sbo	simplebrain	safe	no	Consultar sesiones active/legacy/orphaned; closed no bloquea	sbo
+sbs	simplebrain	mutating	no	Iniciar sesión; genera UUID4 + alias y registra estado/artefactos	sbs "tarea"
 sbsb	simplebrain	mutating	no	Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos	sbsb
-sbl	simplebrain	safe	no	Listar sesiones SimpleBrain	sbl
-sbe	simplebrain	mutating	no	Cerrar una sesión SimpleBrain	sbe
-sbprofile	simplebrain	safe	no	Copiar el perfil compacto al portapapeles	sbprofile
+sbl	simplebrain	mutating	no	Iniciar sesión SimpleBrain y lanzar agente	sbl "tarea"
+sbe	simplebrain	mutating	no	Cerrar por UUID/alias; --from solo legacy; tareas repetibles	sbe --session s-a1b2c3d4 --done-task A
 cat	utility	safe	no	Mostrar archivos con paginación ligera	cat archivo
-gpt-safe	ai	safe	no	Abrir ChatGPT sin aceleración GPU	gpt-safe
 la	navigation	safe	no	Listar archivos ocultos	la
 lg	git	safe	no	Abrir Lazygit	lg
 ll	navigation	safe	no	Listar archivos con detalles	ll
 ls	navigation	safe	no	Listar archivos	ls
-sbo-archive-stale	simplebrain	mutating	no	Archivar sesiones stale	sbo-archive-stale
-sbo-clean	simplebrain	mutating	no	Limpiar sesiones huérfanas	sbo-clean
 vim	utility	safe	no	Abrir Neovim	vim archivo
 cls	utility	safe	no	Limpiar la pantalla	cls
 grep	utility	safe	no	Buscar texto con color	grep patrón

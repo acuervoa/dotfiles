@@ -122,24 +122,17 @@ Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 | `afs` | Iniciar AI Flow | ✅ seguro | ` afs` |
 | `afx` | Ejecutar ciclo con cierre y siguiente paso | 🔴 mutación | `afx "tarea"` |
 | `ai` | Iniciar o cerrar una sesión AI | 🔴 mutación | `ai` |
-| `codex-here` | Lanzar Codex en el directorio actual | ✅ seguro | `codex-here` |
-| `gpt` | Abrir la webapp de ChatGPT | ✅ seguro | `gpt` |
-| `gpt-safe` | Abrir ChatGPT sin aceleración GPU | ✅ seguro | `gpt-safe` |
-| `ia` | Abrir entorno tmux para IA | ✅ seguro | `ia` |
 
 ## SimpleBrain (`sb*`)
 
 | Comando | Descripción | Riesgo | Ejemplo |
 | --- | --- | --- | --- |
-| `sb-lint` | Auditar frontmatter del vault | ✅ seguro | `sb-lint` |
-| `sbclose` | Cerrar formalmente un proyecto | 🔴 mutación | `sbclose "proyecto"` |
-| `sbe` | Cerrar una sesión SimpleBrain | 🔴 mutación | `sbe` |
-| `sbl` | Listar sesiones SimpleBrain | ✅ seguro | `sbl` |
-| `sbo` | Consultar sesión activa y sesiones candidatas | ✅ seguro | `sbo` |
-| `sbo-archive-stale` | Archivar sesiones stale | 🔴 mutación | `sbo-archive-stale` |
-| `sbo-clean` | Limpiar sesiones huérfanas | 🔴 mutación | `sbo-clean` |
-| `sbprofile` | Copiar el perfil compacto al portapapeles | ✅ seguro | `sbprofile` |
-| `sbs` | Iniciar sesión SimpleBrain y registrar estado/artefactos | 🔴 mutación | `sbs` |
+| `ai-session-runbook` | Abrir el runbook operativo completo de sesiones AI | ✅ seguro | `ai-session-runbook` |
+| `sbclose` | Cerrar proyecto con distill, dry-run y archivado no-clobber | 🔴 mutación | `sbclose "proyecto"` |
+| `sbe` | Cerrar por UUID/alias; --from solo legacy; tareas repetibles | 🔴 mutación | `sbe --session s-a1b2c3d4 --done-task A` |
+| `sbl` | Iniciar sesión SimpleBrain y lanzar agente | 🔴 mutación | `sbl "tarea"` |
+| `sbo` | Consultar sesiones active/legacy/orphaned; closed no bloquea | ✅ seguro | `sbo` |
+| `sbs` | Iniciar sesión; genera UUID4 + alias y registra estado/artefactos | 🔴 mutación | `sbs "tarea"` |
 | `sbsb` | Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos | 🔴 mutación | `sbsb` |
 
 ## Navegación
