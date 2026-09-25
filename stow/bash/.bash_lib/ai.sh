@@ -72,7 +72,8 @@ afapplylast() {
 }
 
 ai-session-runbook() {
-  local runbook="$(_sb_vault)/06_KNOWLEDGE/IA/ai-session — Runbook operativo.md"
+  local runbook
+  runbook="$(_sb_vault)/06_KNOWLEDGE/IA/ai-session — Runbook operativo.md"
   [[ -f "$runbook" ]] || {
     printf 'No se encontró el runbook: %s\n' "$runbook" >&2
     return 1
