@@ -60,6 +60,11 @@ check_pers_gui_packages() {
     failures=$((failures + 1))
   fi
 
+  if [ "$STATIC_ONLY" = true ]; then
+    printf '[INFO] --static: se omite la comprobación de paquetes instalados (estado del host)\n'
+    return
+  fi
+
   if ! command -v pacman >/dev/null 2>&1; then
     printf '[ERROR] pacman no está disponible para comprobar PERS-GUI\n' >&2
     failures=$((failures + 1))
@@ -161,7 +166,7 @@ gui_scripts=(
 for script in "${gui_scripts[@]}"; do
   check_file "$script"
   if [ -f "$script" ]; then
-    sh -n "$script" || failures=$((failures + 1))
+    bash -n "$script" || failures=$((failures + 1))
   fi
 done
 
@@ -188,6 +193,7 @@ if [ -e "$HOME/.config/autostart/Nextcloud.desktop" ] || [ -L "$HOME/.config/aut
   failures=$((failures + 1))
 fi
 
+# Los defaults MIME son estado del host: solo se comprueban fuera de --static.
 for mime_pair in \
   'inode/directory thunar.desktop' \
   'text/plain nvim-kitty.desktop' \
@@ -200,11 +206,12 @@ for mime_pair in \
   'x-scheme-handler/http firefox.desktop' \
   'x-scheme-handler/https firefox.desktop' \
   'x-scheme-handler/mailto firefox.desktop'; do
+  [ "$STATIC_ONLY" = true ] && continue
   read -r mime expected <<<"$mime_pair"
   check_mime_default "$mime" "$expected"
 done
 
-if command -v systemd-analyze >/dev/null 2>&1; then
+if [ "$STATIC_ONLY" != true ] && command -v systemd-analyze >/dev/null 2>&1; then
   systemd-analyze --user verify "$HOME/.config/systemd/user/i3-session.target" >/dev/null 2>&1 || {
     printf '[ERROR] systemd-analyze --user verify falló para i3-session.target\n' >&2
     failures=$((failures + 1))
