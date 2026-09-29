@@ -7,7 +7,6 @@
   "enabledCssSnippets": [
     "catppuccin-mocha",
     "sbx-theme",
-    "sbx-ui",
     "sbx-tooltips",
     "sbx-hide-props"
   ]
