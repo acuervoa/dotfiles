@@ -1,13 +1,14 @@
 {
-  "cssTheme": "WowTheme",
+  "cssTheme": "",
   "theme": "obsidian",
   "baseFontSize": 16,
   "interfaceFontFamily": "MesloLGLDZ Nerd Font",
-  "textFontFamily": "MesloLGLDZ Nerd Font",
+  "textFontFamily": "Adwaita Sans",
   "enabledCssSnippets": [
     "catppuccin-mocha",
     "sbx-theme",
     "sbx-tooltips",
     "sbx-hide-props"
-  ]
+  ],
+  "monospaceFontFamily": "MesloLGLDZ Nerd Font"
 }
