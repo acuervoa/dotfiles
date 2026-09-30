@@ -205,7 +205,7 @@
 	--sbx-tab-bg:            color-mix(in srgb, var(--sbx-soft-2) 72%, transparent);
 	--sbx-tab-active-bg:     color-mix(in srgb, var(--text-accent) 24%, var(--sbx-soft));
 	--sbx-tab-active-border: color-mix(in srgb, var(--text-accent) 62%, var(--sbx-border));
-	--sbx-tab-active-color:  color-mix(in srgb, var(--text-accent) 88%, white);
+	--sbx-tab-active-color:  var(--interactive-accent-hover);
 	--sbx-tab-active-glow:   color-mix(in srgb, var(--text-accent) 28%, transparent);
 	--sbx-kbd-bg:            color-mix(in srgb, var(--sbx-soft) 70%, transparent);
 }
@@ -1483,7 +1483,6 @@
       color-mix(in srgb, var(--text-accent) 12%, transparent),
       transparent 55%
     );
-  box-shadow: var(--sbx-shadow);
   min-width: 0;
 }
 
@@ -1504,20 +1503,42 @@
   background: linear-gradient(180deg, var(--sbx-surface-sm), var(--sbx-surface-xs));
   text-decoration: none !important;
   color: var(--text-normal);
-  font-weight: 900;
+  font-weight: 700;
   font-size: var(--sbx-text-sm);
   line-height: 1.3;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  min-height: 40px;
   user-select: none;
   cursor: pointer;
   min-width: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Consulta: referencia, un peldaño por debajo del ritual diario */
+.sbx-dashboard .sbx-tab--ref {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Divisor entre grupos sin nodo extra (el override 90 oculta hijos que no sean .sbx-tab) */
+.sbx-dashboard .sbx-tab--group-start {
+  margin-left: 12px;
+}
+.sbx-dashboard .sbx-tab--group-start::before {
+  content: "";
+  position: absolute;
+  left: -13px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--sbx-accent-border);
+}
+.sbx-dashboard .sbx-tab { position: relative; }
+
+.sbx-dashboard .sbx-tab:focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: 2px;
 }
 
 .sbx-dashboard .sbx-tab:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--sbx-shadow-soft);
   border-color: var(--sbx-accent-border);
   background: linear-gradient(180deg, var(--sbx-accent-bg), var(--sbx-surface-xs));
   text-decoration: none !important;
@@ -1527,22 +1548,9 @@
 .sbx-dashboard .sbx-tab.is-active {
   background: var(--sbx-tab-active-bg);
   border-color: var(--sbx-tab-active-border);
-  box-shadow:
-    0 0 0 1px var(--sbx-glow) inset,
-    0 10px 20px var(--sbx-tab-active-glow);
+  border-bottom: 3px solid var(--sbx-tab-active-color);
   color: var(--sbx-tab-active-color);
-  position: relative;
-}
-
-.sbx-dashboard .sbx-tab.is-active::after {
-  content: "";
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: -6px;
-  height: 3px;
-  border-radius: 999px;
-  background: var(--sbx-tab-active-color);
+  font-weight: 700;
 }
 
 .sbx-dashboard .sbx-tabsbar-right {
@@ -1567,13 +1575,25 @@
   line-height: 1.4;
 }
 
-@media (max-width: 520px) {
+/* Móvil: una fila con scroll horizontal; los atajos de teclado no aplican al tacto */
+@media (max-width: 720px) {
   .sbx-dashboard .sbx-tabsbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+  .sbx-dashboard .sbx-tabsbar-left {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .sbx-dashboard .sbx-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-height: 44px;
   }
   .sbx-dashboard .sbx-tabsbar-right {
-    white-space: normal;
+    display: none;
   }
 }
 
@@ -2001,8 +2021,9 @@
 
 /* La tabla llena el ancho y, si hace falta, puede crecer más (scroll) */
 .sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  max-width: 100%;
+  table-layout: auto;
 }
 
 /* Wrap agresivo en celdas para que “lo largo” no fuerce columnas */
@@ -2489,6 +2510,124 @@
 	background: var(--sbx-state-ok-bg);
 }
 
+
+
+/* --- components/44_prose.css --- */
+/* ======================================================================
+   44) Prosa dentro de cards + estados vacíos + tablas "cuaderno"
+   Mono (Meslo) queda para datos y etiquetas; la voz humana usa la fuente de texto.
+   ====================================================================== */
+
+/* — 1) Párrafos y listas de ayuda dentro de cards ————————————————
+   Obsidian renderiza el contenido de un callout como hijos directos (p, ul, ol);
+   en embeds y secciones puede envolverlos en .el-p / .el-ul, así que se cubren ambos. */
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(p, .el-p > p):not(:has(.internal-embed, .block-language-dataviewjs)),
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(ul, ol, .el-ul > ul, .el-ol > ol) > li {
+	font-family: var(--font-text, "Adwaita Sans"), sans-serif;
+	font-size: var(--sbx-text-sm);
+	line-height: 1.55;
+	color: var(--sbx-muted);
+	text-wrap: pretty;
+}
+
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(p, .el-p > p):not(:has(.internal-embed, .block-language-dataviewjs)) {
+	margin: 8px 0 4px;
+}
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(ul, ol, .el-ul > ul, .el-ol > ol) {
+	margin: 4px 0 8px;
+	padding-left: 1.3em;
+}
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(ul, ol, .el-ul > ul, .el-ol > ol) > li {
+	margin: 2px 0;
+	padding-left: 2px;
+}
+
+/* Lead-in en negrita → etiqueta (uso: **Brief** texto…) */
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content > :is(p, .el-p > p):not(:has(.internal-embed, .block-language-dataviewjs)) > strong:first-child:not(:only-child) {
+	display: inline-block;
+	min-width: 5.5em;
+	margin-right: 8px;
+	font-family: var(--sbx-font-ui);
+	font-size: var(--sbx-text-2xs);
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--sbx-accent-color);
+}
+
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content :is(p, li) a {
+	color: var(--text-accent);
+}
+
+/* Código en línea dentro de prosa: discreto, no un botón */
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content :is(p, li) code {
+	padding: 0 5px;
+	border: 1px solid var(--sbx-border-soft);
+	border-radius: 0;
+	background: var(--sbx-surface-sm);
+	font-family: var(--sbx-font-mono);
+	font-size: var(--sbx-text-xs);
+	line-height: 1.4;
+	color: var(--text-normal);
+}
+
+/* — 2) Estado vacío diseñado ————————————————————————————————— */
+.sbx-dashboard .sbx-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+	padding: 14px 16px;
+	border: 1px dashed var(--sbx-accent-border);
+	background: var(--sbx-accent-bg);
+}
+.sbx-dashboard .sbx-empty-state-title {
+	font-weight: 700;
+	font-size: var(--sbx-text-sm);
+	color: var(--text-normal);
+}
+.sbx-dashboard .sbx-empty-state-hint {
+	font-family: var(--font-text, "Adwaita Sans"), sans-serif;
+	font-size: var(--sbx-text-sm);
+	line-height: 1.5;
+	color: var(--sbx-muted);
+}
+
+/* — 3) Tablas "cuaderno de campo" (prueba) ————————————————————————
+   Renglones en vez de zebra; texto largo en fuente de texto con medida limitada;
+   la primera columna (enlace/identificador) sigue en mono. */
+.sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) tbody tr > * {
+	background: transparent;
+	border-top: 0;
+	border-bottom: 1px solid var(--sbx-border-soft);
+	line-height: 1.6;
+	padding-top: 9px;
+	padding-bottom: 9px;
+}
+.sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) tbody tr:last-child > * {
+	border-bottom: 0;
+}
+.sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) tbody tr:hover > * {
+	background: var(--sbx-accent-bg);
+}
+.sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) tbody td:not(:first-child) {
+	font-family: var(--font-text, "Adwaita Sans"), sans-serif;
+	font-size: var(--sbx-text-sm);
+	text-wrap: pretty;
+}
+
+/* — 4) Listas de tareas en notas-dashboard (INBOX «Capturas», etc.) ——————— */
+.sbx-dashboard .task-list-item {
+	font-family: var(--font-text, "Adwaita Sans"), sans-serif;
+	font-size: var(--sbx-text-sm);
+	line-height: 1.5;
+	padding: 3px 0;
+}
+.sbx-dashboard .task-list-item.is-checked {
+	color: var(--text-faint);
+	text-decoration-color: var(--sbx-border);
+}
+.sbx-dashboard .task-list-item.is-checked a { color: inherit; }
 
 
 /* --- components/60_home-project-cards.css --- */
@@ -5587,6 +5726,64 @@
 .sbx-dashboard .sbx-qa-feedback--err { color: var(--color-red,   #f87171); }
 
 
+/* INBOX — captura rápida (antes inline en INBOX.md) */
+.sbx-dashboard .sbx-inbox-capture      { padding: 4px 0 8px 0; }
+.sbx-dashboard .sbx-inbox-capture-row  { display: flex; gap: 6px; margin-bottom: 8px; }
+.sbx-dashboard .sbx-inbox-input {
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: var(--sbx-text-base);
+}
+.sbx-dashboard button.sbx-btn.sbx-inbox-btn {
+  width: auto;
+  min-height: 44px;
+  padding: 7px 16px;
+  flex-shrink: 0;
+  font-size: var(--sbx-text-xs);
+  font-weight: 700;
+  background: var(--sbx-accent-bg-strong);
+  border-color: var(--sbx-accent-border);
+  color: var(--sbx-accent-color);
+}
+.sbx-dashboard .sbx-inbox-hints        { display: flex; flex-wrap: wrap; gap: 5px; }
+.sbx-dashboard .sbx-inbox-hint {
+  font-size: var(--sbx-text-2xs);
+  cursor: default;
+}
+
+/* Botón de acción en línea (no ocupa todo el ancho como .sbx-btn) */
+.sbx-dashboard button.sbx-btn.sbx-btn--inline {
+  width: auto;
+  min-height: 32px;
+  padding: 4px 12px;
+  flex-shrink: 0;
+  font-size: var(--sbx-text-xs);
+}
+
+/* K02 — candidatas a evergreen: filas separadas, enlace + métricas + botón */
+.sbx-dashboard .sbx-k02-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sbx-dashboard .sbx-k02-list li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sbx-border-soft);
+}
+.sbx-dashboard .sbx-k02-list li:last-child { border-bottom: 0; }
+.sbx-dashboard .sbx-k02-list li:hover { background: var(--sbx-accent-bg); }
+.sbx-dashboard .sbx-k02-list li::marker { content: none; }
+.sbx-dashboard .sbx-k02-meta {
+  font-size: var(--sbx-text-xs);
+  font-variant-numeric: tabular-nums;
+}
+.sbx-dashboard .sbx-k02-list li .sbx-btn--inline { margin-left: auto; }
+
+
 /* --- components/85_wiki-panel.css --- */
 /* ======================================================================
    K01 — Wiki Panel
@@ -7712,11 +7909,11 @@
 
 /* CONTROL “modos” por nota wrapper (dash-ops / dash-focus)
    Se usa en callouts con metadata: only-full / only-focus */
-.sbx-dashboard.dash-ops .callout[data-callout-metadata*=”only-focus”],
-.sbx-dashboard.dash-ops .callout[data-callout-metadata*=”only-full”] {
+.sbx-dashboard.dash-ops .callout[data-callout-metadata*="only-focus"],
+.sbx-dashboard.dash-ops .callout[data-callout-metadata*="only-full"] {
 	display: none;
 }
-.sbx-dashboard.dash-focus .callout[data-callout-metadata*=”only-full”] {
+.sbx-dashboard.dash-focus .callout[data-callout-metadata*="only-full"] {
 	display: none;
 }
 
@@ -7755,19 +7952,18 @@
 .sbx-dashboard .sbx-launcher button.sbx-btn         { border-radius: 0 !important; }
 
 /* 2) Sin hover-lift en cards */
-.sbx-dashboard .callout[data-callout=”sbx-card”]    { transform: none !important; }
+.sbx-dashboard .callout[data-callout="sbx-card"]    { transform: none !important; }
 
 /* 2a) Rail cards no estiran para igualar la altura del vecino */
-.sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata~=”rail”] { align-self: start !important; }
+.sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata~="rail"] { align-self: start !important; }
 
-/* 2b) Zerear padding del callout + propagar variables al callout-title (es hermano de callout-content, no hereda sus variables) */
-.sbx-dashboard .callout[data-callout=”sbx-card”] {
-  padding: 0 !important;
+/* 2b) Propagar variables al callout-title (es hermano de callout-content, no hereda sus variables) */
+.sbx-dashboard .callout[data-callout="sbx-card"] {
   --sbx-content-px: 0px;
   --sbx-content-pt: 0px;
 }
 /* 2c) callout-title full-width: Obsidian puede renderizarlo como flex-child shrinkeable */
-.sbx-dashboard .callout[data-callout=”sbx-card”] > .callout-title {
+.sbx-dashboard .callout[data-callout="sbx-card"] > .callout-title {
   width: 100% !important;
   box-sizing: border-box !important;
   align-self: stretch !important;
@@ -7779,30 +7975,30 @@
 
 /* 3) Backgrounds — modo claro: blanco/near-white sobre lavanda */
 /* sepia light: crema cálida */
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-card”]  { background: #EDE7DA !important; border-color: rgba(90,60,30,0.14) !important; }
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-kpi”]   { background: #EDE7DA !important; border-color: rgba(90,60,30,0.14) !important; }
-.theme-light .sbx-dashboard .sbx-surface-card                  { background: #EDE7DA !important; border-color: rgba(90,60,30,0.14) !important; }
-.theme-light .sbx-dashboard .sbx-surface-panel                 { background: #EDE7DA !important; border-color: rgba(90,60,30,0.14) !important; }
-.theme-light .sbx-dashboard .sbx-kpi-tile                      { background: #E5DDD0 !important; border-color: rgba(90,60,30,0.12) !important; }
-.theme-light .sbx-dashboard .sbx-tabsbar                       { background: #EDE7DA !important; border-color: rgba(90,60,30,0.14) !important; }
-.theme-light .sbx-dashboard .sbx-tab                           { background: #E5DDD0 !important; border-color: rgba(90,60,30,0.12) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-card"]  { background: var(--background-modifier-form-field) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-kpi"]   { background: var(--background-modifier-form-field) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .sbx-surface-card                  { background: var(--background-modifier-form-field) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .sbx-surface-panel                 { background: var(--background-modifier-form-field) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .sbx-kpi-tile                      { background: var(--background-secondary-alt) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .sbx-tabsbar                       { background: var(--background-modifier-form-field) !important; border-color: var(--background-modifier-border) !important; }
+.theme-light .sbx-dashboard .sbx-tab                           { background: var(--background-secondary-alt) !important; border-color: var(--background-modifier-border) !important; }
 .theme-light .sbx-dashboard .sbx-tab:hover                     { background: var(--sbx-accent-bg) !important; }
 .theme-light .sbx-dashboard .sbx-tab.is-active                 { background: var(--sbx-accent-bg-strong) !important; }
-.theme-light .sbx-dashboard .sbx-kbd                           { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-hero-kbd                      { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-pi-next-box                   { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-ni-btn                        { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-ni-btn-open                   { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-launcher a.sbx-btn            { background: #E5DDD0 !important; }
-.theme-light .sbx-dashboard .sbx-launcher button.sbx-btn       { background: #E5DDD0 !important; }
+.theme-light .sbx-dashboard .sbx-kbd                           { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-hero-kbd                      { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-pi-next-box                   { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-ni-btn                        { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-ni-btn-open                   { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-launcher a.sbx-btn            { background: var(--background-secondary-alt) !important; }
+.theme-light .sbx-dashboard .sbx-launcher button.sbx-btn       { background: var(--background-secondary-alt) !important; }
 
 /* 4) Backgrounds — modo oscuro: surface-lg (+30 RGB vs bg) */
-.theme-dark .sbx-dashboard .callout[data-callout=”sbx-card”]   { background: var(--sbx-surface-lg) !important; border-color: rgba(255,255,255,0.10) !important; }
-.theme-dark .sbx-dashboard .callout[data-callout=”sbx-kpi”]    { background: var(--sbx-surface-lg) !important; border-color: rgba(255,255,255,0.10) !important; }
-.theme-dark .sbx-dashboard .sbx-surface-card                   { background: var(--sbx-surface-lg) !important; border-color: rgba(255,255,255,0.10) !important; }
-.theme-dark .sbx-dashboard .sbx-surface-panel                  { background: var(--sbx-surface-lg) !important; border-color: rgba(255,255,255,0.10) !important; }
-.theme-dark .sbx-dashboard .sbx-kpi-tile                       { background: var(--sbx-surface-md) !important; border-color: rgba(255,255,255,0.08) !important; }
-.theme-dark .sbx-dashboard .sbx-tabsbar                        { background: var(--sbx-surface-md) !important; border-color: rgba(255,255,255,0.10) !important; }
+.theme-dark .sbx-dashboard .callout[data-callout="sbx-card"]   { background: var(--sbx-surface-lg) !important; border-color: var(--background-modifier-border) !important; }
+.theme-dark .sbx-dashboard .callout[data-callout="sbx-kpi"]    { background: var(--sbx-surface-lg) !important; border-color: var(--background-modifier-border) !important; }
+.theme-dark .sbx-dashboard .sbx-surface-card                   { background: var(--sbx-surface-lg) !important; border-color: var(--background-modifier-border) !important; }
+.theme-dark .sbx-dashboard .sbx-surface-panel                  { background: var(--sbx-surface-lg) !important; border-color: var(--background-modifier-border) !important; }
+.theme-dark .sbx-dashboard .sbx-kpi-tile                       { background: var(--sbx-surface-md) !important; border-color: var(--background-modifier-border) !important; }
+.theme-dark .sbx-dashboard .sbx-tabsbar                        { background: var(--sbx-surface-md) !important; border-color: var(--background-modifier-border) !important; }
 .theme-dark .sbx-dashboard .sbx-tab                            { background: var(--sbx-surface-sm) !important; }
 .theme-dark .sbx-dashboard .sbx-tab:hover                      { background: var(--sbx-accent-bg) !important; }
 .theme-dark .sbx-dashboard .sbx-tab.is-active                  { background: var(--sbx-accent-bg-strong) !important; }
@@ -7815,8 +8011,8 @@
 .theme-dark .sbx-dashboard .sbx-launcher button.sbx-btn        { background: var(--sbx-surface-md) !important; }
 
 /* 5) Elimina barra de acento superior y separador de título */
-.sbx-dashboard .callout[data-callout=”sbx-card”]::before  { display: none !important; }
-.sbx-dashboard .callout[data-callout=”sbx-card”]::after   { display: none !important; }
+.sbx-dashboard .callout[data-callout="sbx-card"]::before  { display: none !important; }
+.sbx-dashboard .callout[data-callout="sbx-card"]::after   { display: none !important; }
 
 /* 5b) Quita el separador decorativo del callout-title (línea horizontal) */
 .sbx-dashboard .callout-title::after { display: none !important; }
@@ -7826,13 +8022,34 @@
 .sbx-dashboard .plugin-tasks-query-explanation { display: none !important; }
 
 /* 6) NOW semantic cards */
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-mit”]     { background: var(--sbx-accent-bg-strong) !important; }
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-current”] { background: var(--sbx-state-ok-bg) !important; }
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-blocker”] { background: var(--sbx-state-danger-bg) !important; }
-.theme-light .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-due”]     { background: var(--sbx-state-warn-bg) !important; }
-.theme-dark  .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-mit”]     { background: var(--sbx-accent-bg-strong) !important; }
-.theme-dark  .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-current”] { background: var(--sbx-state-ok-bg) !important; }
-.theme-dark  .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-blocker”] { background: var(--sbx-state-danger-bg) !important; }
-.theme-dark  .sbx-dashboard .callout[data-callout=”sbx-card”][data-callout-metadata*=”now-due”]     { background: var(--sbx-state-warn-bg) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-mit"]     { background: var(--sbx-accent-bg-strong) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-current"] { background: var(--sbx-state-ok-bg) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-blocker"] { background: var(--sbx-state-danger-bg) !important; }
+.theme-light .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-due"]     { background: var(--sbx-state-warn-bg) !important; }
+.theme-dark  .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-mit"]     { background: var(--sbx-accent-bg-strong) !important; }
+.theme-dark  .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-current"] { background: var(--sbx-state-ok-bg) !important; }
+.theme-dark  .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-blocker"] { background: var(--sbx-state-danger-bg) !important; }
+.theme-dark  .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-due"]     { background: var(--sbx-state-warn-bg) !important; }
 
+
+
+/* A11y — activo en tema claro: el border-color !important de .sbx-tab no debe anular el subrayado */
+.theme-light .sbx-dashboard .sbx-tab.is-active,
+.theme-dark  .sbx-dashboard .sbx-tab.is-active { border-bottom-color: var(--sbx-tab-active-color) !important; }
+
+/* A11y — foco visible en cualquier control del dashboard */
+.sbx-dashboard :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--text-accent);
+  outline-offset: 2px;
+}
+
+/* A11y — reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sbx-dashboard *,
+  .sbx-dashboard *::before,
+  .sbx-dashboard *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
 
