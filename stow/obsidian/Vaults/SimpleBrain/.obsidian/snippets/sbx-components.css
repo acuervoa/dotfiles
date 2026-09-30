@@ -5743,11 +5743,6 @@
   border-color: var(--sbx-accent-border);
   color: var(--sbx-accent-color);
 }
-.sbx-dashboard .sbx-inbox-hints        { display: flex; flex-wrap: wrap; gap: 5px; }
-.sbx-dashboard .sbx-inbox-hint {
-  font-size: var(--sbx-text-2xs);
-  cursor: default;
-}
 
 /* Botón de acción en línea (no ocupa todo el ancho como .sbx-btn) */
 .sbx-dashboard button.sbx-btn.sbx-btn--inline {
@@ -5780,6 +5775,98 @@
   font-variant-numeric: tabular-nums;
 }
 .sbx-dashboard .sbx-k02-list li .sbx-btn--inline { margin-left: auto; }
+
+/* INBOX — lista de triage, estado y deshacer (antes inline en INBOX.md) */
+.sbx-dashboard .sbx-inbox-status {
+  min-height: 0;
+  font-size: var(--sbx-text-sm);
+  color: var(--sbx-muted);
+}
+.sbx-dashboard .sbx-inbox-status:empty { display: none; }
+.sbx-dashboard .sbx-inbox-status--error {
+  padding: 8px 12px;
+  border: 1px solid var(--sbx-state-danger-border);
+  background: var(--sbx-state-danger-bg);
+  color: var(--sbx-state-danger-color);
+}
+
+.sbx-dashboard .sbx-inbox-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--sbx-border-soft);
+}
+.sbx-dashboard .sbx-inbox-item:last-child { border-bottom: 0; }
+.sbx-dashboard .sbx-inbox-text {
+  font-size: var(--sbx-text-base);
+  line-height: 1.45;
+  color: var(--text-normal);
+  overflow-wrap: anywhere;
+}
+.sbx-dashboard .sbx-inbox-actions,
+.sbx-dashboard .sbx-inbox-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sbx-dashboard .sbx-inbox-menu[hidden] { display: none; }
+.sbx-dashboard .sbx-inbox-menu {
+  padding: 8px;
+  border: 1px solid var(--sbx-border);
+  background: var(--sbx-surface-xs);
+}
+.sbx-dashboard .sbx-inbox-item button.sbx-btn.sbx-btn--inline { min-height: 44px; }
+.sbx-dashboard .sbx-inbox-process {
+  background: var(--sbx-accent-bg-strong);
+  border-color: var(--sbx-accent-border);
+  color: var(--sbx-accent-text);
+  font-weight: 700;
+}
+.sbx-dashboard .sbx-inbox-danger { color: color-mix(in srgb, var(--sbx-state-danger-color) 70%, var(--text-normal)); }
+
+.sbx-dashboard .sbx-inbox-undo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--sbx-accent-border);
+  background: var(--sbx-accent-bg);
+  font-size: var(--sbx-text-sm);
+}
+
+.sbx-dashboard .sbx-inbox-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.sbx-dashboard .sbx-inbox-kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  border: 1px solid var(--sbx-border);
+  background: var(--sbx-surface-xs);
+}
+.sbx-dashboard .sbx-inbox-kpi-val {
+  font-size: var(--sbx-text-xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.sbx-dashboard .sbx-inbox-kpi-label {
+  margin-top: 2px;
+  font-size: var(--sbx-text-xxs);
+  color: var(--sbx-muted);
+  text-align: center;
+}
+.sbx-dashboard .sbx-inbox-kpi--danger .sbx-inbox-kpi-val { color: var(--sbx-state-danger-color); }
+.sbx-dashboard .sbx-inbox-kpi--warn .sbx-inbox-kpi-val   { color: var(--sbx-state-warn-color); }
+.sbx-dashboard .sbx-inbox-kpi--ok .sbx-inbox-kpi-val     { color: var(--sbx-state-ok-color); }
+.sbx-dashboard .sbx-inbox-kpi--accent .sbx-inbox-kpi-val { color: var(--sbx-accent-text); }
+.sbx-dashboard .sbx-inbox-kpi--muted .sbx-inbox-kpi-val  { color: var(--sbx-muted); }
 
 
 /* --- components/85_wiki-panel.css --- */
