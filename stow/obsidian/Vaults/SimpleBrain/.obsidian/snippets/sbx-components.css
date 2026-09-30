@@ -2478,7 +2478,7 @@
 
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
-   SBX — Project Cards (H05_ProyectosActivos.dvjs)  [append]
+   SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
    ========================================================= */
 
 .sbx-dashboard .sbx-pcards-grid {
@@ -3857,7 +3857,7 @@
 /* --- components/65_reviews-insights-pulse.css --- */
 /* =========================================================
    64) Reviews + Insights Pulse — 4-column KPI row modifier
-   Used by R00_PulsoSemanal and I28_PulsoInsights (wide cards).
+   Used by R00_PulsoSemanal and I28_PulsoInsights (both retired 2026-09-30).
    ========================================================= */
 
 .sbx-dashboard .sbx-hs-kpi-row--4 {
@@ -5690,7 +5690,7 @@
 
 /* --- components/86_next-item.css --- */
 /* ======================================================================
-   sbx-next-item inner structure (H03_EjecucionNext / I06_Top3Review)
+   sbx-next-item inner structure (H03_EjecucionNext; I06_Top3Review retirado 2026-09-30)
    ====================================================================== */
 
 /* sbx-next-list: override grid → flex (matches actual usage) */
@@ -5896,7 +5896,7 @@
 }
 
 /* ======================================================================
-   I06_Top3Review inner structure
+   I06_Top3Review inner structure (component retired 2026-09-30)
    ====================================================================== */
 .sbx-dashboard .sbx-i06-empty {
   padding: 20px;
