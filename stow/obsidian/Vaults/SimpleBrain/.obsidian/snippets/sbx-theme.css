@@ -25,6 +25,9 @@
      No se definen aquí. Son el contrato del widget: JS los escribe,
      CSS los consume. Documentados en la sección al final del fichero.
 
+   Texto pequeño de acento (etiquetas, enlaces de prosa): --sbx-accent-text
+   (≥4.5:1 en ambos temas; el acento puro queda para bordes y rellenos).
+
    TIER 3 — Layout runtime (inyectados por JS para layout responsivo)
      No se definen aquí. Internos a cada widget de layout.
 
@@ -206,6 +209,7 @@
 	--sbx-tab-active-bg:     var(--sbx-accent-bg-strong);
 	--sbx-tab-active-border: var(--sbx-accent-border-strong);
 	--sbx-tab-active-color:  var(--interactive-accent-hover);
+	--sbx-accent-text:       var(--interactive-accent-hover);
 }
 
 /* ── Dark ────────────────────────────────────────────────────────────── */
@@ -245,6 +249,7 @@
 	--sbx-tab-active-bg:     var(--sbx-accent-bg-strong);
 	--sbx-tab-active-border: var(--sbx-accent-border-strong);
 	--sbx-tab-active-color:  var(--text-accent);
+	--sbx-accent-text:       var(--text-accent);
 }
 
 /* ======================================================================
@@ -1564,6 +1569,22 @@
   line-height: 1.4;
 }
 
+/* Captura siempre visible en la barra */
+.sbx-dashboard .sbx-tabsbar-right { align-items: center; }
+.sbx-dashboard .sbx-tabsbar-keys { display: inline-flex; gap: 8px; }
+.sbx-dashboard .sbx-tab-capture {
+  min-height: 40px;
+  padding: 9px 14px;
+  border: 1px solid var(--sbx-accent-border-strong);
+  border-radius: 0;
+  background: var(--sbx-accent-bg-strong);
+  color: var(--sbx-accent-text);
+  font-weight: 700;
+  font-size: var(--sbx-text-sm);
+  cursor: pointer;
+}
+.sbx-dashboard .sbx-tab-capture:hover { background: var(--sbx-accent-bg); }
+
 /* Móvil: una fila con scroll horizontal; los atajos de teclado no aplican al tacto */
 @media (max-width: 720px) {
   .sbx-dashboard .sbx-tabsbar {
@@ -1581,7 +1602,13 @@
     white-space: nowrap;
     min-height: 44px;
   }
-  .sbx-dashboard .sbx-tabsbar-right {
+  .sbx-dashboard .sbx-tab-capture { min-height: 44px; width: 100%; }
+  /* Pista de scroll: el borde derecho se difumina mientras haya más pestañas */
+  .sbx-dashboard .sbx-tabsbar-left {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+  .sbx-dashboard .sbx-tabsbar-keys {
     display: none;
   }
 }
@@ -2534,15 +2561,15 @@
 	min-width: 5.5em;
 	margin-right: 8px;
 	font-family: var(--sbx-font-ui);
-	font-size: var(--sbx-text-2xs);
+	font-size: var(--sbx-text-xxs);
 	font-weight: 700;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--sbx-accent-color);
+	color: var(--sbx-accent-text);
 }
 
 .sbx-dashboard .callout[data-callout="sbx-card"] .callout-content :is(p, li) a {
-	color: var(--text-accent);
+	color: var(--sbx-accent-text);
 }
 
 /* Código en línea dentro de prosa: discreto, no un botón */
@@ -8004,9 +8031,6 @@
 .theme-dark  .sbx-dashboard .callout[data-callout="sbx-card"][data-callout-metadata*="now-due"]     { background: var(--sbx-state-warn-bg) !important; }
 
 
-
-/* A11y — activo en tema claro: el border-color !important de .sbx-tab no debe anular el subrayado */
-.theme-light .sbx-dashboard .sbx-tab.is-active,
 
 /* A11y — foco visible en cualquier control del dashboard */
 .sbx-dashboard :is(a, button, input, select, textarea, summary):focus-visible {
