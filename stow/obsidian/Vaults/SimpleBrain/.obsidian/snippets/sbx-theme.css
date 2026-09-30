@@ -7242,12 +7242,13 @@
 
 /* --- components/89_library.css --- */
 /* 89_library.css — módulos de Biblioteca (H20–H23). Sustituye a los estilos en línea.
-   Toda regla va bajo .sbx-hs-wrap para ganar en especificidad al tema. */
+   Toda regla va bajo .sbx-hs-wrap: el prefijo da (0,2,0) a una clase simple. Varias reglas solo
+   EMPATAN con la del tema `.sbx-dashboard .sbx-row-action-btn` (80_sbx-mod-util.css, (0,2,0)) y ganan
+   porque este archivo carga después de 80/88 (tools/build-css.mjs concatena en orden alfabético):
+   renombrarlo para que ordene antes de 80 las rompería. */
 
 /* ── Estados ── */
 .sbx-hs-wrap .sbx-lib-hidden { display: none; }
-.sbx-hs-wrap .sbx-lib-card.is-done { opacity: 0.5; }
-.sbx-hs-wrap .sbx-lib-card.is-ignored { opacity: 0.2; }
 
 /* ── Tarjeta de libro (H20, H21): acento por variable ── */
 .sbx-hs-wrap .sbx-lib-card {
@@ -7259,6 +7260,8 @@
   background: var(--background-secondary);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
+.sbx-hs-wrap .sbx-lib-card.is-done { opacity: 0.5; }
+.sbx-hs-wrap .sbx-lib-card.is-ignored { opacity: 0.2; }
 
 /* ── Fila título + insignias (H20, H21) ── */
 .sbx-hs-wrap .sbx-lib-row {
@@ -7291,7 +7294,7 @@
   line-height: 1.6;
 }
 
-/* ── Texto secundario (H20, H21, H22, H23) ── */
+/* ── Texto secundario: desc (H20, H21); author y faint (H20) ── */
 .sbx-hs-wrap .sbx-lib-desc {
   font-size: 0.80em;
   line-height: 1.5;
@@ -7337,7 +7340,7 @@
 .sbx-hs-wrap .sbx-lib-action:hover { opacity: 0.7; }
 
 /* ── Variantes de botón (H20, H21) ── */
-.sbx-hs-wrap .sbx-lib-action--primary { font-weight: 600; opacity: 1; }
+.sbx-hs-wrap .sbx-lib-action--primary { font-weight: 600; }
 .sbx-hs-wrap .sbx-lib-action--warn { color: var(--color-orange, #f97316); }
 .sbx-hs-wrap .sbx-lib-action--muted { opacity: 0.6; }
 /* El tema pone color en :hover (0,3,0) y opacity 0.4 en :disabled (0,3,0); antes lo inline ganaba. */
@@ -7505,7 +7508,7 @@
   font-style: italic;
   margin-bottom: 5px;
 }
-.sbx-hs-wrap .sbx-lib-h22-why.is-accent { font-style: italic; color: var(--color-accent); }
+.sbx-hs-wrap .sbx-lib-h22-why.is-accent { color: var(--color-accent); }
 .sbx-hs-wrap .sbx-lib-h22-row4 {
   display: flex;
   align-items: center;
