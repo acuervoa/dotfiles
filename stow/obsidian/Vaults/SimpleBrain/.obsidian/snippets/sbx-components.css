@@ -2874,6 +2874,41 @@
 .sbx-fin .sbx-fin-link { font-size: var(--sbx-text-xxs); color: var(--sbx-accent-text); text-decoration: none; }
 
 
+/* --- components/48_state-utils.css --- */
+/* 48_state-utils.css — estados de fila que antes se escribían con style.* en los módulos JS. */
+
+/* "Ver N más": el módulo marca las filas extra; display:none debe ganar a cualquier display de lista */
+.sbx-dashboard .sbx-is-collapsed { display: none !important; }
+
+/* Fila ya atendida (reprogramada, promovida) o eliminada */
+.sbx-dashboard .sbx-is-done { opacity: 0.45; }
+.sbx-dashboard .sbx-is-gone { opacity: 0.3; }
+
+
+/* --- components/49_mini-bars-covers.css --- */
+/* 49_mini-bars-covers.css — barras de proporción (R42) y libros del proyecto (P15).
+   Sustituye a los estilos en línea. El ancho de barra llega por --sbx-pct (dato, no estilo). */
+
+/* ── R42: barras por dominio / año ── */
+.sbx-reading .sbx-bar { flex: 1; height: 4px; margin: 0 8px; background: var(--sbx-border); }
+.sbx-reading .sbx-bar--lg { height: 6px; }
+.sbx-reading .sbx-bar-fill { height: 100%; width: calc(var(--sbx-pct, 0) * 1%); background: var(--sbx-accent-text); }
+.sbx-reading .sbx-cover { flex-shrink: 0; align-self: center; width: 26px; height: 37px; margin-right: 4px; object-fit: cover; }
+
+/* ── P15: libros del proyecto ── */
+.sbx-pbooks .sbx-pbook {
+  margin-bottom: 1px;
+  padding: 5px 8px 4px 10px;
+  border-left: 2px solid var(--sbx-accent-text);
+  border-bottom: 1px solid var(--sbx-border);
+}
+.sbx-pbooks .sbx-pbook.is-alt { background: var(--background-secondary); }
+.sbx-pbooks .sbx-pbook-top { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+.sbx-pbooks .sbx-pbook-icon { flex-shrink: 0; font-size: var(--sbx-text-sm); }
+.sbx-pbooks .sbx-pbook-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sbx-text-sm); }
+.sbx-pbooks .sbx-pbook-desc { padding: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sbx-text-xxs); font-style: italic; color: var(--text-muted); }
+
+
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
    SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
