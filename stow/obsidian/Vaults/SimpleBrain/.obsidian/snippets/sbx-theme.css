@@ -1563,18 +1563,19 @@
 /* Captura siempre visible en la barra */
 .sbx-dashboard .sbx-tabsbar-right { align-items: center; }
 .sbx-dashboard .sbx-tabsbar-keys { display: inline-flex; gap: 8px; }
+/* Acción secundaria: contorno de acento sin relleno, para no competir con la pestaña activa */
 .sbx-dashboard .sbx-tab-capture {
-  min-height: 40px;
-  padding: 9px 14px;
-  border: 1px solid var(--sbx-accent-border-strong);
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--sbx-accent-border);
   border-radius: 0;
-  background: var(--sbx-accent-bg-strong);
+  background: transparent;
   color: var(--sbx-accent-text);
-  font-weight: 700;
-  font-size: var(--sbx-text-sm);
+  font-weight: 500;
+  font-size: var(--sbx-text-xs);
   cursor: pointer;
 }
-.sbx-dashboard .sbx-tab-capture:hover { background: var(--sbx-accent-bg); }
+.sbx-dashboard .sbx-tab-capture:hover { background: var(--sbx-accent-bg); border-color: var(--sbx-accent-border-strong); }
 
 /* Fade de la tira móvil: se apaga al llegar al final del scroll (donde hay API; si no, queda fijo) */
 @property --sbx-tabs-fade {
