@@ -2631,6 +2631,142 @@
 .sbx-dashboard .task-list-item.is-checked a { color: inherit; }
 
 
+/* --- components/45_bio-hoy.css --- */
+/* 45_bio-hoy.css — módulo Biorritmos (B01). Sustituye a los estilos en línea.
+   Todo va bajo .sbx-bio (clase que añade el módulo a su raíz). Plano y cuadrado, como el resto de SBX. */
+
+.sbx-bio {
+  --sbx-bio-phys:  var(--color-orange);
+  --sbx-bio-emo:   var(--color-green);
+  --sbx-bio-intel: var(--color-red);
+}
+.sbx-bio .sbx-bio--phys  { --sbx-bio-c: var(--sbx-bio-phys); }
+.sbx-bio .sbx-bio--emo   { --sbx-bio-c: var(--sbx-bio-emo); }
+.sbx-bio .sbx-bio--intel { --sbx-bio-c: var(--sbx-bio-intel); }
+.sbx-bio .sbx-bio--best  { --sbx-bio-c: var(--sbx-bio-emo); }
+.sbx-bio .sbx-bio--worst { --sbx-bio-c: var(--sbx-bio-intel); }
+
+/* ── Estados de carga / error ── */
+.sbx-bio .sbx-bio-loading,
+.sbx-bio .sbx-bio-empty { font-size: var(--sbx-text-xs); color: var(--text-faint); }
+.sbx-bio .sbx-bio-empty { margin-top: 8px; }
+.sbx-bio .sbx-bio-error { font-size: var(--sbx-text-xs); color: var(--sbx-state-danger-color); }
+
+/* ── Panel del gráfico ── */
+.sbx-bio .sbx-bio-shell {
+  position: relative;
+  margin-top: var(--sbx-pad);
+  padding: var(--sbx-pad-lg);
+  background: var(--background-secondary);
+  border: 1px solid var(--sbx-border);
+}
+.sbx-bio .sbx-bio-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.sbx-bio .sbx-bio-head-title { font-size: var(--sbx-text-sm); font-weight: 800; color: var(--text-normal); }
+.sbx-bio .sbx-bio-head-hint  { font-size: var(--sbx-text-xxs); color: var(--text-muted); }
+
+.sbx-bio .sbx-bio-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px var(--sbx-gap);
+  margin-bottom: var(--sbx-gap);
+  font-size: var(--sbx-text-xs);
+  color: var(--text-muted);
+}
+.sbx-bio .sbx-bio-legend-item { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.sbx-bio .sbx-bio-dot { width: 8px; height: 8px; background: var(--sbx-bio-c); }
+
+.sbx-bio .sbx-bio-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: var(--sbx-pad);
+  align-items: stretch;
+}
+.sbx-bio .sbx-bio-chartwrap { min-width: 0; }
+.sbx-bio .sbx-bio-chart { width: 100%; max-width: 100%; height: 248px; display: block; overflow: visible; }
+
+/* ── Tooltip: posición por variables, visibilidad por clase ── */
+.sbx-bio .sbx-bio-tip {
+  position: absolute;
+  left: var(--sbx-bio-x, 0);
+  top: var(--sbx-bio-y, 0);
+  z-index: 2;
+  min-width: 170px;
+  padding: 9px 10px;
+  background: var(--background-primary);
+  border: 1px solid var(--sbx-accent-border);
+  color: var(--text-normal);
+  font-size: var(--sbx-text-xxs);
+  line-height: 1.45;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -110%);
+  transition: opacity 80ms;
+}
+.sbx-bio .sbx-bio-tip.is-visible { opacity: 1; }
+.sbx-bio .sbx-bio-tip-date { display: block; margin-bottom: 4px; }
+.sbx-bio .sbx-bio-tip-total { margin-top: 4px; }
+
+/* ── Mejor / peor futuro ── */
+.sbx-bio .sbx-bio-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
+.sbx-bio .sbx-bio-col  { display: grid; grid-template-rows: repeat(1, minmax(0, 1fr)); gap: var(--sbx-gap); }
+.sbx-bio .sbx-bio-box {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  min-height: 100px;
+  padding: 13px;
+  background: color-mix(in srgb, var(--sbx-bio-c) 13%, var(--background-primary));
+  border: 1px solid var(--sbx-border);
+}
+.sbx-bio .sbx-bio-box-label { font-size: var(--sbx-text-xxs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--sbx-bio-c); }
+.sbx-bio .sbx-bio-box-date  { font-size: var(--sbx-text-sm); font-weight: 800; color: var(--sbx-bio-c); }
+.sbx-bio .sbx-bio-box-when  { font-size: var(--sbx-text-xxs); color: var(--text-muted); }
+.sbx-bio .sbx-bio-box-val   { font-size: var(--sbx-text-base); font-weight: 900; color: var(--sbx-bio-c); }
+
+/* ── Tarjetas de hoy ── */
+.sbx-bio .sbx-bio-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.sbx-bio .sbx-bio-card {
+  padding: 12px;
+  background: var(--background-secondary);
+  border: 1px solid var(--sbx-border);
+}
+.sbx-bio .sbx-bio-card-label { margin-bottom: 4px; font-size: var(--sbx-text-xxs); font-weight: 700; color: var(--sbx-bio-c); }
+.sbx-bio .sbx-bio-card-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--sbx-bio-c); }
+.sbx-bio .sbx-bio-card-val { font-size: var(--sbx-text-base); }
+.sbx-bio .sbx-bio-delta { font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+.sbx-bio .sbx-bio-delta.is-up   { color: var(--sbx-bio-emo); }
+.sbx-bio .sbx-bio-delta.is-down { color: var(--sbx-bio-intel); }
+.sbx-bio .sbx-bio-card-foot { margin-top: 2px; font-size: var(--sbx-text-2xs); color: var(--text-faint); }
+
+.sbx-bio .sbx-bio-meta { display: flex; flex-wrap: wrap; gap: 10px var(--sbx-gap); margin-top: 6px; font-size: var(--sbx-text-2xs); color: var(--text-faint); }
+
+/* ── Total del foco ── */
+.sbx-bio .sbx-bio-total {
+  margin-top: var(--sbx-gap);
+  padding: var(--sbx-pad);
+  background: var(--background-secondary);
+  border: 1px solid var(--sbx-border);
+}
+.sbx-bio .sbx-bio-total-label { margin-bottom: 4px; font-size: var(--sbx-text-xxs); font-weight: 800; color: var(--text-muted); }
+.sbx-bio .sbx-bio-total-val   { font-size: var(--sbx-text-lg); font-weight: 900; color: var(--text-normal); }
+.sbx-bio .sbx-bio-total-note  { margin-top: 4px; font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+
+/* ── Móvil ── */
+@media (max-width: 980px) {
+  .sbx-bio .sbx-bio-body { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .sbx-bio .sbx-bio-stats { grid-template-columns: minmax(0, 1fr); }
+}
+
+
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
    SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
