@@ -195,6 +195,10 @@
 	--sbx-tab-active-border: var(--sbx-accent-border-strong);
 	--sbx-tab-active-color:  var(--interactive-accent-hover);
 	--sbx-accent-text:       var(--interactive-accent-hover);
+
+	/* texto de estado ≥4.5:1 sobre el fondo claro */
+	--sbx-state-ok-color:   color-mix(in srgb, rgb(var(--sbx-ok))   60%, var(--text-normal));
+	--sbx-state-warn-color: color-mix(in srgb, rgb(var(--sbx-warn)) 58%, var(--text-normal));
 }
 
 /* ── Dark ────────────────────────────────────────────────────────────── */
@@ -235,6 +239,9 @@
 	--sbx-tab-active-border: var(--sbx-accent-border-strong);
 	--sbx-tab-active-color:  var(--text-accent);
 	--sbx-accent-text:       var(--text-accent);
+
+	/* texto de estado ≥4.5:1 sobre el fondo oscuro */
+	--sbx-state-danger-color: color-mix(in srgb, rgb(var(--sbx-danger)) 70%, var(--text-normal));
 }
 
 /* ======================================================================
