@@ -1561,29 +1561,41 @@
 }
 .sbx-dashboard .sbx-tab-capture:hover { background: var(--sbx-accent-bg); }
 
-/* Móvil: una fila con scroll horizontal; los atajos de teclado no aplican al tacto */
+/* Fade de la tira móvil: se apaga al llegar al final del scroll (donde hay API; si no, queda fijo) */
+@property --sbx-tabs-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 28px;
+}
+@keyframes sbx-tabs-fade-out {
+  to { --sbx-tabs-fade: 0px; }
+}
+
+/* Móvil: una sola fila (tira con scroll + Capturar); los atajos de teclado no aplican al tacto */
 @media (max-width: 720px) {
   .sbx-dashboard .sbx-tabsbar {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px;
+    gap: 8px;
   }
   .sbx-dashboard .sbx-tabsbar-left {
+    flex: 1 1 auto;
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
-    padding-bottom: 2px;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--sbx-tabs-fade)), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--sbx-tabs-fade)), transparent);
+    animation: sbx-tabs-fade-out linear both;
+    animation-timeline: scroll(self inline);
   }
   .sbx-dashboard .sbx-tab {
     flex: 0 0 auto;
     white-space: nowrap;
     min-height: 44px;
   }
-  .sbx-dashboard .sbx-tab-capture { min-height: 44px; width: 100%; }
-  /* Pista de scroll: el borde derecho se difumina mientras haya más pestañas */
-  .sbx-dashboard .sbx-tabsbar-left {
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-  }
+  .sbx-dashboard .sbx-tabsbar-right { flex: 0 0 auto; }
+  .sbx-dashboard .sbx-tab-capture { min-height: 44px; white-space: nowrap; }
   .sbx-dashboard .sbx-tabsbar-keys {
     display: none;
   }
