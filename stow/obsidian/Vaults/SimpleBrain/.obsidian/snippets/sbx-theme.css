@@ -2782,6 +2782,74 @@
 }
 
 
+/* --- components/46_email-stats.css --- */
+/* 46_email-stats.css — módulo Email (I01). Sustituye a los estilos en línea.
+   Todo va bajo .sbx-email (clase que añade el módulo a su raíz). */
+
+.sbx-email .sbx-email-stats,
+.sbx-email .sbx-email-runner {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--sbx-border);
+}
+.sbx-email .sbx-email-stats { display: flex; gap: var(--sbx-pad); }
+
+.sbx-email .sbx-email-badge { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.sbx-email .sbx-email-badge-val { font-size: var(--sbx-text-lg); font-weight: 700; color: var(--text-normal); }
+.sbx-email .sbx-email-badge-val.is-accent { color: var(--sbx-accent-text); }
+.sbx-email .sbx-email-badge-label { font-size: var(--sbx-text-2xs); color: var(--text-faint); }
+.sbx-email .sbx-email-spacer { flex: 1; }
+.sbx-email .sbx-email-stamp { align-self: center; font-size: var(--sbx-text-2xs); color: var(--text-faint); }
+
+.sbx-email .sbx-email-error { font-size: var(--sbx-text-xs); color: var(--sbx-state-danger-color); }
+.sbx-email .sbx-email-ok    { font-size: var(--sbx-text-sm); color: var(--sbx-state-ok-color); flex: 1; }
+.sbx-email .sbx-email-empty { padding: 4px 0; font-size: var(--sbx-text-xs); color: var(--sbx-state-ok-color); }
+.sbx-email .sbx-email-note  { font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+
+/* Botones compactos de fila (el tamaño vive aquí, no en línea) */
+.sbx-email button.sbx-row-action-btn { font-size: var(--sbx-text-xxs); padding: 2px 7px; flex-shrink: 0; width: auto; }
+.sbx-email button.sbx-row-action-btn.is-strong { font-weight: 600; }
+.sbx-email button.sbx-row-action-btn.is-center { align-self: center; }
+
+/* Mensajes */
+.sbx-email .sbx-email-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--sbx-border);
+}
+.sbx-email .sbx-email-msg.is-done { opacity: 0.4; }
+.sbx-email .sbx-email-msg-body { flex: 1; min-width: 0; }
+.sbx-email .sbx-email-msg-subj { display: flex; align-items: center; gap: 4px; }
+.sbx-email .sbx-email-msg-meta { display: flex; gap: 6px; margin-top: 2px; }
+.sbx-email .sbx-email-label {
+  flex-shrink: 0;
+  max-width: 80px;
+  padding: 1px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--sbx-text-2xs);
+  background: var(--tag-background);
+  color: var(--tag-color);
+}
+.sbx-email .sbx-email-subject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sbx-text-sm); font-weight: 500; }
+.sbx-email .sbx-email-from { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sbx-text-xxs); color: var(--sbx-accent-text); }
+.sbx-email .sbx-email-date { flex-shrink: 0; font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+
+/* Runner */
+.sbx-email .sbx-email-run { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.sbx-email .sbx-email-run-text { flex: 1; font-size: var(--sbx-text-sm); color: var(--text-muted); }
+.sbx-email .sbx-email-spin { display: inline-block; font-size: var(--sbx-text-xl); color: var(--sbx-accent-text); animation: sbx-spin 1s linear infinite; }
+.sbx-email .sbx-email-done { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+.sbx-email .sbx-email-line { display: flex; align-items: center; gap: 8px; }
+.sbx-email .sbx-email-line.is-start { padding: 4px 0; justify-content: flex-start; }
+.sbx-email .sbx-email-actions { display: flex; gap: 8px; }
+
+@keyframes sbx-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
    SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
