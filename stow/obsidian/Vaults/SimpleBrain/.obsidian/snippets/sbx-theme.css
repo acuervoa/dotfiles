@@ -2850,6 +2850,45 @@
 @keyframes sbx-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 
+/* --- components/47_finanzas.css --- */
+/* 47_finanzas.css — módulo Finanzas (F01). Sustituye a los estilos en línea.
+   Todo va bajo .sbx-fin (clase que añade el módulo a su raíz). */
+
+.sbx-fin .sbx-fin-loading { padding: 4px 0; font-size: var(--sbx-text-xs); color: var(--text-faint); }
+.sbx-fin .sbx-fin-error   { font-size: var(--sbx-text-xs); color: var(--sbx-state-danger-color); }
+.sbx-fin .sbx-fin-status  { font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+
+.sbx-fin .sbx-fin-block { margin-top: 4px; }
+.sbx-fin .sbx-fin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sbx-border);
+}
+.sbx-fin .sbx-fin-row.is-last { border-bottom: 0; }
+.sbx-fin .sbx-fin-label { min-width: 0; line-height: 1.3; }
+.sbx-fin .sbx-fin-label-main { display: block; font-size: var(--sbx-text-sm); color: var(--text-muted); }
+.sbx-fin .sbx-fin-hint { display: block; margin-top: 2px; font-size: var(--sbx-text-xxs); color: var(--text-faint); }
+.sbx-fin .sbx-fin-val { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; font-size: var(--sbx-text-base); color: var(--sbx-state-ok-color); }
+.sbx-fin .sbx-fin-val.is-neg  { color: var(--sbx-state-danger-color); }
+.sbx-fin .sbx-fin-val.is-warn { color: var(--sbx-state-warn-color); }
+
+.sbx-fin .sbx-fin-divider { height: 1px; margin: 8px 0 6px; background: var(--sbx-border); }
+
+.sbx-fin .sbx-fin-month { padding: 8px 10px; border: 1px solid var(--sbx-border); background: var(--background-secondary); }
+.sbx-fin .sbx-fin-month-title { font-size: var(--sbx-text-xxs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+.sbx-fin .sbx-fin-month-sum { margin-top: 4px; font-size: var(--sbx-text-sm); color: var(--text-normal); }
+.sbx-fin .sbx-fin-risk { margin-top: 3px; font-size: var(--sbx-text-xs); font-weight: 600; color: var(--sbx-state-ok-color); }
+.sbx-fin .sbx-fin-risk.is-medium { color: var(--sbx-state-warn-color); }
+.sbx-fin .sbx-fin-risk.is-high   { color: var(--sbx-state-danger-color); }
+.sbx-fin .sbx-fin-conf { display: block; margin-top: 3px; color: var(--text-faint); }
+
+.sbx-fin .sbx-fin-links { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; text-align: right; }
+.sbx-fin .sbx-fin-link { font-size: var(--sbx-text-xxs); color: var(--sbx-accent-text); text-decoration: none; }
+
+
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
    SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
