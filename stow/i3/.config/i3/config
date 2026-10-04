@@ -254,6 +254,7 @@ for_window [class="Alacritty"] floating disable
 for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] floating enable
 for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] resize set 1400 900
 for_window [class="^(ChatGPT-App|chatgpt-webapp)$"] move position center
+#for_window [class="^md\.obsidian\.Obsidian$" title="^Preferencias - .* - Obsidian [0-9.]+$"] floating enable, resize set 1200 850, move position center
 
 # PERS-GUI-07E — Polkit graphical authentication agent
 exec --no-startup-id sh -c 'pgrep -u "$(id -u)" -f '"'"'^/usr/bin/[l]xqt-policykit-agent([[:space:]]|$)'"'"' >/dev/null 2>&1 || exec /usr/bin/lxqt-policykit-agent'
