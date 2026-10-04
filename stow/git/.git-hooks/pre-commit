@@ -16,8 +16,13 @@ files="$(git diff --cached --name-only --diff-filter=ACM |
 [ -z "$files" ] && exit 0
 
 fail=0
+repo_root="$(git rev-parse --show-toplevel)"
 while IFS= read -r f; do
-  if git show ":$f" | grep -nEI "$debug_pattern" -I >/dev/null; then
+  # Vendored third-party skills in ~/.agents legitimately contain console.log.
+  # Only the debug scan is skipped, and only there; the secret scan still runs.
+  skip_debug=0
+  case "$f" in skills/*) [ "$repo_root" = "$HOME/.agents" ] && skip_debug=1 ;; esac
+  if [ "$skip_debug" -eq 0 ] && git show ":$f" | grep -nEI "$debug_pattern" -I >/dev/null; then
     echo "❌ Bloqueado: '$f' contiene trazas/debug." >&2
     git show ":$f" | grep -nEI "$debug_pattern" -I >&2 || true
     fail=1
