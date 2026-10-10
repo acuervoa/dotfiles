@@ -6057,6 +6057,11 @@
   font-variant-numeric: tabular-nums;
 }
 .sbx-dashboard .sbx-k02-list li .sbx-btn--inline { margin-left: auto; }
+.sbx-dashboard .sbx-k02-summary {
+  flex: 0 0 100%;
+  font-size: var(--sbx-text-xs);
+  color: var(--sbx-muted);
+}
 
 /* INBOX — lista de triage, estado y deshacer (antes inline en INBOX.md) */
 .sbx-dashboard .sbx-inbox-status {
