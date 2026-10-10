@@ -2,7 +2,7 @@
 
 Catálogo generado desde `stow/bash/.bash_grammar`.
 
-Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
+Riesgo (de la invocación por defecto; un flag como --apply puede cambiarlo): ✅ seguro · ⚠ confirmación · 🔴 mutación.
 
 ## Micro-atajos
 
@@ -110,16 +110,16 @@ Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 
 | Comando | Descripción | Riesgo | Ejemplo |
 | --- | --- | --- | --- |
-| `af` | Iniciar AI Flow con una tarea | ✅ seguro | `af "revisar cambios"` |
+| `af` | Iniciar AI Flow con una tarea | 🔴 mutación | `af "revisar cambios"` |
 | `afa` | Aplicar una destilación AI Flow | 🔴 mutación | `afa` |
 | `afapplylast` | Aplicar el último draft de destilación | 🔴 mutación | `afapplylast` |
-| `afc` | Ejecutar un ciclo AI Flow | ✅ seguro | `afc` |
+| `afc` | Ejecutar un ciclo AI Flow | 🔴 mutación | `afc` |
 | `afd` | Generar una destilación AI Flow | 🔴 mutación | `afd` |
 | `afdb` | Procesar sesiones históricas pendientes | 🔴 mutación | `afdb --list` |
 | `afdp` | Ejecutar pipeline de destilación | 🔴 mutación | `afdp --dry-run` |
-| `afl` | Iniciar AI Flow y lanzar agente | ✅ seguro | `afl "revisar cambios"` |
+| `afl` | Iniciar AI Flow y lanzar agente | 🔴 mutación | `afl "revisar cambios"` |
 | `aflastdraft` | Localizar el último draft de destilación | ✅ seguro | `aflastdraft` |
-| `afs` | Iniciar AI Flow | ✅ seguro | ` afs` |
+| `afs` | Iniciar AI Flow | 🔴 mutación | ` afs` |
 | `afx` | Ejecutar ciclo con cierre y siguiente paso | 🔴 mutación | `afx "tarea"` |
 | `ai` | Iniciar o cerrar una sesión AI | 🔴 mutación | `ai` |
 
@@ -131,7 +131,7 @@ Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.
 | `sbclose` | Cerrar proyecto con distill, dry-run y archivado no-clobber | 🔴 mutación | `sbclose "proyecto"` |
 | `sbe` | Cerrar por UUID/alias; --from solo legacy; tareas repetibles | 🔴 mutación | `sbe --session s-a1b2c3d4 --done-task A` |
 | `sbl` | Iniciar sesión SimpleBrain y lanzar agente | 🔴 mutación | `sbl "tarea"` |
-| `sbo` | Consultar sesiones active/legacy/orphaned; closed no bloquea | ✅ seguro | `sbo` |
+| `sbo` | Consultar sesiones active/legacy/orphaned (preview); con --apply cierra las candidatas | ✅ seguro | `sbo` |
 | `sbs` | Iniciar sesión; genera UUID4 + alias y registra estado/artefactos | 🔴 mutación | `sbs "tarea"` |
 | `sbsb` | Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos | 🔴 mutación | `sbsb` |
 

@@ -1,12 +1,12 @@
 name	group	risk	micro	description	example
 ..	navigation	safe	no	Subir un nivel	..
 ...	navigation	safe	no	Subir dos niveles	...
-afs	ai	safe	no	Iniciar AI Flow	 afs
-afc	ai	safe	no	Ejecutar un ciclo AI Flow	afc
+afs	ai	mutating	no	Iniciar AI Flow	 afs
+afc	ai	mutating	no	Ejecutar un ciclo AI Flow	afc
 afd	ai	mutating	no	Generar una destilación AI Flow	afd
 afa	ai	mutating	no	Aplicar una destilación AI Flow	afa
-af	ai	safe	no	Iniciar AI Flow con una tarea	af "revisar cambios"
-afl	ai	safe	no	Iniciar AI Flow y lanzar agente	afl "revisar cambios"
+af	ai	mutating	no	Iniciar AI Flow con una tarea	af "revisar cambios"
+afl	ai	mutating	no	Iniciar AI Flow y lanzar agente	afl "revisar cambios"
 afx	ai	mutating	no	Ejecutar ciclo con cierre y siguiente paso	afx "tarea"
 aflastdraft	ai	safe	no	Localizar el último draft de destilación	aflastdraft
 afapplylast	ai	mutating	no	Aplicar el último draft de destilación	afapplylast
@@ -15,7 +15,7 @@ afdb	ai	mutating	no	Procesar sesiones históricas pendientes	afdb --list
 ai	ai	mutating	no	Iniciar o cerrar una sesión AI	ai
 ai-session-runbook	simplebrain	safe	no	Abrir el runbook operativo completo de sesiones AI	ai-session-runbook
 sbclose	simplebrain	mutating	no	Cerrar proyecto con distill, dry-run y archivado no-clobber	sbclose "proyecto"
-sbo	simplebrain	safe	no	Consultar sesiones active/legacy/orphaned; closed no bloquea	sbo
+sbo	simplebrain	safe	no	Consultar sesiones active/legacy/orphaned (preview); con --apply cierra las candidatas	sbo
 sbs	simplebrain	mutating	no	Iniciar sesión; genera UUID4 + alias y registra estado/artefactos	sbs "tarea"
 sbsb	simplebrain	mutating	no	Iniciar sesión SimpleBrain instrumentada y registrar estado/artefactos	sbsb
 sbl	simplebrain	mutating	no	Iniciar sesión SimpleBrain y lanzar agente	sbl "tarea"

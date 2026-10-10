@@ -29,6 +29,20 @@ awk -F '\t' 'NR == 1 {next} $1 !~ /^#/ {
 } END {exit bad}' "$catalog" || fail "metadatos inválidos en el catálogo"
 pass "metadatos del catálogo válidos"
 
+# El riesgo describe la invocación por defecto. Estos comandos escriben estado
+# (brief, sesión, nota de proyecto o cierre) nada más ejecutarse sin flags.
+for name in afs af afl afc ai sbs sbsb sbl sbe sbclose; do
+  risk="$(awk -F '\t' -v n="$name" '$1 == n {print $3}' "$catalog")"
+  [ "$risk" = mutating ] || fail "$name escribe estado en su invocación por defecto y debe ser mutating (es: ${risk:-ausente})"
+done
+# sbo es un preview por defecto, pero --apply muta: la descripción debe avisarlo.
+sbo_description="$(awk -F '\t' '$1 == "sbo" {print $5}' "$catalog")"
+case "$sbo_description" in
+*--apply*) ;;
+*) fail "la descripción de sbo debe avisar de que --apply cierra sesiones" ;;
+esac
+pass "riesgo coherente con la invocación por defecto"
+
 defined="$(
   sed -nE 's/^[[:space:]]*alias[[:space:]]+([a-zA-Z0-9_.-]+)=.*/\1/p' \
     "$repo_root/stow/bash/.bash_aliases" "$repo_root/stow/bash/.bash_lib/"*.sh

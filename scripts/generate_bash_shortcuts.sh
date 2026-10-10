@@ -47,7 +47,7 @@ render_group() {
 {
   printf '# Bash shortcuts · gramática operativa\n\n'
   printf 'Catálogo generado desde `stow/bash/.bash_grammar`.\n\n'
-  printf 'Riesgo: ✅ seguro · ⚠ confirmación · 🔴 mutación.\n\n'
+  printf 'Riesgo (de la invocación por defecto; un flag como --apply puede cambiarlo): ✅ seguro · ⚠ confirmación · 🔴 mutación.\n\n'
 
   printf '## Micro-atajos\n\n'
   printf '| Tecla | Acción | Grupo |\n| --- | --- | --- |\n'
