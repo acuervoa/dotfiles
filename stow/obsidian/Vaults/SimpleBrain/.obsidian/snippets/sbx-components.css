@@ -1348,6 +1348,11 @@
   margin-block: 0;
 }
 
+/* Una fila de KPI justo bajo el título de la tarjeta: separada, no pegada */
+.sbx-dashboard .callout[data-callout="sbx-card"] .callout-content .sbx-hs-kpi-row:first-child {
+  margin-top: var(--sbx-gap, 14px);
+}
+
 
 /* --- components/10_dashboard-shell.css --- */
 /* =========================================================
@@ -2043,12 +2048,21 @@
 
 /* Wrap agresivo en celdas para que “lo largo” no fuerce columnas */
 .sbx-dashboard .callout[data-callout="sbx-card"] :is(td, th) {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .sbx-dashboard .callout[data-callout="sbx-card"] :is(td a, th a) {
   overflow-wrap: anywhere;
+}
+
+/* Cabecera de tabla en tarjetas: una sola superficie y la tipografía de las etiquetas del panel */
+.sbx-dashboard .callout[data-callout="sbx-card"] :is(table, .table-view-table) thead :is(th, td) {
+  background: var(--sbx-accent-bg-strong);
+  font-size: var(--sbx-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 
