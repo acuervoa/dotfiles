@@ -1,6 +1,6 @@
 /* =====================================================================
    SBX THEME — Bundle autocontenido para Obsidian
-   Versión: 2026-10-10
+   Versión: 2026-10-11
 
    INSTALACIÓN:
    1. Copia este fichero a <vault>/.obsidian/snippets/sbx-theme.css
@@ -6170,6 +6170,16 @@
 .sbx-dashboard .sbx-inbox-kpi--accent .sbx-inbox-kpi-val { color: var(--sbx-accent-text); }
 .sbx-dashboard .sbx-inbox-kpi--muted .sbx-inbox-kpi-val  { color: var(--sbx-muted); }
 
+/* Código en línea dentro de módulos (NS.ui.inlineCode): lo que va entre `backticks` */
+.sbx-dashboard .sbx-inline-code {
+  font-family: var(--sbx-font-mono);
+  font-size: 0.92em;
+  padding: 0 4px;
+  background: var(--sbx-surface-sm);
+  border: 1px solid var(--sbx-border);
+  border-radius: 0;
+}
+
 
 /* --- components/85_wiki-panel.css --- */
 /* ======================================================================
@@ -6380,11 +6390,12 @@
   white-space: nowrap;
 }
 
+/* Texto a la izquierda y acciones a su derecha: una fila por acción; en estrecho, apiladas */
 .sbx-dashboard .sbx-ni-main {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -6393,7 +6404,7 @@
   align-items: flex-start;
   gap: 8px;
   min-width: 0;
-  width: 100%;
+  flex: 1 1 0;
 }
 
 .sbx-dashboard .sbx-ni-task-text {
@@ -6415,9 +6426,8 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   min-width: 0;
-  width: 100%;
 }
 
 .sbx-dashboard .sbx-ni-actions .sbx-btn,
@@ -6489,8 +6499,18 @@
     padding: 10px 12px;
   }
 
+  .sbx-dashboard .sbx-ni-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sbx-dashboard .sbx-ni-text {
+    width: 100%;
+  }
+
   .sbx-dashboard .sbx-ni-actions {
     justify-content: flex-start;
+    width: 100%;
   }
 }
 
