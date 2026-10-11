@@ -6047,27 +6047,6 @@
 .sbx-dashboard .sbx-qa-feedback--ok  { color: var(--color-green, #4ade80); }
 .sbx-dashboard .sbx-qa-feedback--err { color: var(--color-red,   #f87171); }
 
-
-/* INBOX — captura rápida (antes inline en INBOX.md) */
-.sbx-dashboard .sbx-inbox-capture      { padding: 4px 0 8px 0; }
-.sbx-dashboard .sbx-inbox-capture-row  { display: flex; gap: 6px; margin-bottom: 8px; }
-.sbx-dashboard .sbx-inbox-input {
-  padding: 10px 12px;
-  min-height: 44px;
-  font-size: var(--sbx-text-base);
-}
-.sbx-dashboard button.sbx-btn.sbx-inbox-btn {
-  width: auto;
-  min-height: 44px;
-  padding: 7px 16px;
-  flex-shrink: 0;
-  font-size: var(--sbx-text-xs);
-  font-weight: 700;
-  background: var(--sbx-accent-bg-strong);
-  border-color: var(--sbx-accent-border);
-  color: var(--sbx-accent-color);
-}
-
 /* Botón de acción en línea (no ocupa todo el ancho como .sbx-btn) */
 .sbx-dashboard button.sbx-btn.sbx-btn--inline {
   width: auto;
