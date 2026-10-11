@@ -6174,6 +6174,42 @@
   margin-right: 8px;
 }
 
+/* Acciones sobre una nota (NS.ui.noteActions): una acción principal, el resto discretas */
+.sbx-dashboard .sbx-note-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.sbx-dashboard .sbx-note-action {
+  width: auto;
+  min-height: 28px;
+  padding: 2px 10px;
+  font-size: var(--sbx-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.sbx-dashboard .sbx-note-action--primary {
+  background: var(--sbx-accent-bg-strong);
+  border-color: var(--sbx-accent-border);
+  color: var(--sbx-accent-text);
+}
+.sbx-dashboard .sbx-note-action--quiet {
+  background: var(--sbx-surface-sm);
+  border-color: var(--sbx-border);
+  color: var(--text-normal);
+}
+.sbx-dashboard .sbx-note-action--danger {
+  background: var(--sbx-state-danger-bg);
+  border-color: var(--sbx-state-danger-border);
+  color: var(--sbx-state-danger-color);
+}
+.sbx-dashboard .sbx-note-action:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
 
 /* --- components/85_wiki-panel.css --- */
 /* ======================================================================
