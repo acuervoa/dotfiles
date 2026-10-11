@@ -6177,6 +6177,23 @@
   content: "→ ";
 }
 
+/* INBOX: texto y acciones en una fila en escritorio; el menú de destinos baja a ancho completo */
+@media (min-width: 720px) {
+  .sbx-dashboard .sbx-inbox-item {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 8px 0;
+  }
+  .sbx-dashboard .sbx-inbox-item .sbx-inbox-text { flex: 1 1 0; min-width: 0; }
+  .sbx-dashboard .sbx-inbox-item .sbx-inbox-actions { flex: 0 0 auto; flex-wrap: nowrap; }
+  .sbx-dashboard .sbx-inbox-item .sbx-inbox-menu { flex: 0 0 100%; }
+}
+@media (min-width: 720px) and (pointer: fine) {
+  .sbx-dashboard .sbx-inbox-item button.sbx-btn.sbx-btn--inline { min-height: 36px; }
+}
+
 
 /* --- components/85_wiki-panel.css --- */
 /* ======================================================================
