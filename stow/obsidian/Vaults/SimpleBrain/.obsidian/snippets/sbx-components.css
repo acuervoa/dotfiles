@@ -6130,37 +6130,6 @@
   font-size: var(--sbx-text-sm);
 }
 
-.sbx-dashboard .sbx-inbox-kpis {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-.sbx-dashboard .sbx-inbox-kpi {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 6px;
-  border: 1px solid var(--sbx-border);
-  background: var(--sbx-surface-xs);
-}
-.sbx-dashboard .sbx-inbox-kpi-val {
-  font-size: var(--sbx-text-xl);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-.sbx-dashboard .sbx-inbox-kpi-label {
-  margin-top: 2px;
-  font-size: var(--sbx-text-xxs);
-  color: var(--sbx-muted);
-  text-align: center;
-}
-.sbx-dashboard .sbx-inbox-kpi--danger .sbx-inbox-kpi-val { color: var(--sbx-state-danger-color); }
-.sbx-dashboard .sbx-inbox-kpi--warn .sbx-inbox-kpi-val   { color: var(--sbx-state-warn-color); }
-.sbx-dashboard .sbx-inbox-kpi--ok .sbx-inbox-kpi-val     { color: var(--sbx-state-ok-color); }
-.sbx-dashboard .sbx-inbox-kpi--accent .sbx-inbox-kpi-val { color: var(--sbx-accent-text); }
-.sbx-dashboard .sbx-inbox-kpi--muted .sbx-inbox-kpi-val  { color: var(--sbx-muted); }
-
 /* Código en línea dentro de módulos (NS.ui.inlineCode): lo que va entre `backticks` */
 .sbx-dashboard .sbx-inline-code {
   font-family: var(--sbx-font-mono);
