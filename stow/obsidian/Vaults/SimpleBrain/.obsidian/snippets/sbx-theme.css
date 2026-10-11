@@ -1350,6 +1350,19 @@
   background: var(--background-modifier-hover);
 }
 
+/* ======================================================================
+   Ritmo vertical entre tarjetas: siempre el token --sbx-gap
+   Obsidian da a cada callout margin: 1em 0. Fuera de un contenedor los márgenes colapsan
+   (16px); dentro de un grid o una columna no colapsan y se suman al gap (16 + 14 + 16).
+   ====================================================================== */
+.sbx-dashboard .callout[data-callout="sbx-card"] {
+  margin-block: var(--sbx-gap, 14px);
+}
+.sbx-dashboard :is(.callout[data-callout="sbx-grid"], .callout[data-callout="sbx-col"])
+  > .callout-content > .callout[data-callout="sbx-card"] {
+  margin-block: 0;
+}
+
 
 /* --- components/10_dashboard-shell.css --- */
 /* =========================================================
@@ -6207,6 +6220,11 @@
 }
 @media (min-width: 720px) and (pointer: fine) {
   .sbx-dashboard .sbx-inbox-item button.sbx-btn.sbx-btn--inline { min-height: 36px; }
+}
+
+/* INBOX: etiqueta del tipo de pendiente (captura | nota) */
+.sbx-dashboard .sbx-inbox-kind {
+  margin-right: 8px;
 }
 
 
