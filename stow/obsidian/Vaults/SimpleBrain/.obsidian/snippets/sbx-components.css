@@ -1353,6 +1353,13 @@
   margin-top: var(--sbx-gap, 14px);
 }
 
+/* Lo último de una tarjeta no deja margen propio: el relleno de la tarjeta ya cierra el espacio
+   (sin esto quedaban ~43 px bajo la última fila, frente a ~12 px sobre la cabecera) */
+.sbx-dashboard .callout[data-callout="sbx-card"] > .callout-content > :last-child,
+.sbx-dashboard .callout[data-callout="sbx-card"] > .callout-content > :last-child :is(table, p, ul, ol, div):last-child {
+  margin-bottom: 0;
+}
+
 
 /* --- components/10_dashboard-shell.css --- */
 /* =========================================================
@@ -2013,7 +2020,15 @@
 		.table-view-table th:not(:first-child),
 		.table-view-table td:not(:first-child)
 	) {
+	text-align: left;
+}
+
+/* Valores cortos (fechas, chips, cifras): centrados; el texto se lee mejor alineado a la izquierda */
+.sbx-dashboard :is(table, .table-view-table) :is(th, td).sbx-cell--center {
 	text-align: center;
+}
+.sbx-dashboard :is(table, .table-view-table) :is(th, td).sbx-cell--nowrap {
+	white-space: nowrap;
 }
 
 /* Dataview: columna 2 nowrap (Editado) */
@@ -6221,10 +6236,6 @@
 }
 
 /* Revisión semanal: tabla de proyectos y metas (G03) */
-.sbx-dashboard .sbx-review-projects td:nth-child(n + 3),
-.sbx-dashboard .sbx-review-projects th:nth-child(n + 3) {
-  text-align: center;
-}
 .sbx-dashboard .sbx-review-projects .sbx-row-action-btn {
   margin-left: 8px;
 }
