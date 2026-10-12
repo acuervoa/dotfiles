@@ -4965,7 +4965,7 @@
 
 .sbx-dashboard .sbx-heatmap-grid {
   display: grid;
-  grid-template-columns: repeat(35, minmax(10px, 1fr));
+  grid-template-columns: repeat(var(--sbx-heat-cols, 35), minmax(10px, 1fr));
   gap: 4px;
   margin-top: 10px;
   overflow-x: auto;
@@ -5067,6 +5067,24 @@
   text-align: center;
   line-height: 1;
   white-space: nowrap;
+}
+
+/* Rejilla repartida en todo el ancho (Salud): una columna por día y celdas de altura fija */
+.sbx-dashboard .sbx-heatmap-grid--rows .sbx-heatmap-cell {
+  aspect-ratio: auto;
+  height: 36px;
+}
+.sbx-dashboard .sbx-heatmap-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: var(--sbx-text-xs, 0.75rem);
+}
+.sbx-dashboard .sbx-health-detail {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: var(--sbx-text-xs, 0.75rem);
 }
 
 
