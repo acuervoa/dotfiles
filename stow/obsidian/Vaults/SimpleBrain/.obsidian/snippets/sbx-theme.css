@@ -6286,6 +6286,27 @@
   border: 0;
 }
 
+/* INBOX: el registro de capturas es markdown del usuario bajo el dashboard (QuickAdd escribe ahí y C13 lo lee).
+   No se envuelve en una tarjeta: se alinea con los títulos de sección y se atenúa lo ya procesado. */
+.sbx-dashboard.sbx-inbox-page .markdown-preview-sizer :is(.el-h2 > h2, .el-h3 > h3) {
+  margin: 24px 0 8px;
+  padding: 6px 14px;
+  border-left: 4px solid var(--text-accent);
+  border-bottom: 1px solid var(--sbx-border);
+  background: var(--sbx-surface-md);
+  font-family: var(--sbx-font-ui);
+  font-size: 0.82em;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-normal);
+}
+.sbx-dashboard.sbx-inbox-page .markdown-preview-sizer .task-list-item.is-checked {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
 
 /* --- components/85_wiki-panel.css --- */
 /* ======================================================================
