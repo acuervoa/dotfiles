@@ -5166,6 +5166,11 @@
   margin-top: var(--sbx-panel-mt, 0);
 }
 
+/* El panel ya separa sus hijos con gap: el margen inferior del título lo duplicaba (18 px de franja) */
+.sbx-dashboard .sbx-panel > .sbx-panel-title {
+  --sbx-surface-header-mb: 0;
+}
+
 .sbx-dashboard .sbx-panel--mt-md {
   margin-top: 12px;
 }
