@@ -6205,6 +6205,11 @@
   letter-spacing: 0.03em;
   white-space: nowrap;
 }
+.sbx-dashboard a.sbx-note-action {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
 .sbx-dashboard .sbx-note-action--primary {
   background: var(--sbx-accent-bg-strong);
   border-color: var(--sbx-accent-border);
