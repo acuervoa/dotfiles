@@ -8007,7 +8007,6 @@
   overflow: hidden;
 }
 .sbx-hs-wrap .sbx-lib-author { font-size: 0.78em; color: var(--text-accent); margin-bottom: 4px; }
-.sbx-hs-wrap .sbx-lib-faint { font-size: 0.72em; color: var(--text-faint); margin-top: 6px; }
 
 /* ── Portada flotante (H20, H21) ── */
 .sbx-hs-wrap .sbx-lib-cover {
@@ -8042,11 +8041,9 @@
 /* ── Variantes de botón (H20, H21) ── */
 .sbx-hs-wrap .sbx-lib-action--primary { font-weight: 600; }
 .sbx-hs-wrap .sbx-lib-action--warn { color: var(--color-orange, #f97316); }
-.sbx-hs-wrap .sbx-lib-action--muted { opacity: 0.6; }
 /* El tema pone color en :hover (0,3,0) y opacity 0.4 en :disabled (0,3,0); antes lo inline ganaba. */
 .sbx-hs-wrap .sbx-lib-action--warn:hover { color: var(--color-orange, #f97316); }
 .sbx-hs-wrap .sbx-row-action-btn.sbx-lib-action--primary:disabled { opacity: 1; }
-.sbx-hs-wrap .sbx-row-action-btn.sbx-lib-action--muted:disabled { opacity: 0.6; }
 
 /* ── H20 ── */
 .sbx-hs-wrap .sbx-lib-h20-sub { font-size: 0.74em; color: var(--text-muted); margin-bottom: 6px; }
@@ -8127,11 +8124,6 @@
 .sbx-hs-wrap .sbx-lib-h21-btn { cursor: pointer; transition: opacity 120ms ease; margin-left: 0; }
 .sbx-hs-wrap .sbx-lib-h21-btn--copy { font-weight: 600; }
 .sbx-hs-wrap .sbx-lib-h21-btn--copy:hover { opacity: 0.7; }
-.sbx-hs-wrap .sbx-lib-h21-btn--cal { opacity: 0.6; }
-.sbx-hs-wrap .sbx-lib-h21-btn--cal:hover { opacity: 1; }
-.sbx-hs-wrap .sbx-lib-h21-btn--ign { opacity: 0.5; }
-.sbx-hs-wrap .sbx-lib-h21-btn--ign:hover { opacity: 0.9; }
-.sbx-hs-wrap .sbx-row-action-btn.sbx-lib-h21-btn--ign:disabled { opacity: 0.5; }
 .sbx-hs-wrap .sbx-lib-h21-footer {
   display: flex;
   align-items: center;
@@ -8256,15 +8248,16 @@
   font-size: 0.75em;
   color: var(--text-faint);
   margin-bottom: 8px;
-  min-height: 18px;
 }
+/* Sin búsqueda no reserva hueco: el bloque vacío no ocupa altura */
+.sbx-hs-wrap .sbx-lib-h23-stats:empty,
+.sbx-hs-wrap .sbx-lib-h23-pager:empty { display: none; }
 .sbx-hs-wrap .sbx-lib-h23-pager {
   display: flex;
   gap: 6px;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
-  min-height: 24px;
 }
 .sbx-hs-wrap .sbx-lib-h23-pagnum { font-size: 0.8em; color: var(--text-faint); padding: 0 2px; }
 .sbx-hs-wrap .sbx-lib-h23-card {
