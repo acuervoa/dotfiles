@@ -43,7 +43,23 @@ with open(git_log_path, 'r') as f:
     git_log = f.read()
 
 content = content.replace('{{date}}', date_str)
-content = content.replace('{{git_log}}', git_log)
+# Repite el prefijo de callout (\`> \`) en cada línea del git log; misma lógica que
+# inject_git_log() en tools/devlog_manager.py del vault.
+import re
+def inject(tpl, log):
+    out = []
+    for line in tpl.split('\\n'):
+        m = re.match(r'^((?:>[ \\t]*)*)(.*)\\{\\{git_log\\}\\}(.*)\$', line)
+        if not m:
+            out.append(line)
+            continue
+        prefix, before, after = m.groups()
+        rows = log.strip('\\n').split('\\n')
+        for i, row in enumerate(rows):
+            text = (before if i == 0 else '') + row + (after if i == len(rows) - 1 else '')
+            out.append((prefix + text).rstrip() if text.strip() else prefix.rstrip())
+    return '\\n'.join(out)
+content = inject(content, git_log)
 content = content.replace('{{session_id}}', session_id)
 content = content.replace('{{project_name}}', 'N/A')
 content = content.replace('{{current_focus}}', 'N/A')
