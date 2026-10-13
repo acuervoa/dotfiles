@@ -8415,6 +8415,13 @@
 .sbx-hs-wrap .sbx-lib-reg-title { font-size: 0.85em; font-weight: 600; min-width: 0; }
 .sbx-hs-wrap .sbx-lib-reg-meta { font-size: 0.75em; color: var(--text-muted); text-align: right; }
 
+/* ── Añadir libro (L05) ── */
+.sbx-hs-wrap .sbx-lib-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.sbx-hs-wrap input[type="text"].sbx-lib-input { flex: 1; min-width: 160px; font-size: 0.85em; }
+.sbx-hs-wrap .sbx-lib-select { font-size: 0.85em; }
+.sbx-hs-wrap .sbx-lib-submit { font-weight: 600; }
+.sbx-hs-wrap .sbx-lib-dups { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+
 
 /* =========================================================
    SBX — Compat/Overrides (append al final)
