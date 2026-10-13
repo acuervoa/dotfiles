@@ -1,6 +1,6 @@
 /* =====================================================================
    SBX THEME — Bundle autocontenido para Obsidian
-   Versión: 2026-10-12
+   Versión: 2026-10-13
 
    INSTALACIÓN:
    1. Copia este fichero a <vault>/.obsidian/snippets/sbx-theme.css
@@ -8380,6 +8380,40 @@
   text-overflow: ellipsis;
 }
 .sbx-hs-wrap .sbx-lib-h23-vault { cursor: pointer; }
+
+/* ── Mi biblioteca (L01–L04) ── */
+.sbx-hs-wrap .sbx-lib-why {
+  font-size: 0.78em;
+  color: var(--text-normal);
+  margin: 4px 0;
+  padding-left: 8px;
+  border-left: 2px solid var(--text-accent);
+}
+.sbx-hs-wrap .sbx-lib-src { font-size: 0.72em; color: var(--text-faint); margin: 2px 0 4px; }
+.sbx-hs-wrap .sbx-lib-reg-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.sbx-hs-wrap .sbx-lib-reg-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.sbx-hs-wrap .sbx-lib-reg-chip {
+  font-size: 0.75em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.sbx-hs-wrap .sbx-lib-reg-chip.is-active { color: var(--text-accent); border-color: var(--text-accent); font-weight: 600; }
+.sbx-hs-wrap input[type="text"].sbx-lib-reg-search { flex: 1; min-width: 160px; font-size: 0.8em; }
+.sbx-hs-wrap .sbx-lib-reg-count { font-size: 0.75em; color: var(--text-faint); margin-bottom: 4px; }
+.sbx-hs-wrap .sbx-lib-reg-list { display: flex; flex-direction: column; }
+.sbx-hs-wrap .sbx-lib-reg-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.sbx-hs-wrap .sbx-lib-reg-title { font-size: 0.85em; font-weight: 600; min-width: 0; }
+.sbx-hs-wrap .sbx-lib-reg-meta { font-size: 0.75em; color: var(--text-muted); text-align: right; }
 
 
 /* =========================================================
