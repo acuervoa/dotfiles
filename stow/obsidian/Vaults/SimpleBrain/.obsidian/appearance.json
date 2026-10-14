@@ -8,7 +8,8 @@
     "catppuccin-mocha",
     "sbx-theme",
     "sbx-tooltips",
-    "sbx-hide-props"
+    "sbx-hide-props",
+    "sbx-graph"
   ],
   "monospaceFontFamily": "MesloLGLDZ Nerd Font"
 }

@@ -1,0 +1,27 @@
+/* sbx-graph.css — colores del graph (global y local) con la paleta sepia del vault.
+   Obsidian lee estos colores del canvas a partir de las clases `.graph-view.color-*`.
+   Los colores por dominio NO van aquí: son `colorGroups` de .obsidian/graph.json. */
+
+.theme-dark .graph-view.color-fill            { color: #7E6044; }               /* nodo sin grupo */
+.theme-dark .graph-view.color-fill-focused    { color: #E0AA60; }               /* nodo activo */
+.theme-dark .graph-view.color-fill-highlight  { color: #FFD97A; }               /* hover */
+.theme-dark .graph-view.color-fill-tag        { color: #9A7BB5; }
+.theme-dark .graph-view.color-fill-attachment { color: #6C7A89; }
+.theme-dark .graph-view.color-fill-unresolved { color: #5A4A36; }
+.theme-dark .graph-view.color-line            { color: rgba(232, 223, 200, 0.10); }
+.theme-dark .graph-view.color-line-highlight  { color: #D09A50; }
+.theme-dark .graph-view.color-arrow           { color: #B49E7C; }
+.theme-dark .graph-view.color-circle          { color: #E0AA60; }               /* anillo del nodo activo */
+.theme-dark .graph-view.color-text            { color: #B49E7C; }
+
+.theme-light .graph-view.color-fill            { color: #A58B6A; }
+.theme-light .graph-view.color-fill-focused    { color: #904E20; }
+.theme-light .graph-view.color-fill-highlight  { color: #B06830; }
+.theme-light .graph-view.color-fill-tag        { color: #7A5C94; }
+.theme-light .graph-view.color-fill-attachment { color: #7E8A96; }
+.theme-light .graph-view.color-fill-unresolved { color: #C9BBA3; }
+.theme-light .graph-view.color-line            { color: rgba(90, 60, 30, 0.14); }
+.theme-light .graph-view.color-line-highlight  { color: #B06830; }
+.theme-light .graph-view.color-arrow           { color: #6E5439; }
+.theme-light .graph-view.color-circle          { color: #904E20; }
+.theme-light .graph-view.color-text            { color: #6E5439; }
