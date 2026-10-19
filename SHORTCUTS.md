@@ -12,11 +12,11 @@
 
 | Atajo / Shortcut | Acción |
 | ---------------- | ------ |
-| $mod+d | exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh |
-| $mod+F11 | exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10" |
-| $mod+v | exec --no-startup-id "CM_LAUNCHER=rofi clipmenu" |
-| $mod+p | exec --no-startup-id rofi-bw |
-| $mod+g | exec --no-startup-id gtk-launch chatgpt-webapp |
+| Super+d | exec --no-startup-id ~/.config/i3/scripts/rofi-diagnostic.sh |
+| Super+F11 | exec --no-startup-id rofi -show run -fullscreen -font "MesloLGLDZ Nerd Font 10" |
+| Super+v | exec --no-startup-id "CM_LAUNCHER=rofi clipmenu" |
+| Super+p | exec --no-startup-id rofi-bw |
+| Super+g | exec --no-startup-id gtk-launch chatgpt-webapp |
 | XF86MonBrightnessUp | exec --no-startup-id brightnessctl set +5% |
 | XF86MonBrightnessDown | exec --no-startup-id brightnessctl set 5%- |
 | XF86AudioRaiseVolume | exec --no-startup-id $volscript up && $refresh_polybar |
@@ -29,28 +29,28 @@
 | XF86AudioPause | exec playerctl pause |
 | XF86AudioNext | exec playerctl next |
 | XF86AudioPrev | exec playerctl previous |
-| $mod+Shift+Return | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh |
-| $mod+Shift+n | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh |
-| $mod+i | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_shortcuts.sh |
-| $mod+Return | exec --no-startup-id $term -e tmux new-session -A -s main |
-| $mod+$left | focus left |
-| $mod+$down | focus down |
-| $mod+$up | focus up |
-| $mod+$right | focus right |
-| $mod+Tab | workspace back_and_forth |
-| $mod+Shift+$left | move left |
-| $mod+Shift+$down | move down |
-| $mod+Shift+$up | move up |
-| $mod+Shift+$right | move right |
-| $mod+Shift+space | floating toggle |
-| $mod+space | focus mode_toggle |
-| $mod+z | fullscreen toggle |
-| $mod+f | exec --no-startup-id rofi -show window |
-| $mod+s | layout stacking |
-| $mod+w | layout tabbed |
-| $mod+e | layout toggle split |
-| $mod+Mod1+h | split h |
-| $mod+Mod1+v | split v |
+| Super+Shift+Return | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch.sh |
+| Super+Shift+n | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_obsidian.sh |
+| Super+i | exec --no-startup-id ~/.config/i3/scripts/toggle_scratch_shortcuts.sh |
+| Super+Return | exec --no-startup-id $term -e tmux new-session -A -s main |
+| Super+h | focus left |
+| Super+j | focus down |
+| Super+k | focus up |
+| Super+l | focus right |
+| Super+Tab | workspace back_and_forth |
+| Super+Shift+h | move left |
+| Super+Shift+j | move down |
+| Super+Shift+k | move up |
+| Super+Shift+l | move right |
+| Super+Shift+space | floating toggle |
+| Super+space | focus mode_toggle |
+| Super+z | fullscreen toggle |
+| Super+f | exec --no-startup-id rofi -show window |
+| Super+s | layout stacking |
+| Super+w | layout tabbed |
+| Super+e | layout toggle split |
+| Super+Mod1+h | split h |
+| Super+Mod1+v | split v |
 | h | resize shrink width 10 px or 10 ppt |
 | j | resize grow height 10 px or 10 ppt |
 | k | resize shrink height 10 px or 10 ppt |
@@ -58,41 +58,44 @@
 | q | mode "default" |
 | Escape | mode "default" |
 | Return | mode "default" |
-| $mod+r | mode "resize" |
-| $mod+1 | workspace $ws1 |
-| $mod+2 | workspace $ws2 |
-| $mod+3 | workspace $ws3 |
-| $mod+4 | workspace $ws4 |
-| $mod+5 | workspace $ws5 |
-| $mod+6 | workspace $ws6 |
-| $mod+7 | workspace $ws7 |
-| $mod+8 | workspace $ws8 |
-| $mod+9 | workspace $ws9 |
-| $mod+0 | workspace $ws10 |
-| $mod+Shift+1 | move container to workspace $ws1 |
-| $mod+Shift+2 | move container to workspace $ws2 |
-| $mod+Shift+3 | move container to workspace $ws3 |
-| $mod+Shift+4 | move container to workspace $ws4 |
-| $mod+Shift+5 | move container to workspace $ws5 |
-| $mod+Shift+6 | move container to workspace $ws6 |
-| $mod+Shift+7 | move container to workspace $ws7 |
-| $mod+Shift+8 | move container to workspace $ws8 |
-| $mod+Shift+9 | move container to workspace $ws9 |
-| $mod+Shift+0 | move container to workspace $ws10 |
-| $mod+Ctrl+Left | move container to output left |
-| $mod+Ctrl+Right | move container to output right |
-| $mod+Shift+c | reload |
-| $mod+Shift+r | restart |
-| $mod+Shift+x | exec --no-startup-id ~/.config/i3/scripts/i3lock.sh |
-| $mod+Shift+e | exec --no-startup-id ~/.config/i3/scripts/session-exit-confirm.sh |
+| Super+r | mode "resize" |
+| Super+1 | workspace 1:DEV |
+| Super+2 | workspace 2:OPS |
+| Super+3 | workspace 3:WEB |
+| Super+4 | workspace 4:DOC |
+| Super+5 | workspace 5:AI |
+| Super+6 | workspace 6:DATA |
+| Super+7 | workspace 7:TERM |
+| Super+8 | workspace 8:CHAT |
+| Super+9 | workspace 9:MEDIA |
+| Super+0 | workspace 10:MISC |
+| Super+Shift+1 | move container to workspace 1:DEV |
+| Super+Shift+2 | move container to workspace 2:OPS |
+| Super+Shift+3 | move container to workspace 3:WEB |
+| Super+Shift+4 | move container to workspace 4:DOC |
+| Super+Shift+5 | move container to workspace 5:AI |
+| Super+Shift+6 | move container to workspace 6:DATA |
+| Super+Shift+7 | move container to workspace 7:TERM |
+| Super+Shift+8 | move container to workspace 8:CHAT |
+| Super+Shift+9 | move container to workspace 9:MEDIA |
+| Super+Shift+0 | move container to workspace 10:MISC |
+| Super+Ctrl+Left | move container to output left |
+| Super+Ctrl+Right | move container to output right |
+| Super+Shift+c | reload |
+| Super+Shift+r | restart |
+| Super+Shift+x | exec --no-startup-id ~/.config/i3/scripts/i3lock.sh |
+| Super+Shift+e | exec --no-startup-id ~/.config/i3/scripts/session-exit-confirm.sh |
 | control+mod1+Delete | exec --no-startup-id ~/.config/i3/scripts/mode_system.sh |
-| $mod+q | exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh |
-| $mod+Shift+y | exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh |
-| $mod+y | exec --no-startup-id /usr/bin/dunstctl history-pop |
-| $mod+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh select |
-| $mod+Shift+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh full |
-| $mod+Shift+F3 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh save-select |
-| $mod+Shift+F4 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh delay 2 select |
+| Super+q | exec --no-startup-id ~/.config/i3/scripts/confirm_kill.sh |
+| Super+Shift+y | exec --no-startup-id ~/.config/polybar/scripts/dunst-toggle.sh |
+| Super+y | exec --no-startup-id /usr/bin/dunstctl history-pop |
+| Super+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh select |
+| Super+Shift+F2 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh full |
+| Super+Shift+F3 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh save-select |
+| Super+Shift+F4 | exec --no-startup-id ~/.config/i3/scripts/screenshot_maim.sh delay 2 select |
+Para cambiar el tamaño de la ventana, pulsa `Super+r` para entrar en el modo
+`resize`. Dentro del modo, `h` reduce el ancho, `l` lo aumenta, `j` aumenta la
+altura y `k` la reduce. Pulsa `q`, `Escape` o `Enter` para volver al modo normal.
 
 #### tmux (stow/tmux/.tmux.conf)
 

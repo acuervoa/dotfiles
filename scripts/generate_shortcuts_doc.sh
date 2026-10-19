@@ -38,10 +38,43 @@ parse_i3_config() {
       shortcut="$(echo "$line" | awk '{print $2}')"
       action="$(echo "$line" | cut -d' ' -f3- | sed 's/^--\s*//')" # Remove leading comment if any
 
+      # Resolve the i3 variables used in key combinations so the cheatsheet
+      # shows the actual keys and workspace names instead of config symbols.
+      shortcut="${shortcut//\$mod/Super}"
+      shortcut="${shortcut//\$left/h}"
+      shortcut="${shortcut//\$down/j}"
+      shortcut="${shortcut//\$up/k}"
+      shortcut="${shortcut//\$right/l}"
+      shortcut="${shortcut//\$ws10/10:MISC}"
+      shortcut="${shortcut//\$ws1/1:DEV}"
+      shortcut="${shortcut//\$ws2/2:OPS}"
+      shortcut="${shortcut//\$ws3/3:WEB}"
+      shortcut="${shortcut//\$ws4/4:DOC}"
+      shortcut="${shortcut//\$ws5/5:AI}"
+      shortcut="${shortcut//\$ws6/6:DATA}"
+      shortcut="${shortcut//\$ws7/7:TERM}"
+      shortcut="${shortcut//\$ws8/8:CHAT}"
+      shortcut="${shortcut//\$ws9/9:MEDIA}"
+      action="${action//\$ws10/10:MISC}"
+      action="${action//\$ws1/1:DEV}"
+      action="${action//\$ws2/2:OPS}"
+      action="${action//\$ws3/3:WEB}"
+      action="${action//\$ws4/4:DOC}"
+      action="${action//\$ws5/5:AI}"
+      action="${action//\$ws6/6:DATA}"
+      action="${action//\$ws7/7:TERM}"
+      action="${action//\$ws8/8:CHAT}"
+      action="${action//\$ws9/9:MEDIA}"
+
       # Further processing needed to clean up action and handle variables like $mod
       echo "| $shortcut | $action |"
     done
-  echo ""
+  cat <<'EOF'
+Para cambiar el tamaño de la ventana, pulsa `Super+r` para entrar en el modo
+`resize`. Dentro del modo, `h` reduce el ancho, `l` lo aumenta, `j` aumenta la
+altura y `k` la reduce. Pulsa `q`, `Escape` o `Enter` para volver al modo normal.
+
+EOF
 
 }
 
