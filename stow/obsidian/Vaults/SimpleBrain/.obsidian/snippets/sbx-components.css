@@ -2952,6 +2952,17 @@
 .sbx-pbooks .sbx-pbook-desc { padding: 1px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--sbx-text-xxs); font-style: italic; color: var(--text-muted); }
 
 
+/* --- components/50_daily-inputs.css --- */
+/* ======================================================================
+   Componente: campos meta-bind de la daily
+   - El input de texto (MIT) usaba el ancho por defecto y cortaba la frase.
+   ====================================================================== */
+
+.sbx-dashboard .callout[data-callout="sbx-card"] .mb-input-type-text input[type="text"] {
+  width: min(100%, 40rem);
+}
+
+
 /* --- components/60_home-project-cards.css --- */
 /* =========================================================
    SBX — Project Cards (H05_ProyectosActivos, retired 2026-09-30)  [append]
