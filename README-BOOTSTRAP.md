@@ -28,7 +28,8 @@ por distro:
 - `pkglist-arch.txt`
 - `pkglist-debian.txt`
 - `pkglist-fedora.txt`
-- `pkglist-wsl.txt`
+
+WSL2 (Ubuntu/Debian) usa `pkglist-debian.txt`.
 
 ### Core (CLI) — recomendado para empezar
 
@@ -48,6 +49,20 @@ Tips:
 - En WSL2 el script fuerza `--core`.
 - Si algún paquete no existe en tu distro/release, el script lo reporta como
   “fallido” para que lo instales o ajustes el pkglist.
+
+### WSL2 (Ubuntu/Debian)
+
+Además de los paquetes de apt, en Debian/Ubuntu `install_deps.sh`:
+- instala **Neovim** desde el tarball oficial en `~/.local/opt/nvim` (la config
+  exige ≥ 0.11 y apt de Ubuntu 24.04 trae 0.9) y lo enlaza en `~/.local/bin/nvim`;
+- instala el CLI **tree-sitter** en `~/.local/bin` (nvim-treesitter compila los
+  parsers con él; el compilador C viene de `build-essential`);
+- enlaza `bat` → `batcat` y `fd` → `fdfind` en `~/.local/bin`.
+
+`starship`, `mise`, `atuin`, `difftastic` y `ripgrep-all` no están en apt:
+son opcionales y el bash los usa solo si existen.
+
+Para que `~/.local/bin` esté en el PATH basta con reabrir la shell tras el bootstrap.
 
 ## 3) Chequeos previos (doctor/status)
 

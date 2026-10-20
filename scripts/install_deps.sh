@@ -101,6 +101,86 @@ install_one() {
   esac
 }
 
+# Neovim: la config exige >= 0.11 y apt (Ubuntu 24.04 = 0.9.x) se queda corto,
+# así que en Debian/Ubuntu se instala el tarball oficial en ~/.local.
+NVIM_VERSION="v0.12.6"
+
+install_neovim_tarball() {
+  local arch
+  case "$(uname -m)" in
+  x86_64) arch="x86_64" ;;
+  aarch64 | arm64) arch="arm64" ;;
+  *)
+    warn "Arquitectura sin tarball de Neovim: $(uname -m)"
+    return 1
+    ;;
+  esac
+
+  local opt_dir="$HOME/.local/opt" bin_dir="$HOME/.local/bin"
+  local url="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-${arch}.tar.gz"
+  local tmp
+  tmp="$(mktemp -d)"
+
+  info "Instalando Neovim ${NVIM_VERSION} (${arch}) en $opt_dir/nvim"
+  if ! curl -fsSL "$url" -o "$tmp/nvim.tar.gz" || ! tar -xzf "$tmp/nvim.tar.gz" -C "$tmp"; then
+    rm -rf "$tmp"
+    warn "No se pudo descargar/extraer Neovim desde $url"
+    return 1
+  fi
+
+  mkdir -p "$opt_dir" "$bin_dir"
+  rm -rf "$opt_dir/nvim"
+  mv "$tmp/nvim-linux-${arch}" "$opt_dir/nvim"
+  ln -sfn "$opt_dir/nvim/bin/nvim" "$bin_dir/nvim"
+  rm -rf "$tmp"
+}
+
+# nvim-treesitter (rama main) compila los parsers con el CLI `tree-sitter`,
+# que no está en apt: se instala el binario oficial en ~/.local/bin.
+TREE_SITTER_VERSION="v0.26.9"
+
+install_tree_sitter_cli() {
+  local arch
+  case "$(uname -m)" in
+  x86_64) arch="x64" ;;
+  aarch64 | arm64) arch="arm64" ;;
+  *)
+    warn "Arquitectura sin binario de tree-sitter: $(uname -m)"
+    return 1
+    ;;
+  esac
+
+  local bin_dir="$HOME/.local/bin"
+  local url="https://github.com/tree-sitter/tree-sitter/releases/download/${TREE_SITTER_VERSION}/tree-sitter-linux-${arch}.gz"
+  local tmp
+  tmp="$(mktemp)"
+
+  info "Instalando tree-sitter CLI ${TREE_SITTER_VERSION} (${arch}) en $bin_dir"
+  if ! curl -fsSL "$url" | gunzip >"$tmp"; then
+    rm -f "$tmp"
+    warn "No se pudo descargar tree-sitter desde $url"
+    return 1
+  fi
+
+  mkdir -p "$bin_dir"
+  install -m 0755 "$tmp" "$bin_dir/tree-sitter"
+  rm -f "$tmp"
+}
+
+# Debian/Ubuntu instalan `bat` como `batcat` y `fd` como `fdfind`.
+link_debian_renamed_bins() {
+  local bin_dir="$HOME/.local/bin" pair real alias_name
+  mkdir -p "$bin_dir"
+  for pair in batcat:bat fdfind:fd; do
+    real="${pair%%:*}"
+    alias_name="${pair##*:}"
+    if command -v "$real" >/dev/null 2>&1 && ! command -v "$alias_name" >/dev/null 2>&1; then
+      ln -s "$(command -v "$real")" "$bin_dir/$alias_name"
+      info "Enlace $bin_dir/$alias_name -> $real"
+    fi
+  done
+}
+
 main() {
   local include_gui=false dry_run=false
 
@@ -181,6 +261,12 @@ main() {
   if [ "${#failed[@]}" -gt 0 ]; then
     warn "Paquetes fallidos (${#failed[@]}): ${failed[*]}"
     warn "Puedes editar $pkglist o instalar esos paquetes manualmente."
+  fi
+
+  if [ "$distro" = "debian" ]; then
+    link_debian_renamed_bins
+    install_neovim_tarball || warn "Neovim no instalado: la config de nvim no arrancará."
+    install_tree_sitter_cli || warn "tree-sitter no instalado: Neovim no podrá compilar parsers."
   fi
 
   info "Instalación de dependencias completada."

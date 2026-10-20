@@ -1,5 +1,6 @@
 # Core (CLI)
 # Debian/Ubuntu package names
+# neovim: no va por apt (versión antigua); lo instala scripts/install_deps.sh desde el tarball oficial.
 git
 stow
 bash
@@ -9,15 +10,17 @@ rsync
 unzip
 gzip
 tmux
-neovim
 fzf
 ripgrep
 fd-find
+# build-essential: compilador C para los parsers de nvim-treesitter
+build-essential
 
 # Quality-of-life (CLI)
 bat
-difftastic
-ripgrep-all
+# difftastic, ripgrep-all: no están en apt (Ubuntu 24.04); opcionales, instalar con cargo/release si se quieren.
+# difftastic
+# ripgrep-all
 zoxide
 trash-cli
 
@@ -27,7 +30,8 @@ xclip
 
 # Docker (optional; Debian/Ubuntu naming differs by release)
 docker.io
-docker-compose-plugin
+# docker-compose-plugin: no existe en apt de Ubuntu (allí es docker-compose-v2); en WSL suele ir con Docker Desktop.
+# docker-compose-plugin
 
 # GUI (desktop-only)
 # i3-wm

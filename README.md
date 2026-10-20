@@ -93,7 +93,7 @@ dotfiles/
 ├── pkglist-arch.txt  # Lista de paquetes para Arch Linux
 ├── pkglist-debian.txt  # Lista de paquetes para Debian/Ubuntu
 ├── pkglist-fedora.txt  # Lista de paquetes para Fedora
-└── pkglist-wsl.txt   # Lista de paquetes para WSL2 (CLI)
+└── pkglist-wsl.txt   # (sin uso: en WSL2 se lee pkglist-debian.txt)
 ```
 
 ---

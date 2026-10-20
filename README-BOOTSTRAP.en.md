@@ -28,7 +28,8 @@ Use `scripts/install_deps.sh`. It detects your distro and reads:
 - `pkglist-arch.txt`
 - `pkglist-debian.txt`
 - `pkglist-fedora.txt`
-- `pkglist-wsl.txt`
+
+WSL2 (Ubuntu/Debian) uses `pkglist-debian.txt`.
 
 Core CLI (recommended first):
 
@@ -47,6 +48,21 @@ bash ./scripts/install_deps.sh --core --gui
 Notes:
 - On WSL2 the script forces core-only.
 - Missing packages are reported so you can tweak the pkglist.
+
+### WSL2 (Ubuntu/Debian)
+
+Besides the apt packages, on Debian/Ubuntu `install_deps.sh`:
+- installs **Neovim** from the official tarball into `~/.local/opt/nvim` (the
+  config needs ≥ 0.11 and Ubuntu 24.04's apt ships 0.9) and links it at
+  `~/.local/bin/nvim`;
+- installs the **tree-sitter** CLI into `~/.local/bin` (nvim-treesitter builds
+  parsers with it; the C compiler comes from `build-essential`);
+- links `bat` → `batcat` and `fd` → `fdfind` in `~/.local/bin`.
+
+`starship`, `mise`, `atuin`, `difftastic` and `ripgrep-all` are not in apt:
+they are optional and bash only uses them when present.
+
+Reopen the shell after bootstrap so `~/.local/bin` is on PATH.
 
 ## 3) Preflight checks (doctor/status)
 
