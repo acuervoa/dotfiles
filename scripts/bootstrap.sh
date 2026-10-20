@@ -148,12 +148,19 @@ maybe_install_tmux_plugins() {
     return 0
   fi
 
-  tmux start-server
+  # `tmux start-server` sin sesiones sale al instante (instalación limpia/WSL):
+  # TPM necesita un servidor vivo, así que se levanta uno con una sesión efímera.
+  local tmp_session=""
+  if ! tmux info >/dev/null 2>&1; then
+    tmp_session="dotfiles-tpm-bootstrap"
+    tmux new-session -d -s "$tmp_session"
+  fi
   tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$plugins_dir/"
   local out ec
   out="$("$install" 2>&1)"
   ec=$?
   printf '%s\n' "$out"
+  [ -n "$tmp_session" ] && tmux kill-session -t "$tmp_session" 2>/dev/null
 
   if [ "$ec" -ne 0 ]; then
     local -a failed_plugins=()
@@ -299,7 +306,7 @@ handle_conflicts() {
   local conflicts
   conflicts="$(
     stow -d "$STOW_DIR" -t "$target_dir" -nS "$pkg" 2>&1 |
-      grep -E 'existing target is not (a symlink|owned by stow|a directory|a link nor a directory):' || true
+      grep -E 'existing target is (not (a symlink|owned by stow|a directory|a link nor a directory)|neither a link nor a directory):|over existing target .+ since ' || true
   )"
 
   if [ -z "$conflicts" ]; then
@@ -321,6 +328,11 @@ handle_conflicts() {
     file_path="${file_path#*existing target is not owned by stow: }"
     file_path="${file_path#*existing target is not a directory: }"
     file_path="${file_path#*existing target is not a link nor a directory: }"
+    # stow 2.3.x (Debian/Ubuntu) redacta el mensaje distinto de 2.4.x
+    file_path="${file_path#*existing target is neither a link nor a directory: }"
+    # stow 2.4.x, ficheros reales: "cannot stow <src> over existing target <dst> since ..."
+    file_path="${file_path#*over existing target }"
+    file_path="${file_path%% since *}"
 
     local full_path="$target_dir/$file_path"
 
