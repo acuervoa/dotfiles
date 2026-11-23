@@ -314,7 +314,6 @@ manifest_get_string() {
       val="${line#*=}"
       val="${val#\"}"
       val="${val%\"}"
-      break
       ;;
     esac
   done <"$manifest"
