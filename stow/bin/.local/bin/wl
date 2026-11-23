@@ -5,10 +5,14 @@
   wl -l "grep -P no existe en BSD"     aprendizaje
   wl -d "SQLite antes que Postgres"    decisión
   wl -b "espero acceso al repo"        bloqueo
+  wl -a NOMBRE [-l|-d|-b] "texto"      anota con identidad de agente (o WORKLOG_AGENT)
   wl today                             entradas de hoy de todos los equipos
   wl sync                              commit + pull --rebase + push de este equipo
   wl init GIT_URL [--host NOMBRE]      clona el repo y fija el nombre del equipo
   wl daily --vault RUTA [--date D]     vuelca el día en DAILY/D.md (equipo del vault)
+
+`-a NOMBRE` es una flag solo al inicio (junto a -l/-d/-b, en cualquier orden); `-a` tiene
+prioridad sobre WORKLOG_AGENT. Sin agente, la entrada no lleva el campo `agente`.
 
 Una frase que empiece por un subcomando se registra igual si no tiene la forma de
 ese subcomando (`wl sync terminado con X` es una entrada, `wl sync` es el comando).
@@ -33,6 +37,7 @@ FLAGS = {"-l": "aprendizaje", "-d": "decision", "-b": "bloqueo"}
 START, END = "<!-- worklog:start -->", "<!-- worklog:end -->"
 FIELDS = ("id", "ts", "host", "tipo", "texto")
 HOST_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+AGENT_RE = HOST_RE  # mismo formato que el equipo; sin '/', para poder mostrar host/agente
 
 
 def die(msg, code=1):
@@ -63,20 +68,37 @@ def host() -> str:
     return name
 
 
+def valid_agent(name) -> bool:
+    return isinstance(name, str) and bool(AGENT_RE.match(name))
+
+
 def cmd_add(argv):
-    tipo, words = "hecho", []
-    for a in argv:
-        if not words and a in FLAGS:
-            tipo = FLAGS[a]
+    tipo, agente, words = "hecho", None, list(argv)
+    while words:  # flags solo al inicio; lo que sigue a la primera palabra es texto
+        if words[0] in FLAGS:
+            tipo = FLAGS[words.pop(0)]
+        elif words[0] == "-a":
+            words.pop(0)
+            if not words:
+                die("-a requiere un nombre de agente")
+            agente = words.pop(0)
+            if not valid_agent(agente):
+                die(f"nombre de agente no válido: {agente!r} (usa letras, cifras, '.', '_' o '-')")
         else:
-            words.append(a)
+            break
+    if agente is None:
+        agente = os.environ.get("WORKLOG_AGENT", "").strip() or None
+        if agente is not None and not valid_agent(agente):
+            die(f"WORKLOG_AGENT no válido: {agente!r} (usa letras, cifras, '.', '_' o '-')")
     texto = " ".join(" ".join(words).split())
     if not texto:
-        die('falta el texto. Uso: wl [-l|-d|-b] "texto"')
+        die('falta el texto. Uso: wl [-a NOMBRE] [-l|-d|-b] "texto"')
     now = datetime.now().astimezone().replace(microsecond=0)
     h = host()
     # id aleatorio: dos entradas iguales en el mismo segundo siguen siendo dos
     entry = {"id": uuid.uuid4().hex[:12], "ts": now.isoformat(), "host": h, "tipo": tipo, "texto": texto}
+    if agente:  # campo opcional: se omite la clave, nunca se escribe null
+        entry["agente"] = agente
     path = root() / h / f"{now.date().isoformat()}.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
     line = (json.dumps(entry, ensure_ascii=False) + "\n").encode("utf-8")
@@ -116,7 +138,9 @@ def load(day: str, base: Path) -> list:
 
 
 def fmt(e) -> str:
-    return f"{e['_ts']:%H:%M} {TYPES.get(e['tipo'], '•')} {e['tipo']} · {e['texto']} [{e['host']}]"
+    agente = e.get("agente")
+    who = f"{e['host']}/{agente}" if valid_agent(agente) else e["host"]
+    return f"{e['_ts']:%H:%M} {TYPES.get(e['tipo'], '•')} {e['tipo']} · {e['texto']} [{who}]"
 
 
 def cmd_today(_argv):
