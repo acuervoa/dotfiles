@@ -196,4 +196,87 @@ wl daily -x >/dev/null || fail "daily -x cambió de comportamiento (rc)"
 [ "$(jget texto)" = "daily -x" ] || fail "daily -x cambió de comportamiento (texto)"
 pass "daily -x conserva su comportamiento previo"
 
+# 12. wl sync sobre un repositorio sin commits (H2): no debe intentar `git push -u origin HEAD`.
+# Remoto: bare local por file://, sin red. Un wrapper de git registra las invocaciones de `wl sync`.
+export GIT_AUTHOR_NAME="wl test" GIT_AUTHOR_EMAIL="wl-test@example.invalid"
+export GIT_COMMITTER_NAME="wl test" GIT_COMMITTER_EMAIL="wl-test@example.invalid"
+real_git="$(command -v git)"
+mkdir -p "$tmp_dir/bin"
+cat >"$tmp_dir/bin/git" <<WRAP
+#!/usr/bin/env bash
+printf '%s\n' "\$*" >>"\$GITCALLS12"
+exec "$real_git" "\$@"
+WRAP
+chmod +x "$tmp_dir/bin/git"
+
+# sync12 NOMBRE: wl sync con el wrapper (solo aquí) y log propio; deja rc/err/calls en variables.
+sync12() {
+  GITCALLS12="$tmp_dir/gitcalls12$1"
+  : >"$GITCALLS12"
+  sync12_out="$(GITCALLS12="$GITCALLS12" PATH="$tmp_dir/bin:$PATH" WORKLOG_DIR="$tmp_dir/wl12$1" WORKLOG_HOST="h12$1" wl sync 2>"$tmp_dir/err12$1")"
+  sync12_rc=$?
+  sync12_err="$(cat "$tmp_dir/err12$1")"
+}
+# init12 NOMBRE REMOTO: wl init con WORKLOG_DIR propio.
+init12() {
+  WORKLOG_DIR="$tmp_dir/wl12$1" wl init "file://$tmp_dir/$2.git" --host "h12$1" >/dev/null 2>&1 || fail "12$1: wl init falló"
+}
+has_push12() { grep -Eq '(^| )push( |$)' "$tmp_dir/gitcalls12$1"; }
+has_pull12() { grep -Eq '(^| )pull( |$)' "$tmp_dir/gitcalls12$1"; }
+# seed12 REMOTO RAMA: un tercero publica un commit en RAMA del remoto.
+seed12() {
+  "$real_git" clone -q "file://$tmp_dir/$1.git" "$tmp_dir/seed12$1" 2>/dev/null || fail "12: clone de siembra falló"
+  "$real_git" -C "$tmp_dir/seed12$1" checkout -q -b "$2"
+  printf 'x\n' >"$tmp_dir/seed12$1/seed"
+  "$real_git" -C "$tmp_dir/seed12$1" add seed
+  "$real_git" -C "$tmp_dir/seed12$1" commit -q -m seed
+  "$real_git" -C "$tmp_dir/seed12$1" push -q origin "$2" 2>/dev/null || fail "12: push de siembra falló"
+}
+
+# 12a: remoto vacío, sin entradas -> error claro, rc=2, sin push y sin refs en el remoto.
+"$real_git" init -q --bare -b main "$tmp_dir/r12a.git"
+init12 a r12a
+sync12 a
+[ "$sync12_rc" -eq 2 ] || fail "12a: rc esperado 2, obtenido $sync12_rc"
+printf '%s\n' "$sync12_err" | grep -q '^wl:' || fail "12a: stderr sin prefijo wl: ($sync12_err)"
+printf '%s\n' "$sync12_err" | grep -q 'no hay entradas que sincronizar' || fail "12a: mensaje inesperado ($sync12_err)"
+[ -z "$sync12_out" ] || fail "12a: salida inesperada en stdout ($sync12_out)"
+! has_push12 a || fail "12a: se intentó git push"
+[ -z "$("$real_git" -C "$tmp_dir/r12a.git" for-each-ref)" ] || fail "12a: el remoto no debía tener refs"
+pass "sync sin commits: rc=2, 'no hay entradas que sincronizar', sin push"
+
+# 12b: remoto vacío, con una entrada -> sincroniza y publica un commit (control positivo del wrapper).
+"$real_git" init -q --bare -b main "$tmp_dir/r12b.git"
+init12 b r12b
+WORKLOG_DIR="$tmp_dir/wl12b" WORKLOG_HOST="h12b" wl "entrada 12b" >/dev/null || fail "12b: no se pudo registrar la entrada"
+sync12 b
+[ "$sync12_rc" -eq 0 ] || fail "12b: rc esperado 0, obtenido $sync12_rc ($sync12_err)"
+[ "$sync12_out" = "sincronizado" ] || fail "12b: salida inesperada ($sync12_out)"
+has_push12 b || fail "12b: no se registró git push (wrapper sin efecto)"
+[ "$("$real_git" -C "$tmp_dir/r12b.git" rev-list --count main)" -eq 1 ] || fail "12b: main del remoto no tiene 1 commit"
+pass "sync con una entrada sobre remoto vacío: sincroniza y publica main"
+
+# 12c: remoto con rama main sembrada por un tercero, sin entradas propias -> pull + push, rc=0.
+"$real_git" init -q --bare -b main "$tmp_dir/r12c.git"
+seed12 r12c main
+init12 c r12c
+sync12 c
+[ "$sync12_rc" -eq 0 ] || fail "12c: rc esperado 0, obtenido $sync12_rc ($sync12_err)"
+[ "$sync12_out" = "sincronizado" ] || fail "12c: salida inesperada ($sync12_out)"
+has_pull12 c || fail "12c: no hubo git pull"
+has_push12 c || fail "12c: no hubo git push"
+pass "sync sin entradas propias sobre remoto con main: pull + push, rc=0"
+
+# 12d (caracterización): init sobre remoto vacío, un tercero publica otra rama y el local sigue sin commits.
+# Hoy falla en el pull (main no existe en el remoto): rc=2 con el mensaje de pull y sin push.
+"$real_git" init -q --bare -b main "$tmp_dir/r12d.git"
+init12 d r12d
+seed12 r12d otra
+sync12 d
+[ "$sync12_rc" -eq 2 ] || fail "12d: rc esperado 2, obtenido $sync12_rc ($sync12_err)"
+printf '%s\n' "$sync12_err" | grep -q '^wl: sin red o conflicto al hacer pull' || fail "12d: mensaje inesperado ($sync12_err)"
+has_pull12 d || fail "12d: no hubo git pull"
+! has_push12 d || fail "12d: se intentó git push"
+pass "sync sin commits con otra rama en el remoto: falla en pull (rc=2), sin push"
+
 printf 'OK\n'

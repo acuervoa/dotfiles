@@ -229,6 +229,9 @@ def cmd_sync(_argv):
             git("rebase", "--abort")  # no dejar el clon a medio rebase
             die("sin red o conflicto al hacer pull; las entradas están a salvo en local\n"
                 + pull.stderr.strip(), 2)
+    if git("rev-parse", "--verify", "-q", "HEAD").returncode:  # repo sin commits: nada que publicar
+        die("no hay entradas que sincronizar: el repositorio aún no tiene commits; "
+            'registra una con wl "texto" y vuelve a ejecutar wl sync', 2)
     push = git("push", "-u", "origin", "HEAD")  # -u: también vale para el primer push a un repo vacío
     if push.returncode:
         die("push falló; las entradas están a salvo en local\n" + push.stderr.strip(), 2)
