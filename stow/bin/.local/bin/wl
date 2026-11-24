@@ -297,7 +297,8 @@ def is_command(argv) -> bool:
     if cmd in ("today", "sync"):
         return not rest
     if cmd == "daily":
-        return bool(rest) and rest[0].startswith("--")
+        return (not rest or rest[0].startswith("--")
+                or re.fullmatch(r"\d{4}-\d{2}-\d{2}", rest[0]) is not None)
     if cmd == "init":
         return bool(rest) and (rest[0] == "--host" or (not rest[0].startswith("-") and (":" in rest[0] or "/" in rest[0])))
     return False

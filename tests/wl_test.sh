@@ -128,4 +128,72 @@ else
   fail "dfdd782 no contiene la versión original de wl (clon superficial o historia reescrita); no se puede comprobar el lector anterior"
 fi
 
+# 11. `daily` solo es subcomando con forma de comando (F3): sin args, con fecha suelta o con --flags.
+#     Una frase que empiece por `daily` sigue siendo una entrada. Los inválidos no escriben nada.
+vault="$tmp_dir/vault11"
+mkdir -p "$vault/DAILY"
+printf '# daily\n' >"$vault/DAILY/$today.md"
+printf '# daily\n' >"$vault/DAILY/2026-10-19.md"
+tree_state() { # estado (rutas, hashes) de un directorio; vacío si no existe
+  [ -e "$1" ] && find "$1" -type f -exec sha256sum {} + | sort -k2
+  stat -c '%n %Y.%y' "$1"/DAILY/* 2>/dev/null
+  return 0
+}
+wl_before="$(tree_state "$WORKLOG_DIR")"
+vault_before="$(tree_state "$vault")"
+
+# daily_invalid ETIQUETA ARGS...: rc=1, stderr `wl:`, sin mensaje de éxito, nada escrito.
+daily_invalid() {
+  local label="$1"; shift
+  local out rc
+  out="$(wl "$@" 2>"$tmp_dir/err11")"; rc=$?
+  [ "$rc" -eq 1 ] || fail "$label: rc esperado 1, obtenido $rc"
+  grep -q '^wl: ' "$tmp_dir/err11" || fail "$label: stderr sin prefijo 'wl:'"
+  [ -z "$out" ] || fail "$label: stdout no vacío ($out)"
+  printf '%s\n' "$out" | grep -Eq 'entradas|sin entradas|sin cambios|registrado|✅' && fail "$label: mensaje de éxito"
+  [ "$(tree_state "$WORKLOG_DIR")" = "$wl_before" ] || fail "$label: modificó el worklog"
+  [ "$(tree_state "$vault")" = "$vault_before" ] || fail "$label: modificó el vault"
+  # WORKLOG_DIR inexistente: no se crea
+  rm -rf -- "$tmp_dir/wl_absent"
+  WORKLOG_DIR="$tmp_dir/wl_absent" wl "$@" >/dev/null 2>&1
+  [ ! -e "$tmp_dir/wl_absent" ] || fail "$label: creó un WORKLOG_DIR inexistente"
+}
+daily_invalid "daily sin args" daily
+daily_invalid "daily con fecha" daily 2026-10-19
+daily_invalid "daily con fecha y --vault" daily 2026-10-19 --vault "$vault"
+daily_invalid "--vault sin valor" daily --vault
+daily_invalid "--date sin --vault" daily --date 2026-10-19
+daily_invalid "fecha inválida" daily --vault "$vault" --date 2026-13-45
+daily_invalid "nota inexistente" daily --vault "$vault" --date 2020-01-01
+pass "daily inválido: rc=1, wl:, sin escritura ni mensaje de éxito"
+
+# Válido con --vault: vuelca las entradas de hoy en la nota temporal.
+out="$(wl daily --vault "$vault")" || fail "daily --vault falló"
+printf '%s\n' "$out" | grep -q "$today.md: [0-9]* entradas" || fail "daily --vault sin resumen (obtenido: $out)"
+grep -q 'sin agente' "$vault/DAILY/$today.md" || fail "daily --vault no volcó las entradas"
+# Válido con --vault y --date (sin entradas ese día: no se toca la nota)
+before="$(sha256sum "$vault/DAILY/2026-10-19.md")"
+out="$(wl daily --vault "$vault" --date 2026-10-19)" || fail "daily --vault --date falló"
+[ "$out" = "sin entradas; no se toca la daily" ] || fail "daily --date sin entradas: salida inesperada ($out)"
+[ "$(sha256sum "$vault/DAILY/2026-10-19.md")" = "$before" ] || fail "daily --date sin entradas tocó la nota"
+pass "daily --vault y daily --vault --date siguen siendo comando"
+
+# Texto libre: se registra como entrada.
+n0="$(line_count)"
+wl daily me cansé >/dev/null || fail "daily me cansé falló"
+[ "$(line_count)" -eq $((n0 + 1)) ] || fail "daily me cansé no añadió una entrada"
+[ "$(jget texto)" = "daily me cansé" ] || fail "daily me cansé: texto alterado ($(jget texto))"
+wl daily 20261019 >/dev/null || fail "daily 20261019 falló"
+[ "$(line_count)" -eq $((n0 + 2)) ] || fail "daily 20261019 no añadió una entrada"
+[ "$(jget texto)" = "daily 20261019" ] || fail "daily 20261019: texto alterado ($(jget texto))"
+pass "frases que empiezan por daily se registran como entrada"
+
+# `daily -x` (fuera de alcance F3): se conserva el comportamiento previo, sea el que sea.
+# Previo: -x no empieza por `--`, así que se trata como entrada de texto.
+n1="$(line_count)"
+wl daily -x >/dev/null || fail "daily -x cambió de comportamiento (rc)"
+[ "$(line_count)" -eq $((n1 + 1)) ] || fail "daily -x cambió de comportamiento (ya no se registra)"
+[ "$(jget texto)" = "daily -x" ] || fail "daily -x cambió de comportamiento (texto)"
+pass "daily -x conserva su comportamiento previo"
+
 printf 'OK\n'
