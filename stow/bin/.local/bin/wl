@@ -9,6 +9,7 @@
   wl today                             entradas de hoy de todos los equipos
   wl sync                              commit + pull --rebase + push de este equipo
   wl init GIT_URL [--host NOMBRE]      clona el repo y fija el nombre del equipo
+                                       (adopta un directorio que solo contenga <equipo>/)
   wl daily --vault RUTA [--date D]     vuelca el día en DAILY/D.md (equipo del vault)
 
 `-a NOMBRE` es una flag solo al inicio (junto a -l/-d/-b, en cualquier orden); `-a` tiene
@@ -21,10 +22,14 @@ Datos: <WORKLOG_DIR>/<equipo>/AAAA-MM-DD.jsonl, un fichero por equipo y día, so
 se añaden líneas. Cada equipo escribe únicamente en su directorio, así que git no
 genera conflictos.
 """
+import glob
 import json
 import os
 import re
+import shlex
+import shutil
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -37,6 +42,7 @@ FLAGS = {"-l": "aprendizaje", "-d": "decision", "-b": "bloqueo"}
 START, END = "<!-- worklog:start -->", "<!-- worklog:end -->"
 FIELDS = ("id", "ts", "host", "tipo", "texto")
 HOST_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+DAY_FILE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.jsonl$")
 AGENT_RE = HOST_RE  # mismo formato que el equipo; sin '/', para poder mostrar host/agente
 
 
@@ -190,16 +196,186 @@ def cmd_init(argv):
         die(f"URL no válida: {url!r}")
     if name is not None and not valid_host(name):
         die(f"nombre de equipo no válido: {name!r}")
-    if root().exists() and any(root().iterdir()):
-        die(f"{root()} ya existe y no está vacío")
-    r = subprocess.run(["git", "clone", "--", url, str(root())], text=True)
+    r = root()
+    pending_adoptions(r)
+    if not (r.exists() and any(r.iterdir())):
+        clone_into(url, r)
+        if name:
+            cfg = config_file()
+            cfg.parent.mkdir(parents=True, exist_ok=True)
+            cfg.write_text(name + "\n", encoding="utf-8")
+        print(f"listo: equipo={host()} datos={root()}")
+        return
+    local = adoptable(r)
+    if local is None:
+        die(f"{r} ya existe y no está vacío; solo se adopta un directorio que contenga únicamente "
+            "<equipo>/ con ficheros AAAA-MM-DD.jsonl")
+    eff = os.environ.get("WORKLOG_HOST") or name or host()
+    if not valid_host(eff):
+        die(f"nombre de equipo no válido: {eff!r}")
+    if local[0] != eff:
+        die(f"{r} ya existe y no está vacío; hay datos locales de {local[0]}/; "
+            f"usa --host {local[0]} o WORKLOG_HOST={local[0]}")
+    env_host = os.environ.get("WORKLOG_HOST")
+    if env_host and name and env_host != name:
+        die(f"WORKLOG_HOST={env_host} y --host {name} difieren; usa el mismo valor en ambos o elimina uno")
+    adopt(url, name, r, eff, local[1])
+    print(f"listo: equipo={host()} datos={root()}")
+
+
+def clone_into(url, dest):
+    r = subprocess.run(["git", "clone", "--", url, str(dest)], text=True)
     if r.returncode:
         die("git clone falló", r.returncode)
-    if name:
-        cfg = config_file()
-        cfg.parent.mkdir(parents=True, exist_ok=True)
-        cfg.write_text(name + "\n", encoding="utf-8")
-    print(f"listo: equipo={host()} datos={root()}")
+
+
+def is_real_dir(p) -> bool:
+    try:
+        return stat.S_ISDIR(os.lstat(p).st_mode)
+    except OSError:
+        return False
+
+
+def pending_adoptions(r: Path):
+    """Un `.<root>.init-*` con ADOPTING y clone/<equipo> guarda datos de usuario sin recuperar."""
+    pattern = os.path.join(glob.escape(str(r.parent)), glob.escape(f".{r.name}.init-") + "*")
+    for t in sorted(glob.glob(pattern)):
+        if not is_real_dir(t):
+            continue
+        try:
+            with open(os.path.join(t, "ADOPTING"), encoding="utf-8") as f:
+                eff = f.read().strip()
+        except OSError:
+            continue
+        held = os.path.join(t, "clone", eff)
+        if not valid_host(eff) or not os.path.lexists(held):
+            continue
+        dest = r / eff
+        state = (f"{dest} existe (datos posteriores a la adopción)" if os.path.lexists(dest)
+                 else f"{dest} no existe")
+        die(f"hay datos locales sin recuperar de una adopción interrumpida; no se toca nada.\n"
+            f"  datos originales de {eff}/: {held}\n"
+            f"  destino: {state}\n"
+            f"  recuperación manual: combina a mano el contenido de {held} con {dest} "
+            f"(si {dest} no existe: mv {shlex.quote(held)} {shlex.quote(str(dest))}), "
+            f"comprueba el resultado y borra {t}")
+
+
+def adoptable(r: Path):
+    """(equipo, ficheros) si root solo contiene <equipo>/ con AAAA-MM-DD.jsonl regulares; si no, None."""
+    try:
+        if not is_real_dir(r) or os.stat(r).st_dev != os.stat(r.parent).st_dev:
+            return None
+        kids = os.listdir(r)
+        if len(kids) != 1 or not is_real_dir(r / kids[0]):
+            return None
+        files = os.listdir(r / kids[0])
+        for f in files:
+            if not DAY_FILE_RE.match(f) or not stat.S_ISREG(os.lstat(r / kids[0] / f).st_mode):
+                return None
+    except OSError:
+        return None
+    return kids[0], sorted(files)
+
+
+def sq(s) -> str:
+    return "'" + str(s).replace("'", "'\\''") + "'"
+
+
+def adopt(url, name, r: Path, eff, files):
+    """Clona en un temporal hermano, mueve <eff>/ dentro del clon y lo deja como root.
+
+    scratch=True solo mientras el temporal no contiene ni puede contener datos del usuario;
+    se desactiva ANTES del rename A y solo se reactiva si se acredita el estado real
+    (datos en root y nada en el clon). Ante cualquier duda se conserva el temporal."""
+    cfg = config_file()
+    try:
+        t = tempfile.mkdtemp(dir=r.parent, prefix=f".{r.name}.init-")
+    except OSError as e:
+        die(f"no se puede crear un temporal junto a {r}: {e}")
+    clone, held, dest = os.path.join(t, "clone"), os.path.join(t, "clone", eff), r / eff
+    cfg_tmp = None
+    scratch = True
+    adopted = False
+    try:
+        res = subprocess.run(["git", "clone", "--", url, clone], text=True)
+        if res.returncode:
+            die("git clone falló", res.returncode)
+        if os.path.lexists(held):
+            die(f"el remoto ya contiene {eff}/; no se adopta ni se mezcla; datos locales intactos")
+        probe = [eff, *(f"{eff}/{f}" for f in files), f"{eff}/{date.today().isoformat()}.jsonl"]
+        chk = subprocess.run(["git", "-C", clone, "check-ignore", "-z", "--stdin"], text=True,
+                             input="\0".join(probe) + "\0", capture_output=True)
+        if chk.returncode != 0 and chk.returncode != 1:
+            die(f"no se pudo comprobar las exclusiones de Git ({chk.stderr.strip()}); datos locales intactos")
+        if chk.returncode == 0:
+            die(f"las exclusiones de Git del repositorio (.gitignore, info/exclude o globales) ignoran "
+                f"{eff}/ o sus ficheros; wl sync no los publicaría; no se adopta, datos locales intactos")
+        try:
+            if name:
+                cfg.parent.mkdir(parents=True, exist_ok=True)
+                fd, cfg_tmp = tempfile.mkstemp(dir=cfg.parent, prefix=".host.")
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                    f.write(name + "\n")
+            with open(os.path.join(t, "ADOPTING"), "w", encoding="utf-8") as f:
+                f.write(eff + "\n")
+        except OSError as e:
+            die(f"no se pudo preparar la adopción: {e}; datos locales intactos")
+        scratch = False  # desde aquí el temporal puede contener datos del usuario
+        try:
+            os.rename(dest, held)  # A: los datos locales pasan al clon
+        except OSError as e:
+            if os.path.lexists(dest) and not os.path.lexists(held):
+                scratch = True  # acreditado: los datos siguen en root y el clon no los contiene
+                die(f"no se pudo mover {dest}: {e}; datos locales intactos")
+            die(f"el movimiento de {dest} falló ({e}) y no se puede acreditar dónde están los datos; "
+                f"no se borra nada.\n  posible ubicación de los datos originales: {held}\n"
+                f"  ubicación original: {dest}\n"
+                f"  recuperación manual: localiza los datos en una de las dos rutas, devuélvelos a {dest} "
+                f"y borra {t};\n  mientras exista {t}, wl init se niega")
+        try:
+            os.rename(clone, r)  # B: el clon pasa a ser root
+        except OSError as e:
+            if cfg_tmp:  # temporal de config: nada del usuario, se puede descartar
+                Path(cfg_tmp).unlink(missing_ok=True)
+                cfg_tmp = None
+            try:
+                os.rename(held, dest)  # rollback de A
+            except OSError as e2:
+                die(f"no se pudo completar la adopción ({e}) ni deshacerla ({e2}); no se borra nada.\n"
+                    f"  datos originales: {held}\n  contenido actual de {dest}: lo escrito después de mover\n"
+                    f"  recuperación manual: combina a mano {held} con {dest} y borra {t};\n"
+                    f"  mientras exista {t}, wl init se niega")
+            if os.path.lexists(dest) and not os.path.lexists(held):
+                scratch = True  # acreditado: restaurados en root y el clon ya no los contiene
+                die(f"no se pudo completar la adopción ({e}); datos locales restaurados e intactos")
+            die(f"no se pudo completar la adopción ({e}); no se puede acreditar la restauración; no se borra nada.\n"
+                f"  datos originales: {held} o {dest}\n"
+                f"  recuperación manual: verifica ambas rutas y borra {t} cuando los datos estén en {dest};\n"
+                f"  mientras exista {t}, wl init se niega")
+        # los datos ya están en root/<eff>: a partir de aquí no se deshace nada
+        adopted = True
+        if cfg_tmp:
+            try:
+                os.replace(cfg_tmp, cfg)
+                cfg_tmp = None
+            except OSError as e:
+                die(f"adopción incompleta ({e}): datos adoptados en {dest}; configuración pendiente: "
+                    f"printf '%s\\n' {sq(name)} > {sq(cfg)}; "
+                    f"pueden borrarse el temporal {cfg_tmp} y el directorio {t}")
+        try:
+            os.unlink(os.path.join(t, "ADOPTING"))
+            os.rmdir(t)
+        except OSError as e:
+            die(f"adopción completada pero no se pudo limpiar el temporal ({e}): datos adoptados en {dest}"
+                + ("" if not name else f", configuración escrita en {cfg}") + f"; puede borrarse {t}")
+        t = None
+        print(f"wl: adoptadas entradas locales de {eff}/ (sin confirmar; wl sync las publica)", file=sys.stderr)
+    finally:
+        if scratch and t:
+            shutil.rmtree(t, ignore_errors=True)
+        if cfg_tmp and not adopted:  # temporal de config: nada del usuario
+            Path(cfg_tmp).unlink(missing_ok=True)
 
 
 def cmd_sync(_argv):

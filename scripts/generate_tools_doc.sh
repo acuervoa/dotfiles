@@ -12,6 +12,11 @@ trap 'rm -f -- "$tmp_output"' EXIT
   exit 1
 }
 
+[ -f "$repo_root/docs/wl.md" ] || {
+  printf 'Falta docs/wl.md, enlazado desde TOOLS.md: %s\n' "$repo_root/docs/wl.md" >&2
+  exit 1
+}
+
 {
   printf '# Herramientas instaladas\n\n'
   printf 'Generado desde `scripts/audit-application-ownership.sh` — no editar a mano.\n\n'
@@ -32,6 +37,10 @@ trap 'rm -f -- "$tmp_output"' EXIT
     [ "$record" = CAPABILITY ] || continue
     printf '| %s | **%s** |\n' "$capability" "$owner"
   done < <("$audit")
+
+  printf '\n## Herramientas propias\n\n'
+  printf '| Herramienta | Ubicación | Uso | Contrato |\n| --- | --- | --- | --- |\n'
+  printf '%s\n' "| **wl** | \`stow/bin/.local/bin/wl\` | registro de trabajo por equipo (git + JSONL) | [docs/wl.md](docs/wl.md) |"
 } >"$tmp_output"
 
 mv -- "$tmp_output" "$output"

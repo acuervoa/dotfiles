@@ -44,3 +44,9 @@ Una sola herramienta por capacidad — ver `docs/audits/2026-09-02-application-i
 | editor | **Neovim** |
 | git-visual | **LazyGit** |
 | notifications | **Dunst** |
+
+## Herramientas propias
+
+| Herramienta | Ubicación | Uso | Contrato |
+| --- | --- | --- | --- |
+| **wl** | `stow/bin/.local/bin/wl` | registro de trabajo por equipo (git + JSONL) | [docs/wl.md](docs/wl.md) |
