@@ -6118,6 +6118,40 @@
   color: var(--sbx-muted);
 }
 
+/* K02 — barra de lote: selector de tema y «Siguientes 10»; aviso de cambio de tema */
+.sbx-dashboard .sbx-k02-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--sbx-border-soft);
+  border-radius: var(--sbx-radius);
+  background: var(--sbx-surface-sm);
+}
+.sbx-dashboard .sbx-k02-bar select.sbx-k02-topic {
+  flex: 1 1 260px;
+  min-width: 0;
+  height: 32px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--sbx-border);
+  border-radius: var(--sbx-radius-sm);
+  font-size: var(--sbx-text-sm);
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+}
+.sbx-dashboard .sbx-k02-bar .sbx-btn--inline { margin-left: auto; }
+.sbx-dashboard .sbx-k02-notice {
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--sbx-accent-border);
+  border-radius: var(--sbx-radius-sm);
+  background: var(--sbx-accent-bg);
+  font-size: var(--sbx-text-xs);
+}
+
 /* INBOX — lista de triage, estado y deshacer (antes inline en INBOX.md) */
 .sbx-dashboard .sbx-inbox-status {
   min-height: 0;
