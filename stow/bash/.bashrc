@@ -199,3 +199,5 @@ move_to_end "/nix/var/nix/profiles/default/bin"
 unset -f move_to_end 2>/dev/null || true
 unset -f move_to_front 2>/dev/null || true
 export PATH
+
+export PATH="$HOME/workbench/bin:$PATH"
