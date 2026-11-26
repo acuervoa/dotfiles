@@ -11,5 +11,6 @@
     "sbx-hide-props",
     "sbx-graph"
   ],
-  "monospaceFontFamily": "MesloLGLDZ Nerd Font"
+  "monospaceFontFamily": "MesloLGLDZ Nerd Font",
+  "showRibbon": true
 }
