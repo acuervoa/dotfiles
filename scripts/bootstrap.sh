@@ -151,6 +151,8 @@ maybe_install_tmux_plugins() {
   # `tmux start-server` sin sesiones sale al instante (instalación limpia/WSL):
   # TPM necesita un servidor vivo, así que se levanta uno con una sesión efímera.
   local tmp_session=""
+  # `info` es aquí un subcomando de tmux, no la función info() de common.sh.
+  # shellcheck disable=SC2033
   if ! tmux info >/dev/null 2>&1; then
     tmp_session="dotfiles-tpm-bootstrap"
     tmux new-session -d -s "$tmp_session"
