@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-exec /usr/bin/mise exec -- agentmemory "$@"
+# agentmemory está instalado en esta versión de Node. El binario se invoca por
+# ruta absoluta: con "mise exec -- agentmemory", si esa versión no está activa,
+# PATH vuelve a encontrar este wrapper y se produce un bucle de exec.
+node_version=24.20.0
+bin="${MISE_DATA_DIR:-$HOME/.local/share/mise}/installs/node/$node_version/bin/agentmemory"
+
+if [[ ! -x "$bin" ]]; then
+  printf 'agentmemory: no existe %s\n' "$bin" >&2
+  exit 127
+fi
+
+exec /usr/bin/mise exec "node@$node_version" -- "$bin" "$@"
