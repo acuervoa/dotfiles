@@ -189,6 +189,7 @@ move_to_front "$HOME/.opencode/bin"
 move_to_front "$HOME/.bun/bin"
 move_to_front "$HOME/bin"
 move_to_front "$HOME/.local/bin"
+move_to_front "$HOME/workbench/bin"
 
 move_to_end() {
   local p="$1"
@@ -199,5 +200,3 @@ move_to_end "/nix/var/nix/profiles/default/bin"
 unset -f move_to_end 2>/dev/null || true
 unset -f move_to_front 2>/dev/null || true
 export PATH
-
-export PATH="$HOME/workbench/bin:$PATH"
